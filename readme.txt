@@ -44,7 +44,7 @@ bây giờ bạn cần phải đăng ký khối trong file includes/wcb-register
 
 ***** 4 - Cách cấu trúc và viết mã PHP
 * Dự án sự dụng khá ít PHP, vì vậy PHP chủ yếu sẽ được viết theo phong cách HƯỚNG CHỨC NĂNG (FUNCTIONAL),
-có nghĩa là không sử dụng Class, toàn bộ là các PHP functions. Tất cả các file PHP sẽ đều được import vào file woostifyblocks.php  
+có nghĩa là không sử dụng Class, toàn bộ là các PHP functions. Tất cả các file PHP sẽ đều được import vào file boostify-blocks.php  
 Bạn có thể thấy toàn bộ file PHP đều nằm trong thư mục /includes
 
 

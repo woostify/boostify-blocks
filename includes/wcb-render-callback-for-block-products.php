@@ -277,7 +277,7 @@ function wcb_block_products__add_percentage_to_sale_badge($product)
 
         $percentage    = round(100 - ($sale_price / $regular_price * 100)) . '%';
     }
-    return '<span class="onsale">' . esc_html__('SALE', 'wcb') . ' ' . $percentage . '</span>';
+    return '<span class="onsale">' . esc_html__('SALE', 'boostify-blocks') . ' ' . $percentage . '</span>';
 }
 
 
@@ -291,14 +291,14 @@ function wcb_block_products__get_sale_badge_html($product,  $showSaleBadgeDiscou
     if (wcb__is_enabled($showSaleBadgeDiscoutPercent)) {
         return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
         ' . wcb_block_products__add_percentage_to_sale_badge($product) . '
-        <span class="screen-reader-text">' . esc_html__('Product on sale', 'wcb') . '</span>
+        <span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
     </div></div>';
     }
 
 
     return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
-			<span aria-hidden="true">' . esc_html__('Sale', 'wcb') . '</span>
-			<span class="screen-reader-text">' . esc_html__('Product on sale', 'wcb') . '</span>
+			<span aria-hidden="true">' . esc_html__('Sale', 'boostify-blocks') . '</span>
+			<span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
 		</div></div>';
 }
 

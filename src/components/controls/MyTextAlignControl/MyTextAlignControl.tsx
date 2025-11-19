@@ -17,7 +17,7 @@ const MyTextAlignControl: FC<Props> = ({
 	textAlignment,
 	className,
 	hasResponsive,
-	label = __("Alignment", "wcb"),
+	label = __("Alignment", "boostify-blocks"),
 }) => {
 	return (
 		<MyRadioGroup

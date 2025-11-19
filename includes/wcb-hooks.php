@@ -7,7 +7,7 @@ function wcb__add_new_block_category($block_categories, $editor_context)
             $block_categories,
             array(
                 'slug'  => 'wcb-blocks',
-                'title' => __('Woostify', 'wcb'),
+                'title' => __('Boostify', 'boostify-blocks'),
                 'icon'  => null,
             ),
         );
