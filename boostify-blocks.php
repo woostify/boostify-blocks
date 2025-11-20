@@ -5,7 +5,7 @@
  * Description:       Boostify Blocks offers an extensive library of customizable blocks that seamlessly integrate with the Gutenberg editor
  * Requires at least: 5.8
  * Requires PHP:      7.3
- * Version:           1.1.13
+ * Version:           1.0.0
  * Author:            Woostify
  * Author URI:        https://woostify.com/about/
  * License:           GPL-2.0-or-later

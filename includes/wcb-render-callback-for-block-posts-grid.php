@@ -332,7 +332,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
 
                 $term_links = [];
                 foreach ($post_taxs as $term) {
-                    $term_links[] = '<a href="' . esc_attr(get_term_link($term->slug, $queries["taxonomySlug"])) . '">' . __($term->name) . '</a>';
+                    $term_links[] = '<a href="' . esc_attr(get_term_link($term->slug, $queries["taxonomySlug"])) . '">' . esc_html($term->name) . '</a>';
                 };
 
                 $all_terms = join('', $term_links);
@@ -340,7 +340,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                     $all_terms = join(', ', $term_links);
                 };
 
-                echo '<div class="wcbPostCard__taxonomies wcbPostCard__taxonomies--' . esc_attr($modifiedClass) . esc_attr($attributes['general_postMeta']['taxonomyStyle'] === "Highlighted" ? " wcbPostCard__taxonomies--highlighted" : "") . '">' . __($all_terms) . '</div>';
+                echo '<div class="wcbPostCard__taxonomies wcbPostCard__taxonomies--' . esc_attr($modifiedClass) . esc_attr($attributes['general_postMeta']['taxonomyStyle'] === "Highlighted" ? " wcbPostCard__taxonomies--highlighted" : "") . '">' . $all_terms . '</div>';
 
             endif;
         }
