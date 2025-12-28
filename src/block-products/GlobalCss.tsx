@@ -477,11 +477,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							right: 
 								style_quickViewBtn?.position === "bottom-image" ? "0 !important" : 
 								style_quickViewBtn?.position === "center-image" ? "50%" : 
-								style_quickViewBtn?.position === "top-right" ? "-1.6px" : "auto",
+								style_quickViewBtn?.position === "top-right" ? "-0.1rem" : "auto",
 							width: 
 								style_quickViewBtn?.position === "bottom-image" ? "100%" : 
 								style_quickViewBtn?.position === "center-image" ? "auto" : 
-								style_quickViewBtn?.position === "top-right" ? "2.60rem" : "unset",
+								style_quickViewBtn?.position === "top-right" ? "2.6rem" : "unset",
 							transform: 
 								style_quickViewBtn?.position === "center-image" ? "translateX(50%)" : 
 								style_quickViewBtn?.position === "top-right" ? "translateY(2.5rem)" : "none",
@@ -514,7 +514,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 								"svg": {
 									color: "inherit",
 								}
-							}
+							},
+							"border": "none",
+
 						},
 					},
 					"&.wcb-products__product--btnIconAddToCart .added_to_cart": {
