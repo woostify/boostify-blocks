@@ -19,15 +19,15 @@
 defined('ABSPATH') || exit;
 
 // Define Constants.
-define('WCB_UNIQUE_NAME', 'boostify-blocks');
+define('BOOSTIFY_BLOCKS_UNIQUE_NAME', 'boostify-blocks');
 
-define('WCB_VERSION', '1.1.13');
+define('BOOSTIFY_BLOCKS_VERSION', '1.1.13');
 
-define('WCB_FILE', __FILE__);
-define('WCB_PLUGIN_BASE', plugin_basename(WCB_FILE));
-define('WCB_PATH', plugin_dir_path(WCB_FILE));
-define('WCB_URI', plugins_url('/', WCB_FILE));
-define('WCB_BUILD_PATH', __DIR__ . '/build');
+define('BOOSTIFY_BLOCKS_FILE', __FILE__);
+define('BOOSTIFY_BLOCKS_PLUGIN_BASE', plugin_basename(BOOSTIFY_BLOCKS_FILE));
+define('BOOSTIFY_BLOCKS_PATH', plugin_dir_path(BOOSTIFY_BLOCKS_FILE));
+define('BOOSTIFY_BLOCKS_URI', plugins_url('/', BOOSTIFY_BLOCKS_FILE));
+define('BOOSTIFY_BLOCKS_BUILD_PATH', __DIR__ . '/build');
 
 
 
