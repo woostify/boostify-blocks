@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 if (!function_exists('wcb_get_wcb_block_type_list') || !function_exists('get_option')) {
     return;
 }

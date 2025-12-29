@@ -1,5 +1,5 @@
 <?php
-
+defined('ABSPATH') || exit;
 add_action('wp_ajax_wcb_dashboard_blocks_disable_enable', 'wcb_ajax_dashboard_blocks_disable_enable');
 function wcb_ajax_dashboard_blocks_disable_enable()
 {

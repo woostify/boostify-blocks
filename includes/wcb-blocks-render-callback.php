@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 //============================================= block 1 ===============================================================
 function wcb_block_tabs_renderCallback($attributes, $content)
 {
@@ -141,24 +142,31 @@ function wcb_block_form__renderCallback($attributes, $content)
 
     $wcb_blocks_settings_options = get_option('wcb_blocks_settings_options');
     ob_start();
-    echo $content;
+    echo wp_kses_post($content);
 ?>
-    <!-- general_gg_recaptcha.enableReCaptcha -->
-    <?php if (boolval($attributes['general_gg_recaptcha']['enableReCaptcha'] ?? true)) : ?>
-
-        <!-- V2 -->
-        <?php if (($attributes['general_gg_recaptcha']['version'] ?? 'v2') === 'v2') : ?>
-            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-        <?php endif; ?>
-
-        <!-- V3 -->
-        <?php if (($attributes['general_gg_recaptcha']['version'] ?? 'v2') === 'v3') : ?>
-            <script src="https://www.google.com/recaptcha/api.js?render=<?php echo esc_attr($wcb_blocks_settings_options['reCAPTCHA_v3_site_key'] ?? ""); ?>" async defer></script>
-        <?php endif; ?>
-
-    <?php endif; ?>
-
 <?php
+    // Register reCAPTCHA scripts
+    if (boolval($attributes['general_gg_recaptcha']['enableReCaptcha'] ?? true)) {
+        $recaptcha_url = 'https://www.google.com/recaptcha/api.js';
+        $handle = 'google-recaptcha-v2';
+        
+        if (($attributes['general_gg_recaptcha']['version'] ?? 'v2') === 'v3') {
+            $site_key = $wcb_blocks_settings_options['reCAPTCHA_v3_site_key'] ?? "";
+            $recaptcha_url = add_query_arg('render', $site_key, 'https://www.google.com/recaptcha/api.js');
+            $handle = 'google-recaptcha-v3';
+        }
+
+        wp_enqueue_script($handle, $recaptcha_url, [], null, true);
+        
+        // Add async defer attributes
+        add_filter('script_loader_tag', function($tag, $handle_check) use ($handle) {
+            if ($handle === $handle_check) {
+                return str_replace(' src', ' async defer src', $tag);
+            }
+            return $tag;
+        }, 10, 2);
+    }
+
     return ob_get_clean();
 }
 

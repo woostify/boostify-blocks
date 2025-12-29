@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 
 function wcb_block_products__renderCallback($attributes, $content)
 {
@@ -26,7 +27,7 @@ function wcb_block_products__renderCallback($attributes, $content)
 
 ?>
 
-    <?php echo $content; ?>
+    <?php echo wp_kses_post($content); ?>
     <div class="wcb-products__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
 
         <?php
@@ -42,7 +43,7 @@ function wcb_block_products__renderCallback($attributes, $content)
 
                     global $product;
                     if (!empty($product)) {
-                        echo wcb_block_products__render_product($product, $attributes, $loop->current_post);
+                        echo wp_kses_post(wcb_block_products__render_product($product, $attributes, $loop->current_post));
                     }
                 endwhile;
                 ?>
@@ -237,7 +238,8 @@ function wcb_block_products__get_rating_html($product)
 
 
     if ($rating_count > 0) {
-        $label = sprintf(__('Rated %s out of 5', 'woocommerce'), $average);
+        /* translators: %s: Average rating score */
+        $label = sprintf(__('Rated %s out of 5', 'boostify-blocks'), $average);
         $html  = '<div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . '</div>';
         return $html;
     }

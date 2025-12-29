@@ -1,5 +1,5 @@
 <?php
-
+defined('ABSPATH') || exit;
 add_action('wp_ajax_wcb_get_product_filters', 'wcb_woo__ajax_get_product_filters');
 add_action('wp_ajax_nopriv_wcb_get_product_filters', 'wcb_woo__ajax_get_product_filters');
 

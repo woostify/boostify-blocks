@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 add_action('wp_ajax_wcbform_action', 'wcb_form_action_init');
 add_action('wp_ajax_nopriv_wcbform_action', 'wcb_form_action_init');
 function wcb_form_action_init()
