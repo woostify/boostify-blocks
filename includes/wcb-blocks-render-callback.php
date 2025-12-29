@@ -140,7 +140,7 @@ function wcb_block_form__renderCallback($attributes, $content)
     // }
     wp_enqueue_script__block_commoncss_frontend_styles();
 
-    $wcb_blocks_settings_options = get_option('wcb_blocks_settings_options');
+    $wcb_blocks_settings_options = get_option('boostify_blocks_settings_options');
     ob_start();
     echo wp_kses_post($content);
 ?>

@@ -11,7 +11,7 @@ if (!function_exists("wcb__my_scripts_method")) {
         wp_enqueue_style('wcb-frontend-css', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/style-index.css');
         wp_localize_script(
             'jquery',
-            'wcbFrontendAjaxObject',
+            'boostifyBlocksFrontendAjaxObject',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),
@@ -19,14 +19,14 @@ if (!function_exists("wcb__my_scripts_method")) {
         );
         wp_localize_script(
             'jquery',
-            'wcbLayoutGlobalSettings',
+            'boostifyBlocksLayoutGlobalSettings',
             wcb__get_layout_global_settings()
         );
-        // 1 - JS Global -> Follow by typeof window.wcbGlobalVariables
+        // 1 - JS Global -> Follow by typeof window.boostifyBlocksGlobalVariables
         wp_localize_script(
             'jquery',
-            'wcbGlobalVariables',
-            get_option('wcb_blocks_settings_options')
+            'boostifyBlocksGlobalVariables',
+            get_option('boostify_blocks_settings_options')
         );
 
         // can xem xet lai, vi no se enqueue khi ma testimonial co duoc goi hay khong di nua....
@@ -48,14 +48,14 @@ if (!function_exists("wcb__my_enqueue_scripts_for_admin_editor")) {
     {
         wp_localize_script(
             'jquery',
-            'wcbLayoutGlobalSettings',
+            'boostifyBlocksLayoutGlobalSettings',
             wcb__get_layout_global_settings()
         );
-        // 1 - JS Global -> Follow by typeof window.wcbGlobalVariables
+        // 1 - JS Global -> Follow by typeof window.boostifyBlocksGlobalVariables
         wp_localize_script(
             'jquery',
-            'wcbGlobalVariables',
-            get_option('wcb_blocks_settings_options')
+            'boostifyBlocksGlobalVariables',
+            get_option('boostify_blocks_settings_options')
         );
     }
     add_action('admin_enqueue_scripts', 'wcb__my_enqueue_scripts_for_admin_editor');

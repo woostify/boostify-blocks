@@ -11,7 +11,7 @@ function wcb_ajax_dashboard_blocks_disable_enable()
 
     $newBlocksStatus = array_merge($wcbBlockStatusInit, $blocksStatus);
 
-    update_option('wcb_blocks_enable_disable_options', $newBlocksStatus);
+    update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
     $array_result = array(
         'data' => $newBlocksStatus,
         'message' => 'your message'
@@ -28,7 +28,7 @@ function wcb_ajax_dashboard_update_settings()
     $settings = $_POST['settings'] ?? [];
     $settings = array_merge(wcb_get_default_blocks_settings(), $settings);
 
-    update_option('wcb_blocks_settings_options', $settings);
+    update_option('boostify_blocks_settings_options', $settings);
     $array_result = array(
         'data' => $settings,
         'message' => 'your message'

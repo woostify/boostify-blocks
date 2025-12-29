@@ -12,7 +12,7 @@ add_action('init', 'wcb_create_blocks_gutenberg_init');
 if (!function_exists("wcb_create_blocks_gutenberg_init")) {
     function wcb_create_blocks_gutenberg_init()
     {
-        $wcb_blocks_enable_disable = get_option('wcb_blocks_enable_disable_options') ?? [];
+        $wcb_blocks_enable_disable = get_option('boostify_blocks_enable_disable_options') ?? [];
 
         // common - not deactive
         register_block_type(
