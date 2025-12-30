@@ -65,6 +65,7 @@ export type ThemeDefaults = {
         hover_bg_color?: string;
         hover_text_color?: string;
         border_radius?: number;
+        woostify_pro_active?: boolean;
     };
 };
   

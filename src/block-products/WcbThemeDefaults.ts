@@ -471,6 +471,10 @@ export function buildStyleQuickViewButtonDefault(attr?: Partial<typeof WCB_PRODU
             quickViewBtn?.border_radius ??
             attr?.border_radius ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.border_radius,
+        woostify_pro_active:
+            quickViewBtn?.woostify_pro_active ??
+            attr?.woostify_pro_active ??
+            WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.woostify_pro_active,
     };
 }
 

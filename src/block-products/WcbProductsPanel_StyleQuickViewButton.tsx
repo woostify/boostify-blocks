@@ -11,6 +11,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON {
 	hover_bg_color: string;
 	hover_text_color: string;
 	border_radius: number;
+	woostify_pro_active?: boolean;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO: WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON =
@@ -23,4 +24,5 @@ export const WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO: WCB_PRODUCTS_PANEL_
 		hover_bg_color: "#f5f5f5",
 		hover_text_color: "#333333",
 		border_radius: 0,
+		woostify_pro_active: false,
 	};
