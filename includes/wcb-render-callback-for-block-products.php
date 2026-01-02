@@ -207,7 +207,15 @@ function wcb_block_products_apply_theme_defaults($attributes)
     $attributes['style_quickViewBtn'] = array_merge(
         $attributes['style_quickViewBtn'] ?? [],
         [
+            'enabled' => $quickview['enabled'] ?? ($attributes['style_quickViewBtn']['enabled'] ?? null),
             'position' => $quickview['position'] ?? ($attributes['style_quickViewBtn']['position'] ?? null),
+            'show_icon' => $quickview['show_icon'] ?? ($attributes['style_quickViewBtn']['show_icon'] ?? null),
+            'bg_color' => $quickview['bg_color'] ?? ($attributes['style_quickViewBtn']['bg_color'] ?? null),
+            'text_color' => $quickview['text_color'] ?? ($attributes['style_quickViewBtn']['text_color'] ?? null),
+            'hover_bg_color' => $quickview['hover_bg_color'] ?? ($attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
+            'hover_text_color' => $quickview['hover_text_color'] ?? ($attributes['style_quickViewBtn']['hover_text_color'] ?? null),
+            'border_radius' => isset($quickview['border_radius']) ? $quickview['border_radius'] . 'px' : ($attributes['style_quickViewBtn']['border_radius'] ?? null),
+            'woostify_pro_active' => $quickview['woostify_pro_active'] ?? ($attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
         ]
     );
 
