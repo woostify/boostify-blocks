@@ -31,7 +31,9 @@ function initQuickViewSlider() {
             autoplay: false, // Disable autoplay for manual control
             controls: true,
             controlsText: ['<', '>'],
-            nav: true,            loop: false,            autoplayButtonOutput: false,
+            nav: true,            
+            loop: false,            
+            autoplayButtonOutput: false,
         });
     }
 }
@@ -44,15 +46,95 @@ function initQuickViewQuantity() {
         customQuantity();
         
         // Also run after a short delay in case content is still loading
-        setTimeout(customQuantity, 100);
-        setTimeout(customQuantity, 500);
+        setTimeout(customQuantity, 300);
     }
+}
+// Function to handle add to cart in quick view
+function handleQuickViewAddToCart() {
+    // Disable theme's handler for quick view buttons
+    jQuery(document).on('click', '#woostify-quick-view-panel .single_add_to_cart_button', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        // Handle manually
+        handleQuickViewAddToCartManual(jQuery(this));
+        return false;
+    });
+    
+    // Also handle form submit as backup
+    jQuery(document).on('submit', '#woostify-quick-view-panel form.cart', function(e) {
+        e.preventDefault();
+        const $button = jQuery(this).find('.single_add_to_cart_button');
+        handleQuickViewAddToCartManual($button);
+    });
+}
+
+// Manual add to cart handler for quick view
+function handleQuickViewAddToCartManual($button) {
+    const $form = $button.closest('form.cart');
+    
+    // Add loading state
+    $button.addClass('add_to_cart_button--loading').prop('disabled', true);
+    
+    // Prepare form data using FormData (same as theme)
+    const formData = new FormData($form[0]);
+    formData.append('ajax_nonce', woostify_woocommerce_general.ajax_nonce);
+    
+    // Send AJAX request using fetch (same as theme)
+    fetch(wc_add_to_cart_params.wc_ajax_url.toString().replace('%%endpoint%%', 'woostify_single_add_to_cart'), {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            throw new Error('Network response was not ok: ' + response.status);
+        }
+    })
+    .then(data => {
+        // Check for errors in response
+        if (data && data.error) {
+            throw new Error(data.error);
+        }
+        
+        // Update cart fragments
+        if (typeof woostifyAjaxSingleUpdateFragments === 'function') {
+            woostifyAjaxSingleUpdateFragments($button[0]);
+        }
+        
+        // Manually trigger sidebar opening (since theme's logic may not work for quick view)
+        setTimeout(function() {
+            if (typeof cartSidebarOpen === 'function') {
+                cartSidebarOpen();
+            }
+        }, 100);
+        
+        // Remove loading state
+        $button.removeClass('add_to_cart_button--loading').prop('disabled', false);
+        
+        // Close quick view
+        document.documentElement.classList.remove('quick-view-open');
+        
+    })
+    .catch(error => {
+        console.error('Add to cart error:', error);
+        $button.removeClass('add_to_cart_button--loading').prop('disabled', false);
+        
+        // Show error message
+        if (typeof woostifyShowNotification === 'function') {
+            woostifyShowNotification('Failed to add product to cart. Please try again.', 'error');
+        } else {
+            alert('Failed to add product to cart. Please try again.');
+        }
+    });
 }
 
 // Initialize on document ready
 jQuery(document).ready(function() {
     initQuickViewSlider();
     initQuickViewQuantity();
+    handleQuickViewAddToCart();
 });
 
 // Also initialize when modal is shown (assuming modal is added dynamically)
@@ -61,7 +143,8 @@ jQuery(document).on('click', '.product-quick-view-btn', function() {
     setTimeout(function() {
         initQuickViewSlider();
         initQuickViewQuantity();
-    }, 500); // Increase delay
+        handleQuickViewAddToCart();
+    }, 100); // Increase delay
 });
 
 // Listen for when the quick view modal is opened
@@ -89,6 +172,7 @@ const observer = new MutationObserver(function(mutations) {
                         setTimeout(function() {
                             initQuickViewSlider();
                             initQuickViewQuantity();
+                            handleQuickViewAddToCart();
                         }, 200);
                     }
                 }
