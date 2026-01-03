@@ -71,6 +71,11 @@ function handleQuickViewAddToCart() {
 
 // Manual add to cart handler for quick view
 function handleQuickViewAddToCartManual($button) {
+    // Prevent multiple calls if already processing
+    if ($button.hasClass('add_to_cart_button--loading')) {
+        return;
+    }
+    
     const $form = $button.closest('form.cart');
     
     // Add loading state
