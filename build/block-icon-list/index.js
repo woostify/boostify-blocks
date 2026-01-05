@@ -9936,7 +9936,7 @@ const blokc1Attrs = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"wcb/icon-list","version":"0.1.2","title":"Icon List","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-clipboard","description":"Create a list highlighted with icons/images.","supports":{"html":false,"anchor":true,"align":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wcb/icon-list","version":"0.1.2","title":"Icon List","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-clipboard","description":"Create a list highlighted with icons/images.","supports":{"html":false,"anchor":true,"align":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

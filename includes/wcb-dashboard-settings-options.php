@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 // wcb_blocks_settings_options
 function wcb_dashboard_settings_options_init()
 {

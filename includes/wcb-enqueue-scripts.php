@@ -1,5 +1,7 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 // Enqueue for Frontend
 if (!function_exists("wcb__my_scripts_method")) {
     function wcb__my_scripts_method()

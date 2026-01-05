@@ -43,7 +43,7 @@ const Edit = () => {
   \*****************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"create-block-wcbxxyyyzz/wcbxxyyyzz-blocks-common-css","version":"0.1.0","title":"Block Common CSS","category":"wcb-blocks","parent":["wcb/create-block-wcbxxyyyzz"],"icon":"heart","description":"Example static block scaffolded with Create Block tool.","supports":{"html":false},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./FrontendStyles.js"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"create-block-wcbxxyyyzz/wcbxxyyyzz-blocks-common-css","version":"0.1.0","title":"Block Common CSS","category":"wcb-blocks","parent":["wcb/create-block-wcbxxyyyzz"],"icon":"heart","description":"Example static block scaffolded with Create Block tool.","supports":{"html":false},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css","viewScript":"file:./FrontendStyles.js"}');
 
 /***/ }),
 
