@@ -3,7 +3,7 @@ import React, { FC } from "react";
 
 
 export interface WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON {
-	enabled: boolean;
+	enabled?: boolean;
 	position: 'bottom-image' | 'top-right' | 'center-image' | 'none';
 	show_icon: boolean;
 	bg_color: string;

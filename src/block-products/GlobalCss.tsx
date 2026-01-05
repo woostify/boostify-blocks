@@ -456,7 +456,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					},
 					":hover": {
 						".wcb-products__product--quickViewBottomImage--item": {
-							display: style_quickViewBtn?.woostify_pro_active ? "flex !important" : "none !important",
+							display: (style_quickViewBtn?.woostify_pro_active && style_quickViewBtn?.enabled) ? "flex !important" : "none !important",
 							alignItems: "center !important",
 							justifyContent: "center !important",
 							padding: 
@@ -622,9 +622,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						".wcb-products__product--wishlistTopRight--item": {
 							position: (general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position === "top-right") ? "absolute" : "relative",
 							top: (general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position !== "top-right") ? "0" : 
-								 (style_quickViewBtn?.woostify_pro_active && general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") ? "2.48rem" : 
-								 (style_quickViewBtn?.woostify_pro_active == false && general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") ? "0" :
-								 (style_quickViewBtn?.woostify_pro_active && general_addToCartBtn?.position !== "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") ? "0" : "-2.5rem",
+								 ((style_quickViewBtn?.woostify_pro_active && style_quickViewBtn?.enabled) && general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") ? "2.48rem" : 
+								 ((!style_quickViewBtn?.woostify_pro_active || !style_quickViewBtn?.enabled) && general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") ? "0" :
+								 ((style_quickViewBtn?.woostify_pro_active && style_quickViewBtn?.enabled) && general_addToCartBtn?.position !== "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") ? "0" : "-2.5rem",
 							right: 0,
 							width: "2.5rem",
 							height: "2.5rem",
