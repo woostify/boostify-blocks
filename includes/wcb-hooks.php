@@ -1,5 +1,7 @@
 <?php
-defined('ABSPATH') || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 function wcb__add_new_block_category($block_categories, $editor_context)
 {
     if (!empty($editor_context->post)) {

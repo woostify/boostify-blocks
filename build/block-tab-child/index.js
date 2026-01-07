@@ -3226,7 +3226,7 @@ const blokc1Attrs = {
   \****************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"wcb/tab-child","version":"0.1.0","title":"Tab child","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-support text-xl","description":"Example static block scaffolded with Create Block tool.","parent":["wcb/tabs"],"supports":{"html":false,"anchor":true,"align":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wcb/tab-child","version":"0.1.0","title":"Tab child","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-support text-xl","description":"Example static block scaffolded with Create Block tool.","parent":["wcb/tabs"],"supports":{"html":false,"anchor":true,"align":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

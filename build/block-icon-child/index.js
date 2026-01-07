@@ -9978,7 +9978,7 @@ const blokc1Attrs = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json","apiVersion":2,"name":"wcb/icon","version":"0.1.0","title":"List Item","category":"wcb-blocks","icon":"- wcb-icon-full","description":"A single icon block that can be used inside an icon list.","supports":{"html":false,"anchor":true},"textdomain":"wcb-blocks","parent":["wcb/icon-list"],"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json","apiVersion":3,"name":"wcb/icon","version":"0.1.0","title":"List Item","category":"wcb-blocks","icon":"- wcb-icon-full","description":"A single icon block that can be used inside an icon list.","supports":{"html":false,"anchor":true},"textdomain":"wcb-blocks","parent":["wcb/icon-list"],"editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

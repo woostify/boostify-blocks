@@ -1,5 +1,7 @@
 <?php
-defined('ABSPATH') || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 //============================================= block 1 ===============================================================
 function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
 {

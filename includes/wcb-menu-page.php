@@ -1,5 +1,7 @@
 <?php
-defined('ABSPATH') || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 /**
  * Register a custom menu page.
  */

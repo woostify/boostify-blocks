@@ -8536,7 +8536,7 @@ const blokc1Attrs = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"wcb/image","version":"0.1.0","title":"Image","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-image","description":"Insert an image to make a visual statement.","supports":{"html":false,"anchor":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wcb/image","version":"0.1.0","title":"Image","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-image","description":"Insert an image to make a visual statement.","supports":{"html":false,"anchor":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

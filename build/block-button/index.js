@@ -9465,7 +9465,7 @@ const blokc1Attrs = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"wcb/button","version":"0.1.0","title":"Button","icon":"button - wcb-block-editor-block-icon text-xl","parent":["wcb/buttons"],"category":"wcb-blocks","description":"Prompt visitors to take action with a button-style link.","supports":{"anchor":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wcb/button","version":"0.1.0","title":"Button","icon":"button - wcb-block-editor-block-icon text-xl","parent":["wcb/buttons"],"category":"wcb-blocks","description":"Prompt visitors to take action with a button-style link.","supports":{"anchor":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

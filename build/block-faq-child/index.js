@@ -6700,7 +6700,7 @@ const blokc1Attrs = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"wcb/faq-child","version":"0.1.0","title":"FAQ child","category":"wcb-blocks","usesContext":["wcb/faq_icon","wcb/faq_general"],"parent":["wcb/faq"],"icon":"- wcb-block-editor-block-icon lni lni-support text-xl","description":"Example static block scaffolded with Create Block tool.","supports":{"html":false},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wcb/faq-child","version":"0.1.0","title":"FAQ child","category":"wcb-blocks","usesContext":["wcb/faq_icon","wcb/faq_general"],"parent":["wcb/faq"],"icon":"- wcb-block-editor-block-icon lni lni-support text-xl","description":"Example static block scaffolded with Create Block tool.","supports":{"html":false},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 
