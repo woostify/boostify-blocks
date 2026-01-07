@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 function wcb_var_dump($value)
 {
     echo '<p style="color:red; padding: 50px 200px">';

@@ -8928,7 +8928,7 @@ const WcbTabsPanelPreset = ({
   const renderPresetItem = item => {
     if (item.name === "carousel-simple") {
       return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1]  transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
+        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1] \r transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
       }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
         xmlns: "http://www.w3.org/2000/svg",
         width: "325",
@@ -8971,7 +8971,7 @@ const WcbTabsPanelPreset = ({
     }
     if (item.name === "carousel-solid") {
       return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1]  transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
+        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1] \r transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
       }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
         xmlns: "http://www.w3.org/2000/svg",
         width: "325",
@@ -9014,7 +9014,7 @@ const WcbTabsPanelPreset = ({
     }
     if (item.name === "grid-simple") {
       return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1]  transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
+        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1] \r transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
       }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
         xmlns: "http://www.w3.org/2000/svg",
         width: "325",
@@ -9061,7 +9061,7 @@ const WcbTabsPanelPreset = ({
     }
     if (item.name === "grid-solid") {
       return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1]  transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
+        className: "w-full h-full overflow-hidden flex items-center justify-center border border-[#dadada] text-[#898e95] bg-[#f0f0f1] \r transition-[background,box-shadow] duration-75 ease-in rounded-[5px_5px_5px_5px]"
       }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
         xmlns: "http://www.w3.org/2000/svg",
         width: "325",
@@ -10168,7 +10168,7 @@ const blokc1Attrs = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"wcb/tabs","version":"0.1.0","title":"Tabs","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-support","description":"Add Tabs to your page.","supports":{"html":false,"anchor":true,"align":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wcb/tabs","version":"0.1.0","title":"Tabs","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-support","description":"Add Tabs to your page.","supports":{"html":false,"anchor":true,"align":true},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

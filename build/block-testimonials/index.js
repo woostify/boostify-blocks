@@ -13485,7 +13485,7 @@ const blokc1Attrs = {
 /***/ ((module) => {
 
 "use strict";
-module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":2,"name":"wcb/testimonials","version":"0.1.0","title":"Testimonials","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-quotation","description":"Create confidence in your brand or product by showing off beautiful unique testimonials.","supports":{"html":false,"anchor":true,"align":["full","wide"]},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wcb/testimonials","version":"0.1.0","title":"Testimonials","category":"wcb-blocks","icon":"- wcb-block-editor-block-icon lni lni-quotation","description":"Create confidence in your brand or product by showing off beautiful unique testimonials.","supports":{"html":false,"anchor":true,"align":["full","wide"]},"textdomain":"wcb-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 //============================================= block 1 ===============================================================
 function wcb_block_tabs_renderCallback($attributes, $content)
 {
