@@ -335,7 +335,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
 
                 $term_links = [];
                 foreach ($post_taxs as $term) {
-                    $term_links[] = '<a href="' . esc_attr(get_term_link($term->slug, $queries["taxonomySlug"])) . '">' . __($term->name) . '</a>';
+                    $term_links[] = '<a href="' . esc_attr(get_term_link($term->slug, $queries["taxonomySlug"])) . '">' . esc_html($term->name) . '</a>';
                 };
 
                 $all_terms = join('', $term_links);
@@ -343,7 +343,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                     $all_terms = join(', ', $term_links);
                 };
 
-                echo '<div class="wcbPostCard__taxonomies wcbPostCard__taxonomies--' . esc_attr($modifiedClass) . esc_attr($attributes['general_postMeta']['taxonomyStyle'] === "Highlighted" ? " wcbPostCard__taxonomies--highlighted" : "") . '">' . __($all_terms) . '</div>';
+                echo '<div class="wcbPostCard__taxonomies wcbPostCard__taxonomies--' . esc_attr($modifiedClass) . esc_attr($attributes['general_postMeta']['taxonomyStyle'] === "Highlighted" ? " wcbPostCard__taxonomies--highlighted" : "") . '">' . wp_kses_post($all_terms) . '</div>';
 
             endif;
         }
@@ -352,7 +352,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
     ob_start();
 ?>
     <!-- CONTENT FOR RENDER CSSS @EMOTION -->
-    <?php echo $content; ?>
+    <?php echo wp_kses_post($content); ?>
 
     <!-- RENDER FOLLOW BY EDIT.TSX -->
     <div class="wcb-posts-grid__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
@@ -370,7 +370,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                     <div class="wcbPostCard wcbPostCard--image-<?php echo esc_attr($featuredImagePosition); ?>">
 
                         <!-- card - FUll link  -->
-                        <a class="wcbPostCard__completeLink" href="<?php echo get_permalink(); ?>"></a>
+                        <a class="wcbPostCard__completeLink" href="<?php echo esc_url(get_permalink()); ?>"></a>
 
                         <!-- Post Thumbnail -->
                         <?php if ($hasFeaturedImage) : ?>
@@ -402,11 +402,14 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
 
                             <!-- TITLE -->
                             <?php if ($attributes['general_postMeta']['isShowTitle'] ?? true) : ?>
-                                <?php echo '<' . ($attributes['general_postMeta']['titleHtmlTag'] ?? "h4") . ' class="wcbPostCard__title" >' ?>
+                            <?php 
+                                $titleHtmlTag = $attributes['general_postMeta']['titleHtmlTag'] ?? "h4";
+                                echo sprintf('<%1$s class="wcbPostCard__title">', tag_escape($titleHtmlTag));
+                            ?>
                                 <a href="<?php the_permalink(); ?>">
                                     <?php the_title(); ?>
                                 </a>
-                                <?php echo '</' . ($attributes['general_postMeta']['titleHtmlTag'] ?? "h4") . '>' ?>
+                                <?php echo sprintf('</%1$s>', tag_escape($titleHtmlTag)); ?>
                             <?php endif; ?>
 
 
@@ -414,7 +417,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                 <!-- FULL POST CONTENT -->
                                 <?php if (($attributes['general_postContent']['contentType'] ?? "excerpt") === "Full post") {
                                     echo '<div class="wcbPostCard__fullContent">';
-                                    echo the_content();
+                                    echo wp_kses_post(apply_filters('the_content', get_the_content()));
                                     echo '</div>';
                                 };  ?>
 
@@ -428,12 +431,12 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                         $firsthalf = array_slice($split, 0, $words_to_show_first);
                                         $output = '<p class="wcbPostCard__excerpt" >';
                                         $output .= implode(' ', $firsthalf);
-                                        $output .= esc_html__('...');
+                                        $output .= esc_html__('...', 'boostify-blocks');
                                         $output .= '</p>';
                                     } else {
                                         $output = '<p class="wcbPostCard__excerpt">'  .   $excerpt . '</p>';
                                     }
-                                    echo $output;
+                                    echo wp_kses_post($output);
                                 }; ?>
                             <?php endif; ?>
 
@@ -491,7 +494,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                                 </svg>
 
                                             </span>
-                                            <?php echo get_comments_number(); ?>
+                                            <?php echo esc_html(get_comments_number()); ?>
                                         </span>
                                     <?php endif; ?>
                                 </div>

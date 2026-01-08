@@ -121,14 +121,14 @@ if (!function_exists("wcb_pagination_bar")) {
 
         $big = 999999999; // need an unlikely integer
         $current_page = max(1, get_query_var('paged'));
-        echo paginate_links(array(
+        echo wp_kses_post(paginate_links(array(
             'base' => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
             'format' => '?paged=%#%',
             'current' => $current_page,
             'total' => $total,
             'next_text' => $nextHtml,
             'prev_text' => $prevHtml
-        ));
+        )));
     }
 }
 

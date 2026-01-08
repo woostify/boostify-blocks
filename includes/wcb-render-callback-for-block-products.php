@@ -29,7 +29,7 @@ function wcb_block_products__renderCallback($attributes, $content)
 
 ?>
 
-    <?php echo $content; ?>
+    <?php echo wp_kses_post($content); ?>
     <div class="wcb-products__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
 
         <?php
@@ -45,7 +45,7 @@ function wcb_block_products__renderCallback($attributes, $content)
 
                     global $product;
                     if (!empty($product)) {
-                        echo wcb_block_products__render_product($product, $attributes, $loop->current_post);
+                        echo wp_kses_post(wcb_block_products__render_product($product, $attributes, $loop->current_post));
                     }
                 endwhile;
                 ?>
@@ -240,7 +240,8 @@ function wcb_block_products__get_rating_html($product)
 
 
     if ($rating_count > 0) {
-        $label = sprintf(__('Rated %s out of 5', 'woocommerce'), $average);
+        /* translators: %s: Average rating score */
+        $label = sprintf(__('Rated %s out of 5', 'boostify-blocks'), $average);
         $html  = '<div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . '</div>';
         return $html;
     }
@@ -498,7 +499,7 @@ if (!function_exists("wcb_block_products_set_block_query_args")) :
      * @return array Array of product IDs.
      */
     function wc_get_product_ids_on_sale_myself() {
-        $product_ids_on_sale = get_transient('wc_product_ids_on_sale');
+        $product_ids_on_sale = get_transient('wcb_product_ids_on_sale');
 
         if (false === $product_ids_on_sale) {
             $product_ids_on_sale = array();
@@ -534,7 +535,7 @@ if (!function_exists("wcb_block_products_set_block_query_args")) :
 
             // Remove duplicates and store in transient.
             $product_ids_on_sale = array_unique($product_ids_on_sale);
-            set_transient('wc_product_ids_on_sale', $product_ids_on_sale, DAY_IN_SECONDS);
+            set_transient('wcb_product_ids_on_sale', $product_ids_on_sale, DAY_IN_SECONDS);
         }
 
         return apply_filters('woocommerce_product_ids_on_sale', $product_ids_on_sale);
