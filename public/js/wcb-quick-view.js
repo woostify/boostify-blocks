@@ -1,8 +1,5 @@
 /**
- * ======================================================
- * QUICK VIEW HOVER GALLERY (PRODUCT LOOP – hover button)
  * Load preview gallery when hovering the Quick View button
- * ======================================================
  */
 jQuery(document).on('mouseenter', '.product-quick-view-btn', function () {
     const $btn = jQuery(this);
@@ -35,10 +32,7 @@ jQuery(document).on('mouseenter', '.product-quick-view-btn', function () {
 
 
 /**
- * ======================================================
- * VARIATION SWATCH CLICK (Quick View)
  * Click swatch → update select → trigger Woo variation logic
- * ======================================================
  */
 jQuery(document).on(
     'click',
@@ -65,17 +59,17 @@ jQuery(document).on(
 
             setTimeout(function() {
                 updateQuickViewGallery($form, attribute, value);
-            }, 500);
+            }, 50);
         }
     }
 );
 
 
 /**
- * ======================================================
- * UPDATE QUICK VIEW GALLERY
  * Update gallery slider when variation changes
- * ======================================================
+ * @param {jQuery} $form - The variations form jQuery object
+ * @param {string} attribute - The attribute name (e.g., 'attribute_pa_color')
+ * @param {string} value - The selected attribute value
  */
 function updateQuickViewGallery($form, attribute, value) {
     const gallery = document.querySelector('#quick-view-gallery');
@@ -111,7 +105,8 @@ function updateQuickViewGallery($form, attribute, value) {
             
             // Re-initialize slider
             if (quickViewSlider) {
-                quickViewSlider.destroy();
+                // quickViewSlider.destroy();
+                quickViewSlider = null;
             }
             quickViewSlider = tns({
                 container: gallery,
@@ -131,7 +126,7 @@ function updateQuickViewGallery($form, attribute, value) {
             
             // Re-initialize slider
             if (quickViewSlider) {
-                quickViewSlider.destroy();
+                quickViewSlider = null;
             }
             quickViewSlider = tns({
                 container: gallery,
@@ -149,41 +144,7 @@ function updateQuickViewGallery($form, attribute, value) {
 
 
 /**
- * ======================================================
- * WOOCOMMERCE RESET VARIATION EVENT
- * Restore original gallery when variations are cleared
- * ======================================================
- */
-jQuery(document).on('reset_data', '#woostify-quick-view-panel form.variations_form', function() {
-    console.log('🔄 Resetting gallery to original');
-    
-    const gallery = document.querySelector('#quick-view-gallery');
-    if (!gallery || !originalGalleryHtml) return;
-    
-    gallery.innerHTML = originalGalleryHtml;
-    
-    // Re-initialize slider
-    if (quickViewSlider) {
-        quickViewSlider.destroy();
-    }
-    quickViewSlider = tns({
-        container: gallery,
-        items: 1,
-        autoplay: false,
-        controls: true,
-        controlsText: ['<', '>'],
-        nav: true,
-        loop: false,
-        autoplayButtonOutput: false,
-    });
-});
-
-
-/**
- * ======================================================
- * RESET VARIATIONS (Capture phase override)
  * Block theme handlers and apply custom reset logic
- * ======================================================
  */
 document.addEventListener(
     'click',
@@ -197,19 +158,40 @@ document.addEventListener(
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        handleQuickViewReset(resetBtn);
+        // Apply custom reset logic
+        handleQuickViewResetURL(resetBtn);
+        // set initial gallery
+
+        if (quickViewSlider) {
+            quickViewSlider = null;
+        }
+
+        if (!originalGalleryHtml) return;
+
+        const gallery = document.querySelector('#quick-view-gallery');
+        if (!gallery) return;
+
+        gallery.innerHTML = originalGalleryHtml;
+
+        quickViewSlider = tns({
+            container: gallery,
+            items: 1,
+            autoplay: false,
+            controls: true,
+            controlsText: ['<', '>'],
+            nav: true,
+            loop: false,
+            autoplayButtonOutput: false,
+        });
     },
     true // Capture phase (important)
 );
 
 
 /**
- * ======================================================
- * QUICK VIEW RESET HANDLER
  * Clear variations, swatches, and sync URL state
- * ======================================================
  */
-function handleQuickViewReset(btn) {
+function handleQuickViewResetURL(btn) {
     const $form = jQuery(btn).closest('form.variations_form');
 
     /* 1. Reset URL – keep page_id */
@@ -248,13 +230,11 @@ function handleQuickViewReset(btn) {
 
 
 /**
- * ======================================================
- * QUICK VIEW SLIDER
  * Initialize / re-initialize gallery slider
- * ======================================================
  */
 let quickViewSlider = null;
 let originalGalleryHtml = '';
+let originalGalleryInitialized = '';
 
 function initQuickViewSlider() {
     const gallery = document.querySelector('#quick-view-gallery');
@@ -267,7 +247,7 @@ function initQuickViewSlider() {
 
     // Destroy existing slider before re-init
     if (quickViewSlider) {
-        quickViewSlider.destroy();
+        quickViewSlider = null;
     }
 
     // Init Tiny Slider
@@ -285,10 +265,10 @@ function initQuickViewSlider() {
 
 
 /**
- * ======================================================
+
  * QUICK VIEW QUANTITY
  * Initialize +/- quantity buttons
- * ======================================================
+
  */
 function initQuickViewQuantity() {
     if (typeof customQuantity === 'function') {
@@ -300,9 +280,9 @@ function initQuickViewQuantity() {
 
 
 /**
- * ======================================================
+
  * QUICK VIEW ADD TO CART (Override theme handler)
- * ======================================================
+
  */
 function handleQuickViewAddToCart() {
 
@@ -332,9 +312,8 @@ function handleQuickViewAddToCart() {
 
 
 /**
- * ======================================================
- * MANUAL ADD TO CART HANDLER (AJAX)
- * ======================================================
+ * Manual AJAX add to cart handler
+ * @param {jQuery} $button - The add to cart button jQuery object
  */
 function handleQuickViewAddToCartManual($button) {
 
@@ -381,7 +360,6 @@ function handleQuickViewAddToCartManual($button) {
             document.documentElement.classList.remove('quick-view-open');
         })
         .catch(error => {
-            console.error('Add to cart error:', error);
             $button.removeClass('add_to_cart_button--loading').prop('disabled', false);
 
             if (typeof woostifyShowNotification === 'function') {
@@ -397,10 +375,7 @@ function handleQuickViewAddToCartManual($button) {
 
 
 /**
- * ======================================================
- * APPLY URL PARAMS TO VARIATION SWATCHES
  * Sync swatches when product opens with ?attribute_pa_xxx=
- * ======================================================
  */
 function applyUrlParamsToSwatches() {
     const quickViewPanel = document.getElementById('woostify-quick-view-panel');
@@ -440,9 +415,7 @@ function applyUrlParamsToSwatches() {
 
 
 /**
- * ======================================================
- * INIT VARIATION SWATCHES IN QUICK VIEW
- * ======================================================
+ * Initialize quick view variation swatches
  */
 function initQuickViewVariationSwatches() {
 
@@ -468,9 +441,7 @@ function initQuickViewVariationSwatches() {
 
 
 /**
- * ======================================================
- * DOCUMENT READY INIT
- * ======================================================
+ * Init on document ready
  */
 jQuery(document).ready(function () {
     initQuickViewSlider();
@@ -481,9 +452,7 @@ jQuery(document).ready(function () {
 
 
 /**
- * ======================================================
- * QUICK VIEW OPEN (Button click)
- * ======================================================
+ * Click quick view button → re-init handlers
  */
 jQuery(document).on('click', '.product-quick-view-btn', function () {
     originalGalleryHtml = '';
@@ -497,9 +466,7 @@ jQuery(document).on('click', '.product-quick-view-btn', function () {
 
 
 /**
- * ======================================================
- * OBSERVE QUICK VIEW OPEN (Class mutation)
- * ======================================================
+ * Observe quick view panel open/close via class change
  */
 const quickViewObserver = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
