@@ -7,18 +7,31 @@ add_action('wp_ajax_nopriv_wcbform_action', 'wcb_form_action_init');
 function wcb_form_action_init()
 {
 
-    $form_data = $_POST['formData'] ?? [];
-    $mail_info = $_POST['mailInfo'] ?? [];
+    // Verify nonce to ensure the request originated from our site.
+    if (
+        ! isset($_POST['nonce']) ||
+        ! check_ajax_referer('wcb_form_action_nonce', 'nonce', false)
+    ) {
+        wp_send_json_error(array('message' => __('Invalid security token.', 'boostify-blocks')), 400);
+        wp_die();
+    }
+
+    $form_data = isset($_POST['formData']) && is_array($_POST['formData']) ? $_POST['formData'] : [];
+    $mail_info = isset($_POST['mailInfo']) && is_array($_POST['mailInfo']) ? $_POST['mailInfo'] : [];
     // TEST
     // wp_send_json_success('Chào mừng bạn đến với ' . $mail_info['subject'] . $mail_info['to'] . $mail_info['cc'] . $mail_info['bcc']);
     // wp_die();
     // 
-    $to = $mail_info['to'];
-    $subject = $mail_info['subject'];
+    $to = isset($mail_info['to']) ? sanitize_email($mail_info['to']) : '';
+    $subject = isset($mail_info['subject']) ? sanitize_text_field($mail_info['subject']) : '';
     $body = '<html><body><h1>Hello World!</h1></body></html>';
     $headers = array('Content-Type: text/html; charset=UTF-8');
-    $headers[] = 'Cc: ' . $mail_info['cc'];
-    $headers[] = 'Bcc: ' . $mail_info['bcc'];
+    if ( ! empty($mail_info['cc']) ) {
+        $headers[] = 'Cc: ' . sanitize_email($mail_info['cc']);
+    }
+    if ( ! empty($mail_info['bcc']) ) {
+        $headers[] = 'Bcc: ' . sanitize_email($mail_info['bcc']);
+    }
 
     // BODY
     ob_start();

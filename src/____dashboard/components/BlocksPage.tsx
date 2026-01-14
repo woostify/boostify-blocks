@@ -48,6 +48,7 @@ const BlocksPage: FC<Props> = ({
 		setBlocksStatus(newBlocksStatus);
 		const data = {
 			action: "wcb_dashboard_blocks_disable_enable",
+			nonce: (window as any)?.boostifyBlocksFrontendAjaxObject?.nonce,
 			blocksStatus: newBlocksStatus,
 		};
 		toast.promise(
