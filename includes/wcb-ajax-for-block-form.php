@@ -60,7 +60,9 @@ function wcb_form_action_init()
     <body>
         <?php foreach ($form_data as &$field) : ?>
             <p>
-                <strong><?php echo esc_html($field["name"]); ?></strong> - <span> <?php echo esc_html($field["value"]); ?></span>
+                <strong><?php echo esc_html( sanitize_text_field( $field['name'] ?? '' ) ); ?></strong>
+                -
+                <span><?php echo esc_html( sanitize_text_field( $field['value'] ?? '' ) ); ?></span>
             </p>
         <?php endforeach; ?>
     </body>
