@@ -14,10 +14,17 @@ function wcb_register_custom_menu_page() {
 		__( 'Boostify Blocks Settings', 'boostify-blocks' ),
 		__( 'Boostify Blocks', 'boostify-blocks' ),
 		'manage_options',
-		WCB_PATH . 'includes/settings-page.php',
-		'',
+		'boostify-blocks-settings',
+		'wcb_render_boostify_blocks_settings_page',
 		'data:image/svg+xml;base64,' . base64_encode( $svg ),
 		6
 	);
 }
 add_action( 'admin_menu', 'wcb_register_custom_menu_page' );
+
+/**
+ * Render the Boostify Blocks settings page.
+ */
+function wcb_render_boostify_blocks_settings_page() {
+	require_once BOOSTIFY_BLOCKS_PATH . 'includes/settings-page.php';
+}
