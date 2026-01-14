@@ -499,7 +499,7 @@ if (!function_exists("wcb_block_products_set_block_query_args")) :
      * @return array Array of product IDs.
      */
     function wc_get_product_ids_on_sale_myself() {
-        $product_ids_on_sale = get_transient('wcb_product_ids_on_sale');
+        $product_ids_on_sale = get_transient('boostify_blocks_product_ids_on_sale');
 
         if (false === $product_ids_on_sale) {
             $product_ids_on_sale = array();
@@ -533,9 +533,9 @@ if (!function_exists("wcb_block_products_set_block_query_args")) :
                 }
             }
 
-            // Remove duplicates and store in transient.
+            // Remove duplicates and store in transient with a unique, prefixed name.
             $product_ids_on_sale = array_unique($product_ids_on_sale);
-            set_transient('wcb_product_ids_on_sale', $product_ids_on_sale, DAY_IN_SECONDS);
+            set_transient('boostify_blocks_product_ids_on_sale', $product_ids_on_sale, DAY_IN_SECONDS);
         }
 
         return apply_filters('woocommerce_product_ids_on_sale', $product_ids_on_sale);
