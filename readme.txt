@@ -41,6 +41,19 @@ We understand the need for a quality product backed by dedicated support that ca
 <a href="https://woostify.com/contact/" target="_blank" rel="">Need help? We are just a click away!</a>
 
 
+== External services ==
+
+This plugin can connect to the **Google reCAPTCHA** service provided by Google LLC. It is used to protect form submissions made through Boostify Blocks form blocks from spam and automated abuse.
+
+- When you enable reCAPTCHA for a form block, the plugin enqueues the official Google reCAPTCHA script from `https://www.google.com/recaptcha/api.js` on pages where that form is displayed.
+- When those pages are loaded (and when users interact with the reCAPTCHA widget), information is sent directly from the visitor’s browser to Google. This typically includes the visitor’s IP address, browser and device information, referrer URL, and other data used by Google to provide and improve the reCAPTCHA service. This data is handled by Google according to their own policies, and is not stored or processed by this plugin beyond triggering the script load.
+- Site owners must configure their own reCAPTCHA site and secret keys in order to use this feature. If reCAPTCHA is not enabled for a form block, the plugin does not load or communicate with the Google reCAPTCHA service.
+
+For more information about Google reCAPTCHA, please review Google’s terms and policies:
+- Terms of Service: https://policies.google.com/terms
+- Privacy Policy: https://policies.google.com/privacy
+
+
 
 == Frequently Asked Questions ==
 
