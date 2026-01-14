@@ -16,21 +16,40 @@ function wcb_form_action_init()
         wp_die();
     }
 
-    $form_data = isset($_POST['formData']) && is_array($_POST['formData']) ? $_POST['formData'] : [];
-    $mail_info = isset($_POST['mailInfo']) && is_array($_POST['mailInfo']) ? $_POST['mailInfo'] : [];
-    // TEST
-    // wp_send_json_success('Chào mừng bạn đến với ' . $mail_info['subject'] . $mail_info['to'] . $mail_info['cc'] . $mail_info['bcc']);
-    // wp_die();
-    // 
-    $to = isset($mail_info['to']) ? sanitize_email($mail_info['to']) : '';
-    $subject = isset($mail_info['subject']) ? sanitize_text_field($mail_info['subject']) : '';
+    // Normalize and sanitize incoming data.
+    $raw_form_data = isset($_POST['formData']) && is_array($_POST['formData']) ? wp_unslash($_POST['formData']) : array();
+    $raw_mail_info = isset($_POST['mailInfo']) && is_array($_POST['mailInfo']) ? wp_unslash($_POST['mailInfo']) : array();
+
+    $form_data = array();
+    foreach ($raw_form_data as $field) {
+        if (! is_array($field)) {
+            continue;
+        }
+        $name  = isset($field['name']) ? sanitize_text_field($field['name']) : '';
+        $value = isset($field['value']) ? wp_kses_post($field['value']) : '';
+
+        $form_data[] = array(
+            'name'  => $name,
+            'value' => $value,
+        );
+    }
+
+    $mail_info = array(
+        'to'      => isset($raw_mail_info['to']) ? sanitize_email($raw_mail_info['to']) : '',
+        'subject' => isset($raw_mail_info['subject']) ? sanitize_text_field($raw_mail_info['subject']) : '',
+        'cc'      => isset($raw_mail_info['cc']) ? sanitize_email($raw_mail_info['cc']) : '',
+        'bcc'     => isset($raw_mail_info['bcc']) ? sanitize_email($raw_mail_info['bcc']) : '',
+    );
+
+    $to = $mail_info['to'];
+    $subject = $mail_info['subject'];
     $body = '<html><body><h1>Hello World!</h1></body></html>';
     $headers = array('Content-Type: text/html; charset=UTF-8');
     if ( ! empty($mail_info['cc']) ) {
-        $headers[] = 'Cc: ' . sanitize_email($mail_info['cc']);
+        $headers[] = 'Cc: ' . $mail_info['cc'];
     }
     if ( ! empty($mail_info['bcc']) ) {
-        $headers[] = 'Bcc: ' . sanitize_email($mail_info['bcc']);
+        $headers[] = 'Bcc: ' . $mail_info['bcc'];
     }
 
     // BODY

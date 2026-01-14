@@ -20,13 +20,24 @@ function wcb_ajax_dashboard_blocks_disable_enable()
         wp_die();
     }
 
-    $blocksStatus = isset($_POST['blocksStatus']) && is_array($_POST['blocksStatus']) ? $_POST['blocksStatus'] : [];
+    $blocksStatus = isset($_POST['blocksStatus']) && is_array($_POST['blocksStatus']) ? wp_unslash($_POST['blocksStatus']) : array();
     $wcbBlockStatusInit = [];
     if (function_exists('wcb_get_wcb_block_name_enable_init')) {
         $wcbBlockStatusInit = wcb_get_wcb_block_name_enable_init();
     }
 
-    $newBlocksStatus = array_merge($wcbBlockStatusInit, $blocksStatus);
+    // Sanitize and normalize block status values (only allow expected values).
+    $sanitizedBlocksStatus = array();
+    foreach ($blocksStatus as $key => $value) {
+        $key = sanitize_key($key);
+        $value = (string) $value;
+        if ($value !== 'enabled' && $value !== 'disabled') {
+            continue;
+        }
+        $sanitizedBlocksStatus[$key] = $value;
+    }
+
+    $newBlocksStatus = array_merge($wcbBlockStatusInit, $sanitizedBlocksStatus);
 
     update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
     $array_result = array(
@@ -40,6 +51,27 @@ function wcb_ajax_dashboard_blocks_disable_enable()
 
 // 
 add_action('wp_ajax_wcb_dashboard_blocks_update_settings', 'wcb_ajax_dashboard_update_settings');
+
+if ( ! function_exists( 'wcb_recursive_sanitize_text_field' ) ) {
+    /**
+     * Recursively sanitize an array of values using sanitize_text_field.
+     *
+     * @param mixed $value The value to sanitize.
+     * @return mixed
+     */
+    function wcb_recursive_sanitize_text_field( $value ) {
+        if ( is_array( $value ) ) {
+            foreach ( $value as $k => $v ) {
+                $value[ $k ] = wcb_recursive_sanitize_text_field( $v );
+            }
+
+            return $value;
+        }
+
+        return sanitize_text_field( (string) $value );
+    }
+}
+
 function wcb_ajax_dashboard_update_settings()
 {
     // Only allow administrators (or appropriate capability) to update settings.
@@ -57,8 +89,9 @@ function wcb_ajax_dashboard_update_settings()
         wp_die();
     }
 
-    $settings = isset($_POST['settings']) && is_array($_POST['settings']) ? $_POST['settings'] : [];
-    $settings = array_merge(wcb_get_default_blocks_settings(), $settings);
+    $raw_settings = isset($_POST['settings']) && is_array($_POST['settings']) ? wp_unslash($_POST['settings']) : array();
+    $sanitized_settings = wcb_recursive_sanitize_text_field( $raw_settings );
+    $settings = array_merge(wcb_get_default_blocks_settings(), $sanitized_settings);
 
     update_option('boostify_blocks_settings_options', $settings);
     $array_result = array(
