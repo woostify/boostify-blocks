@@ -3,10 +3,10 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 //============================================= block 1 ===============================================================
-function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
+function boostify_blocks_block_posts_grid_render_callback($attributes, $content, $block)
 {
 
-    wp_enqueue_script__block_commoncss_frontend_styles();
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     // 
 
     $DEFAULT_ATTRS = [
@@ -323,8 +323,8 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
         'paged'                 => $paged
     ]);
 
-    if (!function_exists("wcb_block_posts_grid__render_taxonomy")) {
-        function wcb_block_posts_grid__render_taxonomy($queries, $attributes, $modifiedClass = "")
+    if (!function_exists("boostify_blocks_block_posts_grid_render_taxonomy")) {
+        function boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes, $modifiedClass = "")
         {
             $isShow = boolval($attributes['general_postMeta']['isShowTaxonomy'] ?? false);
             if (!$isShow) {
@@ -382,7 +382,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                     ($attributes['general_postMeta']["taxonomyPosition"] ?? "Inside featured image") === "Inside featured image" &&
                                     $featuredImagePosition !== "background"
                                 ) {
-                                    wcb_block_posts_grid__render_taxonomy($queries, $attributes, "Insidefeaturedimage");
+                                    boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes, "Insidefeaturedimage");
                                 }; ?>
 
                             </div>
@@ -397,7 +397,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                             <?php
 
                             if (($attributes['general_postMeta']['taxonomyPosition'] ?? "Below featured image") === "Below featured image" || !$hasFeaturedImage ||  $featuredImagePosition === 'background') {
-                                wcb_block_posts_grid__render_taxonomy($queries, $attributes,);
+                                boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes,);
                             }; ?>
 
                             <!-- TITLE -->
@@ -417,6 +417,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                 <!-- FULL POST CONTENT -->
                                 <?php if (($attributes['general_postContent']['contentType'] ?? "excerpt") === "Full post") {
                                     echo '<div class="wcbPostCard__fullContent">';
+                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook.
                                     echo wp_kses_post(apply_filters('the_content', get_the_content()));
                                     echo '</div>';
                                 };  ?>
@@ -515,9 +516,9 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
         </div>
 
         <!-- pagination here -->
-        <?php if (wcb__is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
+        <?php if (boostify_blocks_is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
             <div class="wcb-posts-grid__pagination">
-                <?php wcb_pagination_bar($the_query, $attributes['general_pagination']); ?>
+                <?php boostify_blocks_pagination_bar($the_query, $attributes['general_pagination']); ?>
             </div>
         <?php endif; ?>
 

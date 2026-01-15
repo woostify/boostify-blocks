@@ -2,8 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-add_action('wp_ajax_wcb_dashboard_blocks_disable_enable', 'wcb_ajax_dashboard_blocks_disable_enable');
-function wcb_ajax_dashboard_blocks_disable_enable()
+add_action('wp_ajax_wcb_dashboard_blocks_disable_enable', 'boostify_blocks_ajax_dashboard_blocks_disable_enable');
+function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 {
     // Only allow administrators (or appropriate capability) to toggle block status.
     if ( ! current_user_can('manage_options') ) {
@@ -20,10 +20,11 @@ function wcb_ajax_dashboard_blocks_disable_enable()
         wp_die();
     }
 
-    $blocksStatus = isset($_POST['blocksStatus']) && is_array($_POST['blocksStatus']) ? wp_unslash($_POST['blocksStatus']) : array();
+    $post_data = wp_unslash( $_POST );
+    $blocksStatus = isset($post_data['blocksStatus']) && is_array($post_data['blocksStatus']) ? $post_data['blocksStatus'] : array();
     $wcbBlockStatusInit = [];
-    if (function_exists('wcb_get_wcb_block_name_enable_init')) {
-        $wcbBlockStatusInit = wcb_get_wcb_block_name_enable_init();
+    if (function_exists('boostify_blocks_get_block_name_enable_init')) {
+        $wcbBlockStatusInit = boostify_blocks_get_block_name_enable_init();
     }
 
     // Sanitize and normalize block status values (only allow expected values).
@@ -50,19 +51,19 @@ function wcb_ajax_dashboard_blocks_disable_enable()
 }
 
 // 
-add_action('wp_ajax_wcb_dashboard_blocks_update_settings', 'wcb_ajax_dashboard_update_settings');
+add_action('wp_ajax_wcb_dashboard_blocks_update_settings', 'boostify_blocks_ajax_dashboard_update_settings');
 
-if ( ! function_exists( 'wcb_recursive_sanitize_text_field' ) ) {
+if ( ! function_exists( 'boostify_blocks_recursive_sanitize_text_field' ) ) {
     /**
      * Recursively sanitize an array of values using sanitize_text_field.
      *
      * @param mixed $value The value to sanitize.
      * @return mixed
      */
-    function wcb_recursive_sanitize_text_field( $value ) {
+    function boostify_blocks_recursive_sanitize_text_field( $value ) {
         if ( is_array( $value ) ) {
             foreach ( $value as $k => $v ) {
-                $value[ $k ] = wcb_recursive_sanitize_text_field( $v );
+                $value[ $k ] = boostify_blocks_recursive_sanitize_text_field( $v );
             }
 
             return $value;
@@ -72,7 +73,7 @@ if ( ! function_exists( 'wcb_recursive_sanitize_text_field' ) ) {
     }
 }
 
-function wcb_ajax_dashboard_update_settings()
+function boostify_blocks_ajax_dashboard_update_settings()
 {
     // Only allow administrators (or appropriate capability) to update settings.
     if ( ! current_user_can('manage_options') ) {
@@ -89,9 +90,10 @@ function wcb_ajax_dashboard_update_settings()
         wp_die();
     }
 
-    $raw_settings = isset($_POST['settings']) && is_array($_POST['settings']) ? wp_unslash($_POST['settings']) : array();
-    $sanitized_settings = wcb_recursive_sanitize_text_field( $raw_settings );
-    $settings = array_merge(wcb_get_default_blocks_settings(), $sanitized_settings);
+    $post_data = wp_unslash( $_POST );
+    $raw_settings = isset($post_data['settings']) && is_array($post_data['settings']) ? $post_data['settings'] : array();
+    $sanitized_settings = boostify_blocks_recursive_sanitize_text_field( $raw_settings );
+    $settings = array_merge(boostify_blocks_get_default_blocks_settings(), $sanitized_settings);
 
     update_option('boostify_blocks_settings_options', $settings);
     $array_result = array(

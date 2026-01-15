@@ -2,9 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-add_action('wp_ajax_wcbform_action', 'wcb_form_action_init');
-add_action('wp_ajax_nopriv_wcbform_action', 'wcb_form_action_init');
-function wcb_form_action_init()
+add_action('wp_ajax_wcbform_action', 'boostify_blocks_form_action_init');
+add_action('wp_ajax_nopriv_wcbform_action', 'boostify_blocks_form_action_init');
+function boostify_blocks_form_action_init()
 {
 
     // Verify nonce to ensure the request originated from our site.
@@ -17,8 +17,9 @@ function wcb_form_action_init()
     }
 
     // Normalize and sanitize incoming data.
-    $raw_form_data = isset($_POST['formData']) && is_array($_POST['formData']) ? wp_unslash($_POST['formData']) : array();
-    $raw_mail_info = isset($_POST['mailInfo']) && is_array($_POST['mailInfo']) ? wp_unslash($_POST['mailInfo']) : array();
+    $post_data     = wp_unslash( $_POST );
+    $raw_form_data = isset($post_data['formData']) && is_array($post_data['formData']) ? $post_data['formData'] : array();
+    $raw_mail_info = isset($post_data['mailInfo']) && is_array($post_data['mailInfo']) ? $post_data['mailInfo'] : array();
 
     $form_data = array();
     foreach ($raw_form_data as $field) {
