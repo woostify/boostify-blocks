@@ -32,7 +32,35 @@ jQuery(document).on('mouseenter', '.product-quick-view-btn', function () {
 
 
 /**
- * Click swatch → update select → trigger Woo variation logic
+ * Click swatch → update select → trigger Woo variation logic 
+ * Select dropdowns swatches
+ */
+jQuery(document).on(
+  'change',
+  '#woostify-quick-view-panel select[name^="attribute_"]',
+  function () {
+
+    const $select   = jQuery(this);
+    const value     = $select.val();
+    const attribute = $select.attr('name');
+    const $form     = $select.closest('form.variations_form');
+
+    if (attribute && value) {
+        // Trigger lại Woo logic nếu cần
+        $form.trigger('check_variations');
+        $form.trigger('woocommerce_variation_select_change');
+
+        setTimeout(function() {
+            updateQuickViewGallery($form, attribute, value);
+        }, 50);
+    }
+  }
+);
+
+
+/**
+ * Click swatch → update select → trigger Woo variation logic 
+ * Color - Image - Label swatches
  */
 jQuery(document).on(
     'click',
