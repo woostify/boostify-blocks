@@ -218,7 +218,7 @@ function boostify_blocks_block_products_get_image_html($product)
 }
 
 
-function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link)
+function boostify_blocks_block_products_get_title_html($product, $headingTag, $link)
 {
     if (empty($headingTag)) {
         $headingTag = 'div';

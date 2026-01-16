@@ -418,7 +418,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                                 <?php if (($attributes['general_postContent']['contentType'] ?? "excerpt") === "Full post") {
                                     echo '<div class="wcbPostCard__fullContent">';
                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook.
-                                    echo wp_kses_post(apply_filters('the_content', get_the_content()));
+                                    echo wp_kses_post(apply_filters('the_content', (string) get_the_content()));
                                     echo '</div>';
                                 };  ?>
 
