@@ -338,10 +338,9 @@ function handleQuickViewAddToCart() {
     );
 }
 
-
 /**
- * Manual AJAX add to cart handler
- * @param {jQuery} $button - The add to cart button jQuery object
+ * Manual AJAX add to cart handler (FIXED for variable products)
+ * @param {jQuery} $button
  */
 function handleQuickViewAddToCartManual($button) {
 
@@ -350,26 +349,87 @@ function handleQuickViewAddToCartManual($button) {
 
     const $form = $button.closest('form.cart');
 
-    // Set loading state
+    // Loading state
     $button.addClass('add_to_cart_button--loading').prop('disabled', true);
 
-    // Prepare form data
-    const formData = new FormData($form[0]);
-    formData.append('ajax_nonce', woostify_woocommerce_general.ajax_nonce);
+    try {
 
-    // AJAX add to cart
-    fetch(
-        wc_add_to_cart_params.wc_ajax_url
-            .toString()
-            .replace('%%endpoint%%', 'woostify_single_add_to_cart'),
-        {
-            method: 'POST',
-            body: formData
+        const formData = new FormData($form[0]);
+        const variations = $form.data('product_variations') || [];
+        let variationId = '';
+
+        /* ----------------------------------------------------
+         * 1. Collect selected attributes
+         * ---------------------------------------------------- */
+        const attributes = {};
+        let hasEmpty = false;
+
+        $form.find('select[name^="attribute_"]').each(function () {
+            const name  = this.name;
+            const value = this.value;
+
+            if (!value) {
+                hasEmpty = true;
+            }
+            attributes[name] = value;
+        });
+
+        // TODO: Enable this check if needed
+        // if (hasEmpty && variations.length) {
+        //     throw 'Please select all product options.';
+        // }
+
+        /* ----------------------------------------------------
+         * 2. Match variation
+         * ---------------------------------------------------- */
+        if (variations.length) {
+            const matched = variations.find(v =>
+                Object.keys(attributes).every(attr =>
+                    v.attributes[attr] === attributes[attr]
+                )
+            );
+
+            // TODO: Enable this check if needed
+            // if (!matched) {
+            //     throw 'Selected variation not found.';
+            // }
+
+            if (matched && matched.variation_id) {
+                variationId = matched.variation_id;
+                formData.set('variation_id', variationId);
+            }
         }
-    )
+
+        /* ----------------------------------------------------
+         * 3. Required fields
+         * ---------------------------------------------------- */
+        if (!formData.get('product_id')) {
+            throw 'Missing product ID.';
+        }
+
+        formData.append(
+            'ajax_nonce',
+            woostify_woocommerce_general.ajax_nonce
+        );
+
+        /* ----------------------------------------------------
+         * 4. AJAX add to cart
+         * ---------------------------------------------------- */
+        fetch(
+            wc_add_to_cart_params.wc_ajax_url
+                .toString()
+                .replace('%%endpoint%%', 'woostify_single_add_to_cart'),
+            {
+                method: 'POST',
+                body: formData
+            }
+        )
         .then(res => res.json())
         .then(data => {
-            if (data.error) throw data.error;
+
+            if (data.error) {
+                throw data.error;
+            }
 
             // Update cart fragments
             if (typeof woostifyAjaxSingleUpdateFragments === 'function') {
@@ -383,22 +443,34 @@ function handleQuickViewAddToCartManual($button) {
                 }
             }, 100);
 
-            // Reset state
-            $button.removeClass('add_to_cart_button--loading').prop('disabled', false);
+            // Reset UI
+            $button
+                .removeClass('add_to_cart_button--loading')
+                .prop('disabled', false);
+
             document.documentElement.classList.remove('quick-view-open');
         })
-        .catch(error => {
-            $button.removeClass('add_to_cart_button--loading').prop('disabled', false);
-
-            if (typeof woostifyShowNotification === 'function') {
-                woostifyShowNotification(
-                    'Failed to add product to cart. Please try again.',
-                    'error'
-                );
-            } else {
-                alert('Failed to add product to cart.');
-            }
+        .catch(err => {
+            throw err;
         });
+
+    } catch (error) {
+
+        $button
+            .removeClass('add_to_cart_button--loading')
+            .prop('disabled', false);
+
+        if (typeof woostifyShowNotification === 'function') {
+            woostifyShowNotification(
+                typeof error === 'string'
+                    ? error
+                    : 'Failed to add product to cart.',
+                'error'
+            );
+        } else {
+            alert(error);
+        }
+    }
 }
 
 
