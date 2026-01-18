@@ -403,9 +403,10 @@ function handleQuickViewAddToCartManual($button) {
         /* ----------------------------------------------------
          * 3. Required fields
          * ---------------------------------------------------- */
-        if (!formData.get('product_id')) {
-            throw 'Missing product ID.';
-        }
+        // TODO: Enable this check if needed
+        // if (!formData.get('product_id')) {
+        //     throw 'Missing product ID.';
+        // }
 
         formData.append(
             'ajax_nonce',
@@ -468,7 +469,8 @@ function handleQuickViewAddToCartManual($button) {
                 'error'
             );
         } else {
-            alert(error);
+            console.log(error);
+            // alert(error);
         }
     }
 }
