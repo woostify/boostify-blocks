@@ -46,6 +46,13 @@ if (!function_exists("wcb__my_scripts_method")) {
         );
 
         wp_enqueue_script(
+            'wcb-buynow-js',
+            plugin_dir_url(WCB_FILE) . 'public/js/wcb-buynow.js',
+            array('jquery', 'wcb-tiny-slider'),
+            true
+        );
+
+        wp_enqueue_script(
             'wcb-tiny-slider',
             'https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js',
             array('jquery'),

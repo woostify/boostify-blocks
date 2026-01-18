@@ -383,6 +383,11 @@ function handleQuickViewAddToCartManual($button) {
                 }
             }, 100);
 
+             // Re-init buy now button.
+            if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
+                woostifyBuyNowProduct( true );
+            }
+
             // Reset state
             $button.removeClass('add_to_cart_button--loading').prop('disabled', false);
             document.documentElement.classList.remove('quick-view-open');
@@ -476,6 +481,10 @@ jQuery(document).ready(function () {
     initQuickViewQuantity();
     initQuickViewVariationSwatches();
     handleQuickViewAddToCart();
+     // Re-init buy now button.
+    if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
+        woostifyBuyNowProduct( true );
+    }
 });
 
 
@@ -489,6 +498,11 @@ jQuery(document).on('click', '.product-quick-view-btn', function () {
         initQuickViewQuantity();
         initQuickViewVariationSwatches();
         handleQuickViewAddToCart();
+        // Re-init buy now button.
+        if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
+            woostifyBuyNowProduct( true );
+        }
+
     }, 500);
 });
 
@@ -509,6 +523,10 @@ const quickViewObserver = new MutationObserver(function (mutations) {
                 initQuickViewQuantity();
                 initQuickViewVariationSwatches();
                 handleQuickViewAddToCart();
+                 // Re-init buy now button.
+                if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
+                    woostifyBuyNowProduct( true );
+                }
             }, 300);
         }
     });
