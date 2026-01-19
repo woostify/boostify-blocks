@@ -227,7 +227,7 @@
 	}
 	.wcb-products__product-onsale {
 		border: none;
-		padding: 0.25rem 0.75rem;
+		padding: 0 5px;
 		text-align: center;
 		// Fix WooCommerce styles causing vertical text
 		writing-mode: initial;
@@ -257,7 +257,7 @@
 	}
 	.wcb-products__product-on-outofstock {
 		border: none;
-		padding: 2px 6px;
+		padding: 0 5px;
 		text-align: center;
 		// text-transform: uppercase;
 		// Fix WooCommerce styles causing vertical text

@@ -397,6 +397,8 @@ function wcb_block_products__render_product($product, $attributes, $index)
     }
 
     $data->out_of_stock = wcb_block_products__get_out_of_stock_html($product);
+    // pre-order badge
+    $data->preorder_badge = wcb_block_products__get_preorder_html($product);
 
     $btnInsideImage = ($attributes['general_addToCartBtn']['position'] ?? "") === "inside image";
     $btnIconAddToCart = ($attributes['general_addToCartBtn']['position'] ?? "") === "icon";
@@ -436,6 +438,7 @@ function wcb_block_products__render_product($product, $attributes, $index)
     // out of stock
     $classes .= $saleInsideImage ? " wcb-products__product--onsaleInsideImage" : "";
     $saleOutOfStock = $data->out_of_stock ? : "";
+    $preorderBadge = $data->preorder_badge ? : "";
 
     // wishlist button
     global $wpdb;
@@ -529,6 +532,7 @@ function wcb_block_products__render_product($product, $attributes, $index)
                     {$btnQuickViewBottomImageHtml}
                     {$saleBadge1}
                     {$saleOutOfStock}
+                    {$preorderBadge}
                 </div>
                 {$data->categories}
                 {$data->title}
@@ -686,6 +690,7 @@ function wcb_block_products__add_percentage_to_sale_badge($product)
 
 function wcb_block_products__get_sale_badge_html($product,  $showSaleBadgeDiscoutPercent)
 {
+    error_log('is_on_sale:' . var_export($product->is_on_sale(), true));
     if (!$product->is_on_sale()) {
         return;
     }
@@ -725,6 +730,36 @@ function wcb_block_products__get_out_of_stock_html($product)
                 </div></div>';
     }
 }
+
+function wcb_block_products__get_preorder_html( $product ) {
+
+    if ( ! $product instanceof WC_Product ) {
+        return '';
+    }
+
+    $product_id = $product->get_id();
+
+    // Woostify Pre-Order detection
+    $preorder_date = get_post_meta( $product_id, '_onpreorder_date_to', true );
+
+    error_log('preorder date: ' . var_export($preorder_date, true));
+
+    if ( empty( $preorder_date ) ) {
+        return '';
+    }
+
+    // Optional: hide badge if preorder expired
+    if ( strtotime( $preorder_date ) < current_time( 'timestamp' ) ) {
+        return '';
+    }
+
+    error_log('Passed' . var_export($preorder_date, true));
+
+    return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
+			<span aria-hidden="true">Pre-Order</span>
+		</div></div>';
+}
+
 
 function wcb_block_products__get_button_html($product, $attributes)
 {

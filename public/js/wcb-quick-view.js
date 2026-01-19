@@ -558,6 +558,10 @@ jQuery(document).ready(function () {
     if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
         woostifyBuyNowProduct( true );
     }
+    // Re-init pre order
+    if ( 'function' === typeof( w ) ) {
+        woostifyBuyNowProduct( true );
+    }
 });
 
 
@@ -574,6 +578,11 @@ jQuery(document).on('click', '.product-quick-view-btn', function () {
         // Re-init buy now button.
         if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
             woostifyBuyNowProduct( true );
+        }
+
+        // Re-init pre order
+        if ( 'function' === typeof( woostifyCountdownPreorder ) ) {
+            woostifyCountdownPreorder();
         }
 
     }, 500);
@@ -599,6 +608,11 @@ const quickViewObserver = new MutationObserver(function (mutations) {
                  // Re-init buy now button.
                 if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
                     woostifyBuyNowProduct( true );
+                }
+
+                // Re-init pre order
+                if ( 'function' === typeof( woostifyCountdownPreorder ) ) {
+                    woostifyCountdownPreorder();
                 }
             }, 300);
         }
