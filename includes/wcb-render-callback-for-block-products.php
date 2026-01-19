@@ -690,7 +690,6 @@ function wcb_block_products__add_percentage_to_sale_badge($product)
 
 function wcb_block_products__get_sale_badge_html($product,  $showSaleBadgeDiscoutPercent)
 {
-    error_log('is_on_sale:' . var_export($product->is_on_sale(), true));
     if (!$product->is_on_sale()) {
         return;
     }
