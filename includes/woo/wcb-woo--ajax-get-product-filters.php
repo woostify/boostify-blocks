@@ -1,9 +1,9 @@
 <?php
 
-add_action('wp_ajax_wcb_get_product_filters', 'wcb_woo__ajax_get_product_filters');
-add_action('wp_ajax_nopriv_wcb_get_product_filters', 'wcb_woo__ajax_get_product_filters');
+add_action('wp_ajax_bcb_get_product_filters', 'bcb_woo__ajax_get_product_filters');
+add_action('wp_ajax_nopriv_bcb_get_product_filters', 'bcb_woo__ajax_get_product_filters');
 
-function wcb_woo__ajax_get_product_filters()
+function bcb_woo__ajax_get_product_filters()
 {
     $args = array(
         'post_type'      => 'product', // product, not products
@@ -30,7 +30,7 @@ function wcb_woo__ajax_get_product_filters()
 }
 
 
-function wcb_woo___get_product_filters_no_ajax()
+function bcb_woo___get_product_filters_no_ajax()
 {
     $args = array(
         'post_type'      => 'product', // product, not products

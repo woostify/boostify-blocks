@@ -4,15 +4,15 @@ import {
 } from "../block-container/attributes";
 import { MyCheckboxOption, MY_CHECK_BOX_OPTIONS_DEMO } from "./Edit";
 import {
-	WCB_CHECKBOX_PANEL_GENERAL,
-	WCB_CHECKBOX_PANEL_GENERAL_DEMO,
+	BCB_CHECKBOX_PANEL_GENERAL,
+	BCB_CHECKBOX_PANEL_GENERAL_DEMO,
 } from "./WcbCheckboxPanelGeneral";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	label: string;
 	//
 	options: MyCheckboxOption[];
-	general_general: WCB_CHECKBOX_PANEL_GENERAL;
+	general_general: BCB_CHECKBOX_PANEL_GENERAL;
 	//
 }
 
@@ -24,7 +24,7 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	label: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-form__label",
+		selector: ".bcb-form__label",
 		default: "Label",
 	},
 	options: {
@@ -34,7 +34,7 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	//
 	general_general: {
 		type: "object",
-		default: WCB_CHECKBOX_PANEL_GENERAL_DEMO,
+		default: BCB_CHECKBOX_PANEL_GENERAL_DEMO,
 	},
 	// ADVANCE
 };

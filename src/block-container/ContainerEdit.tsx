@@ -87,7 +87,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 	useEffect(() => {
 		let cl = "";
 		if (hasParent) {
-			cl = "is_wcb_container_child";
+			cl = "is_bcb_container_child";
 		}
 		setAttributes({ containerClassName: cl });
 	}, [hasParent, containerWidthType]);
@@ -275,7 +275,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 	//
 
 	const blockProps = useBlockProps({
-		className: `wcb-container__inner is-layout-flow`,
+		className: `bcb-container__inner is-layout-flow`,
 	});
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
@@ -321,7 +321,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 
 	const blockWrapProps = useBlockProps({
 		ref,
-		className: `wcb-container__wrap ${uniqueId} ${containerClassName}`.trim(),
+		className: `bcb-container__wrap ${uniqueId} ${containerClassName}`.trim(),
 	});
 
 	// make uniqueid

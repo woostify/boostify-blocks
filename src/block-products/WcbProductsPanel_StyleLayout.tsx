@@ -26,7 +26,7 @@ import HelpText from "../components/controls/HelpText";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_LAYOUT
+export interface BCB_PRODUCTS_PANEL_STYLE_LAYOUT
 	extends MyDimensionsNoMarginControlData {
 	textAlignment: TextAlignment;
 	backgroundColor: string;
@@ -37,7 +37,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_LAYOUT
 	swithToScrollSnapX: ResponsiveDevices | "None";
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: WCB_PRODUCTS_PANEL_STYLE_LAYOUT =
+export const BCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: BCB_PRODUCTS_PANEL_STYLE_LAYOUT =
 	{
 		...MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO,
 		textAlignment: "center",
@@ -58,12 +58,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: WCB_PRODUCTS_PANEL_STYLE_LAYO
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_LAYOUT;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_LAYOUT) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_LAYOUT;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_LAYOUT) => void;
 }
 
 const WcbProductsPanel_StyleLayout: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -81,7 +81,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 		panelData;
 
 	const SNAPX_POSTION_PLANS: MyRadioItem<
-		WCB_PRODUCTS_PANEL_STYLE_LAYOUT["swithToScrollSnapX"]
+		BCB_PRODUCTS_PANEL_STYLE_LAYOUT["swithToScrollSnapX"]
 	>[] = [
 		{ name: "Desktop", icon: "Desktop" },
 		{ name: "Tablet", icon: "Tablet" },

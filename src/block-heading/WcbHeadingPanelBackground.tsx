@@ -6,22 +6,22 @@ import MyBackgroundNoImageControl, {
 	STYLES_BG_NO_IMAGE_DEMO,
 } from "../components/controls/MyBackgroundControl/MyBackgroundNoImageControl";
 
-export interface WCB_HEADING_PANEL_BACKGROUND {
+export interface BCB_HEADING_PANEL_BACKGROUND {
 	background: BackgroundNoImageControlData;
 }
 
-export const WCB_HEADING_PANEL_BACKGROUND_DEMO: WCB_HEADING_PANEL_BACKGROUND = {
+export const BCB_HEADING_PANEL_BACKGROUND_DEMO: BCB_HEADING_PANEL_BACKGROUND = {
 	background: STYLES_BG_NO_IMAGE_DEMO,
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_HEADING_PANEL_BACKGROUND;
-	setAttr__: (data: WCB_HEADING_PANEL_BACKGROUND) => void;
+	panelData: BCB_HEADING_PANEL_BACKGROUND;
+	setAttr__: (data: BCB_HEADING_PANEL_BACKGROUND) => void;
 }
 
 const WcbHeadingPanelBackground: FC<Props> = ({
-	panelData = WCB_HEADING_PANEL_BACKGROUND_DEMO,
+	panelData = BCB_HEADING_PANEL_BACKGROUND_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

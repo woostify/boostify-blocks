@@ -13,16 +13,16 @@ import {
 } from "../components/controls/MyBorderControl/types";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
-import { WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE } from "./WcbPostGridPanelPostFeaturedImage";
+import { BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE } from "./WcbPostGridPanelPostFeaturedImage";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE {
+export interface BCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE {
 	marginBottom: HasResponsive<string>;
 	backgroundOverlay: string;
 	border: MyBorderControlData;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE =
+export const BCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE_DEMO: BCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE =
 	{
 		marginBottom: { Desktop: "0" },
 		backgroundOverlay: "#FFFFFFE6",
@@ -31,13 +31,13 @@ export const WCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE) => void;
-	imagePosition: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE["featuredImagePosition"];
+	panelData: BCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE) => void;
+	imagePosition: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE["featuredImagePosition"];
 }
 
 const WcbPostGridPanel_StyleFeaturedImage: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_FEATURED_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

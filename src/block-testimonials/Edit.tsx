@@ -14,7 +14,7 @@ import WcbTestimonialsPanelGeneral from "./WcbTestimonialsPanelGeneral";
 import WcbTestimonialsPanelImages from "./WcbTestimonialsPanelImages";
 import WcbTestimonialsPanelRating from "./WcbTestimonialsPanelRating";
 import WcbTestimonialsPanelCarousel from "./WcbTestimonialsPanelCarousel";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import WcbTestimonialsPanel_StyleName from "./WcbTestimonialsPanel_StyleName";
 import WcbTestimonialsPanel_StyleContent from "./WcbTestimonialsPanel_StyleContent";
 import WcbTestimonialsPanel_StyleCompany from "./WcbTestimonialsPanel_StyleCompany";
@@ -335,7 +335,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return (
 			<RichText
 				tagName="div"
-				className="wcb-testimonials__item-content"
+				className="bcb-testimonials__item-content"
 				value={item.content}
 				onChange={(content) => {
 					setAttributes({
@@ -359,7 +359,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return (
 			<RichText
 				tagName="div"
-				className="wcb-testimonials__item-name"
+				className="bcb-testimonials__item-name"
 				value={item.name}
 				onChange={(content) => {
 					setAttributes({
@@ -386,7 +386,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return (
 			<RichText
 				tagName="div"
-				className="wcb-testimonials__item-company"
+				className="bcb-testimonials__item-company"
 				value={item.companyName}
 				onChange={(content) => {
 					setAttributes({
@@ -409,7 +409,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const renderTestimonialItemImage = (item: TestimonialItem, index: number) => {
 		const { images, isShowImage, imageSize } = general_images;
 		const { imageSize: imageSizeAttr } = style_image;
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+		const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 		const { mediaId, mediaSrcSet } = images[index] || {};
 		if (!isShowImage || !mediaId) {
 			return null;
@@ -418,7 +418,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			getValueFromAttrsResponsives(imageSizeAttr);
 		const url = getImageUrlBySize(images[index], imageSize);
 		return (
-			<div className="wcb-testimonials__item-image">
+			<div className="bcb-testimonials__item-image">
 				<img
 					src={url}
 					alt=""
@@ -431,16 +431,16 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const renderTestimonialItemRating = (item: TestimonialItem, index: number) => {
 		const { ratings, isShowRating, ratingPosition } = general_rating;
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+		const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 		if (!isShowRating) {
 			return null;
 		}
 		return (
-			<div className="wcb-testimonials__item-rating">
+			<div className="bcb-testimonials__item-rating">
 				{ ratings[index] && Array.from({ length: 5 }, (_, i) => {
 					const clsActive = i < ratings[index] ? 'active' : '';
 					return (
-						<span key={i} className={`wcb-star ${clsActive}`}>
+						<span key={i} className={`bcb-star ${clsActive}`}>
 							★
 						</span>
 					);
@@ -453,8 +453,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		const { imagePosition } = general_images;
 		const { ratingPosition } = general_rating;
 		return (
-			<div className="wcb-testimonials__item" key={index + "-"}>
-				<div className="wcb-testimonials__item-background">
+			<div className="bcb-testimonials__item" key={index + "-"}>
+				<div className="bcb-testimonials__item-background">
 					<div className=""></div>
 					<VideoBackgroundByBgControl
 						bgType={style_backgroundAndBorder.background.bgType}
@@ -464,12 +464,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						bgType={style_backgroundAndBorder.background.bgType}
 						overlayType={style_backgroundAndBorder.background.overlayType}
 					/>
-					<div className="wcb-testimonials__item-wrap-inner">
+					<div className="bcb-testimonials__item-wrap-inner">
 						{/* IMAGE */}
 						{imagePosition === "left" &&
 							renderTestimonialItemImage(item, index)}
 
-						<div className="wcb-testimonials__item-inner">
+						<div className="bcb-testimonials__item-inner">
 							{/* RATING */}
 							{ ratingPosition === "top" && 
 								renderTestimonialItemRating(item, index) }
@@ -485,12 +485,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							{ ratingPosition === "middle" && 
 								renderTestimonialItemRating(item, index) }
 
-							<div className="wcb-testimonials__item-user">
+							<div className="bcb-testimonials__item-user">
 								{/* IMAGE */}
 								{imagePosition === "bottom" &&
 									renderTestimonialItemImage(item, index)}
 
-								<div className="wcb-testimonials__item-nameandcompany">
+								<div className="bcb-testimonials__item-nameandcompany">
 									{/* NAME */}
 									<div>{renderTestimonialItemName(item, index)}</div>
 
@@ -591,7 +591,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-testimonials__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-testimonials__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}

@@ -5,12 +5,12 @@ import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_FORM_PANEL_GOOGLE_RECAPTCHA {
+export interface BCB_FORM_PANEL_GOOGLE_RECAPTCHA {
 	enableReCaptcha: boolean;
 	version: "v2" | "v3";
 }
 
-export const WCB_FORM_PANEL_GOOGLE_RECAPTCHA_DEMO: WCB_FORM_PANEL_GOOGLE_RECAPTCHA =
+export const BCB_FORM_PANEL_GOOGLE_RECAPTCHA_DEMO: BCB_FORM_PANEL_GOOGLE_RECAPTCHA =
 	{
 		enableReCaptcha: false,
 		version: "v2",
@@ -18,12 +18,12 @@ export const WCB_FORM_PANEL_GOOGLE_RECAPTCHA_DEMO: WCB_FORM_PANEL_GOOGLE_RECAPTC
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_GOOGLE_RECAPTCHA;
-	setAttr__: (data: WCB_FORM_PANEL_GOOGLE_RECAPTCHA) => void;
+	panelData: BCB_FORM_PANEL_GOOGLE_RECAPTCHA;
+	setAttr__: (data: BCB_FORM_PANEL_GOOGLE_RECAPTCHA) => void;
 }
 
 const WcbFormPanelGoogleRecaptcha: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_GOOGLE_RECAPTCHA_DEMO,
+	panelData = BCB_FORM_PANEL_GOOGLE_RECAPTCHA_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -33,7 +33,7 @@ const WcbFormPanelGoogleRecaptcha: FC<Props> = ({
 	const { enableReCaptcha, version } = panelData;
 
 	const reCaptcha_plans: MyRadioItem<
-		WCB_FORM_PANEL_GOOGLE_RECAPTCHA["version"]
+		BCB_FORM_PANEL_GOOGLE_RECAPTCHA["version"]
 	>[] = [
 		{ name: "v2", icon: "V2" },
 		{ name: "v3", icon: "V3" },
@@ -67,7 +67,7 @@ const WcbFormPanelGoogleRecaptcha: FC<Props> = ({
 							onChange={(value) => {
 								setAttr__({
 									...panelData,
-									version: value as WCB_FORM_PANEL_GOOGLE_RECAPTCHA["version"],
+									version: value as BCB_FORM_PANEL_GOOGLE_RECAPTCHA["version"],
 								});
 							}}
 							hasResponsive={false}

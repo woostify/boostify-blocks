@@ -225,7 +225,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const renderImage = () => {
 		return general_image.isShowImage && general_image?.image?.mediaId ? (
 			<img
-				className="wcb-team__image"
+				className="bcb-team__image"
 				src={general_image.image.mediaUrl}
 				alt=""
 			/>
@@ -238,7 +238,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-team__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-team__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}
@@ -254,15 +254,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					general_image.imagePosition === "top") &&
 					renderImage()}
 				{/* CHILD CONTENT  */}
-				<div className="wcb-team__content-wrap">
-					<div className="wcb-team__content">
+				<div className="bcb-team__content-wrap">
+					<div className="bcb-team__content">
 						<RichText
 							tagName={HeadingTag}
 							value={heading}
 							allowedFormats={["core/bold", "core/italic"]}
 							onChange={(content) => setAttributes({ heading: content })}
 							placeholder={__("Heading...")}
-							className="wcb-team__heading"
+							className="bcb-team__heading"
 						/>
 						<RichText
 							tagName="div"
@@ -270,7 +270,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							allowedFormats={[]}
 							onChange={(content) => setAttributes({ designation: content })}
 							placeholder={__("Designation...")}
-							className="wcb-team__designation"
+							className="bcb-team__designation"
 						/>
 						<RichText
 							tagName="div"
@@ -278,12 +278,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							allowedFormats={["core/bold", "core/italic"]}
 							onChange={(content) => setAttributes({ description: content })}
 							placeholder={__("Description...")}
-							className="wcb-team__description"
+							className="bcb-team__description"
 						/>
 					</div>
 
 					{general_socials.enableSocials && general_socials.socials?.length ? (
-						<div className="wcb-team__socials-icons">
+						<div className="bcb-team__socials-icons">
 							{general_socials.socials.map((item, index) => {
 								return (
 									<a

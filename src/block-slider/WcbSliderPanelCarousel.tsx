@@ -3,7 +3,7 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 
-export interface WCB_SLIDER_PANEL_CAROUSEL {
+export interface BCB_SLIDER_PANEL_CAROUSEL {
 	hoverpause: boolean;
 	isAutoPlay: boolean;
 	autoplaySpeed: number;
@@ -13,7 +13,7 @@ export interface WCB_SLIDER_PANEL_CAROUSEL {
 	showArrowsDots: "Dot" | "Arrow" | "Both";
 }
 
-export const WCB_SLIDER_PANEL_CAROUSEL_DEMO: WCB_SLIDER_PANEL_CAROUSEL =
+export const BCB_SLIDER_PANEL_CAROUSEL_DEMO: BCB_SLIDER_PANEL_CAROUSEL =
 	{
 		animationDuration: 500,
 		autoplaySpeed: 3000,
@@ -26,12 +26,12 @@ export const WCB_SLIDER_PANEL_CAROUSEL_DEMO: WCB_SLIDER_PANEL_CAROUSEL =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_CAROUSEL;
-	setAttr__: (data: WCB_SLIDER_PANEL_CAROUSEL) => void;
+	panelData: BCB_SLIDER_PANEL_CAROUSEL;
+	setAttr__: (data: BCB_SLIDER_PANEL_CAROUSEL) => void;
 }
 
 const WcbSlidersPanelCarousel: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_CAROUSEL_DEMO,
+	panelData = BCB_SLIDER_PANEL_CAROUSEL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

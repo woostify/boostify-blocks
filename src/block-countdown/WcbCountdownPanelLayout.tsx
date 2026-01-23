@@ -13,24 +13,24 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_COUNTDOWN_PANEL_LAYOUT {
+export interface BCB_COUNTDOWN_PANEL_LAYOUT {
 	textAlignment: HasResponsive<TextAlignment>;
 	contentWidth: HasResponsive<string>;
 	flexDirection: HasResponsive<CSSProperties["flexDirection"]>;
 }
 
-export const WCB_COUNTDOWN_PANEL_LAYOUT_PRESET_LEFT_DEMO: WCB_COUNTDOWN_PANEL_LAYOUT = {
+export const BCB_COUNTDOWN_PANEL_LAYOUT_PRESET_LEFT_DEMO: BCB_COUNTDOWN_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "left" },
 	contentWidth: { Desktop: "100%" },
 	flexDirection: { Desktop: "column" },
 };
-export const WCB_COUNTDOWN_PANEL_LAYOUT_PRESET_CENTER_DEMO: WCB_COUNTDOWN_PANEL_LAYOUT = {
+export const BCB_COUNTDOWN_PANEL_LAYOUT_PRESET_CENTER_DEMO: BCB_COUNTDOWN_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "center" },
 	contentWidth: { Desktop: "100%" },
 	flexDirection: { Desktop: "column" },
 };
 
-export const WCB_COUNTDOWN_PANEL_LAYOUT_DEMO: WCB_COUNTDOWN_PANEL_LAYOUT = {
+export const BCB_COUNTDOWN_PANEL_LAYOUT_DEMO: BCB_COUNTDOWN_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "center" },
 	contentWidth: { Desktop: "100%" },
 	flexDirection: { Desktop: "row" },
@@ -38,12 +38,12 @@ export const WCB_COUNTDOWN_PANEL_LAYOUT_DEMO: WCB_COUNTDOWN_PANEL_LAYOUT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_COUNTDOWN_PANEL_LAYOUT;
-	setAttr__: (data: WCB_COUNTDOWN_PANEL_LAYOUT) => void;
+	panelData: BCB_COUNTDOWN_PANEL_LAYOUT;
+	setAttr__: (data: BCB_COUNTDOWN_PANEL_LAYOUT) => void;
 }
 
 const WcbCountdownPanelLayout: FC<Props> = ({
-	panelData = WCB_COUNTDOWN_PANEL_LAYOUT_DEMO,
+	panelData = BCB_COUNTDOWN_PANEL_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

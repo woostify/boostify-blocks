@@ -12,19 +12,19 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import MySelect from "../components/controls/MySelect";
 import { Option } from "../types";
 
-export interface WCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST {
+export interface BCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST {
     layout: "horizontal" | "vertical";
 }
 
-export interface WCB_ICON_LIST_PANEL_LAYOUT {
-    layout: WCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST["layout"];
+export interface BCB_ICON_LIST_PANEL_LAYOUT {
+    layout: BCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST["layout"];
     textAlignment: HasResponsive<TextAlignment>;
     headingTag: keyof HTMLElementTagNameMap;
     enablePrefix: boolean;
     enableTitle: boolean;
 }
 
-export const WCB_ICON_LIST_PANEL_LAYOUT_DEMO: WCB_ICON_LIST_PANEL_LAYOUT = {
+export const BCB_ICON_LIST_PANEL_LAYOUT_DEMO: BCB_ICON_LIST_PANEL_LAYOUT = {
     layout: "vertical",
     textAlignment: { Desktop: "left" },
     headingTag: "p",
@@ -34,12 +34,12 @@ export const WCB_ICON_LIST_PANEL_LAYOUT_DEMO: WCB_ICON_LIST_PANEL_LAYOUT = {
 
 interface Props
     extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-    panelData: WCB_ICON_LIST_PANEL_LAYOUT;
-    setAttr__: (data: WCB_ICON_LIST_PANEL_LAYOUT) => void;
+    panelData: BCB_ICON_LIST_PANEL_LAYOUT;
+    setAttr__: (data: BCB_ICON_LIST_PANEL_LAYOUT) => void;
 }
 
 const WcbIconListPanelLayout: FC<Props> = ({
-    panelData = WCB_ICON_LIST_PANEL_LAYOUT_DEMO,
+    panelData = BCB_ICON_LIST_PANEL_LAYOUT_DEMO,
     setAttr__,
     initialOpen,
     onToggle,
@@ -69,7 +69,7 @@ const WcbIconListPanelLayout: FC<Props> = ({
         });
     };
 
-    const PLANS_DEMO: Option<WCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST["layout"]>[] = [
+    const PLANS_DEMO: Option<BCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST["layout"]>[] = [
         { value: "horizontal", label: "Horizontal" },
         { value: "vertical", label: "Vertical" },
     ];
@@ -89,7 +89,7 @@ const WcbIconListPanelLayout: FC<Props> = ({
                     onChange={(value) => {
                         setAttr__({
                             ...panelData,
-                            layout: value as WCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST["layout"],
+                            layout: value as BCB_ICON_LIST_PANEL_LAYOUT_ICON_LIST["layout"],
                         });
                     }}
                 />

@@ -5,7 +5,7 @@ import React, { FC, CSSProperties } from "react";
 import { __experimentalInputControl as InputControl } from "@wordpress/components";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 import MaxPageToShowInput from "../components/controls/MaxPageToShowInput";
-export interface WCB_POST_GRID_PANEL_PAGINATION {
+export interface BCB_POST_GRID_PANEL_PAGINATION {
 	isShowPagination: boolean;
 	pageLimit: number;
 	previousText: string;
@@ -13,7 +13,7 @@ export interface WCB_POST_GRID_PANEL_PAGINATION {
 	iconName: "none" | "arrow" | "chevron" | "chevron-double";
 }
 
-export const WCB_POST_GRID_PANEL_PAGINATION_DEMO: WCB_POST_GRID_PANEL_PAGINATION =
+export const BCB_POST_GRID_PANEL_PAGINATION_DEMO: BCB_POST_GRID_PANEL_PAGINATION =
 	{
 		isShowPagination: true,
 		pageLimit: 0,
@@ -24,12 +24,12 @@ export const WCB_POST_GRID_PANEL_PAGINATION_DEMO: WCB_POST_GRID_PANEL_PAGINATION
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_PAGINATION;
-	setAttr__: (data: WCB_POST_GRID_PANEL_PAGINATION) => void;
+	panelData: BCB_POST_GRID_PANEL_PAGINATION;
+	setAttr__: (data: BCB_POST_GRID_PANEL_PAGINATION) => void;
 }
 
-export const WCB_POSTS_GRID_PAGINATION_PLANS_ICONS: MyRadioItem<
-	WCB_POST_GRID_PANEL_PAGINATION["iconName"]
+export const BCB_POSTS_GRID_PAGINATION_PLANS_ICONS: MyRadioItem<
+	BCB_POST_GRID_PANEL_PAGINATION["iconName"]
 >[] = [
 	{
 		name: "none",
@@ -56,7 +56,7 @@ export const WCB_POSTS_GRID_PAGINATION_PLANS_ICONS: MyRadioItem<
 ];
 
 const WcbPostGridPanelPagination: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_PAGINATION_DEMO,
+	panelData = BCB_POST_GRID_PANEL_PAGINATION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -72,7 +72,7 @@ const WcbPostGridPanelPagination: FC<Props> = ({
 				onChange={(name) => {
 					setAttr__({ ...panelData, iconName: name as any });
 				}}
-				plans={WCB_POSTS_GRID_PAGINATION_PLANS_ICONS}
+				plans={BCB_POSTS_GRID_PAGINATION_PLANS_ICONS}
 				value={iconName}
 				hasResponsive={false}
 			/>

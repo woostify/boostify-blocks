@@ -20,7 +20,7 @@ import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl
 import MyTabPanel from "../components/controls/MyTabPanel/MyTabPanel";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 
-export interface WCB_FAQ_PANEL_STYLE_QUESTION {
+export interface BCB_FAQ_PANEL_STYLE_QUESTION {
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
 	color: string;
@@ -29,7 +29,7 @@ export interface WCB_FAQ_PANEL_STYLE_QUESTION {
 	backgroundColorHover: string;
 }
 
-export const WCB_FAQ_PANEL_STYLE_QUESTION_DEMO: WCB_FAQ_PANEL_STYLE_QUESTION = {
+export const BCB_FAQ_PANEL_STYLE_QUESTION_DEMO: BCB_FAQ_PANEL_STYLE_QUESTION = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	padding: {
 		Desktop: {
@@ -57,12 +57,12 @@ export const PANEL_COLOR_TABS: {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FAQ_PANEL_STYLE_QUESTION;
-	setAttr__: (data: WCB_FAQ_PANEL_STYLE_QUESTION) => void;
+	panelData: BCB_FAQ_PANEL_STYLE_QUESTION;
+	setAttr__: (data: BCB_FAQ_PANEL_STYLE_QUESTION) => void;
 }
 
 const WcbFaqPanel_StyleQuestion: FC<Props> = ({
-	panelData = WCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
+	panelData = BCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

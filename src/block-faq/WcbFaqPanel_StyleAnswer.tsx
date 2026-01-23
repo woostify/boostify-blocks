@@ -19,14 +19,14 @@ import {
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 
-export interface WCB_FAQ_PANEL_STYLE_ANSWER {
+export interface BCB_FAQ_PANEL_STYLE_ANSWER {
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
 	color: string;
 	backgroundColor: string;
 }
 
-export const WCB_FAQ_PANEL_STYLE_ANSWER_DEMO: WCB_FAQ_PANEL_STYLE_ANSWER = {
+export const BCB_FAQ_PANEL_STYLE_ANSWER_DEMO: BCB_FAQ_PANEL_STYLE_ANSWER = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	padding: {
 		Desktop: {
@@ -42,12 +42,12 @@ export const WCB_FAQ_PANEL_STYLE_ANSWER_DEMO: WCB_FAQ_PANEL_STYLE_ANSWER = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FAQ_PANEL_STYLE_ANSWER;
-	setAttr__: (data: WCB_FAQ_PANEL_STYLE_ANSWER) => void;
+	panelData: BCB_FAQ_PANEL_STYLE_ANSWER;
+	setAttr__: (data: BCB_FAQ_PANEL_STYLE_ANSWER) => void;
 }
 
 const WcbFaqPanel_StyleAnswer: FC<Props> = ({
-	panelData = WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+	panelData = BCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

@@ -703,7 +703,7 @@ const Image: FC<ImageProps> = ({
 
 		img = (
 			<ResizableBox
-				className="wcb-image__ResizableBox"
+				className="bcb-image__ResizableBox"
 				size={{
 					width: WIDTH || "auto",
 					height: HEIGHT && !hasCustomBorder ? HEIGHT : "auto",

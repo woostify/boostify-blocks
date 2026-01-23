@@ -136,7 +136,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	);
 	
 	const wrapBlockProps = useBlockProps.save({
-		className: `woostify-container wcb-image__wrap wcb-image__wrap--${general_settings.layout} ${classes}`.trim(),
+		className: `woostify-container bcb-image__wrap bcb-image__wrap--${general_settings.layout} ${classes}`.trim(),
 		style: {
 			display: "flex",
 			justifyContent: attributes.general_settings?.alignment?.Desktop
@@ -147,9 +147,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	const renderOverlay = () => {
 		return (
-			<div className="wcb-image__overlay-wrap">
-				<div className="wcb-image__overlay-bg">
-					<div className="wcb-image__overlay-content">
+			<div className="bcb-image__overlay-wrap">
+				<div className="bcb-image__overlay-bg">
+					<div className="bcb-image__overlay-content">
 						<InnerBlocks.Content />
 					</div>
 				</div>

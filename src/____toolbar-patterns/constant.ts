@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-export const GET_WCB_BLOCKS = gql`
+export const GET_BCB_BLOCKS = gql`
 	query NewQuery {
 		wcbBlocks(where: { status: PUBLISH }, first: 400) {
 			edges {

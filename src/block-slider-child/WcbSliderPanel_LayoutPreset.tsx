@@ -4,28 +4,28 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import ResetButton from "../components/controls/ResetButton";
 import { SLIDER_LAYOUT_PRESET } from "./types";
-export interface WCB_SLIDER_LAYOUT_PANEL_PRESET {
-	preset: "wcb-layout-1" | "wcb-layout-2" | "wcb-layout-3" | "wcb-layout-4" | "wcb-layout-5" | "";
+export interface BCB_SLIDER_LAYOUT_PANEL_PRESET {
+	preset: "bcb-layout-1" | "bcb-layout-2" | "bcb-layout-3" | "bcb-layout-4" | "bcb-layout-5" | "";
 }
 
-export const WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO: WCB_SLIDER_LAYOUT_PANEL_PRESET = {
+export const BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO: BCB_SLIDER_LAYOUT_PANEL_PRESET = {
 	preset: "",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_LAYOUT_PANEL_PRESET;
-	setAttr__: (data: WCB_SLIDER_LAYOUT_PANEL_PRESET) => void;
+	panelData: BCB_SLIDER_LAYOUT_PANEL_PRESET;
+	setAttr__: (data: BCB_SLIDER_LAYOUT_PANEL_PRESET) => void;
 }
 
 const WcbSliderLayoutPanelPreset: FC<Props> = ({
-	panelData = WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO,
+	panelData = BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
 	opened,
 }) => {
-	const setPreset = (preset: WCB_SLIDER_LAYOUT_PANEL_PRESET["preset"]) => {
+	const setPreset = (preset: BCB_SLIDER_LAYOUT_PANEL_PRESET["preset"]) => {
 		setAttr__({ preset: preset });
 	};
 
@@ -34,7 +34,7 @@ const WcbSliderLayoutPanelPreset: FC<Props> = ({
 			<RadioGroup value={panelData.preset} onChange={setPreset}>
 				<RadioGroup.Label className="relative flex items-center justify-between ">
 					<span>{__("Select Preset", "wcb")}</span>
-					<ResetButton onClick={() => setPreset(WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO.preset)} />
+					<ResetButton onClick={() => setPreset(BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO.preset)} />
 				</RadioGroup.Label>
 				<div className={"relative p-3 bg-slate-50 mt-3 rounded-lg"}>
 					<div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))]"></div>

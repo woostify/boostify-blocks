@@ -50,8 +50,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		return (
 			<>
 				{general_icon.enableIcon && (
-					<div className="wcb-icon-box__icon-wrap">
-						<div className="wcb-icon-box__icon">
+					<div className="bcb-icon-box__icon-wrap">
+						<div className="bcb-icon-box__icon">
 							<MyIconFull icon={general_icon.icon} />
 						</div>
 					</div>
@@ -66,8 +66,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			return null;
 		}
 		return (
-			<div className="wcb-icon-box__separator-wrap">
-				<div className="wcb-icon-box__separator"></div>
+			<div className="bcb-icon-box__separator-wrap">
+				<div className="bcb-icon-box__separator"></div>
 			</div>
 		);
 	};
@@ -76,7 +76,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-icon-box__wrap",
+		className: "bcb-icon-box__wrap",
 	});
 	//
 
@@ -91,16 +91,16 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				renderIcon()}
 
 			{/* CHILD CONTENT  */}
-			<div className="wcb-icon-box__content">
-				<div className="wcb-icon-box__content-title-wrap">
+			<div className="bcb-icon-box__content">
+				<div className="bcb-icon-box__content-title-wrap">
 					{general_icon.iconPosition === "leftOfTitle" && renderIcon()}
-					<div className="wcb-icon-box__content-title">
+					<div className="bcb-icon-box__content-title">
 						{general_layout.enablePrefix && (
 							<RichText.Content
 								tagName="div"
 								value={designation}
 								placeholder={__("Designation...")}
-								className="wcb-icon-box__designation"
+								className="bcb-icon-box__designation"
 							/>
 						)}
 
@@ -111,7 +111,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 								tagName={HeadingTag}
 								value={heading}
 								placeholder={__("Heading...")}
-								className="wcb-icon-box__heading"
+								className="bcb-icon-box__heading"
 							/>
 						)}
 					</div>
@@ -127,7 +127,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 						tagName="div"
 						value={description}
 						placeholder={__("Description...")}
-						className="wcb-icon-box__description"
+						className="bcb-icon-box__description"
 					/>
 				)}
 

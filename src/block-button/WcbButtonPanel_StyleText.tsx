@@ -11,13 +11,13 @@ import MyTypographyControl from "../components/controls/MyTypographyControl/MyTy
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MyDisclosure from "../components/controls/MyDisclosure";
 
-export interface WCB_BUTTON_PANEL_STYLE_TEXT {
+export interface BCB_BUTTON_PANEL_STYLE_TEXT {
 	typography: MyTypographyControlData;
 	color: string;
 	hoverColor: string;
 }
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY: WCB_BUTTON_PANEL_STYLE_TEXT =
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY: BCB_BUTTON_PANEL_STYLE_TEXT =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -26,31 +26,31 @@ export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY: WCB_BUTTON_PANEL_STYLE_TE
 		hoverColor: "#fff",
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY: WCB_BUTTON_PANEL_STYLE_TEXT =
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY: BCB_BUTTON_PANEL_STYLE_TEXT =
 	{
-		...WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
+		...BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
 		color: "#0284c7",
 		hoverColor: "#0284c7",
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE: WCB_BUTTON_PANEL_STYLE_TEXT =
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE: BCB_BUTTON_PANEL_STYLE_TEXT =
 	{
-		...WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
+		...BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
 		color: "#111827",
 		hoverColor: "#111827",
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO =
-	WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY;
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO =
+	BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_STYLE_TEXT;
-	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_TEXT) => void;
+	panelData: BCB_BUTTON_PANEL_STYLE_TEXT;
+	setAttr__: (data: BCB_BUTTON_PANEL_STYLE_TEXT) => void;
 }
 
 const WcbButtonPanel_StyleText: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_STYLE_TEXT_DEMO,
+	panelData = BCB_BUTTON_PANEL_STYLE_TEXT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

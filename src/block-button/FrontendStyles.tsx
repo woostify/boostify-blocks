@@ -13,10 +13,10 @@ interface Props extends WcbAttrs {}
 
 //
 const divsToUpdateButton = document.querySelectorAll(
-	".wcb-button__wrap.wcb-update-div"
+	".bcb-button__wrap.bcb-update-div"
 );
 const divsToUpdateCTA = document.querySelectorAll(
-	".wcb-cta__wrap.wcb-update-div"
+	".bcb-cta__wrap.bcb-update-div"
 );
 
 xxxxxxxxxxxxxx(divsToUpdateButton, GlobalCssButton);
@@ -27,11 +27,11 @@ function xxxxxxxxxxxxxx(divsToUpdate, GlobalCss) {
 
 	divsToUpdate.forEach((div) => {
 		const preEl = div.querySelector(
-			`pre[data-wcb-block-attrs=${div.id}]`
+			`pre[data-bcb-block-attrs=${div.id}]`
 		) as HTMLElement | null;
 
 		const divRenderCssEl = div.querySelector(
-			`div[data-wcb-global-styles=${div.id}]`
+			`div[data-bcb-global-styles=${div.id}]`
 		) as HTMLElement | null;
 
 		if (!preEl || !preEl.innerText || !divRenderCssEl) {
@@ -48,7 +48,7 @@ function xxxxxxxxxxxxxx(divsToUpdate, GlobalCss) {
 			divRenderCssEl
 		);
 		//
-		div.classList.remove("wcb-update-div");
+		div.classList.remove("bcb-update-div");
 		preEl.remove();
 	});
 }

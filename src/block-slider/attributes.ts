@@ -16,63 +16,63 @@ import {
 } from "../components/controls/MyZIndexControl/MyZIndexControl";
 // SLIDER_ITEM_DEMO moved to child component
 import {
-	WCB_SLIDER_PANEL_CAROUSEL,
-	WCB_SLIDER_PANEL_CAROUSEL_DEMO,
+	BCB_SLIDER_PANEL_CAROUSEL,
+	BCB_SLIDER_PANEL_CAROUSEL_DEMO,
 } from "./WcbSliderPanelCarousel";
 import {
-	WCB_SLIDER_PANEL_GENERAL,
-	WCB_SLIDER_PANEL_GENERAL_DEMO,
+	BCB_SLIDER_PANEL_GENERAL,
+	BCB_SLIDER_PANEL_GENERAL_DEMO,
 } from "./WcbSliderPanelGeneral";
 
 import {
-	WCB_SLIDER_PANEL_STYLE_ARROW_DOTS,
-	WCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO,
+	BCB_SLIDER_PANEL_STYLE_ARROW_DOTS,
+	BCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO,
 } from "./WcbSliderPanel_StyleArrowDots";
 import {
-	WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER,
-	WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
+	BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER,
+	BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
 } from "./WcbSliderPanel_StyleBackground";
 import {
-	WCB_SLIDER_PANEL_STYLE_COMPANY,
-	WCB_SLIDER_PANEL_STYLE_COMPANY_DEMO,
+	BCB_SLIDER_PANEL_STYLE_COMPANY,
+	BCB_SLIDER_PANEL_STYLE_COMPANY_DEMO,
 } from "./WcbSliderPanel_StyleCompany";
 import { 
-	WCB_SLIDER_PANEL_STYLE_CONTENT,
-	WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO 
+	BCB_SLIDER_PANEL_STYLE_CONTENT,
+	BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO 
 } from "./WcbSliderPanel_StyleContent";
 import {
-	WCB_SLIDER_PANEL_STYLE_DIMENSION,
-	WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
+	BCB_SLIDER_PANEL_STYLE_DIMENSION,
+	BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbSliderPanel_StyleDimension";
 
 import {
-	WCB_SLIDER_PANEL_STYLE_NAME,
-	WCB_SLIDER_PANEL_STYLE_NAME_DEMO,
+	BCB_SLIDER_PANEL_STYLE_NAME,
+	BCB_SLIDER_PANEL_STYLE_NAME_DEMO,
 } from "./WcbSliderPanel_StyleName";
 import {
-	WCB_SLIDER_PANEL_STYLE_BOXSHADOW,
-	WCB_SLIDER_PANEL_STYLE_BOXSHADOW_DEMO,
+	BCB_SLIDER_PANEL_STYLE_BOXSHADOW,
+	BCB_SLIDER_PANEL_STYLE_BOXSHADOW_DEMO,
 } from "./WcbSliderPanel_StyleBoxshadow"
 import {
-	WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT,
-	WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO,
+	BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT,
+	BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO,
 } from "./WcbSlidersPanel_StyleVerticalAlignment";
 
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	sliders: string[][];
 	//
-	general_general: WCB_SLIDER_PANEL_GENERAL;
-	general_carousel: WCB_SLIDER_PANEL_CAROUSEL;
+	general_general: BCB_SLIDER_PANEL_GENERAL;
+	general_carousel: BCB_SLIDER_PANEL_CAROUSEL;
 	//
-	style_name: WCB_SLIDER_PANEL_STYLE_NAME;
-	style_content: WCB_SLIDER_PANEL_STYLE_CONTENT;
-	style_company: WCB_SLIDER_PANEL_STYLE_COMPANY;
-	style_verticalAlignment?: WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT;
-	style_arrowAndDots: WCB_SLIDER_PANEL_STYLE_ARROW_DOTS;
-	style_backgroundAndBorder: WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER;
-	style_boxshadow: WCB_SLIDER_PANEL_STYLE_BOXSHADOW; // New box shadow style
-	style_dimension: WCB_SLIDER_PANEL_STYLE_DIMENSION;
+	style_name: BCB_SLIDER_PANEL_STYLE_NAME;
+	style_content: BCB_SLIDER_PANEL_STYLE_CONTENT;
+	style_company: BCB_SLIDER_PANEL_STYLE_COMPANY;
+	style_verticalAlignment?: BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT;
+	style_arrowAndDots: BCB_SLIDER_PANEL_STYLE_ARROW_DOTS;
+	style_backgroundAndBorder: BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER;
+	style_boxshadow: BCB_SLIDER_PANEL_STYLE_BOXSHADOW; // New box shadow style
+	style_dimension: BCB_SLIDER_PANEL_STYLE_DIMENSION;
 	//
 	advance_responsiveCondition: MyResponsiveConditionControlData;
 	advance_zIndex: MyZIndexControlData;
@@ -97,44 +97,44 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	// THE ATTRS OF BLOCK HERE
 	general_general: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_GENERAL_DEMO,
+		default: BCB_SLIDER_PANEL_GENERAL_DEMO,
 	},
 	general_carousel: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_CAROUSEL_DEMO,
+		default: BCB_SLIDER_PANEL_CAROUSEL_DEMO,
 	},
 	//
 	style_name: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_STYLE_NAME_DEMO,
+		default: BCB_SLIDER_PANEL_STYLE_NAME_DEMO,
 	},
 	style_content: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
+		default: BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
 	},
 	style_company: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_STYLE_COMPANY_DEMO,
+		default: BCB_SLIDER_PANEL_STYLE_COMPANY_DEMO,
 	},
 	style_verticalAlignment: {
 		type: "object",
-		default: WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO,
+		default: BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO,
 	},
 	style_arrowAndDots: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO,
+		default: BCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO,
 	},
 	style_backgroundAndBorder: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
+		default: BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
 	},
 	style_dimension: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
+		default: BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
 	},
 	style_boxshadow: {
 		type: "object",
-		default: WCB_SLIDER_PANEL_STYLE_BOXSHADOW_DEMO,
+		default: BCB_SLIDER_PANEL_STYLE_BOXSHADOW_DEMO,
 	},
 	// ADVANCE
 	advance_responsiveCondition: {

@@ -34,7 +34,7 @@ const WoostifyBlockSidebarContent = (props) => {
 		loadPromise.then(() => {
 			const settings = new models.Settings();
 			settings.fetch().then((response) => {
-				setTypoSettings(head(response.wcb_global_typography) || {});
+				setTypoSettings(head(response.bcb_global_typography) || {});
 			});
 		});
 	}, []);
@@ -55,7 +55,7 @@ const WoostifyBlockSidebarContent = (props) => {
 		clearTimeout(saveSettingsTime);
 		saveSettingsTime = setTimeout(() => {
 			const model = new models.Settings({
-				wcb_global_typography: [newSettings], // eslint-disable-line
+				bcb_global_typography: [newSettings], // eslint-disable-line
 			});
 			model.save();
 

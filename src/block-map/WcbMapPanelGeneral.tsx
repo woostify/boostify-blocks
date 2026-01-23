@@ -11,7 +11,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 import _ from "lodash";
 
-export interface WCB_MAP_PANEL_GENERAL {
+export interface BCB_MAP_PANEL_GENERAL {
 	height: HasResponsive<string>;
 	zoom: number;
 	language: string;
@@ -19,7 +19,7 @@ export interface WCB_MAP_PANEL_GENERAL {
 	placeQuery: string;
 }
 
-export const WCB_MAP_PANEL_GENERAL_DEMO: WCB_MAP_PANEL_GENERAL = {
+export const BCB_MAP_PANEL_GENERAL_DEMO: BCB_MAP_PANEL_GENERAL = {
 	height: { Desktop: "400px" },
 	zoom: 13,
 	mapTypeId: "roadmap",
@@ -29,12 +29,12 @@ export const WCB_MAP_PANEL_GENERAL_DEMO: WCB_MAP_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_MAP_PANEL_GENERAL;
-	setAttr__: (data: WCB_MAP_PANEL_GENERAL) => void;
+	panelData: BCB_MAP_PANEL_GENERAL;
+	setAttr__: (data: BCB_MAP_PANEL_GENERAL) => void;
 }
 
 const WcbMapPanelGeneral: FC<Props> = ({
-	panelData = WCB_MAP_PANEL_GENERAL_DEMO,
+	panelData = BCB_MAP_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -49,7 +49,7 @@ const WcbMapPanelGeneral: FC<Props> = ({
 		deviceType
 	);
 
-	const debounce_fun = _.debounce(function (data: WCB_MAP_PANEL_GENERAL) {
+	const debounce_fun = _.debounce(function (data: BCB_MAP_PANEL_GENERAL) {
 		console.log("Function debounced after 300ms!", { data });
 		setAttr__(data);
 	}, 500);
@@ -87,7 +87,7 @@ const WcbMapPanelGeneral: FC<Props> = ({
 					onChange={(data) => {
 						setAttr__({
 							...panelData,
-							mapTypeId: data as WCB_MAP_PANEL_GENERAL["mapTypeId"],
+							mapTypeId: data as BCB_MAP_PANEL_GENERAL["mapTypeId"],
 						});
 					}}
 				/>

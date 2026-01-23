@@ -10,14 +10,14 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_TEXAREA_PANEL_GENERAL {
+export interface BCB_TEXAREA_PANEL_GENERAL {
 	autocomplete: MyInputAutocomplete;
 	placeholder: string;
 	isRequired: boolean;
 	rows: number;
 }
 
-export const WCB_TEXAREA_PANEL_GENERAL_DEMO: WCB_TEXAREA_PANEL_GENERAL = {
+export const BCB_TEXAREA_PANEL_GENERAL_DEMO: BCB_TEXAREA_PANEL_GENERAL = {
 	autocomplete: "off",
 	isRequired: false,
 	placeholder: "Textarea",
@@ -26,12 +26,12 @@ export const WCB_TEXAREA_PANEL_GENERAL_DEMO: WCB_TEXAREA_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEXAREA_PANEL_GENERAL;
-	setAttr__: (data: WCB_TEXAREA_PANEL_GENERAL) => void;
+	panelData: BCB_TEXAREA_PANEL_GENERAL;
+	setAttr__: (data: BCB_TEXAREA_PANEL_GENERAL) => void;
 }
 
 const WcbTextareaPanelGeneral: FC<Props> = ({
-	panelData = WCB_TEXAREA_PANEL_GENERAL_DEMO,
+	panelData = BCB_TEXAREA_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

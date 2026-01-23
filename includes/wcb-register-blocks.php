@@ -3,31 +3,31 @@
 //============================================================================================================================================
 // START REGISTER GUTENBERG BLOCKS
 //======================================================================================================================================
-require WCB_PATH . 'includes/wcb-render-callback-for-block-posts-grid.php';
-require WCB_PATH . 'includes/wcb-render-callback-for-block-products.php';
-require WCB_PATH . 'includes/wcb-ajax-for-block-form.php';
+require BCB_PATH . 'includes/wcb-render-callback-for-block-posts-grid.php';
+require BCB_PATH . 'includes/wcb-render-callback-for-block-products.php';
+require BCB_PATH . 'includes/wcb-ajax-for-block-form.php';
 // 
 
-add_action('init', 'wcb_create_blocks_gutenberg_init');
-if (!function_exists("wcb_create_blocks_gutenberg_init")) {
-    function wcb_create_blocks_gutenberg_init()
+add_action('init', 'bcb_create_blocks_gutenberg_init');
+if (!function_exists("bcb_create_blocks_gutenberg_init")) {
+    function bcb_create_blocks_gutenberg_init()
     {
-        $wcb_blocks_enable_disable = get_option('wcb_blocks_enable_disable_options') ?? [];
+        $bcb_blocks_enable_disable = get_option('bcb_blocks_enable_disable_options') ?? [];
 
         // common - not deactive
         register_block_type(
-            WCB_BUILD_PATH . '/block-common-css',
+            BCB_BUILD_PATH . '/block-common-css',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/____toolbar-patterns',
+            BCB_BUILD_PATH . '/____toolbar-patterns',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-container',
+            BCB_BUILD_PATH . '/block-container',
             [
-                "render_callback"     => "wcb_block_container__renderCallback",
-                "ancestor"     => (($wcb_blocks_enable_disable['wcb/container'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_container__renderCallback",
+                "ancestor"     => (($bcb_blocks_enable_disable['wcb/container'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -35,7 +35,7 @@ if (!function_exists("wcb_create_blocks_gutenberg_init")) {
 
         if (defined('WC_PLUGIN_FILE')) :
             register_block_type(
-                WCB_BUILD_PATH . '/block-products',
+                BCB_BUILD_PATH . '/block-products',
                 [
                     'attributes'      => array(
                         'uniqueId'    => array(
@@ -98,24 +98,24 @@ if (!function_exists("wcb_create_blocks_gutenberg_init")) {
                         ),
 
                     ),
-                    "render_callback"     => "wcb_block_products__renderCallback",
-                    "ancestor"            => (($wcb_blocks_enable_disable['wcb/products'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                    "render_callback"     => "bcb_block_products__renderCallback",
+                    "ancestor"            => (($bcb_blocks_enable_disable['wcb/products'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                     "view_script_handles" => []
                 ]
             );
         endif;
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-heading',
+            BCB_BUILD_PATH . '/block-heading',
             [
-                "render_callback"     => "wcb_block_heading__renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/heading'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_heading__renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/heading'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-posts-grid',
+            BCB_BUILD_PATH . '/block-posts-grid',
             [
                 'attributes'      => array(
                     'uniqueId'    => array(
@@ -181,8 +181,8 @@ if (!function_exists("wcb_create_blocks_gutenberg_init")) {
                     ),
 
                 ),
-                "render_callback"     => "wcb_block_posts_grid__renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/posts-grid'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_posts_grid__renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/posts-grid'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
 
             ]
@@ -190,229 +190,229 @@ if (!function_exists("wcb_create_blocks_gutenberg_init")) {
 
         // FORM
         register_block_type(
-            WCB_BUILD_PATH . '/block-form',
+            BCB_BUILD_PATH . '/block-form',
             [
-                "render_callback"     => "wcb_block_form__renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/form'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_form__renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/form'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         // FORM CHILD BLOCKS
         register_block_type(
-            WCB_BUILD_PATH . '/block-input',
+            BCB_BUILD_PATH . '/block-input',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-email',
+            BCB_BUILD_PATH . '/block-email',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-phone',
+            BCB_BUILD_PATH . '/block-phone',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-textarea',
+            BCB_BUILD_PATH . '/block-textarea',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-checkbox',
+            BCB_BUILD_PATH . '/block-checkbox',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-radio',
+            BCB_BUILD_PATH . '/block-radio',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-url',
+            BCB_BUILD_PATH . '/block-url',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-select',
+            BCB_BUILD_PATH . '/block-select',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-toggle',
+            BCB_BUILD_PATH . '/block-toggle',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-date',
+            BCB_BUILD_PATH . '/block-date',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-accept',
+            BCB_BUILD_PATH . '/block-accept',
             []
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-hidden',
+            BCB_BUILD_PATH . '/block-hidden',
             []
         );
         // END FORM CHILD BLOCKS
 
         // 
         register_block_type(
-            WCB_BUILD_PATH . '/block-testimonials',
+            BCB_BUILD_PATH . '/block-testimonials',
             [
-                "render_callback"     => "wcb_block_testimonials__renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/testimonials'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_testimonials__renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/testimonials'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-buttons',
+            BCB_BUILD_PATH . '/block-buttons',
             [
-                "render_callback"     => "wcb_block_buttons__renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/buttons'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_buttons__renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/buttons'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
         // BUTTON CHILD
         register_block_type(
-            WCB_BUILD_PATH . '/block-button',
+            BCB_BUILD_PATH . '/block-button',
             [
-                "render_callback"     => "wcb_block_button__renderCallback",
+                "render_callback"     => "bcb_block_button__renderCallback",
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-cta',
+            BCB_BUILD_PATH . '/block-cta',
             [
-                "render_callback"     => "wcb_block_cta_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/cta'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_cta_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/cta'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-faq',
+            BCB_BUILD_PATH . '/block-faq',
             [
-                "render_callback"     => "wcb_block_faq_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/faq'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_faq_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/faq'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
         // FAQ CHILD
         register_block_type(
-            WCB_BUILD_PATH . '/block-faq-child',
+            BCB_BUILD_PATH . '/block-faq-child',
             [
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-team',
+            BCB_BUILD_PATH . '/block-team',
             [
-                "render_callback"     => "wcb_block_team_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/team'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_team_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/team'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-icon-box',
+            BCB_BUILD_PATH . '/block-icon-box',
             [
-                "render_callback"     => "wcb_block_icon_box_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon-box'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_icon_box_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/icon-box'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-image',
+            BCB_BUILD_PATH . '/block-image',
             [
-                "render_callback"     => "wcb_block_image_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/image'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_image_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/image'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-map',
+            BCB_BUILD_PATH . '/block-map',
             [
-                "render_callback"     => "wcb_block_map_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/map'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_map_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/map'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         // tabs blocks
         register_block_type(
-            WCB_BUILD_PATH . '/block-tabs',
+            BCB_BUILD_PATH . '/block-tabs',
             [
-                "render_callback"     => "wcb_block_tabs_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/tabs'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_tabs_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/tabs'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
         register_block_type(
-            WCB_BUILD_PATH . '/block-tab-child',
+            BCB_BUILD_PATH . '/block-tab-child',
             [
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-slider',
+            BCB_BUILD_PATH . '/block-slider',
             [
-                "render_callback"     => "wcb_block_slider_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/slider'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_slider_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/slider'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
  
         // SLIDER CHILD
         register_block_type(
-            WCB_BUILD_PATH . '/block-slider-child',
+            BCB_BUILD_PATH . '/block-slider-child',
             [
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-countdown',
+            BCB_BUILD_PATH . '/block-countdown',
             [
-                "render_callback"     => "wcb_block_countdown_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/countdown'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_countdown_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/countdown'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-counter',
+            BCB_BUILD_PATH . '/block-counter',
             [
-                "render_callback"     => "wcb_block_counter_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/counter'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_counter_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/counter'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         register_block_type(
-            WCB_BUILD_PATH . '/block-icon-list',
+            BCB_BUILD_PATH . '/block-icon-list',
             [
-                "render_callback"     => "wcb_block_icon_list_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon-list'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_icon_list_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/icon-list'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
 
         // ICON CHILD
         register_block_type(
-            WCB_BUILD_PATH . '/block-icon-child',
+            BCB_BUILD_PATH . '/block-icon-child',
             [
-                "render_callback"     => "wcb_block_icon_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled')  ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_icon_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled')  ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
         
         // ICON BLOCK
         register_block_type(
-            WCB_BUILD_PATH . '/block-icon',
+            BCB_BUILD_PATH . '/block-icon',
             [
-                "render_callback"     => "wcb_block_icon_renderCallback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled') ? null : WCB_UNIQUE_NAME,
+                "render_callback"     => "bcb_block_icon_renderCallback",
+                "ancestor"              => (($bcb_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled') ? null : BCB_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );

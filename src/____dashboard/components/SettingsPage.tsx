@@ -9,7 +9,7 @@ import SettingsPageEditorOptions from "./SettingsPageEditorOptions";
 import toast, { Toaster } from "react-hot-toast";
 import SettingsPageTemplates from "./SettingsPageTemplates";
 import SettingsPageBlockSettings from "./SettingsPageBlockSettings";
-import { Wcb_theme_layout_global_settings } from "../../types";
+import { Bcb_theme_layout_global_settings } from "../../types";
 
 interface Tab {
 	name: string;
@@ -42,7 +42,7 @@ const TABS: Tab[] = [
 
 interface Props {
 	initData: typeof window.wcbGlobalVariables;
-	themeLayoutGlobal?: Wcb_theme_layout_global_settings;
+	themeLayoutGlobal?: Bcb_theme_layout_global_settings;
 }
 
 const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
@@ -80,7 +80,7 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 		};
 		setAllSettings(newSettings);
 		const data = {
-			action: "wcb_dashboard_blocks_update_settings",
+			action: "bcb_dashboard_blocks_update_settings",
 			settings: newSettings,
 		};
 

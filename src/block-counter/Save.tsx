@@ -60,7 +60,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
         return (
             <div
-                className="wcb-icon-box__progress-circle-wrap"
+                className="bcb-icon-box__progress-circle-wrap"
                 style={{
                     position: "relative",
                     width: `${radius * 2}px`,
@@ -86,7 +86,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         cy={radius}
                     />
                     <circle
-                        className="wcb-icon-box__progress-circle"
+                        className="bcb-icon-box__progress-circle"
                         stroke="#007cba"
                         fill="transparent"
                         strokeWidth={stroke}
@@ -113,15 +113,15 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                     }}
                 >
                     {general_icon.enableIcon && (
-                        <div className="wcb-icon-box__icon">
+                        <div className="bcb-icon-box__icon">
                             <MyIconFull icon={general_icon.icon} />
                         </div>
                     )}
-                    {/* <div className="wcb-icon-box__number-inside">
+                    {/* <div className="bcb-icon-box__number-inside">
                         {formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
                         {general_layout.numberSuffix}
                     </div> */}
-                    <div className="wcb-icon-box__number">
+                    <div className="bcb-icon-box__number">
 						<span>{general_layout.numberPrefix}</span>
 						{formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
 						<span>{general_layout.numberSuffix}</span>
@@ -131,7 +131,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                             tagName="div"
                             value={description}
                             placeholder={__("Description of box ...")}
-                            className="wcb-icon-box__description"
+                            className="bcb-icon-box__description"
                             style={{
                                 wordBreak: "break-word",
                                 maxWidth: "100%",
@@ -147,7 +147,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
     const renderProgressBar = () => {
         return (
             <div
-                className="wcb-icon-box__progress-bar-wrap"
+                className="bcb-icon-box__progress-bar-wrap"
                 data-start-number={general_layout?.startNumber || "0"}
                 data-end-number={general_layout?.endNumber || "0"}
                 data-animation-duration={general_layout?.animationDuration || "1500"}
@@ -165,7 +165,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                     }}
                 >
                     <div
-                        className="wcb-icon-box__progress-bar"
+                        className="bcb-icon-box__progress-bar"
                         style={{
                             width: "0%", // Initially set to 0% progress
                             height: "100%",
@@ -178,11 +178,11 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                             paddingRight: "4px",
                         }}
                     >
-                    <div className="wcb-icon-box__number" style={{
+                    <div className="bcb-icon-box__number" style={{
 							marginBottom: "0px"
 						}}>
 							<span>{general_layout.numberPrefix}</span>
-                            <span className="wcb-icon-box__number-value">0</span>
+                            <span className="bcb-icon-box__number-value">0</span>
 							<span>{general_layout.numberSuffix}</span>
 						</div>
                     </div>
@@ -192,7 +192,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         tagName="div"
                         value={description}
                         placeholder={__("Description of box ...")}
-                        className="wcb-icon-box__description"
+                        className="bcb-icon-box__description"
                         style={{
                             wordBreak: "break-word",
                             maxWidth: "100%",
@@ -207,8 +207,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         return (
             <>
                 {general_icon.enableIcon && general_layout.type !== "circle" && general_layout.type !== "bar" && (
-                    <div className="wcb-icon-box__icon-wrap">
-                        <div className="wcb-icon-box__icon">
+                    <div className="bcb-icon-box__icon-wrap">
+                        <div className="bcb-icon-box__icon">
                             <MyIconFull icon={general_icon.icon} />
                         </div>
                     </div>
@@ -218,7 +218,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
     };
 
     const wrapBlockProps = useBlockProps.save({
-        className: "wcb-counter-box__wrap",
+        className: "bcb-counter-box__wrap",
     });
 
     return (
@@ -233,13 +233,13 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 renderIcon()}
 
             {/* CHILD CONTENT */}
-            <div className="wcb-icon-box__content">
-                <div className="wcb-icon-box__content-title-wrap">
+            <div className="bcb-icon-box__content">
+                <div className="bcb-icon-box__content-title-wrap">
                     {general_icon.iconPosition === "leftOfTitle" &&
                         general_layout.type !== "circle" &&
                         general_layout.type !== "bar" &&
                         renderIcon()}
-                    <div className="wcb-icon-box__content-title">
+                    <div className="bcb-icon-box__content-title">
                         {general_layout.enablePrefix &&
                             general_layout.type !== "circle" &&
                             general_layout.type !== "bar" && (
@@ -247,7 +247,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                                     tagName="div"
                                     value={designation}
                                     placeholder={__("Designation...")}
-                                    className="wcb-icon-box__designation"
+                                    className="bcb-icon-box__designation"
                                 />
                             )}
 
@@ -255,14 +255,14 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                             general_layout.type !== "circle" &&
                             general_layout.type !== "bar" && (
                                 <div 
-									className="wcb-icon-box__number"
+									className="bcb-icon-box__number"
 									data-start-number={general_layout?.startNumber || "0"}
                                     data-end-number={general_layout?.endNumber || "0"}
                                     data-animation-duration={general_layout?.animationDuration || "1500"}
                                     data-decimal-places={general_layout?.decimalNumber || "0"}
 								>
                                     <span>{general_layout.numberPrefix}</span>
-									<span className="wcb-icon-box__number-value">
+									<span className="bcb-icon-box__number-value">
 										{formatNumber(general_layout.startNumber, general_layout?.decimalNumber)}
 									</span>
                                     <span>{general_layout.numberSuffix}</span>
@@ -286,7 +286,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                             tagName="div"
                             value={description}
                             placeholder={__("Description...")}
-                            className="wcb-icon-box__description"
+                            className="bcb-icon-box__description"
                         />
                     )}
 

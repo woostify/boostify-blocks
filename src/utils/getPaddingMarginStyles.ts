@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import { DimensionSettings } from "../components/controls/MyDimensionsControl/types";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import getValueFromAttrsResponsives from "./getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
 
@@ -12,7 +12,7 @@ interface Params {
 }
 
 const getPaddingMarginStyles = ({ className, padding, margin }: Params) => {
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const {
 		value_Desktop: margin_Desktop,

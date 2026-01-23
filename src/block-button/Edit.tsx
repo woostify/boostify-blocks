@@ -17,34 +17,34 @@ import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import WcbButtonPanelPreset from "./WcbButtonPanelPreset";
 import WcbButtonPanelContent, {
-	WCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR,
-	WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON,
-	WCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon,
-	WCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons,
+	BCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR,
+	BCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON,
+	BCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon,
+	BCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons,
 } from "./WcbButtonPanelContent";
 import WcbButtonPanel_StyleText, {
-	WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
-	WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY,
-	WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE,
+	BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
+	BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY,
+	BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE,
 } from "./WcbButtonPanel_StyleText";
 import WcbButtonPanel_StyleIcon, {
-	WCB_BUTTON_PANEL_STYLE_ICON_DEMO,
+	BCB_BUTTON_PANEL_STYLE_ICON_DEMO,
 } from "./WcbButtonPanel_StyleIcon";
 import WcbButtonPanel_StyleBackground, {
-	WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY,
-	WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_SECONDARY,
-	WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
+	BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY,
+	BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_SECONDARY,
+	BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
 } from "./WcbButtonPanel_StyleBackground";
 import WcbButtonPanel_StyleBorder, {
-	WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_PRIMARY,
-	WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_ROUND,
-	WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_SECONDARY,
-	WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_WHITE,
+	BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_PRIMARY,
+	BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_ROUND,
+	BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_SECONDARY,
+	BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_WHITE,
 } from "./WcbButtonPanel_StyleBorder";
 import WcbButtonPanel_StyleBoxshadow from "./WcbButtonPanel_StyleBoxshadow";
 import WcbButtonPanel_StyleDemension, {
-	WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR,
-	WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY,
+	BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR,
+	BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY,
 } from "./WcbButtonPanel_StyleDimension";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
@@ -156,38 +156,38 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								setAttributes({
 									style_text:
 										preset === "white"
-											? WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE
+											? BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE
 											: preset === "secondary"
-											? WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY
-											: WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
-									style_icon: WCB_BUTTON_PANEL_STYLE_ICON_DEMO,
+											? BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY
+											: BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
+									style_icon: BCB_BUTTON_PANEL_STYLE_ICON_DEMO,
 									style_background:
 										preset === "white"
-											? WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE
+											? BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE
 											: preset === "secondary"
-											? WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_SECONDARY
-											: WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY,
+											? BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_SECONDARY
+											: BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY,
 									style_border:
 										preset === "white"
-											? WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_WHITE
+											? BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_WHITE
 											: preset === "secondary"
-											? WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_SECONDARY
+											? BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_SECONDARY
 											: preset === "round" || preset === "circular"
-											? WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_ROUND
-											: WCB_BUTTON_PANEL_STYLE_BORDER_DEMO_PRIMARY,
-									// style_boxshadow: WCB_BUTTON_PANEL_STYLE_BOXSHADOW_DEMO,
+											? BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_ROUND
+											: BCB_BUTTON_PANEL_STYLE_BORDER_DEMO_PRIMARY,
+									// style_boxshadow: BCB_BUTTON_PANEL_STYLE_BOXSHADOW_DEMO,
 									style_dimension:
 										preset === "circular"
-											? WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR
-											: WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY,
+											? BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR
+											: BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY,
 									general_content:
 										preset === "circular"
-											? WCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR
+											? BCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR
 											: preset === "with_leading_icon"
-											? WCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon
+											? BCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon
 											: preset === "with_trailing_icons"
-											? WCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons
-											: WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON,
+											? BCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons
+											: BCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON,
 								});
 							}}
 							panelData={general_preset}
@@ -352,7 +352,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-button__wrap ${uniqueId} `}
+				className={`${wrapBlockProps?.className} bcb-button__wrap ${uniqueId} `}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}

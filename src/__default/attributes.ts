@@ -28,7 +28,7 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	heading: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-heading__heading",
+		selector: ".bcb-heading__heading",
 		default: "Clik to edit HEADING",
 	},
 

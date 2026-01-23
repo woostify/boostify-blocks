@@ -25,9 +25,9 @@ import {
 	MyBorderControlData,
 } from "../components/controls/MyBorderControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
-import { WCB_TAGS_PANEL_GENERAL } from "./WcbTabsPanelGeneral";
+import { BCB_TAGS_PANEL_GENERAL } from "./WcbTabsPanelGeneral";
 
-export interface WCB_TABS_PANEL_STYLE_TITLE {
+export interface BCB_TABS_PANEL_STYLE_TITLE {
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
 	color: string;
@@ -40,7 +40,7 @@ export interface WCB_TABS_PANEL_STYLE_TITLE {
 	borderActive: MyBorderControlData;
 }
 
-export const WCB_TABS_PANEL_STYLE_TITLE_DEMO: WCB_TABS_PANEL_STYLE_TITLE = {
+export const BCB_TABS_PANEL_STYLE_TITLE_DEMO: BCB_TABS_PANEL_STYLE_TITLE = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	border: MY_BORDER_CONTROL_DEMO,
 	borderActive: MY_BORDER_CONTROL_DEMO,
@@ -72,13 +72,13 @@ export const PANEL_COLOR_TABS: {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TABS_PANEL_STYLE_TITLE;
-	setAttr__: (data: WCB_TABS_PANEL_STYLE_TITLE) => void;
-	style: WCB_TAGS_PANEL_GENERAL["style"];
+	panelData: BCB_TABS_PANEL_STYLE_TITLE;
+	setAttr__: (data: BCB_TABS_PANEL_STYLE_TITLE) => void;
+	style: BCB_TAGS_PANEL_GENERAL["style"];
 }
 
 const WcbTabsPanel_StyleTitle: FC<Props> = ({
-	panelData = WCB_TABS_PANEL_STYLE_TITLE_DEMO,
+	panelData = BCB_TABS_PANEL_STYLE_TITLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

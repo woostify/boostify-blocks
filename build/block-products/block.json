@@ -4,8 +4,8 @@
   "name": "wcb/products",
   "version": "0.1.0",
   "title": "Products",
-  "category": "wcb-blocks",
-  "icon": "- wcb-block-editor-block-icon lni lni-restaurant",
+  "category": "bcb-blocks",
+  "icon": "- bcb-block-editor-block-icon lni lni-restaurant",
   "description": "Display products from your store in a grid layout.",
   "supports": {
     "html": false,
@@ -14,7 +14,7 @@
       "wide"
     ]
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "bcb-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

@@ -13,7 +13,7 @@ const VideoBackgroundByBgControl: FC<Props> = ({ videoData, bgType }) => {
 	}
 	const SRC = videoData?.mediaUrl || "";
 	return (
-		<div className="wcb-VideoBackgroundByBgControl">
+		<div className="bcb-VideoBackgroundByBgControl">
 			<video
 				autoPlay
 				loop

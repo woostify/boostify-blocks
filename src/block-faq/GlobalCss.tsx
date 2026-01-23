@@ -4,7 +4,7 @@ import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import getBackgroundColorGradientStyles from "../utils/getBackgroundColorGradientStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import getBorderStyles from "../utils/getBorderStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
@@ -28,17 +28,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-faq__inner`;
-	const FAQ_CHILD_WRAP = `${WRAP_CLASSNAME} .wcb-faq-child__wrap`;
-	const FAQ_CHILD_QUESTION = `${WRAP_CLASSNAME} .wcb-faq-child__question`;
-	const FAQ_CHILD_QUESTION_TEXT = `${WRAP_CLASSNAME} .wcb-faq-child__question-text`;
-	const FAQ_CHILD_ANSWER = `${WRAP_CLASSNAME} .wcb-faq-child__answer`;
-	const FAQ_CHILD_ANSWER_TEXT = `${WRAP_CLASSNAME} .wcb-faq-child__answer-text`;
-	const FAQ_CHILD_ICON = `${WRAP_CLASSNAME} .wcb-faq-child__icon`;
-	const FAQ_CHILD_SEPARATOR = `${WRAP_CLASSNAME} .wcb-faq-child__separator`;
+	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .bcb-faq__inner`;
+	const FAQ_CHILD_WRAP = `${WRAP_CLASSNAME} .bcb-faq-child__wrap`;
+	const FAQ_CHILD_QUESTION = `${WRAP_CLASSNAME} .bcb-faq-child__question`;
+	const FAQ_CHILD_QUESTION_TEXT = `${WRAP_CLASSNAME} .bcb-faq-child__question-text`;
+	const FAQ_CHILD_ANSWER = `${WRAP_CLASSNAME} .bcb-faq-child__answer`;
+	const FAQ_CHILD_ANSWER_TEXT = `${WRAP_CLASSNAME} .bcb-faq-child__answer-text`;
+	const FAQ_CHILD_ICON = `${WRAP_CLASSNAME} .bcb-faq-child__icon`;
+	const FAQ_CHILD_SEPARATOR = `${WRAP_CLASSNAME} .bcb-faq-child__separator`;
 
 	//
 
@@ -174,7 +174,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 								backgroundColor: style_question.backgroundColorHover,
 							},
 						},
-						[`${WRAP_CLASSNAME} .wcb-faq-child__wrap.active .wcb-faq-child__question`]:
+						[`${WRAP_CLASSNAME} .bcb-faq-child__wrap.active .bcb-faq-child__question`]:
 							{
 								color: style_question.colorHover,
 								backgroundColor: style_question.backgroundColorHover,
@@ -197,8 +197,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 						[FAQ_CHILD_ICON]: {
 							color: style_icon.color,
 						},
-						[`${WRAP_CLASSNAME} .wcb-faq-child__wrap.active`]: {
-							".wcb-faq-child__icon": {
+						[`${WRAP_CLASSNAME} .bcb-faq-child__wrap.active`]: {
+							".bcb-faq-child__icon": {
 								color: style_icon.activeColor,
 							},
 						},

@@ -16,7 +16,7 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_FORM_PANEL_GENERAL {
+export interface BCB_FORM_PANEL_GENERAL {
 	textAlignment: HasResponsive<TextAlignment>;
 	isShowLabel: boolean;
 	formStyle: "simple" | "underline" | "solid";
@@ -26,7 +26,7 @@ export interface WCB_FORM_PANEL_GENERAL {
 	successRedirectUrl: string;
 }
 
-export const WCB_FORM_PANEL_GENERAL_DEMO: WCB_FORM_PANEL_GENERAL = {
+export const BCB_FORM_PANEL_GENERAL_DEMO: BCB_FORM_PANEL_GENERAL = {
 	textAlignment: { Desktop: "left" },
 	isShowLabel: true,
 	formStyle: "simple",
@@ -39,12 +39,12 @@ export const WCB_FORM_PANEL_GENERAL_DEMO: WCB_FORM_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_GENERAL;
-	setAttr__: (data: WCB_FORM_PANEL_GENERAL) => void;
+	panelData: BCB_FORM_PANEL_GENERAL;
+	setAttr__: (data: BCB_FORM_PANEL_GENERAL) => void;
 }
 
 const WcbFormPanelGeneral: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_GENERAL_DEMO,
+	panelData = BCB_FORM_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -67,13 +67,13 @@ const WcbFormPanelGeneral: FC<Props> = ({
 	);
 
 	//
-	const form_style_plans: MyRadioItem<WCB_FORM_PANEL_GENERAL["formStyle"]>[] = [
+	const form_style_plans: MyRadioItem<BCB_FORM_PANEL_GENERAL["formStyle"]>[] = [
 		{ name: "simple", icon: "Simple" },
 		{ name: "underline", icon: "Underline" },
 		{ name: "solid", icon: "Solid" },
 	];
 	const confirmationType_plans: MyRadioItem<
-		WCB_FORM_PANEL_GENERAL["confirmationType"]
+		BCB_FORM_PANEL_GENERAL["confirmationType"]
 	>[] = [
 		{ name: "message", icon: "Message" },
 		{ name: "url-text", icon: "Url text" },

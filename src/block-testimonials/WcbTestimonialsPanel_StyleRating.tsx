@@ -9,24 +9,24 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export const WCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_RATING =
+export const BCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_RATING =
 	{
 		color: "#FF8B00",
 		marginBottom: { Desktop: "0.25rem" },
 	};
-export interface WCB_TESTIMONIALS_PANEL_STYLE_RATING {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_RATING {
 	marginBottom: HasResponsive<string>;
 	color: string;
 }
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_RATING;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_RATING) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_RATING;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_RATING) => void;
 }
 
 const WcbTestimonialsPanel_StyleRating: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

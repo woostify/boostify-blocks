@@ -13,8 +13,8 @@ import { QueryBlockAttributes } from "./types";
 // console.log(999, { allSettings: getAllWcSettings() });
 
 //
-export const PRODUCT_TITLE_ID = "WCB_PRODUCT_TITLE_ID";
-export const PRODUCT_TEMPLATE_ID = "WCB_PRODUCT_TEMPLATE_ID";
+export const PRODUCT_TITLE_ID = "BCB_PRODUCT_TITLE_ID";
+export const PRODUCT_TEMPLATE_ID = "BCB_PRODUCT_TEMPLATE_ID";
 
 // export function getSetting<T>(
 // 	name: string,

@@ -127,7 +127,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-map__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-map__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}
@@ -140,7 +140,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				<GlobalCss {...WcbAttrsForSave()} />
 
 				{/* CHILD CONTENT  */}
-				<div className="wcb-map__inner">
+				<div className="bcb-map__inner">
 					<iframe
 						width="100%"
 						height="100%"

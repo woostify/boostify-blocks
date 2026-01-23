@@ -17,5 +17,5 @@ export function initCountDown(
 		'timerEndAction': cd_date[1],
 		'redirectURL': ''
 	}
-	WCBCountdown.changeEndTime(`.${props.uniqueId} .wcb-countdown__content`, data);
+	WCBCountdown.changeEndTime(`.${props.uniqueId} .bcb-countdown__content`, data);
 }

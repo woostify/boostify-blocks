@@ -10,14 +10,14 @@ import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import HelpText from "../components/controls/HelpText";
 
-export interface WCB_TABS_PANEL_STYLE_ICON {
+export interface BCB_TABS_PANEL_STYLE_ICON {
 	size: HasResponsive<number>;
 	color: string;
 	activeColor: string;
 	colGap: HasResponsive<string>;
 }
 
-export const WCB_TABS_PANEL_STYLE_ICON_DEMO: WCB_TABS_PANEL_STYLE_ICON = {
+export const BCB_TABS_PANEL_STYLE_ICON_DEMO: BCB_TABS_PANEL_STYLE_ICON = {
 	size: { Desktop: 20 },
 	color: "",
 	activeColor: "",
@@ -26,12 +26,12 @@ export const WCB_TABS_PANEL_STYLE_ICON_DEMO: WCB_TABS_PANEL_STYLE_ICON = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TABS_PANEL_STYLE_ICON;
-	setAttr__: (data: WCB_TABS_PANEL_STYLE_ICON) => void;
+	panelData: BCB_TABS_PANEL_STYLE_ICON;
+	setAttr__: (data: BCB_TABS_PANEL_STYLE_ICON) => void;
 }
 
 const WcbTabsPanel_StyleIcon: FC<Props> = ({
-	panelData = WCB_TABS_PANEL_STYLE_ICON_DEMO,
+	panelData = BCB_TABS_PANEL_STYLE_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

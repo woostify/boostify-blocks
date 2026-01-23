@@ -25,8 +25,8 @@ Markdown parsed.
 * Tất cả các khối đã build/ sắp build sẽ cần nằm trong 1 thư mục có tiền tố "block-" ở đầu. Có thể xem các khối có sẵn trong thư mục src.
 * Đã có sẵn một khốI mặc định __default: Đây là khối boilepelate, khi bạn muốn tạo một khối mới bạn chỉ cần copy khối naỳ và sửa lại tên, ...
 * Thư mục block-common-css là một khối đăng ký để tải CSS chung cho các khối (TAILWINDCSS,...), và import lazy các file JavaScript frontend.(Đọc thêm ở dưới)
-* Thư mục __dashboard: Nơi xây dựng trang dashboard Wcb-settings
-* Thư mục __toolbar-partterns: Nơi xây dựng nút WCB-partterns ở trong editor
+* Thư mục __dashboard: Nơi xây dựng trang dashboard Bcb-settings
+* Thư mục __toolbar-partterns: Nơi xây dựng nút BCB-partterns ở trong editor
 * Thư mục components: Chứa các components control settings để setings trong các khối. Nên giữ cho các control components này càng đơn giản càng tốt, 
 không nên lạm dụng mà để nhiều Fields setting, điều này sẽ khiến nhiều khôi bị ảnh hưởng khi có bất kỳ sự thay đổi.  
 * hooks/ utils ...
@@ -40,11 +40,11 @@ Tôi import lazy tất cả các file JavaScript vào  block-common-css/Frontend
 
 ***** 3 - Đăng ký khối với WordPress
 ** Sau khi tạo khối, chạy lệnh "run start" để phát triển, khi đó trong thu mục build sẽ build ra 1 thư mục có cùng tên với tên block, 
-bây giờ bạn cần phải đăng ký khối trong file includes/wcb-register-blocks.php
+bây giờ bạn cần phải đăng ký khối trong file includes/bcb-register-blocks.php
 
 ***** 4 - Cách cấu trúc và viết mã PHP
 * Dự án sự dụng khá ít PHP, vì vậy PHP chủ yếu sẽ được viết theo phong cách HƯỚNG CHỨC NĂNG (FUNCTIONAL),
-có nghĩa là không sử dụng Class, toàn bộ là các PHP functions. Tất cả các file PHP sẽ đều được import vào file woostifyblocks.php  
+có nghĩa là không sử dụng Class, toàn bộ là các PHP functions. Tất cả các file PHP sẽ đều được import vào file boostify-blocks.php  
 Bạn có thể thấy toàn bộ file PHP đều nằm trong thư mục /includes
 
 

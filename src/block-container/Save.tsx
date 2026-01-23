@@ -55,7 +55,7 @@ export default function save({
 
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-container__wrap " + containerClassName,
+		className: "bcb-container__wrap " + containerClassName,
 	});
 	//
 	const blockProps = useBlockProps.save();
@@ -79,7 +79,7 @@ export default function save({
 				/>
 				<div
 					children={innerBlocksProps.children}
-					className="wcb-container__inner"
+					className="bcb-container__inner"
 					style={GAPS_VARIABLES}
 				/>
 			</>

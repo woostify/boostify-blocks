@@ -13,12 +13,12 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-select__wrap " + UNIQUE_NAME,
+		className: "bcb-select__wrap " + UNIQUE_NAME,
 	});
 
 	const renderSelect = () => {
 		return (
-			<select className="wcb-select__select" name={UNIQUE_NAME}>
+			<select className="bcb-select__select" name={UNIQUE_NAME}>
 				{(attributes.options || []).map((item, index) => (
 					<option key={index + "-" + item.value} value={item.value}>
 						{item.label}

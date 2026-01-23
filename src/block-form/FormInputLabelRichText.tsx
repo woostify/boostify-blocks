@@ -18,7 +18,7 @@ export const FormInputLabelRichText: FC<Props> = ({
 		<RichText
 			onChange={onChange}
 			value={value}
-			className={`wcb-form__label ${className} ${isRequired ? "required" : ""}`}
+			className={`bcb-form__label ${className} ${isRequired ? "required" : ""}`}
 			tagName="span"
 		/>
 	);

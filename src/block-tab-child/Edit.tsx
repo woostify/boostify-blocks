@@ -10,8 +10,8 @@ import { WcbAttrs } from "./attributes";
 import { EditProps } from "../block-container/Edit";
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
-import { WCB_FAQ_PANEL_ICON } from "../block-faq/WcbFaqPanelIcon";
-import { WCB_FAQ_PANEL_GENERAL } from "../block-faq/WcbFaqPanelGeneral";
+import { BCB_FAQ_PANEL_ICON } from "../block-faq/WcbFaqPanelIcon";
+import { BCB_FAQ_PANEL_GENERAL } from "../block-faq/WcbFaqPanelGeneral";
 import { useSelect } from "@wordpress/data";
 import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
@@ -20,8 +20,8 @@ const Edit: FC<
 	EditProps<
 		WcbAttrs,
 		{
-			"wcb/faq_icon"?: WCB_FAQ_PANEL_ICON;
-			"wcb/faq_general"?: WCB_FAQ_PANEL_GENERAL;
+			"wcb/faq_icon"?: BCB_FAQ_PANEL_ICON;
+			"wcb/faq_general"?: BCB_FAQ_PANEL_GENERAL;
 		}
 	>
 > = (props) => {
@@ -68,7 +68,7 @@ const Edit: FC<
 		],
 	];
 	const blockProps = useBlockProps({
-		className: `wcb-tab-child__inner`,
+		className: `bcb-tab-child__inner`,
 	});
 
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
@@ -86,7 +86,7 @@ const Edit: FC<
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-tab-child__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-tab-child__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				<div {...innerBlocksProps} id={undefined} />

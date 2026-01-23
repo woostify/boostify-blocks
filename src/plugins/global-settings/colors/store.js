@@ -46,7 +46,7 @@ domReady(() => {
 		const settings = new models.Settings();
 
 		settings.fetch().then((response) => {
-			const { wcb_global_colors: _wcbColors } = response;
+			const { bcb_global_colors: _wcbColors } = response;
 
 			let wcbColors = head(_wcbColors) || [];
 
@@ -65,7 +65,7 @@ domReady(() => {
 			) {
 				dispatch('core/block-editor').updateSettings({ colors });
 				wcbColors = colors.filter(({ slug }) =>
-					slug.match(/^wcb-global-color/)
+					slug.match(/^bcb-global-color/)
 				);
 				wcbColorSlugs = wcbColors.map((color) => color.slug);
 			} else {

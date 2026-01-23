@@ -8,22 +8,22 @@ import {
 import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 
-export interface WCB_CHECKBOX_PANEL_GENERAL {
+export interface BCB_CHECKBOX_PANEL_GENERAL {
 	isRequired: boolean;
 }
 
-export const WCB_CHECKBOX_PANEL_GENERAL_DEMO: WCB_CHECKBOX_PANEL_GENERAL = {
+export const BCB_CHECKBOX_PANEL_GENERAL_DEMO: BCB_CHECKBOX_PANEL_GENERAL = {
 	isRequired: false,
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_CHECKBOX_PANEL_GENERAL;
-	setAttr__: (data: WCB_CHECKBOX_PANEL_GENERAL) => void;
+	panelData: BCB_CHECKBOX_PANEL_GENERAL;
+	setAttr__: (data: BCB_CHECKBOX_PANEL_GENERAL) => void;
 }
 
 const WcbCheckboxPanelGeneral: FC<Props> = ({
-	panelData = WCB_CHECKBOX_PANEL_GENERAL_DEMO,
+	panelData = BCB_CHECKBOX_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

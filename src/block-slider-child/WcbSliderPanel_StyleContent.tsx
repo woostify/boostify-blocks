@@ -18,14 +18,14 @@ import {
 import MyTextAlignControl, {
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
 
-export interface WCB_SLIDER_PANEL_STYLE_CONTENT {
+export interface BCB_SLIDER_PANEL_STYLE_CONTENT {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 	textAlignment: HasResponsive<TextAlignment>;
 }
 
-export const WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO: WCB_SLIDER_PANEL_STYLE_CONTENT =
+export const BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO: BCB_SLIDER_PANEL_STYLE_CONTENT =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -38,12 +38,12 @@ export const WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO: WCB_SLIDER_PANEL_STYLE_CONTENT
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_STYLE_CONTENT;
-	setAttr__: (data: WCB_SLIDER_PANEL_STYLE_CONTENT) => void;
+	panelData: BCB_SLIDER_PANEL_STYLE_CONTENT;
+	setAttr__: (data: BCB_SLIDER_PANEL_STYLE_CONTENT) => void;
 }
 
 const WcbSlidersPanel_StyleContent: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
+	panelData = BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

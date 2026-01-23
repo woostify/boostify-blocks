@@ -57,7 +57,7 @@ const WcbPluginSidebar = (props) => {
 		};
 
 		const data = {
-			action: "wcb_dashboard_blocks_update_settings",
+			action: "bcb_dashboard_blocks_update_settings",
 			settings: newSettings,
 		};
 		setUpdateStatus("loading");

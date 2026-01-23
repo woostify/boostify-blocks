@@ -32,12 +32,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 	} = attrs;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const ITEM_CLASSNAME = `${WRAP_CLASSNAME} .wcb-testimonials__item`;
-	const ITEM_NAME = `${WRAP_CLASSNAME} .wcb-testimonials__item-name`;
-	const ITEM_CONTENT = `${WRAP_CLASSNAME} .wcb-testimonials__item-content`;
-	const ITEM_COMPANY = `${WRAP_CLASSNAME} .wcb-testimonials__item-company`;
-	const ITEM_IMAGE = `${WRAP_CLASSNAME} .wcb-testimonials__item-image`;
-	const ITEM_RATING = `${WRAP_CLASSNAME} .wcb-testimonials__item-rating`;
+	const ITEM_CLASSNAME = `${WRAP_CLASSNAME} .bcb-testimonials__item`;
+	const ITEM_NAME = `${WRAP_CLASSNAME} .bcb-testimonials__item-name`;
+	const ITEM_CONTENT = `${WRAP_CLASSNAME} .bcb-testimonials__item-content`;
+	const ITEM_COMPANY = `${WRAP_CLASSNAME} .bcb-testimonials__item-company`;
+	const ITEM_IMAGE = `${WRAP_CLASSNAME} .bcb-testimonials__item-image`;
+	const ITEM_RATING = `${WRAP_CLASSNAME} .bcb-testimonials__item-rating`;
 	const SLICK_ARROW = `${WRAP_CLASSNAME} .slick-arrow`;
 	const SLICK_DOTS = `${WRAP_CLASSNAME} .slick-dots`;
 
@@ -160,11 +160,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 						prefix: "marginBottom",
 					}),
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME} .wcb-testimonials__item-inner`,
+						className: `${WRAP_CLASSNAME} .bcb-testimonials__item-inner`,
 						padding: style_dimension.padding,
 					}),
 					getStyleBackground({
-						className: `${ITEM_CLASSNAME} .wcb-testimonials__item-background`,
+						className: `${ITEM_CLASSNAME} .bcb-testimonials__item-background`,
 						styles_background: style_backgroundAndBorder.background,
 					}),
 				]}

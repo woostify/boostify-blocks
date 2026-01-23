@@ -4,7 +4,7 @@
   "name": "create-block-wcbxxyyyzz/wcbxxyyyzz-blocks-toolbar-patterns",
   "version": "0.1.0",
   "title": "Block Common CSS",
-  "category": "wcb-blocks",
+  "category": "bcb-blocks",
   "parent": [
     "wcb/create-block-toolbar-patterns"
   ],
@@ -13,7 +13,7 @@
   "supports": {
     "html": false
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "bcb-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

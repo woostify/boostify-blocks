@@ -11,14 +11,14 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_SLIDER_PANEL_GENERAL {
+export interface BCB_SLIDER_PANEL_GENERAL {
 	textAlignment: HasResponsive<TextAlignment>;
 	numberofTestimonials: number;
 	columns: HasResponsive<number>;
 	colGap: HasResponsive<string>;
 }
 
-export const WCB_SLIDER_PANEL_GENERAL_DEMO: WCB_SLIDER_PANEL_GENERAL =
+export const BCB_SLIDER_PANEL_GENERAL_DEMO: BCB_SLIDER_PANEL_GENERAL =
 	{
 		textAlignment: { Desktop: "center" },
 		numberofTestimonials: 3,
@@ -28,12 +28,12 @@ export const WCB_SLIDER_PANEL_GENERAL_DEMO: WCB_SLIDER_PANEL_GENERAL =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_GENERAL;
-	setAttr__: (data: WCB_SLIDER_PANEL_GENERAL) => void;
+	panelData: BCB_SLIDER_PANEL_GENERAL;
+	setAttr__: (data: BCB_SLIDER_PANEL_GENERAL) => void;
 }
 
 const WcbSlidersPanelGeneral: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_GENERAL_DEMO,
+	panelData = BCB_SLIDER_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

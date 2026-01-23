@@ -47,8 +47,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		return (
 			<>
 				{general_icon.enableIcon && (
-					<div className="wcb-icon-list__icon-wrap">
-						<div className="wcb-icon-list__icon">
+					<div className="bcb-icon-list__icon-wrap">
+						<div className="bcb-icon-list__icon">
 							<MyIconFull icon={general_icon.icon} />
 						</div>
 					</div>
@@ -63,8 +63,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			return null;
 		}
 		return (
-			<div className="wcb-icon-list__separator-wrap">
-				<div className="wcb-icon-list__separator"></div>
+			<div className="bcb-icon-list__separator-wrap">
+				<div className="bcb-icon-list__separator"></div>
 			</div>
 		);
 	};
@@ -73,7 +73,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-icon-list__wrap",
+		className: "bcb-icon-list__wrap",
 	});
 	//
 
@@ -85,16 +85,16 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		>
 
 			{/* CHILD CONTENT  */}
-			<div className="wcb-icon-list__content">
-				<div className="wcb-icon-list__content-title-wrap">
+			<div className="bcb-icon-list__content">
+				<div className="bcb-icon-list__content-title-wrap">
 					{general_icon.iconPosition === "leftOfTitle" && renderIcon()}
-					<div className="wcb-icon-list__content-title">
+					<div className="bcb-icon-list__content-title">
 						{general_layout.enablePrefix && (
 							<RichText.Content
 								tagName="div"
 								value={designation}
 								placeholder={__("Designation...")}
-								className="wcb-icon-list__designation"
+								className="bcb-icon-list__designation"
 							/>
 						)}
 
@@ -105,7 +105,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 								tagName={HeadingTag}
 								value={heading}
 								placeholder={__("Heading...")}
-								className="wcb-icon-list__heading"
+								className="bcb-icon-list__heading"
 							/>
 						)}
 					</div>

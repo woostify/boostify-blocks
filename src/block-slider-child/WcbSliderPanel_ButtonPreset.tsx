@@ -20,8 +20,8 @@ import { get } from "lodash";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 
-export interface WCB_SLIDER_BUTTON_PANEL_PRESET {
-	preset: "wcb-button-1" | "wcb-button-2" | "wcb-button-3" | "wcb-button-4" | "wcb-button-5" | "wcb-button-6" | "wcb-button-7" | "wcb-button-8" | "";
+export interface BCB_SLIDER_BUTTON_PANEL_PRESET {
+	preset: "bcb-button-1" | "bcb-button-2" | "bcb-button-3" | "bcb-button-4" | "bcb-button-5" | "bcb-button-6" | "bcb-button-7" | "bcb-button-8" | "";
 	enableIcon: boolean;
 	icon: MyIcon;
 	link: string;
@@ -32,8 +32,8 @@ export interface WCB_SLIDER_BUTTON_PANEL_PRESET {
 	iconSpacing: HasResponsive<string>;
 }
 
-export const WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO: WCB_SLIDER_BUTTON_PANEL_PRESET = {
-	preset: "wcb-button-1",
+export const BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO: BCB_SLIDER_BUTTON_PANEL_PRESET = {
+	preset: "bcb-button-1",
 	enableIcon: false,
 	icon: {
 		iconName: "lni-arrow-right",
@@ -47,12 +47,12 @@ export const WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO: WCB_SLIDER_BUTTON_PANEL_PRESET
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_BUTTON_PANEL_PRESET;
-	setAttr__: (data: WCB_SLIDER_BUTTON_PANEL_PRESET) => void;
+	panelData: BCB_SLIDER_BUTTON_PANEL_PRESET;
+	setAttr__: (data: BCB_SLIDER_BUTTON_PANEL_PRESET) => void;
 }
 
 const WcbSliderButtonPanelPreset: FC<Props> = ({
-	panelData = WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
+	panelData = BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -60,8 +60,8 @@ const WcbSliderButtonPanelPreset: FC<Props> = ({
 }) => {
 	const { enableIcon, icon, openInNewWindow, link, iconPosition, iconSpacing } = panelData;
 
-	const setPreset = (preset: WCB_SLIDER_BUTTON_PANEL_PRESET["preset"]) => {
-		if (preset === "wcb-button-4" || preset === "wcb-button-8") {
+	const setPreset = (preset: BCB_SLIDER_BUTTON_PANEL_PRESET["preset"]) => {
+		if (preset === "bcb-button-4" || preset === "bcb-button-8") {
 			setAttr__({
 				...panelData,
 				enableIcon: true,
@@ -70,7 +70,7 @@ const WcbSliderButtonPanelPreset: FC<Props> = ({
 		setAttr__({ ...panelData, preset });
 	};
 
-	const ICON_POSITION_DEMO: Option<WCB_SLIDER_BUTTON_PANEL_PRESET["iconPosition"]>[] = [
+	const ICON_POSITION_DEMO: Option<BCB_SLIDER_BUTTON_PANEL_PRESET["iconPosition"]>[] = [
 		{ value: "beforeTitle", label: "Before Text" },
 		{ value: "afterTitle", label: "After Text" },
 	];
@@ -87,7 +87,7 @@ const WcbSliderButtonPanelPreset: FC<Props> = ({
 			<RadioGroup value={panelData.preset} onChange={setPreset}>
 				<RadioGroup.Label className="relative flex items-center justify-between ">
 					<span>{__("Select Preset", "wcb")}</span>
-					<ResetButton onClick={() => setPreset(WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO.preset)} />
+					<ResetButton onClick={() => setPreset(BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO.preset)} />
 				</RadioGroup.Label>
 				<div className={"relative p-3 bg-slate-50 mt-3 rounded-lg"}>
 					<div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))]"></div>
@@ -133,13 +133,13 @@ const WcbSliderButtonPanelPreset: FC<Props> = ({
 						if (checked === true) {
 							setAttr__({ 
 								...panelData, 
-								preset: "wcb-button-4",
+								preset: "bcb-button-4",
 								enableIcon: checked
 							});
 						} else {
 							setAttr__({ 
 								...panelData, 
-								preset: "wcb-button-1",
+								preset: "bcb-button-1",
 								enableIcon: checked
 							});
 						}
@@ -204,10 +204,10 @@ const WcbSliderButtonPanelPreset: FC<Props> = ({
 							options={ICON_POSITION_DEMO}
 							value={iconPosition}
 							onChange={(value) => {
-								let newData: WCB_SLIDER_BUTTON_PANEL_PRESET = {
+								let newData: BCB_SLIDER_BUTTON_PANEL_PRESET = {
 									...panelData,
 									iconPosition:
-										value as WCB_SLIDER_BUTTON_PANEL_PRESET["iconPosition"],
+										value as BCB_SLIDER_BUTTON_PANEL_PRESET["iconPosition"],
 								};
 								setAttr__(newData);
 							}}

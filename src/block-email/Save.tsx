@@ -12,7 +12,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const UNIQUE_NAME = converUniqueId(uniqueId, "email");
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-email__wrap",
+		className: "bcb-email__wrap",
 	});
 
 	return (

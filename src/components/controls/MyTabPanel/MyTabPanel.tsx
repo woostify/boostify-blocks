@@ -14,7 +14,7 @@ const MyTabPanel: FC<Props> = ({
 }) => {
 	return (
 		<TabPanel
-			className={`wcb-bodyControls__panel ${className}`}
+			className={`bcb-bodyControls__panel ${className}`}
 			activeClass={activeClass}
 			initialTabName={initialTabName}
 			tabs={tabs}

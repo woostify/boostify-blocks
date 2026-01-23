@@ -8,7 +8,7 @@ import SelecIcon, {
 } from "../components/controls/SelectIcon/SelecIcon";
 import { Option } from "../types";
 
-export interface WCB_ICON_LIST_PANEL_ICON {
+export interface BCB_ICON_LIST_PANEL_ICON {
 	enableIcon: boolean;
 	icon: MyIcon;
 	iconPosition: "leftOfTitle" | "rightOfTitle"
@@ -16,7 +16,7 @@ export interface WCB_ICON_LIST_PANEL_ICON {
 	verticalAlignment: "top" | "middle";
 }
 
-export const WCB_ICON_LIST_PANEL_ICON_DEMO: WCB_ICON_LIST_PANEL_ICON = {
+export const BCB_ICON_LIST_PANEL_ICON_DEMO: BCB_ICON_LIST_PANEL_ICON = {
 	enableIcon: true,
 	iconPosition: "leftOfTitle",
 	icon: {
@@ -29,12 +29,12 @@ export const WCB_ICON_LIST_PANEL_ICON_DEMO: WCB_ICON_LIST_PANEL_ICON = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_LIST_PANEL_ICON;
-	setAttr__: (data: WCB_ICON_LIST_PANEL_ICON) => void;
+	panelData: BCB_ICON_LIST_PANEL_ICON;
+	setAttr__: (data: BCB_ICON_LIST_PANEL_ICON) => void;
 }
 
 const WcbIconListPanelIcon: FC<Props> = ({
-	panelData = WCB_ICON_LIST_PANEL_ICON_DEMO,
+	panelData = BCB_ICON_LIST_PANEL_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -43,7 +43,7 @@ const WcbIconListPanelIcon: FC<Props> = ({
 	const { enableIcon, icon, iconPosition } =
 		panelData;
 	//
-	const PLANS_DEMO: Option<WCB_ICON_LIST_PANEL_ICON["iconPosition"]>[] = [
+	const PLANS_DEMO: Option<BCB_ICON_LIST_PANEL_ICON["iconPosition"]>[] = [
 		{ value: "leftOfTitle", label: "Left Of Title" },
 		{ value: "rightOfTitle", label: "Right Of Title" },
 	];
@@ -71,10 +71,10 @@ const WcbIconListPanelIcon: FC<Props> = ({
 					options={PLANS_DEMO}
 					value={iconPosition}
 					onChange={(value) => {
-						let newData: WCB_ICON_LIST_PANEL_ICON = {
+						let newData: BCB_ICON_LIST_PANEL_ICON = {
 							...panelData,
 							iconPosition:
-								value as WCB_ICON_LIST_PANEL_ICON["iconPosition"],
+								value as BCB_ICON_LIST_PANEL_ICON["iconPosition"],
 						};
 						setAttr__(newData);
 					}}

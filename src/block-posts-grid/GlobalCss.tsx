@@ -6,7 +6,7 @@ import getBoxShadowStyles from "../utils/getBoxShadowStyles";
 import getCssProperyHasResponsive from "../utils/getCssProperyHasResponsive";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbBlockPostsGridAttrs } from "./attributes";
 
 interface Props extends Required<WcbBlockPostsGridAttrs> {}
@@ -37,7 +37,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .wcbPostCard`;
@@ -69,7 +69,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 		return {
 			[`${WRAP_CLASSNAME}`]: {
-				".wcb-posts-grid__list-posts": {
+				".bcb-posts-grid__list-posts": {
 					display: "grid",
 					gridTemplateColumns: `repeat(${numberOfColumn_mobile}, minmax(0, 1fr))`,
 					rowGap: rowGap_mobile,
@@ -98,7 +98,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			cssProperty: style_pagination.marginTop,
 		});
 		return {
-			[`${WRAP_CLASSNAME} .wcb-posts-grid__pagination`]: {
+			[`${WRAP_CLASSNAME} .bcb-posts-grid__pagination`]: {
 				marginTop: marginTop_mobile,
 				justifyContent: style_pagination.justifyContent,
 				[`.page-numbers`]: {
@@ -311,14 +311,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global styles={getDivWrapStyles_Pagination()} />
 					<Global
 						styles={getBorderStyles({
-							className: `${WRAP_CLASSNAME} .wcb-posts-grid__pagination .page-numbers`,
+							className: `${WRAP_CLASSNAME} .bcb-posts-grid__pagination .page-numbers`,
 							border: style_pagination.mainStyle.Normal.border,
 							isWithRadius: true,
 						})}
 					/>
 					<Global
 						styles={getBorderStyles({
-							className: `${WRAP_CLASSNAME} .wcb-posts-grid__pagination .page-numbers.current`,
+							className: `${WRAP_CLASSNAME} .bcb-posts-grid__pagination .page-numbers.current`,
 							border: style_pagination.mainStyle.Active.border,
 							isWithRadius: true,
 						})}

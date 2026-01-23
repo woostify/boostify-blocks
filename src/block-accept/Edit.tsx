@@ -72,7 +72,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// <CacheProvider value={myCache}>
 		<div
 			{...wrapBlockProps}
-			className={`${wrapBlockProps?.className} wcb-accept__wrap ${uniqueId}`}
+			className={`${wrapBlockProps?.className} bcb-accept__wrap ${uniqueId}`}
 			data-uniqueid={uniqueId}
 		>
 			{/* CONTROL SETTINGS */}
@@ -89,21 +89,21 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						href={general_general.linkHref}
 						target={general_general.openInNewTab ? "_blank" : "_self"}
 						rel="noopener noreferrer"
-						className="wcb-accept__link"
+						className="bcb-accept__link"
 					>
 						{general_general.linkLabel}
 					</a>
 				</div>
 			)}
-			<label className="wcb-checkbox__option">
+			<label className="bcb-checkbox__option">
 				<input
 					type="checkbox"
-					className="wcb-checkbox__option-input"
+					className="bcb-checkbox__option-input"
 					required={general_general.isRequired}
 					name={UNIQUE_NAME}
 				/>
 				<span
-					className={`wcb-checkbox__option-label ${
+					className={`bcb-checkbox__option-label ${
 						general_general.isRequired ? "required" : ""
 					}`}
 				>

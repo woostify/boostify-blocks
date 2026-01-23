@@ -19,9 +19,9 @@ function animateCounterElement(counterBlock: Element) {
     counterBlock.setAttribute("data-animated", "true");
 
     // Target circle, bar, and number wrappers within this specific counter block
-    const circleWrappers = counterBlock.querySelectorAll(".wcb-icon-box__progress-circle-wrap");
-    const barWrappers = counterBlock.querySelectorAll(".wcb-icon-box__progress-bar-wrap");
-    const numberWrappers = counterBlock.querySelectorAll(".wcb-icon-box__number[data-start-number]");
+    const circleWrappers = counterBlock.querySelectorAll(".bcb-icon-box__progress-circle-wrap");
+    const barWrappers = counterBlock.querySelectorAll(".bcb-icon-box__progress-bar-wrap");
+    const numberWrappers = counterBlock.querySelectorAll(".bcb-icon-box__number[data-start-number]");
 
     // Animate circles
     circleWrappers.forEach((wrapper) => {
@@ -32,8 +32,8 @@ function animateCounterElement(counterBlock: Element) {
         const numberPrefix = wrapper.getAttribute("data-number-prefix") || "";
         const numberSuffix = wrapper.getAttribute("data-number-suffix") || "";
 
-        const circle = wrapper.querySelector(".wcb-icon-box__progress-circle") as SVGCircleElement;
-        const numberDisplay = wrapper.querySelector(".wcb-icon-box__number") as HTMLElement;
+        const circle = wrapper.querySelector(".bcb-icon-box__progress-circle") as SVGCircleElement;
+        const numberDisplay = wrapper.querySelector(".bcb-icon-box__number") as HTMLElement;
 
         if (!circle || !numberDisplay) return;
 
@@ -79,9 +79,9 @@ function animateCounterElement(counterBlock: Element) {
         const numberPrefix = wrapper.getAttribute("data-number-prefix") || "";
         const numberSuffix = wrapper.getAttribute("data-number-suffix") || "";
 
-        const bar = wrapper.querySelector(".wcb-icon-box__progress-bar") as HTMLElement;
-        const numberDisplay = wrapper.querySelector(".wcb-icon-box__number") as HTMLElement;
-        const numberValue = wrapper.querySelector(".wcb-icon-box__number-value") as HTMLElement;
+        const bar = wrapper.querySelector(".bcb-icon-box__progress-bar") as HTMLElement;
+        const numberDisplay = wrapper.querySelector(".bcb-icon-box__number") as HTMLElement;
+        const numberValue = wrapper.querySelector(".bcb-icon-box__number-value") as HTMLElement;
 
         if (!bar || !numberDisplay || !numberValue) return;
 
@@ -128,7 +128,7 @@ function animateCounterElement(counterBlock: Element) {
         const animationDuration = parseInt(wrapper.getAttribute("data-animation-duration") || "1500");
         const decimalPlaces = parseInt(wrapper.getAttribute("data-decimal-places") || "0");
 
-        const numberDisplay = wrapper.querySelector(".wcb-icon-box__number-value") as HTMLElement;
+        const numberDisplay = wrapper.querySelector(".bcb-icon-box__number-value") as HTMLElement;
 
         if (!numberDisplay) return;
 
@@ -161,7 +161,7 @@ export function animateProgressElements() {
     // Function to initialize when DOM is ready
     const initializeAnimation = () => {
         // Use specific selector for counter blocks
-        const counterBlocks = document.querySelectorAll(".wcb-counter-box__wrap:not(.wcb-update-div)");
+        const counterBlocks = document.querySelectorAll(".bcb-counter-box__wrap:not(.bcb-update-div)");
         
         // Check if IntersectionObserver is supported
         if (!window.IntersectionObserver) {

@@ -7,18 +7,18 @@ import { converClientIdToUniqueClass } from "../utils/converUniqueIdToAnphaKey";
 import _ from "lodash";
 
 // Import default values from style panels
-import { WCB_SLIDER_PANEL_STYLE_NAME_DEMO } from "./WcbSliderPanel_StyleName";
-import { WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO } from "./WcbSliderPanel_StyleContent";
-import { WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO } from "./WcbSliderPanel_StyleBackground";
-import { WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "./WcbSliderPanel_StyleDimension";
-import { WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO, DEFAULT_MY_TOP_ICON } from "./WcbSliderPanel_StyleImage";
-import { WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO } from "./WcbSliderPanel_ButtonPreset";
-import { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "./WcbSliderPanel_LayoutPreset";
+import { BCB_SLIDER_PANEL_STYLE_NAME_DEMO } from "./WcbSliderPanel_StyleName";
+import { BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO } from "./WcbSliderPanel_StyleContent";
+import { BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO } from "./WcbSliderPanel_StyleBackground";
+import { BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "./WcbSliderPanel_StyleDimension";
+import { BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO, DEFAULT_MY_TOP_ICON } from "./WcbSliderPanel_StyleImage";
+import { BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO } from "./WcbSliderPanel_ButtonPreset";
+import { BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "./WcbSliderPanel_LayoutPreset";
 import { RESPONSIVE_CONDITON_DEMO } from "../components/controls/MyResponsiveConditionControl/MyResponsiveConditionControl";
 import { Z_INDEX_DEMO } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectControl/MyMotionEffectControl";
 import { INIT_IMAGE_DATA_UPLOAD_DEMO } from "../components/controls/MyBackgroundControl/MyBackgroundControl";
-import { WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO } from "./WcbSliderPanel_StyleCallToActionButton";
+import { BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO } from "./WcbSliderPanel_StyleCallToActionButton";
 import MyIconFull from "../components/controls/MyIconFull";
 
 export interface WcbAttrsForSave extends WcbAttrs {
@@ -59,14 +59,14 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 		callToAction,
 		image: image || INIT_IMAGE_DATA_UPLOAD_DEMO,
 		rating: rating || 5,
-		style_image: style_image || WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
-		style_callToActionButton: style_callToActionButton || WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO,
-		style_buttonPreset: style_buttonPreset || WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
-		style_layoutPreset: style_layoutPreset || WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO,
-		style_backgroundAndBorder: style_backgroundAndBorder || WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
-		style_content: style_content || WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
-		style_dimension: style_dimension || WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
-		style_name: style_name || WCB_SLIDER_PANEL_STYLE_NAME_DEMO,
+		style_image: style_image || BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
+		style_callToActionButton: style_callToActionButton || BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO,
+		style_buttonPreset: style_buttonPreset || BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
+		style_layoutPreset: style_layoutPreset || BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO,
+		style_backgroundAndBorder: style_backgroundAndBorder || BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
+		style_content: style_content || BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
+		style_dimension: style_dimension || BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
+		style_name: style_name || BCB_SLIDER_PANEL_STYLE_NAME_DEMO,
 		advance_responsiveCondition: advance_responsiveCondition || RESPONSIVE_CONDITON_DEMO,
 		advance_zIndex: advance_zIndex || Z_INDEX_DEMO,
 		advance_motionEffect: advance_motionEffect || MY_MOTION_EFFECT_DEMO,
@@ -75,9 +75,9 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 
 	const renderImage = () => {
 		return style_image && style_image.isShowImage && style_image.image?.mediaId ? (
-			<div className="wcb-slider-child__content-image">
+			<div className="bcb-slider-child__content-image">
 				<img
-					className="wcb-slider-child__image"
+					className="bcb-slider-child__image"
 					src={style_image.image.mediaUrl}
 					alt=""
 				/>
@@ -89,15 +89,15 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 		return (
 			<MyIcon
 				icon={style_buttonPreset?.enableIcon ? (style_buttonPreset?.icon?.iconName ?? "lni-arrow-right") : "lni-arrow-right"}
-				className="wcb-slider-child__btn-text ml-2"
+				className="bcb-slider-child__btn-text ml-2"
 			/>
 		);
 	};
 
 	const renderIconTop = () => {
 		return (
-			<div className="wcb-top__icon-wrap flex justify-center">
-				<div className="wcb-top__icon">
+			<div className="bcb-top__icon-wrap flex justify-center">
+				<div className="bcb-top__icon">
 					<MyIconFull icon={style_image?.enableIcon && style_image?.icon ? style_image.icon : DEFAULT_MY_TOP_ICON} />
 				</div>
 			</div>
@@ -106,25 +106,25 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 
 	const renderCallToAction = (preset: any, enableIcon: any, iconPosition: any) => {
 		return (
-			<div className="wcb-slider-child__btn-inner">
+			<div className="bcb-slider-child__btn-inner">
 				{
 					iconPosition === 'beforeTitle' && 
 					(
-						preset === 'wcb-button-4' || 
-						preset === 'wcb-button-8' || 
+						preset === 'bcb-button-4' || 
+						preset === 'bcb-button-8' || 
 						enableIcon
 					) ? renderIconButton() : null
 				}
 				<RichText.Content
 					tagName="div"
 					value={callToAction}
-					className="wcb-slider-child__btn-text wcb-slider-child__btn_spacing"
+					className="bcb-slider-child__btn-text bcb-slider-child__btn_spacing"
 				/>
 				{
 					iconPosition === 'afterTitle' && 
 					(
-						preset === 'wcb-button-4' || 
-						preset === 'wcb-button-8' || 
+						preset === 'bcb-button-4' || 
+						preset === 'bcb-button-8' || 
 						enableIcon
 					) ? renderIconButton() : null
 				}
@@ -134,35 +134,35 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 
 	const renderCallToActionLink = (preset: any, enableIcon: any, iconPosition: any, link: any, openInNewWindow: any) => {
 		return (
-			<div className="wcb-slider-child__btn-inner">
+			<div className="bcb-slider-child__btn-inner">
 				<a
-					className="wcb-slider-child__btn-inner__link"
+					className="bcb-slider-child__btn-inner__link"
 					href={link}
 					target={openInNewWindow ? "_blank" : "_self"}
 				>
 					{
 						iconPosition === 'beforeTitle' && 
 						(
-							preset === 'wcb-button-4' || 
-							preset === 'wcb-button-8' || 
+							preset === 'bcb-button-4' || 
+							preset === 'bcb-button-8' || 
 							enableIcon
 						) ? renderIconButton() : null
 					}
 					<RichText.Content
 						tagName="div"
 						value={callToAction}
-						className="wcb-slider-child__btn-text wcb-slider-child__btn_spacing"
+						className="bcb-slider-child__btn-text bcb-slider-child__btn_spacing"
 					/>
 					{
 						iconPosition === 'afterTitle' && 
 						(
-							preset === 'wcb-button-4' || 
-							preset === 'wcb-button-8' || 
+							preset === 'bcb-button-4' || 
+							preset === 'bcb-button-8' || 
 							enableIcon
 						) ? renderIconButton() : null
 					}
 					{/* {
-						preset === 'wcb-button-4' || preset === 'wcb-button-8' || enableIcon ?
+						preset === 'bcb-button-4' || preset === 'bcb-button-8' || enableIcon ?
 						renderIconButton() : null
 					} */}
 				</a>
@@ -172,7 +172,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 
 	// Helper functions to determine icon rendering
 	const shouldRenderIconTop = () => {
-		const isStandardLayout = ["wcb-layout-1", "wcb-layout-2", "wcb-layout-3"].includes(style_layoutPreset?.preset || "");
+		const isStandardLayout = ["bcb-layout-1", "bcb-layout-2", "bcb-layout-3"].includes(style_layoutPreset?.preset || "");
 		const isCustomLayout = !style_layoutPreset?.preset;
 		
 		if (isStandardLayout) {
@@ -189,7 +189,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 	};
 
 	const shouldRenderIconBelowTitle = () => {
-		const isStandardLayout = ["wcb-layout-1", "wcb-layout-2", "wcb-layout-3"].includes(style_layoutPreset?.preset || "");
+		const isStandardLayout = ["bcb-layout-1", "bcb-layout-2", "bcb-layout-3"].includes(style_layoutPreset?.preset || "");
 		const isCustomLayout = !style_layoutPreset?.preset;
 		
 		// Both standard and custom layouts: show below title when enabled with bellowTitle position
@@ -201,29 +201,29 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 	// Clean structure for slick + frontend CSS system with correct timing
 	return (
 		<div 
-			// className="wcb-slider__item"
+			// className="bcb-slider__item"
 		>
-			{/* <div className="wcb-slider__item-background"> */}
-				{/* <div className="wcb-slider__item-wrap-inner"> */}
-					{/* <div className="wcb-slider__item-inner"> */}
+			{/* <div className="bcb-slider__item-background"> */}
+				{/* <div className="bcb-slider__item-wrap-inner"> */}
+					{/* <div className="bcb-slider__item-inner"> */}
 						{/* Child content wrapper with frontend CSS system - timing is now fixed */}
 						<div 
-							className={`wcb-slider-child__wrap ${uniqueId} ${uniqueCssClass} wcb-update-div`}
+							className={`bcb-slider-child__wrap ${uniqueId} ${uniqueCssClass} bcb-update-div`}
 							data-uniqueid={uniqueId}
 							data-clientid={clientID || 'not-available'}
 						>
 							{/* Frontend CSS injection elements */}
-							<div data-wcb-global-styles={uniqueId}></div>
-							<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
+							<div data-bcb-global-styles={uniqueId}></div>
+							<pre data-bcb-block-attrs={uniqueId} style={{ display: "none" }}>
 								{_.escape(JSON.stringify(newAttrForSave))}
 							</pre>
 							
 							{/* Child CSS styles for both edit and save mode */}
 							<GlobalCss {...newAttrForSave} clientID={clientID} />
 							
-							<div className="wcb-slider-child__item">
-								<div className="wcb-slider-child__item-background">
-									<div className="wcb-slider-child__item-wrap-inner">
+							<div className="bcb-slider-child__item">
+								<div className="bcb-slider-child__item-background">
+									<div className="bcb-slider-child__item-wrap-inner">
 										<div className={`${
 											style_image?.iconPosition === "left" || style_image?.iconPosition === "right"
 											? "flex gap-4"
@@ -236,7 +236,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 											renderImage()
 										}
 										{ style_image?.iconPosition === "left" && renderIconTop() }
-										<div className="wcb-slider-child__item-inner">
+										<div className="bcb-slider-child__item-inner">
 											{/* Image */}	
 											{
 												(style_image && 
@@ -247,7 +247,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 											{/* Icon Top */}
 											{shouldRenderIconTop() && renderIconTop()}
 											{/* Name */}
-											<div className={`wcb-slider-child__name`}>
+											<div className={`bcb-slider-child__name`}>
 												<RichText.Content
 													tagName="div"
 													value={name}
@@ -264,18 +264,18 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 											}
 
 											{/* Content */}
-											<div className={`wcb-slider-child__content ${
+											<div className={`bcb-slider-child__content ${
 													(() => {
 														// Check for layout presets and icon positions first (these override text alignment)
-														if (style_layoutPreset?.preset === "wcb-layout-2" ||
-															style_layoutPreset?.preset === "wcb-layout-3" ||
-															style_layoutPreset?.preset === "wcb-layout-5" ||
+														if (style_layoutPreset?.preset === "bcb-layout-2" ||
+															style_layoutPreset?.preset === "bcb-layout-3" ||
+															style_layoutPreset?.preset === "bcb-layout-5" ||
 															style_image?.iconPosition === "left") {
-															return "wcb-slider-child__content_start";
+															return "bcb-slider-child__content_start";
 														}
 														
 														if (style_image?.iconPosition === "right") {
-															return "wcb-slider-child__content_end";
+															return "bcb-slider-child__content_end";
 														}
 													})()
 												}`}>
@@ -287,7 +287,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 
 											{/* Call to Action */}
 											{
-												style_layoutPreset?.preset === "wcb-layout-3" ? null : (
+												style_layoutPreset?.preset === "bcb-layout-3" ? null : (
 													style_buttonPreset?.link ? (
 														// <a
 														// 	style={{

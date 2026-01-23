@@ -183,7 +183,7 @@ const HOCInspectorControls: FC<Props> = ({
 	const renderContent = () => {
 		return (
 			<TabPanel
-				className={`wcb-inspectorControls__panel ${uniqueId}`}
+				className={`bcb-inspectorControls__panel ${uniqueId}`}
 				activeClass="HOCInspectorControls__ative-tab active-tab"
 				tabs={tabs}
 				onSelect={handleChageTab}

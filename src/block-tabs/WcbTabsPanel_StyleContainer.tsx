@@ -18,7 +18,7 @@ import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_TABS_PANEL_STYLE_CONTAINER {
+export interface BCB_TABS_PANEL_STYLE_CONTAINER {
 	background: BackgroundNoImageControlData;
 	border: MyBorderControlData;
 	rowGap: HasResponsive<string>;
@@ -26,7 +26,7 @@ export interface WCB_TABS_PANEL_STYLE_CONTAINER {
 	equalHeight: boolean;
 }
 
-export const WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SIMPLE: WCB_TABS_PANEL_STYLE_CONTAINER =
+export const BCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SIMPLE: BCB_TABS_PANEL_STYLE_CONTAINER =
 	{
 		background: STYLES_BG_NO_IMAGE_DEMO,
 		border: MY_BORDER_CONTROL_DEMO,
@@ -35,7 +35,7 @@ export const WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SIMPLE: WCB_TABS_PANEL_STYLE_CO
 		rowGap: { Desktop: "1rem" },
 	};
 
-export const WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID: WCB_TABS_PANEL_STYLE_CONTAINER =
+export const BCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID: BCB_TABS_PANEL_STYLE_CONTAINER =
 	{
 		background: {
 			...STYLES_BG_NO_IMAGE_DEMO,
@@ -55,16 +55,16 @@ export const WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID: WCB_TABS_PANEL_STYLE_CON
 		colunmGap: { Desktop: "1rem" },
 		rowGap: { Desktop: "1rem" },
 	};
-export const WCB_TABS_PANEL_STYLE_CONTAINER_DEMO =
-	WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SIMPLE;
+export const BCB_TABS_PANEL_STYLE_CONTAINER_DEMO =
+	BCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SIMPLE;
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TABS_PANEL_STYLE_CONTAINER;
-	setAttr__: (data: WCB_TABS_PANEL_STYLE_CONTAINER) => void;
+	panelData: BCB_TABS_PANEL_STYLE_CONTAINER;
+	setAttr__: (data: BCB_TABS_PANEL_STYLE_CONTAINER) => void;
 }
 
 const WcbFaqPanel_StyleContainer: FC<Props> = ({
-	panelData = WCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
+	panelData = BCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

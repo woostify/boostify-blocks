@@ -8,7 +8,7 @@ import SelecIcon, {
 } from "../components/controls/SelectIcon/SelecIcon";
 import { Option } from "../types";
 
-export interface WCB_ICON_BOX_PANEL_ICON {
+export interface BCB_ICON_BOX_PANEL_ICON {
 	enableIcon: boolean;
 	icon: MyIcon;
 	iconPosition:
@@ -22,7 +22,7 @@ export interface WCB_ICON_BOX_PANEL_ICON {
 	verticalAlignment: "top" | "middle";
 }
 
-export const WCB_ICON_BOX_PANEL_ICON_DEMO: WCB_ICON_BOX_PANEL_ICON = {
+export const BCB_ICON_BOX_PANEL_ICON_DEMO: BCB_ICON_BOX_PANEL_ICON = {
 	enableIcon: true,
 	iconPosition: "top",
 	stackOn: "none",
@@ -35,12 +35,12 @@ export const WCB_ICON_BOX_PANEL_ICON_DEMO: WCB_ICON_BOX_PANEL_ICON = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_BOX_PANEL_ICON;
-	setAttr__: (data: WCB_ICON_BOX_PANEL_ICON) => void;
+	panelData: BCB_ICON_BOX_PANEL_ICON;
+	setAttr__: (data: BCB_ICON_BOX_PANEL_ICON) => void;
 }
 
 const WcbIconBoxPanelIcon: FC<Props> = ({
-	panelData = WCB_ICON_BOX_PANEL_ICON_DEMO,
+	panelData = BCB_ICON_BOX_PANEL_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -49,7 +49,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 	const { enableIcon, icon, iconPosition, stackOn, verticalAlignment } =
 		panelData;
 	//
-	const PLANS_DEMO: Option<WCB_ICON_BOX_PANEL_ICON["iconPosition"]>[] = [
+	const PLANS_DEMO: Option<BCB_ICON_BOX_PANEL_ICON["iconPosition"]>[] = [
 		{ value: "top", label: "Top" },
 		{ value: "left", label: "Left" },
 		{ value: "right", label: "Right" },
@@ -57,12 +57,12 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 		{ value: "rightOfTitle", label: "Right Of Title" },
 		{ value: "bellowTitle", label: "Bellow Title" },
 	];
-	const STACK_ON_DEMO: Option<WCB_ICON_BOX_PANEL_ICON["stackOn"]>[] = [
+	const STACK_ON_DEMO: Option<BCB_ICON_BOX_PANEL_ICON["stackOn"]>[] = [
 		{ value: "none", label: "None" },
 		{ value: "tablet", label: "Tablet" },
 		{ value: "mobile", label: "Mobile" },
 	];
-	const VERTICAL_DEMO: Option<WCB_ICON_BOX_PANEL_ICON["verticalAlignment"]>[] =
+	const VERTICAL_DEMO: Option<BCB_ICON_BOX_PANEL_ICON["verticalAlignment"]>[] =
 		[
 			{ value: "top", label: "Top" },
 			{ value: "middle", label: "Middle" },
@@ -102,16 +102,16 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 							options={PLANS_DEMO}
 							value={iconPosition}
 							onChange={(value) => {
-								let newData: WCB_ICON_BOX_PANEL_ICON = {
+								let newData: BCB_ICON_BOX_PANEL_ICON = {
 									...panelData,
 									iconPosition:
-										value as WCB_ICON_BOX_PANEL_ICON["iconPosition"],
+										value as BCB_ICON_BOX_PANEL_ICON["iconPosition"],
 								};
 								if (iconPosition !== "left" && iconPosition !== "right") {
 									newData = {
 										...panelData,
 										iconPosition:
-											value as WCB_ICON_BOX_PANEL_ICON["iconPosition"],
+											value as BCB_ICON_BOX_PANEL_ICON["iconPosition"],
 										stackOn: "none",
 									};
 								}
@@ -127,7 +127,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 								onChange={(value) => {
 									setAttr__({
 										...panelData,
-										stackOn: value as WCB_ICON_BOX_PANEL_ICON["stackOn"],
+										stackOn: value as BCB_ICON_BOX_PANEL_ICON["stackOn"],
 									});
 								}}
 							/>
@@ -144,7 +144,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 									setAttr__({
 										...panelData,
 										verticalAlignment:
-											value as WCB_ICON_BOX_PANEL_ICON["verticalAlignment"],
+											value as BCB_ICON_BOX_PANEL_ICON["verticalAlignment"],
 									});
 								}}
 							/>

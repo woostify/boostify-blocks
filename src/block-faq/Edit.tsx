@@ -18,17 +18,17 @@ import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import WcbFaqPanelGeneral from "./WcbFaqPanelGeneral";
 import WcbFaqPanelIcon from "./WcbFaqPanelIcon";
 import WcbFaqPanel_StyleContainer, {
-	WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
-	WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
+	BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
+	BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
 } from "./WcbFaqPanel_StyleContainer";
 import WcbFaqPanel_StyleQuestion, {
-	WCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
+	BCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
 } from "./WcbFaqPanel_StyleQuestion";
 import WcbFaqPanel_StyleAnswer, {
-	WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+	BCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
 } from "./WcbFaqPanel_StyleAnswer";
 import WcbFaqPanel_StyleIcon, {
-	WCB_FAQ_PANEL_STYLE_ICON_DEMO,
+	BCB_FAQ_PANEL_STYLE_ICON_DEMO,
 } from "./WcbFaqPanel_StyleIcon";
 import WcbFaqPanelPreset from "./WcbFaqPanelPreset";
 import MyCacheProvider from "../components/MyCacheProvider";
@@ -92,10 +92,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 											...general_general,
 											layout: "accordion",
 										},
-										style_container: WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
-										style_answer: WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
-										style_question: WCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
-										style_icon: WCB_FAQ_PANEL_STYLE_ICON_DEMO,
+										style_container: BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
+										style_answer: BCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+										style_question: BCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
+										style_icon: BCB_FAQ_PANEL_STYLE_ICON_DEMO,
 									});
 								}
 								if (data.preset === "carousel-solid") {
@@ -105,10 +105,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 											...general_general,
 											layout: "accordion",
 										},
-										style_container: WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
-										style_answer: WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
-										style_question: WCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
-										style_icon: WCB_FAQ_PANEL_STYLE_ICON_DEMO,
+										style_container: BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
+										style_answer: BCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+										style_question: BCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
+										style_icon: BCB_FAQ_PANEL_STYLE_ICON_DEMO,
 									});
 								}
 								if (data.preset === "grid-simple") {
@@ -118,9 +118,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 											...general_general,
 											layout: "grid",
 										},
-										style_container: WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
-										style_answer: WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
-										style_question: WCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
+										style_container: BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
+										style_answer: BCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+										style_question: BCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
 									});
 								}
 								if (data.preset === "grid-solid") {
@@ -130,9 +130,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 											...general_general,
 											layout: "grid",
 										},
-										style_container: WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
-										style_answer: WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
-										style_question: WCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
+										style_container: BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
+										style_answer: BCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+										style_question: BCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
 									});
 								}
 
@@ -262,7 +262,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	// INNER BLOCK
 	const blockProps = useBlockProps({
-		className: `wcb-faq__inner`,
+		className: `bcb-faq__inner`,
 	});
 
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
@@ -306,7 +306,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-faq__wrap p-2 ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-faq__wrap p-2 ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}

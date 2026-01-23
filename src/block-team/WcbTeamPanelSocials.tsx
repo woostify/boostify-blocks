@@ -21,7 +21,7 @@ export interface TeamSociaItem {
 	url: string;
 }
 
-export interface WCB_TEAM_PANEL_SOCIALS {
+export interface BCB_TEAM_PANEL_SOCIALS {
 	enableSocials: boolean;
 	openLinkInNewTab: boolean;
 	numberOfItems: number;
@@ -36,7 +36,7 @@ export const DEFAULT_MY_TEAM_SOCIAL: TeamSociaItem = {
 	},
 };
 
-export const WCB_TEAM_PANEL_SOCIALS_DEMO: WCB_TEAM_PANEL_SOCIALS = {
+export const BCB_TEAM_PANEL_SOCIALS_DEMO: BCB_TEAM_PANEL_SOCIALS = {
 	enableSocials: true,
 	openLinkInNewTab: false,
 	numberOfItems: 4,
@@ -68,13 +68,13 @@ export const WCB_TEAM_PANEL_SOCIALS_DEMO: WCB_TEAM_PANEL_SOCIALS = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_SOCIALS;
-	setAttr__: (data: WCB_TEAM_PANEL_SOCIALS) => void;
+	panelData: BCB_TEAM_PANEL_SOCIALS;
+	setAttr__: (data: BCB_TEAM_PANEL_SOCIALS) => void;
 }
 type TabsHere = "Settings" | "Socials";
 
 const WcbTeamPanelSocials: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_SOCIALS_DEMO,
+	panelData = BCB_TEAM_PANEL_SOCIALS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -213,7 +213,7 @@ const WcbTeamPanelSocials: FC<Props> = ({
 		>
 			<div className={"space-y-5"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="Settings"
 					tabs={TABS}

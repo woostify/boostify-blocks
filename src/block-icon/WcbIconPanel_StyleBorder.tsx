@@ -7,9 +7,9 @@ import {
 } from "../components/controls/MyBorderControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 
-export interface WCB_ICON_PANEL_STYLE_BORDER extends MyBorderControlData {}
+export interface BCB_ICON_PANEL_STYLE_BORDER extends MyBorderControlData {}
 
-export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND: WCB_ICON_PANEL_STYLE_BORDER =
+export const BCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND: BCB_ICON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		radius: {
@@ -21,7 +21,7 @@ export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND: WCB_ICON_PANEL_STYLE_BORDER
 			},
 		},
 	};
-export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_WHITE: WCB_ICON_PANEL_STYLE_BORDER =
+export const BCB_ICON_PANEL_STYLE_BORDER_DEMO_WHITE: BCB_ICON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		mainSettings: {
@@ -40,7 +40,7 @@ export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_WHITE: WCB_ICON_PANEL_STYLE_BORDER
 		},
 		hoverColor: "",
 	};
-export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_SECONDARY: WCB_ICON_PANEL_STYLE_BORDER =
+export const BCB_ICON_PANEL_STYLE_BORDER_DEMO_SECONDARY: BCB_ICON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		mainSettings: {
@@ -51,7 +51,7 @@ export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_SECONDARY: WCB_ICON_PANEL_STYLE_BO
 		},
 		hoverColor: "#d1d5db",
 	};
-export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_PRIMARY: WCB_ICON_PANEL_STYLE_BORDER =
+export const BCB_ICON_PANEL_STYLE_BORDER_DEMO_PRIMARY: BCB_ICON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		mainSettings: {
@@ -63,17 +63,17 @@ export const WCB_ICON_PANEL_STYLE_BORDER_DEMO_PRIMARY: WCB_ICON_PANEL_STYLE_BORD
 		hoverColor: "#d1d5db",
 	};
 
-export const WCB_ICON_PANEL_STYLE_BORDER_DEMO =
-	WCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND;
+export const BCB_ICON_PANEL_STYLE_BORDER_DEMO =
+	BCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_PANEL_STYLE_BORDER;
-	setAttr__: (data: WCB_ICON_PANEL_STYLE_BORDER) => void;
+	panelData: BCB_ICON_PANEL_STYLE_BORDER;
+	setAttr__: (data: BCB_ICON_PANEL_STYLE_BORDER) => void;
 }
 
 const WcbIconPanel_StyleBorder: FC<Props> = ({
-	panelData = WCB_ICON_PANEL_STYLE_BORDER_DEMO,
+	panelData = BCB_ICON_PANEL_STYLE_BORDER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

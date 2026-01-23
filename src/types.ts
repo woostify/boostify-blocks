@@ -27,7 +27,7 @@ export type AlignmentMatrixControlValue =
 	| "bottom center"
 	| "bottom right";
 
-export interface Wcb_theme_layout_global_settings {
+export interface Bcb_theme_layout_global_settings {
 	contentSize?: string;
 	wideSize?: string;
 	contentSizeOfWoostify?: boolean;

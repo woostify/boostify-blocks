@@ -13,14 +13,14 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 export type BtnGroupAlignment = CSSProperties["justifyContent"];
 export type BtnGroupSizes = "default" | "xs" | "sm" | "md" | "lg" | "xl";
 
-export interface WCB_BUTTONS_PANEL_GENERAL {
+export interface BCB_BUTTONS_PANEL_GENERAL {
 	alignment: HasResponsive<BtnGroupAlignment>;
 	stackOrientation: "none" | "Desktop" | "Tablet" | "Mobile";
 	gap: HasResponsive<string>;
 	size: HasResponsive<BtnGroupSizes>;
 }
 
-export const WCB_BUTTONS_PANEL_GENERAL_DEMO: WCB_BUTTONS_PANEL_GENERAL = {
+export const BCB_BUTTONS_PANEL_GENERAL_DEMO: BCB_BUTTONS_PANEL_GENERAL = {
 	alignment: { Desktop: "start" },
 	stackOrientation: "Mobile",
 	gap: { Desktop: "1rem" },
@@ -29,12 +29,12 @@ export const WCB_BUTTONS_PANEL_GENERAL_DEMO: WCB_BUTTONS_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTONS_PANEL_GENERAL;
-	setAttr__: (data: WCB_BUTTONS_PANEL_GENERAL) => void;
+	panelData: BCB_BUTTONS_PANEL_GENERAL;
+	setAttr__: (data: BCB_BUTTONS_PANEL_GENERAL) => void;
 }
 
 const WcbButtonsPanelGeneral: FC<Props> = ({
-	panelData = WCB_BUTTONS_PANEL_GENERAL_DEMO,
+	panelData = BCB_BUTTONS_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -101,7 +101,7 @@ const WcbButtonsPanelGeneral: FC<Props> = ({
 	];
 
 	const PLANS_stackOrientation: MyRadioItem<
-		WCB_BUTTONS_PANEL_GENERAL["stackOrientation"]
+		BCB_BUTTONS_PANEL_GENERAL["stackOrientation"]
 	>[] = [
 		{
 			name: "none",

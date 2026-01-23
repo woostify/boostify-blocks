@@ -14,13 +14,13 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_CTA_PANEL_STYLE_TITLE {
+export interface BCB_CTA_PANEL_STYLE_TITLE {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_CTA_PANEL_STYLE_TITLE_DEMO: WCB_CTA_PANEL_STYLE_TITLE = {
+export const BCB_CTA_PANEL_STYLE_TITLE_DEMO: BCB_CTA_PANEL_STYLE_TITLE = {
 	typography: {
 		...TYPOGRAPHY_CONTROL_DEMO,
 		fontSizes: { Desktop: "2.25rem" },
@@ -38,12 +38,12 @@ export const WCB_CTA_PANEL_STYLE_TITLE_DEMO: WCB_CTA_PANEL_STYLE_TITLE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_CTA_PANEL_STYLE_TITLE;
-	setAttr__: (data: WCB_CTA_PANEL_STYLE_TITLE) => void;
+	panelData: BCB_CTA_PANEL_STYLE_TITLE;
+	setAttr__: (data: BCB_CTA_PANEL_STYLE_TITLE) => void;
 }
 
 const WcbCtaPanel_StyleTitle: FC<Props> = ({
-	panelData = WCB_CTA_PANEL_STYLE_TITLE_DEMO,
+	panelData = BCB_CTA_PANEL_STYLE_TITLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

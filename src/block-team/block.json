@@ -4,15 +4,15 @@
 	"name": "wcb/team",
 	"version": "0.1.0",
 	"title": "Team",
-	"category": "wcb-blocks",
-	"icon": "- wcb-block-editor-block-icon lni lni-users",
+	"category": "bcb-blocks",
+	"icon": "- bcb-block-editor-block-icon lni lni-users",
 	"description": "A beautifully display the details about your team members.",
 	"supports": {
 		"html": false,
 		"align": ["wide", "full"],
 		"anchor": true
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "bcb-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

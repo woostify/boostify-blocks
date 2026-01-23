@@ -5,10 +5,10 @@ import { AuthorRoot } from "./AuthorType";
 import { CategoryRoot } from "./CategoryType";
 import { getFeaturedImageDetails } from "./getFeaturedImageDetails";
 import { PostRoot } from "./types";
-import { WCB_POST_GRID_PANEL_POST_CONTENT } from "./WcbPostGridPanelPostContent";
-import { WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE } from "./WcbPostGridPanelPostFeaturedImage";
-import { WCB_POST_GRID_PANEL_POST_META } from "./WcbPostGridPanelPostMeta";
-import { WCB_POST_GRID_PANEL_READMORE_LINK } from "./WcbPostGridPanelReadMoreLink";
+import { BCB_POST_GRID_PANEL_POST_CONTENT } from "./WcbPostGridPanelPostContent";
+import { BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE } from "./WcbPostGridPanelPostFeaturedImage";
+import { BCB_POST_GRID_PANEL_POST_META } from "./WcbPostGridPanelPostMeta";
+import { BCB_POST_GRID_PANEL_READMORE_LINK } from "./WcbPostGridPanelReadMoreLink";
 import useRedirectionPreventedNotice from "../hooks/useRedirectionPreventedNotice";
 import {
 	CalendarIcon,
@@ -34,10 +34,10 @@ interface Props {
 	postData: PostRoot;
 	categories: CategoryRoot[];
 	authors: AuthorRoot[];
-	postMetaSettings: WCB_POST_GRID_PANEL_POST_META;
-	postContentSettings: WCB_POST_GRID_PANEL_POST_CONTENT;
-	featuredImageSettings: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE;
-	general_readmoreLink: WCB_POST_GRID_PANEL_READMORE_LINK;
+	postMetaSettings: BCB_POST_GRID_PANEL_POST_META;
+	postContentSettings: BCB_POST_GRID_PANEL_POST_CONTENT;
+	featuredImageSettings: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE;
+	general_readmoreLink: BCB_POST_GRID_PANEL_READMORE_LINK;
 }
 
 const WcbPostCard: FC<Props> = ({

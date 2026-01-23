@@ -40,7 +40,7 @@ registerBlockType(metadata.name, {
 			height="26" 
 			viewBox="0 0 26 24" 
 			fill="none" 
-			class="wcb-editor-block-icons fill-nones"
+			class="bcb-editor-block-icons fill-nones"
 			aria-hidden="true" 
 			focusable="false">
 				<rect x="5.4502" y="4.98621" width="15.0978" height="11.2249" rx="2" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></rect>

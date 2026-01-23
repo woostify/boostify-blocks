@@ -255,7 +255,7 @@ const MyBoxShadowControl: FC<Props> = ({
 
 	return (
 		<TabPanel
-			className={`wcb-bodyControls__panel ${className}`}
+			className={`bcb-bodyControls__panel ${className}`}
 			activeClass="active-tab"
 			onSelect={(tab) => setCurrentTab(tab as TabsHere)}
 			initialTabName="Normal"

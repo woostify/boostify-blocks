@@ -40,7 +40,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-slider__wrap",
+		className: "bcb-slider__wrap",
 	});
 
 	return (

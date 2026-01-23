@@ -27,8 +27,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 	} = attrs;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid="${uniqueId}"]`;
-	const ITEM_CLASSNAME = `${WRAP_CLASSNAME}.wcb-slider__wrap`;
-	// const ITEM_INNER_CLASSNAME = `${ITEM_CLASSNAME} .wcb-slider__item-inner`;
+	const ITEM_CLASSNAME = `${WRAP_CLASSNAME}.bcb-slider__wrap`;
+	// const ITEM_INNER_CLASSNAME = `${ITEM_CLASSNAME} .bcb-slider__item-inner`;
 	const SLICK_ARROW = `${WRAP_CLASSNAME} .slick-arrow`;
 	const SLICK_DOTS = `${WRAP_CLASSNAME} .slick-dots`;
 	const SLICK_PREV = `${WRAP_CLASSNAME} .slick-prev`;

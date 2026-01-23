@@ -35,12 +35,12 @@ type A = {
 	};
 };
 
-export interface WCB_FORM_PANEL_STYLE_MESSAGES extends A {
+export interface BCB_FORM_PANEL_STYLE_MESSAGES extends A {
 	typography: MyTypographyControlData;
 	margin?: HasResponsive<DimensionSettings>;
 }
 
-export const WCB_FORM_PANEL_STYLE_MESSAGES_DEMO: WCB_FORM_PANEL_STYLE_MESSAGES =
+export const BCB_FORM_PANEL_STYLE_MESSAGES_DEMO: BCB_FORM_PANEL_STYLE_MESSAGES =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		margin: undefined,
@@ -58,12 +58,12 @@ export const WCB_FORM_PANEL_STYLE_MESSAGES_DEMO: WCB_FORM_PANEL_STYLE_MESSAGES =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_MESSAGES;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_MESSAGES) => void;
+	panelData: BCB_FORM_PANEL_STYLE_MESSAGES;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_MESSAGES) => void;
 }
 
 const WcbPostGridPanel_StyleMessages: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_MESSAGES_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_MESSAGES_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -114,7 +114,7 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 				/>
 
 				<TabPanel
-					className={`wcb-bodyControls__panel `}
+					className={`bcb-bodyControls__panel `}
 					activeClass="active-tab"
 					initialTabName={initialTabName}
 					tabs={PanelTab}

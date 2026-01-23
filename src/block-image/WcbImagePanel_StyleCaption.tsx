@@ -22,13 +22,13 @@ import { DimensionSettings } from "../components/controls/MyDimensionsControl/ty
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 
-export interface WCB_IMAGE_PANEL_STYLE_CAPTION {
+export interface BCB_IMAGE_PANEL_STYLE_CAPTION {
 	typography: MyTypographyControlData;
 	textColor: string;
 	margin: HasResponsive<DimensionSettings>;
 }
 
-export const WCB_IMAGE_PANEL_STYLE_CAPTION_DEMO: WCB_IMAGE_PANEL_STYLE_CAPTION =
+export const BCB_IMAGE_PANEL_STYLE_CAPTION_DEMO: BCB_IMAGE_PANEL_STYLE_CAPTION =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "",
@@ -44,12 +44,12 @@ export const WCB_IMAGE_PANEL_STYLE_CAPTION_DEMO: WCB_IMAGE_PANEL_STYLE_CAPTION =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_IMAGE_PANEL_STYLE_CAPTION;
-	setAttr__: (data: WCB_IMAGE_PANEL_STYLE_CAPTION) => void;
+	panelData: BCB_IMAGE_PANEL_STYLE_CAPTION;
+	setAttr__: (data: BCB_IMAGE_PANEL_STYLE_CAPTION) => void;
 }
 
 const WcbImagePanel_StyleCaption: FC<Props> = ({
-	panelData = WCB_IMAGE_PANEL_STYLE_CAPTION_DEMO,
+	panelData = BCB_IMAGE_PANEL_STYLE_CAPTION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

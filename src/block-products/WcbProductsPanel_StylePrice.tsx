@@ -15,13 +15,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_PRICE {
+export interface BCB_PRODUCTS_PANEL_STYLE_PRICE {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO: WCB_PRODUCTS_PANEL_STYLE_PRICE =
+export const BCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO: BCB_PRODUCTS_PANEL_STYLE_PRICE =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -32,12 +32,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO: WCB_PRODUCTS_PANEL_STYLE_PRICE
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_PRICE;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_PRICE) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_PRICE;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_PRICE) => void;
 }
 
 const WcbProductsPanel_StylePrice: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

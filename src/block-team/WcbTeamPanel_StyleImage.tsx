@@ -21,12 +21,12 @@ import {
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 import MyDisclosure from "../components/controls/MyDisclosure";
 
-export interface WCB_TEAM_PANEL_STYLE_IMAGE {
+export interface BCB_TEAM_PANEL_STYLE_IMAGE {
 	margin: HasResponsive<DimensionSettings>;
 	imageSize: HasResponsive<string>;
 	border: MyBorderControlData;
 }
-export const WCB_TEAM_PANEL_STYLE_IMAGE_DEMO: WCB_TEAM_PANEL_STYLE_IMAGE = {
+export const BCB_TEAM_PANEL_STYLE_IMAGE_DEMO: BCB_TEAM_PANEL_STYLE_IMAGE = {
 	margin: {
 		Desktop: {
 			top: "1rem",
@@ -43,12 +43,12 @@ export const WCB_TEAM_PANEL_STYLE_IMAGE_DEMO: WCB_TEAM_PANEL_STYLE_IMAGE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_STYLE_IMAGE;
-	setAttr__: (data: WCB_TEAM_PANEL_STYLE_IMAGE) => void;
+	panelData: BCB_TEAM_PANEL_STYLE_IMAGE;
+	setAttr__: (data: BCB_TEAM_PANEL_STYLE_IMAGE) => void;
 }
 
 const WcbTeamPanel_StyleImage: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_STYLE_IMAGE_DEMO,
+	panelData = BCB_TEAM_PANEL_STYLE_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

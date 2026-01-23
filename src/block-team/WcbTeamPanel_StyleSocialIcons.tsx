@@ -8,14 +8,14 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_TEAM_PANEL_STYLE_SOCIALICONS {
+export interface BCB_TEAM_PANEL_STYLE_SOCIALICONS {
 	color: string;
 	hoverColor: string;
 	iconSize: HasResponsive<string>;
 	iconSpacing: HasResponsive<string>;
 }
 
-export const WCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO: WCB_TEAM_PANEL_STYLE_SOCIALICONS =
+export const BCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO: BCB_TEAM_PANEL_STYLE_SOCIALICONS =
 	{
 		color: "#334155",
 		hoverColor: "",
@@ -25,12 +25,12 @@ export const WCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO: WCB_TEAM_PANEL_STYLE_SOCIALI
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_STYLE_SOCIALICONS;
-	setAttr__: (data: WCB_TEAM_PANEL_STYLE_SOCIALICONS) => void;
+	panelData: BCB_TEAM_PANEL_STYLE_SOCIALICONS;
+	setAttr__: (data: BCB_TEAM_PANEL_STYLE_SOCIALICONS) => void;
 }
 
 const WcbTeamPanel_StyleSocialIcons: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO,
+	panelData = BCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

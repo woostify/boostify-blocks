@@ -1,10 +1,10 @@
-.wcb-radio__wrap {
+.bcb-radio__wrap {
 	label {
 		@apply select-none;
 	}
 }
 
-.wcb-radio__option {
+.bcb-radio__option {
 	@apply inline-flex items-center;
 	input {
 		&.round {
@@ -13,6 +13,6 @@
 	}
 }
 
-.wcb-radio__option-label {
+.bcb-radio__option-label {
 	@apply ml-2;
 }

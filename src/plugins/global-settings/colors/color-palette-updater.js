@@ -50,6 +50,6 @@ const WCBGlobalColorPaletteUpdater = () => {
 	return null;
 };
 
-registerPlugin('wcb-update-global-color-palette', {
+registerPlugin('bcb-update-global-color-palette', {
 	render: WCBGlobalColorPaletteUpdater,
 });

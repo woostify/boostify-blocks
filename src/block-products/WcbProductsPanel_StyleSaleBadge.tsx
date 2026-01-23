@@ -15,14 +15,14 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE {
+export interface BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE {
 	typography: MyTypographyControlData;
 	textColor: string;
 	backgroundColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE =
+export const BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -43,12 +43,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE) => void;
 }
 
 const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

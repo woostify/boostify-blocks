@@ -5,7 +5,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import getImageUrlBySize from "../utils/getImageUrlBySize";
 import VideoBackgroundByBgControl from "../components/VideoBackgroundByBgControl";
 import OverlayBackgroundByBgControl from "../components/OverlayBackgroundByBgControl";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 
 // Old SliderItem interface for backward compatibility
 interface OldSliderItem {
@@ -72,7 +72,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 	};
 
 	const blockProps = useBlockProps.save({
-		className: "wcb-slider__wrap",
+		className: "bcb-slider__wrap",
 	});
 
 	const SLIDER_ITEM_DEMO = {
@@ -90,7 +90,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 		return (
 			<RichText.Content
 				tagName="div"
-				className="wcb-slider__item-content"
+				className="bcb-slider__item-content"
 				value={item.content}
 			/>
 		);
@@ -100,7 +100,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 		return (
 			<RichText.Content
 				tagName="div"
-				className="wcb-slider__item-name"
+				className="bcb-slider__item-name"
 				value={item.name}
 			/>
 		);
@@ -110,7 +110,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 		return (
 			<RichText.Content
 				tagName="div"
-				className="wcb-slider__item-company"
+				className="bcb-slider__item-company"
 				value={item.companyName}
 			/>
 		);
@@ -119,7 +119,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 	const renderTestimonialItemImage = (item: OldSliderItem, index: number) => {
 		const { images, isShowImage, imageSize } = general_images || {};
 		const { imageSize: imageSizeAttr } = style_image || {};
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES || {};
+		const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES || {};
 		const { mediaId, mediaSrcSet } = images?.[index] || {};
 		
 		if (!isShowImage || !mediaId) {
@@ -131,7 +131,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 		const url = getImageUrlBySize(images[index], imageSize);
 		
 		return (
-			<div className="wcb-slider__item-image">
+			<div className="bcb-slider__item-image">
 				<img
 					src={url}
 					alt=""
@@ -145,8 +145,8 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 	const renderTestimonialItem = (item: OldSliderItem, index: number) => {
 		const { imagePosition } = general_images || {};
 		return (
-			<div className="wcb-slider__item" key={index}>
-				<div className="wcb-slider__item-background">
+			<div className="bcb-slider__item" key={index}>
+				<div className="bcb-slider__item-background">
 					<div className=""></div>
 					<VideoBackgroundByBgControl
 						bgType={style_backgroundAndBorder?.background?.bgType}
@@ -157,22 +157,22 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 						overlayType={style_backgroundAndBorder?.background?.overlayType}
 					/>
 
-					<div className="wcb-slider__item-wrap-inner">
+					<div className="bcb-slider__item-wrap-inner">
 						{/* IMAGE */}
 						{imagePosition === "left" && renderTestimonialItemImage(item, index)}
 
-						<div className="wcb-slider__item-inner">
+						<div className="bcb-slider__item-inner">
 							{/* IMAGE */}
 							{imagePosition === "top" && renderTestimonialItemImage(item, index)}
 
 							{/* CONTENT */}
 							{renderTestimonialItemContent(item, index)}
 
-							<div className="wcb-slider__item-user">
+							<div className="bcb-slider__item-user">
 								{/* IMAGE */}
 								{imagePosition === "bottom" && renderTestimonialItemImage(item, index)}
 
-								<div className="wcb-slider__item-nameandcompany">
+								<div className="bcb-slider__item-nameandcompany">
 									{/* NAME */}
 									{renderTestimonialItemName(item, index)}
 
@@ -192,7 +192,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 
 	return (
 		<SaveCommon attributes={newAttrForSave} uniqueId={uniqueId} {...blockProps}>
-			<div className="wcb-slider__wrap-items">
+			<div className="bcb-slider__wrap-items">
 				{CURRENT_DATA.map(renderTestimonialItem)}
 			</div>
 		</SaveCommon>

@@ -224,8 +224,8 @@ const Edit: FC<EditProps<WcbBlockHeadingAttrs>> = (props) => {
 
 	const renderSeparator = () => {
 		return general_content.showSeparator ? (
-			<div className="wcb-heading__separator-wrap">
-				<div className="wcb-heading__separator"></div>
+			<div className="bcb-heading__separator-wrap">
+				<div className="bcb-heading__separator"></div>
 			</div>
 		) : null;
 	};
@@ -234,7 +234,7 @@ const Edit: FC<EditProps<WcbBlockHeadingAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-heading__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-heading__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				<HOCInspectorControls
@@ -252,7 +252,7 @@ const Edit: FC<EditProps<WcbBlockHeadingAttrs>> = (props) => {
 					<RichText
 						identifier="heading"
 						tagName={general_content.headingTag || "h2"}
-						className="wcb-heading__heading"
+						className="bcb-heading__heading"
 						value={heading}
 						placeholder="Add heading"
 						onChange={(heading) => setAttributes({ heading })}
@@ -265,7 +265,7 @@ const Edit: FC<EditProps<WcbBlockHeadingAttrs>> = (props) => {
 					<RichText
 						identifier="subHeading"
 						tagName="p"
-						className="wcb-heading__subHeading"
+						className="bcb-heading__subHeading"
 						value={subHeading}
 						onChange={(subHeading) => setAttributes({ subHeading })}
 						placeholder="Add sub heading"

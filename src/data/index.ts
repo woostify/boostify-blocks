@@ -18,7 +18,7 @@ const INIT_BLOCK: BlockInPanelStore = {
 export interface WcbPanelStoreState extends Record<string, BlockInPanelStore> {}
 const DEFAULT_STATE: WcbPanelStoreState = {};
 
-const WCB_STORE_PANELS = "wcb/panels";
+const BCB_STORE_PANELS = "wcb/panels";
 
 const actions = {
 	setBlockPanelInfo(blockId: string, block: BlockInPanelStore) {
@@ -30,7 +30,7 @@ const actions = {
 	},
 };
 
-const store = createReduxStore(WCB_STORE_PANELS, {
+const store = createReduxStore(BCB_STORE_PANELS, {
 	reducer(
 		state: WcbPanelStoreState = DEFAULT_STATE,
 		action
@@ -68,4 +68,4 @@ const store = createReduxStore(WCB_STORE_PANELS, {
 
 register(store);
 
-export { WCB_STORE_PANELS };
+export { BCB_STORE_PANELS };

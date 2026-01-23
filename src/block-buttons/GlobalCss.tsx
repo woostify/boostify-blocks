@@ -5,7 +5,7 @@ import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrs } from "./attributes";
 
 interface Props extends WcbAttrs {}
@@ -23,12 +23,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 	const { stackOrientation, alignment, size } = general_general;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-buttons__inner`;
-	// const INNER_BUTTON = `#${uniqueId} .wcb-button__main`;
-	const INNER_BUTTON_TEXT = `#${uniqueId} .wcb-button__text`;
+	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .bcb-buttons__inner`;
+	// const INNER_BUTTON = `#${uniqueId} .bcb-button__main`;
+	const INNER_BUTTON_TEXT = `#${uniqueId} .bcb-button__text`;
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject => {

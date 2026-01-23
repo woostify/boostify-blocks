@@ -9,7 +9,7 @@ import getFlexPropertiesStyles from "../utils/getFlexPropertiesStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
 
@@ -32,10 +32,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const CONTENT_CLASSNAME = `${WRAP_CLASSNAME} .wcb-icon__content`;
+	const CONTENT_CLASSNAME = `${WRAP_CLASSNAME} .bcb-icon__content`;
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject => {
@@ -116,28 +116,28 @@ const GlobalCss: FC<Props> = (attrs) => {
 						margin: style_dimension.margin,
 					}),
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME} .wcb-icon__content`,
+						className: `${WRAP_CLASSNAME} .bcb-icon__content`,
 						padding: style_dimension.padding,
 					}),
 					getBorderStyles({
 						border: style_icon,
-						className: `${WRAP_CLASSNAME} .wcb-icon__content`,
+						className: `${WRAP_CLASSNAME} .bcb-icon__content`,
 						isWithRadius: true,
 					}),
 					getStyleObjectFromResponsiveAttr({
-						className: `${WRAP_CLASSNAME} .wcb-icon-full`,
+						className: `${WRAP_CLASSNAME} .bcb-icon-full`,
 						value: general_icon.size,
 						prefix: "width",
 						prefix_2: "fontSize",
 					}),
 					{
-						[`${CONTENT_CLASSNAME} .wcb-icon-full`]: {
+						[`${CONTENT_CLASSNAME} .bcb-icon-full`]: {
 							color: style_icon.color
 						},
-						[`${CONTENT_CLASSNAME}:hover .wcb-icon-full`]: {
+						[`${CONTENT_CLASSNAME}:hover .bcb-icon-full`]: {
 							color: style_icon.hoverColor,
 						},
-						[`${WRAP_CLASSNAME} .wcb-icon__content`]: {
+						[`${WRAP_CLASSNAME} .bcb-icon__content`]: {
 							cursor: general_icon.enableLink ? 'pointer' : '',
 						},
 					}

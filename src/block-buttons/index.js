@@ -39,7 +39,7 @@ registerBlockType(metadata.name, {
 	deprecated: deprecated,
 	icon: (
 		<svg
-			className="wcb-editor-block-icons fill-none "
+			className="bcb-editor-block-icons fill-none "
 			width={24}
 			height={24}
 			viewBox="0 0 24 24"

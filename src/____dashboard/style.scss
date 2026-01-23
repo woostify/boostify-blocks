@@ -1,7 +1,7 @@
-.woostifyblocks-includes-settings-page-php {
+.boostify-blocks-includes-settings-page-php {
 	--font-body: "";
 
-	#wpbody-content > .notice:not(.wcb-notice),
+	#wpbody-content > .notice:not(.bcb-notice),
 	#wpbody-content > .error {
 		display: none !important;
 	}
@@ -13,7 +13,7 @@
 		@apply pl-0;
 	}
 
-	.wcb-field-disabled {
+	.bcb-field-disabled {
 		pointer-events: none;
 		opacity: 0.4;
 	}

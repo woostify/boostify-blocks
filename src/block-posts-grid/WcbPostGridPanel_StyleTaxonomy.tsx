@@ -15,14 +15,14 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_TAXONOMY {
+export interface BCB_POST_GRID_PANEL_STYLE_TAXONOMY {
 	typography: MyTypographyControlData;
 	textColor: string;
 	backgroundColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO: WCB_POST_GRID_PANEL_STYLE_TAXONOMY =
+export const BCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO: BCB_POST_GRID_PANEL_STYLE_TAXONOMY =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -43,12 +43,12 @@ export const WCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO: WCB_POST_GRID_PANEL_STYLE_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_TAXONOMY;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_TAXONOMY) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_TAXONOMY;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_TAXONOMY) => void;
 }
 
 const WcbPostGridPanel_StyleTaxonomy: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

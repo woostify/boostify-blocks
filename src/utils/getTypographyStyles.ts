@@ -1,6 +1,6 @@
 import { CSSObject } from "@emotion/react";
 import { MyTypographyControlData } from "../components/controls/MyTypographyControl/types";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { loadGoogleFont } from "./font";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
 
@@ -27,7 +27,7 @@ const getTypographyStyles = ({ typography, className }: Params): CSSObject => {
 		loadGoogleFont(fontFamily);
 	}
 
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 	//
 	const fontSize_Desktop = fontSizes?.Desktop;
 	const fontSize_Tablet = fontSizes?.Tablet || fontSize_Desktop;

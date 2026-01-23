@@ -10,7 +10,7 @@ import React, { FC, useState } from "react";
 
 type TabsHere = "To" | "CC" | "BCC";
 
-export type WCB_FORM_PANEL_ACTION = {
+export type BCB_FORM_PANEL_ACTION = {
 	main: {
 		[K in TabsHere]: {
 			email: string;
@@ -19,7 +19,7 @@ export type WCB_FORM_PANEL_ACTION = {
 	subject: string;
 };
 
-export const WCB_FORM_PANEL_ACTION_DEMO: WCB_FORM_PANEL_ACTION = {
+export const BCB_FORM_PANEL_ACTION_DEMO: BCB_FORM_PANEL_ACTION = {
 	main: {
 		To: { email: "" },
 		BCC: { email: "" },
@@ -30,12 +30,12 @@ export const WCB_FORM_PANEL_ACTION_DEMO: WCB_FORM_PANEL_ACTION = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_ACTION;
-	setAttr__: (data: WCB_FORM_PANEL_ACTION) => void;
+	panelData: BCB_FORM_PANEL_ACTION;
+	setAttr__: (data: BCB_FORM_PANEL_ACTION) => void;
 }
 
 const WcbFormPanelAction: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_ACTION_DEMO,
+	panelData = BCB_FORM_PANEL_ACTION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -67,7 +67,7 @@ const WcbFormPanelAction: FC<Props> = ({
 					)}
 				</Notice>
 				<TabPanel
-					className={`wcb-bodyControls__panel `}
+					className={`bcb-bodyControls__panel `}
 					activeClass="active-tab"
 					initialTabName="To"
 					tabs={PanelTab}

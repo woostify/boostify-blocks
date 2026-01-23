@@ -11,9 +11,9 @@ import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import WcbCtaPanelLayout, {
-	WCB_CTA_PANEL_LAYOUT_DEMO,
-	WCB_CTA_PANEL_LAYOUT_PRESET_CENTER_DEMO,
-	WCB_CTA_PANEL_LAYOUT_PRESET_LEFT_DEMO,
+	BCB_CTA_PANEL_LAYOUT_DEMO,
+	BCB_CTA_PANEL_LAYOUT_PRESET_CENTER_DEMO,
+	BCB_CTA_PANEL_LAYOUT_PRESET_LEFT_DEMO,
 } from "./WcbCtaPanelLayout";
 import WcbCtaPanel_StyleTitle from "./WcbCtaPanel_StyleTitle";
 import WcbCtaPanel_StyleDescription from "./WcbCtaPanel_StyleDescription";
@@ -77,15 +77,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								if (!data.preset) {
 									return setAttributes({
 										general_preset: data,
-										general_layout: WCB_CTA_PANEL_LAYOUT_DEMO,
+										general_layout: BCB_CTA_PANEL_LAYOUT_DEMO,
 									});
 								}
 								setAttributes({
 									general_preset: data,
 									general_layout:
 										data.preset === "preset-center"
-											? WCB_CTA_PANEL_LAYOUT_PRESET_CENTER_DEMO
-											: WCB_CTA_PANEL_LAYOUT_PRESET_LEFT_DEMO,
+											? BCB_CTA_PANEL_LAYOUT_PRESET_CENTER_DEMO
+											: BCB_CTA_PANEL_LAYOUT_PRESET_LEFT_DEMO,
 								});
 							}}
 							panelData={general_preset}
@@ -195,7 +195,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-cta__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-cta__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}
@@ -208,15 +208,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				<GlobalCss {...WcbAttrsForSave()} />
 
 				{/* CHILD CONTENT  */}
-				<div className="wcb-cta__inner">
-					<div className="wcb-cta__content">
+				<div className="bcb-cta__inner">
+					<div className="bcb-cta__content">
 						<RichText
 							tagName={attributes.general_layout.headingTag || "h3"}
 							value={attributes.title}
 							allowedFormats={["core/bold", "core/italic"]}
 							onChange={(content) => setAttributes({ title: content })}
 							placeholder={__("Call to action")}
-							className="wcb-cta__title"
+							className="bcb-cta__title"
 						/>
 						<RichText
 							tagName="p"
@@ -226,10 +226,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							placeholder={
 								"Click here to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo..."
 							}
-							className="wcb-cta__description"
+							className="bcb-cta__description"
 						/>
 					</div>
-					<div className="wcb-cta__buttons">
+					<div className="bcb-cta__buttons">
 						<InnerBlocks
 							allowedBlocks={[]}
 							template={[["wcb/buttons", {}, [["wcb/button", {}]]]]}

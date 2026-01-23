@@ -9,13 +9,13 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_INPUT_PANEL_GENERAL {
+export interface BCB_INPUT_PANEL_GENERAL {
 	autocomplete: MyInputAutocomplete;
 	placeholder: string;
 	isRequired: boolean;
 }
 
-export const WCB_INPUT_PANEL_GENERAL_DEMO: WCB_INPUT_PANEL_GENERAL = {
+export const BCB_INPUT_PANEL_GENERAL_DEMO: BCB_INPUT_PANEL_GENERAL = {
 	autocomplete: "name",
 	isRequired: false,
 	placeholder: "Firt name",
@@ -23,12 +23,12 @@ export const WCB_INPUT_PANEL_GENERAL_DEMO: WCB_INPUT_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_INPUT_PANEL_GENERAL;
-	setAttr__: (data: WCB_INPUT_PANEL_GENERAL) => void;
+	panelData: BCB_INPUT_PANEL_GENERAL;
+	setAttr__: (data: BCB_INPUT_PANEL_GENERAL) => void;
 }
 
 const WcbInputPanelGeneral: FC<Props> = ({
-	panelData = WCB_INPUT_PANEL_GENERAL_DEMO,
+	panelData = BCB_INPUT_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

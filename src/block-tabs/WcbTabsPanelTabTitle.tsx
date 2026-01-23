@@ -13,7 +13,7 @@ import SelecIcon, {
 import MySelect from "../components/controls/MySelect";
 import { BlockTabTitleItem } from "./types";
 
-export interface WCB_TABS_PANEL_TAB_TITLE {
+export interface BCB_TABS_PANEL_TAB_TITLE {
 	enableIcon: boolean;
 	iconPosition: MyPosition;
 	textAlignment: AlignmentH;
@@ -22,7 +22,7 @@ export interface WCB_TABS_PANEL_TAB_TITLE {
 	icon: MyIcon;
 }
 
-export const WCB_TABS_PANEL_TAB_TITLE_DEMO: WCB_TABS_PANEL_TAB_TITLE = {
+export const BCB_TABS_PANEL_TAB_TITLE_DEMO: BCB_TABS_PANEL_TAB_TITLE = {
 	textAlignment: "center",
 	tabAlignment: "left",
 	iconPosition: "left",
@@ -36,14 +36,14 @@ export const WCB_TABS_PANEL_TAB_TITLE_DEMO: WCB_TABS_PANEL_TAB_TITLE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TABS_PANEL_TAB_TITLE;
-	setAttr__: (data: WCB_TABS_PANEL_TAB_TITLE) => void;
+	panelData: BCB_TABS_PANEL_TAB_TITLE;
+	setAttr__: (data: BCB_TABS_PANEL_TAB_TITLE) => void;
 	//
 	tabTitles: BlockTabTitleItem[];
 }
 
 const WcbTabsPanelTabTitle: FC<Props> = ({
-	panelData = WCB_TABS_PANEL_TAB_TITLE_DEMO,
+	panelData = BCB_TABS_PANEL_TAB_TITLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -59,7 +59,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	} = panelData;
 
 	const OPTION_INIT_OPEN_TAB_DEMO: Option<
-		WCB_TABS_PANEL_TAB_TITLE["initOpenTab"]
+		BCB_TABS_PANEL_TAB_TITLE["initOpenTab"]
 	>[] = [
 		{ value: "tab1", label: "Tab1" },
 		{ value: "tab2", label: "Tab2" },
@@ -67,7 +67,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	];
 
 	const PLANS_ICON_POS_DEMO: MyRadioItem<
-		WCB_TABS_PANEL_TAB_TITLE["iconPosition"]
+		BCB_TABS_PANEL_TAB_TITLE["iconPosition"]
 	>[] = [
 		{ icon: "Left", name: "left" },
 		{ icon: "Right", name: "right" },

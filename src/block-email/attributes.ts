@@ -3,14 +3,14 @@ import {
 	WcbAttrsCommonFromWp,
 } from "../block-container/attributes";
 import {
-	WCB_EMAIL_PANEL_GENERAL,
-	WCB_EMAIL_PANEL_GENERAL_DEMO,
+	BCB_EMAIL_PANEL_GENERAL,
+	BCB_EMAIL_PANEL_GENERAL_DEMO,
 } from "./WcbEmailPanelGeneral";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	label: string;
 	//
-	general_general: WCB_EMAIL_PANEL_GENERAL;
+	general_general: BCB_EMAIL_PANEL_GENERAL;
 	//
 }
 
@@ -22,13 +22,13 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	label: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-form__label",
+		selector: ".bcb-form__label",
 		default: "Label",
 	},
 	//
 	general_general: {
 		type: "object",
-		default: WCB_EMAIL_PANEL_GENERAL_DEMO,
+		default: BCB_EMAIL_PANEL_GENERAL_DEMO,
 	},
 };
 

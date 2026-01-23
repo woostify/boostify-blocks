@@ -14,13 +14,13 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_ICON_LIST_PANEL_STYLE_DESIGNATION {
+export interface BCB_ICON_LIST_PANEL_STYLE_DESIGNATION {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_ICON_LIST_PANEL_STYLE_DESIGNATION_DEMO: WCB_ICON_LIST_PANEL_STYLE_DESIGNATION =
+export const BCB_ICON_LIST_PANEL_STYLE_DESIGNATION_DEMO: BCB_ICON_LIST_PANEL_STYLE_DESIGNATION =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -32,12 +32,12 @@ export const WCB_ICON_LIST_PANEL_STYLE_DESIGNATION_DEMO: WCB_ICON_LIST_PANEL_STY
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_LIST_PANEL_STYLE_DESIGNATION;
-	setAttr__: (data: WCB_ICON_LIST_PANEL_STYLE_DESIGNATION) => void;
+	panelData: BCB_ICON_LIST_PANEL_STYLE_DESIGNATION;
+	setAttr__: (data: BCB_ICON_LIST_PANEL_STYLE_DESIGNATION) => void;
 }
 
 const WcbIconListPanel_StyleDesignation: FC<Props> = ({
-	panelData = WCB_ICON_LIST_PANEL_STYLE_DESIGNATION_DEMO,
+	panelData = BCB_ICON_LIST_PANEL_STYLE_DESIGNATION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

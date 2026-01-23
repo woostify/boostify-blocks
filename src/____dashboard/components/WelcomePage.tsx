@@ -109,7 +109,7 @@ const WelcomePage = () => {
 							</p>
 							<a
 								className="block mt-3 text-base text-blue-600"
-								href="https://woostifyblocks.com/"
+								href="https://boostify-blocks.com/"
 								target="_blank"
 								rel="noreferrer"
 							>
@@ -156,7 +156,7 @@ const WelcomePage = () => {
 							</p>
 							<a
 								className="block mt-3 text-base text-blue-600"
-								href="https://woostifyblocks.com/"
+								href="https://boostify-blocks.com/"
 								target="_blank"
 								rel="noreferrer"
 							>
@@ -193,7 +193,7 @@ const WelcomePage = () => {
 							</p>
 							<a
 								className="block mt-3 text-base text-blue-600"
-								href="https://woostifyblocks.com/"
+								href="https://boostify-blocks.com/"
 								target="_blank"
 								rel="noreferrer"
 							>

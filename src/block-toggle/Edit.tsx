@@ -73,7 +73,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// <CacheProvider value={myCache}>
 		<div
 			{...wrapBlockProps}
-			className={`${wrapBlockProps?.className} wcb-toggle__wrap ${uniqueId}`}
+			className={`${wrapBlockProps?.className} bcb-toggle__wrap ${uniqueId}`}
 			data-uniqueid={uniqueId}
 		>
 			{/* CONTROL SETTINGS */}
@@ -91,10 +91,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				}}
 			/>
 
-			<label className="wcb-toggle__switch">
+			<label className="bcb-toggle__switch">
 				<input
 					type="hidden"
-					className="wcb-toggle__switch-input-hidden"
+					className="bcb-toggle__switch-input-hidden"
 					data-truestate={attributes.general_general?.trueState}
 					data-falsestate={attributes.general_general?.falseState}
 					name={UNIQUE_NAME}
@@ -114,7 +114,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					required={attributes.general_general?.isRequired}
 				/>
 				<span
-					className={`wcb-toggle__slider ${
+					className={`bcb-toggle__slider ${
 						attributes.general_general?.layout === "round" ? "round" : ""
 					}`}
 				></span>

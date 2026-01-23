@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { CSSObject } from "@emotion/react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import getValueFromAttrsResponsives from "./getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
 
@@ -27,7 +27,7 @@ function getStyleObjectFromResponsiveAttr({
 	hasUnit = true,
 	unit,
 }: Params): CSSObject {
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	let { value_Desktop, value_Tablet, value_Mobile } =
 		getValueFromAttrsResponsives(value);

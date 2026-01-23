@@ -55,13 +55,13 @@ const MY_POST_GRID_MAIN_STYLE_PAGINATION_DEMO: PostGridPagiantionType = {
 	},
 };
 
-export interface WCB_PRODUCTS_PANEL_STYLE_PAGINATION {
+export interface BCB_PRODUCTS_PANEL_STYLE_PAGINATION {
 	mainStyle: PostGridPagiantionType;
 	marginTop: HasResponsive<string>;
 	justifyContent: CSSProperties["justifyContent"];
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO: WCB_PRODUCTS_PANEL_STYLE_PAGINATION =
+export const BCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO: BCB_PRODUCTS_PANEL_STYLE_PAGINATION =
 	{
 		mainStyle: MY_POST_GRID_MAIN_STYLE_PAGINATION_DEMO,
 		marginTop: { Desktop: "2rem" },
@@ -70,12 +70,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO: WCB_PRODUCTS_PANEL_STYLE_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_PAGINATION;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_PAGINATION) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_PAGINATION;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_PAGINATION) => void;
 }
 
 const WcbProductsPanel_StylePagination: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -167,7 +167,7 @@ const WcbProductsPanel_StylePagination: FC<Props> = ({
 		>
 			<div className="space-y-4">
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="Normal"
 					tabs={PANEL_PAGINATION_TABS}

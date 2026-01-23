@@ -22,14 +22,14 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_IMAGE_PANEL_STYLE_IMAGE {
+export interface BCB_IMAGE_PANEL_STYLE_IMAGE {
 	border: MyBorderControlData;
 	boxShadow: MyBoxShadowControlData;
 	padding: HasResponsive<DimensionSettings>;
 	margin: HasResponsive<DimensionSettings>;
 }
 
-export const WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO: WCB_IMAGE_PANEL_STYLE_IMAGE = {
+export const BCB_IMAGE_PANEL_STYLE_IMAGE_DEMO: BCB_IMAGE_PANEL_STYLE_IMAGE = {
 	border: MY_BORDER_CONTROL_DEMO,
 	boxShadow: MY_BOX_SHADOW_CONTROL_DEMO,
 	padding: {
@@ -52,12 +52,12 @@ export const WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO: WCB_IMAGE_PANEL_STYLE_IMAGE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_IMAGE_PANEL_STYLE_IMAGE;
-	setAttr__: (data: WCB_IMAGE_PANEL_STYLE_IMAGE) => void;
+	panelData: BCB_IMAGE_PANEL_STYLE_IMAGE;
+	setAttr__: (data: BCB_IMAGE_PANEL_STYLE_IMAGE) => void;
 }
 
 const WcbImagePanel_StyleImage: FC<Props> = ({
-	panelData = WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
+	panelData = BCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

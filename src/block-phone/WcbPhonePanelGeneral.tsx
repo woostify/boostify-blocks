@@ -9,14 +9,14 @@ import { __ } from "@wordpress/i18n";
 import React, { FC } from "react";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_PHONE_PANEL_GENERAL {
+export interface BCB_PHONE_PANEL_GENERAL {
 	autocomplete: MyInputAutocomplete;
 	placeholder: string;
 	pattern: string;
 	isRequired: boolean;
 }
 
-export const WCB_PHONE_PANEL_GENERAL_DEMO: WCB_PHONE_PANEL_GENERAL = {
+export const BCB_PHONE_PANEL_GENERAL_DEMO: BCB_PHONE_PANEL_GENERAL = {
 	autocomplete: "tel-national",
 	isRequired: false,
 	placeholder: "123 45 678",
@@ -25,12 +25,12 @@ export const WCB_PHONE_PANEL_GENERAL_DEMO: WCB_PHONE_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PHONE_PANEL_GENERAL;
-	setAttr__: (data: WCB_PHONE_PANEL_GENERAL) => void;
+	panelData: BCB_PHONE_PANEL_GENERAL;
+	setAttr__: (data: BCB_PHONE_PANEL_GENERAL) => void;
 }
 
 const WcbPhonePanelGeneral: FC<Props> = ({
-	panelData = WCB_PHONE_PANEL_GENERAL_DEMO,
+	panelData = BCB_PHONE_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

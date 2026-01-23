@@ -12,18 +12,18 @@ import converUniqueIdToAnphaKey, { converClientIdToUniqueClass } from "../utils/
 import GlobalCss from "./GlobalCss";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 // Import style panels
-import WcbSlidersPanel_StyleName, { WCB_SLIDER_PANEL_STYLE_NAME_DEMO } from "./WcbSliderPanel_StyleName";
-import WcbSlidersPanel_StyleContent, { WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO } from "./WcbSliderPanel_StyleContent";
+import WcbSlidersPanel_StyleName, { BCB_SLIDER_PANEL_STYLE_NAME_DEMO } from "./WcbSliderPanel_StyleName";
+import WcbSlidersPanel_StyleContent, { BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO } from "./WcbSliderPanel_StyleContent";
 import WcbSlidersPanel_StyleImage, { 
-	WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO, 
+	BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO, 
 	DEFAULT_MY_TOP_ICON
 } from "./WcbSliderPanel_StyleImage";
-import WcbSlidersPanel_StyleBackground, { WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO } from "./WcbSliderPanel_StyleBackground";
-import WcbSlidersPanel_StyleDimension, { WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "./WcbSliderPanel_StyleDimension";
-import WcbSliderButtonPanelPreset, { WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO } from "./WcbSliderPanel_ButtonPreset";
-import WcbSliderLayoutPanelPreset, { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "./WcbSliderPanel_LayoutPreset";
-import WcbSlidersPanel_StyleSeparator, { WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "./WcbSliderPanel_StyleSeparator";
-import WcbSliderPanel_StyleCallToActionButton, { WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO } from "./WcbSliderPanel_StyleCallToActionButton"
+import WcbSlidersPanel_StyleBackground, { BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO } from "./WcbSliderPanel_StyleBackground";
+import WcbSlidersPanel_StyleDimension, { BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "./WcbSliderPanel_StyleDimension";
+import WcbSliderButtonPanelPreset, { BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO } from "./WcbSliderPanel_ButtonPreset";
+import WcbSliderLayoutPanelPreset, { BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "./WcbSliderPanel_LayoutPreset";
+import WcbSlidersPanel_StyleSeparator, { BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "./WcbSliderPanel_StyleSeparator";
+import WcbSliderPanel_StyleCallToActionButton, { BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO } from "./WcbSliderPanel_StyleCallToActionButton"
 import MyIcon from "../components/controls/MyIcon";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import MyIconFull from "../components/controls/MyIconFull";
@@ -32,22 +32,22 @@ import MyIconFull from "../components/controls/MyIconFull";
 // Export the panel components and demos for parent component to use
 export {
 	WcbSlidersPanel_StyleName,
-	WCB_SLIDER_PANEL_STYLE_NAME_DEMO,
+	BCB_SLIDER_PANEL_STYLE_NAME_DEMO,
 	WcbSlidersPanel_StyleContent,
-	WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
+	BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
 	WcbSliderPanel_StyleCallToActionButton,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO,
 	WcbSlidersPanel_StyleImage,
-	WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
+	BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
 	WcbSlidersPanel_StyleBackground,
-	WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
+	BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
 	WcbSlidersPanel_StyleDimension,
-	WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
+	BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
 	WcbSliderButtonPanelPreset,
-	WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
+	BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
 	WcbSliderLayoutPanelPreset,
-	WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO,
-	WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO,
+	BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO,
+	BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO,
 	WcbSlidersPanel_StyleSeparator,
 	AdvancePanelCommon
 };
@@ -92,9 +92,9 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 
 	const renderImage = () => {
 		return style_image && style_image.isShowImage && style_image.image?.mediaId ? (
-			<div className="wcb-slider-child__content-image">
+			<div className="bcb-slider-child__content-image">
 				<img
-					className="wcb-slider-child__image"
+					className="bcb-slider-child__image"
 					src={style_image.image.mediaUrl}
 					alt=""
 				/>
@@ -106,15 +106,15 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 		return (
 			<MyIcon
 				icon={style_buttonPreset?.enableIcon ? (style_buttonPreset?.icon?.iconName ?? "lni-arrow-right") : "lni-arrow-right"}
-				className="wcb-slider-child__btn-text ml-2"
+				className="bcb-slider-child__btn-text ml-2"
 			/>
 		);
 	};
 
 	const renderIconTop = () => {
 		return (
-			<div className="wcb-top__icon-wrap flex justify-center">
-				<div className="wcb-top__icon">
+			<div className="bcb-top__icon-wrap flex justify-center">
+				<div className="bcb-top__icon">
 					<MyIconFull icon={style_image?.enableIcon && style_image?.icon ? style_image.icon : DEFAULT_MY_TOP_ICON} />
 				</div>
 			</div>
@@ -123,7 +123,7 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 
 	// Helper functions to determine icon rendering
 	const shouldRenderIconTop = () => {
-		const isStandardLayout = ["wcb-layout-1", "wcb-layout-2", "wcb-layout-3"].includes(style_layoutPreset?.preset || "");
+		const isStandardLayout = ["bcb-layout-1", "bcb-layout-2", "bcb-layout-3"].includes(style_layoutPreset?.preset || "");
 		const isCustomLayout = !style_layoutPreset?.preset;
 		
 		if (isStandardLayout) {
@@ -140,7 +140,7 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 	};
 
 	const shouldRenderIconBelowTitle = () => {
-		const isStandardLayout = ["wcb-layout-1", "wcb-layout-2", "wcb-layout-3"].includes(style_layoutPreset?.preset || "");
+		const isStandardLayout = ["bcb-layout-1", "bcb-layout-2", "bcb-layout-3"].includes(style_layoutPreset?.preset || "");
 		const isCustomLayout = !style_layoutPreset?.preset;
 		
 		// Both standard and custom layouts: show below title when enabled with bellowTitle position
@@ -153,7 +153,7 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-slider-child__wrap ${uniqueId} ${uniqueClientClass}`}
+				className={`${wrapBlockProps?.className} bcb-slider-child__wrap ${uniqueId} ${uniqueClientClass}`}
 				data-uniqueid={uniqueId}
 				data-clientid={clientId}
 			>
@@ -161,9 +161,9 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 				{/* CSS in JS - Use clientID for unique styling */}
 				<GlobalCss {...attributes} clientID={clientId} deviceType={deviceType}/>
 				
-				<div className="wcb-slider-child__item">
-					<div className="wcb-slider-child__item-background">
-						<div className="wcb-slider-child__item-wrap-inner">
+				<div className="bcb-slider-child__item">
+					<div className="bcb-slider-child__item-background">
+						<div className="bcb-slider-child__item-wrap-inner">
 							<div className={`${
 								style_image?.iconPosition === "left" || style_image?.iconPosition === "right"
 								? "icon-position__flex gap-4"
@@ -176,7 +176,7 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 								renderImage()
 							}
 							{ style_image?.iconPosition === "left" && renderIconTop() }
-							<div className="wcb-slider-child__item-inner">
+							<div className="bcb-slider-child__item-inner">
 								{/* Image */}	
 								{
 									(style_image && 
@@ -187,7 +187,7 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 								{/* Icon Top */}
 								{shouldRenderIconTop() && renderIconTop()}
 								{/* Name */}
-								<div className={`wcb-slider-child__name`}>
+								<div className={`bcb-slider-child__name`}>
 									<RichText
 										tagName="div"
 										placeholder={__("Enter name...", "wcb")}
@@ -206,12 +206,12 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 								}
 
 								{/* Content */}
-								<div className={`wcb-slider-child__content ${
+								<div className={`bcb-slider-child__content ${
 										(() => {
 											// Check for layout presets and icon positions first (these override text alignment)
-											if (style_layoutPreset?.preset === "wcb-layout-2" ||
-												style_layoutPreset?.preset === "wcb-layout-3" ||
-												style_layoutPreset?.preset === "wcb-layout-5" ||
+											if (style_layoutPreset?.preset === "bcb-layout-2" ||
+												style_layoutPreset?.preset === "bcb-layout-3" ||
+												style_layoutPreset?.preset === "bcb-layout-5" ||
 												style_image?.iconPosition === "left") {
 												return "text-start";
 											}
@@ -250,14 +250,14 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 
 								{/* Call to Action */}
 								{
-									style_layoutPreset?.preset === "wcb-layout-3" ?
+									style_layoutPreset?.preset === "bcb-layout-3" ?
 									null : 								
-										<div className="wcb-slider-child__btn-inner">
+										<div className="bcb-slider-child__btn-inner">
 											{
 												style_buttonPreset?.iconPosition === "beforeTitle" && 
 												(
-													style_buttonPreset?.preset === 'wcb-button-4' || 
-													style_buttonPreset?.preset === 'wcb-button-8' || 
+													style_buttonPreset?.preset === 'bcb-button-4' || 
+													style_buttonPreset?.preset === 'bcb-button-8' || 
 													style_buttonPreset?.enableIcon
 												) ? renderIconButton() : null
 											}
@@ -266,13 +266,13 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 												placeholder={__("Enter call to action...", "wcb")}
 												value={callToAction}
 												onChange={(value) => setAttributes({ callToAction: value })}
-												className="wcb-slider-child__btn-text wcb-slider-child__btn_spacing"
+												className="bcb-slider-child__btn-text bcb-slider-child__btn_spacing"
 											/>
 											{
 												style_buttonPreset?.iconPosition === "afterTitle" && 
 												(
-													style_buttonPreset?.preset === 'wcb-button-4' || 
-													style_buttonPreset?.preset === 'wcb-button-8' || 
+													style_buttonPreset?.preset === 'bcb-button-4' || 
+													style_buttonPreset?.preset === 'bcb-button-8' || 
 													style_buttonPreset?.enableIcon
 												) ? renderIconButton() : null
 											}

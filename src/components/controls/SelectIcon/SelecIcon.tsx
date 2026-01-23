@@ -223,7 +223,7 @@ const SelecIcon: FC<Props> = ({
 					rows={17}
 					label=""
 					placeholder={`<svg xmlns="http://www.w3.org/2000/svg" fill="none" ...`}
-					className="Wcb-SelectIcon__textarea text-slate-200"
+					className="Bcb-SelectIcon__textarea text-slate-200"
 					help={
 						!svgCodeState || isCorrectSvgCode ? (
 							__("Enter your SVG code here", "wcb")
@@ -300,7 +300,7 @@ const SelecIcon: FC<Props> = ({
 		<Dropdown
 			position="middle left"
 			className="w-full"
-			contentClassName="Wcb-SelectIcon z-[100]"
+			contentClassName="Bcb-SelectIcon z-[100]"
 			renderToggle={({ isOpen, onToggle }) => (
 				<div className="flex items-center space-x-4">
 					<button

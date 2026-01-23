@@ -25,7 +25,7 @@ import {
 } from "../components/controls/MyBorderControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 
-export interface WCB_TABS_PANEL_STYLE_BODY {
+export interface BCB_TABS_PANEL_STYLE_BODY {
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
 	margin: HasResponsive<DimensionSettings>;
@@ -36,7 +36,7 @@ export interface WCB_TABS_PANEL_STYLE_BODY {
 	border: MyBorderControlData;
 }
 
-export const WCB_TABS_PANEL_STYLE_BODY_DEMO: WCB_TABS_PANEL_STYLE_BODY = {
+export const BCB_TABS_PANEL_STYLE_BODY_DEMO: BCB_TABS_PANEL_STYLE_BODY = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	border: MY_BORDER_CONTROL_DEMO,
 	margin: {
@@ -73,12 +73,12 @@ export const PANEL_COLOR_TABS: {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TABS_PANEL_STYLE_BODY;
-	setAttr__: (data: WCB_TABS_PANEL_STYLE_BODY) => void;
+	panelData: BCB_TABS_PANEL_STYLE_BODY;
+	setAttr__: (data: BCB_TABS_PANEL_STYLE_BODY) => void;
 }
 
 const WcbTabsPanel_StyleBody: FC<Props> = ({
-	panelData = WCB_TABS_PANEL_STYLE_BODY_DEMO,
+	panelData = BCB_TABS_PANEL_STYLE_BODY_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

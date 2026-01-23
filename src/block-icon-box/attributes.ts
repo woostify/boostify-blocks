@@ -11,42 +11,42 @@ import {
 	Z_INDEX_DEMO,
 } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import {
-	WCB_ICON_BOX_PANEL_ICON,
-	WCB_ICON_BOX_PANEL_ICON_DEMO,
+	BCB_ICON_BOX_PANEL_ICON,
+	BCB_ICON_BOX_PANEL_ICON_DEMO,
 } from "./WcbIconBoxPanelIcon";
 import {
-	WCB_ICON_BOX_PANEL_LAYOUT,
-	WCB_ICON_BOX_PANEL_LAYOUT_DEMO,
+	BCB_ICON_BOX_PANEL_LAYOUT,
+	BCB_ICON_BOX_PANEL_LAYOUT_DEMO,
 } from "./WcbIconBoxPanelLayout";
 
 import {
-	WCB_ICON_BOX_PANEL_STYLE_DESIGNATION,
-	WCB_ICON_BOX_PANEL_STYLE_DESIGNATION_DEMO,
+	BCB_ICON_BOX_PANEL_STYLE_DESIGNATION,
+	BCB_ICON_BOX_PANEL_STYLE_DESIGNATION_DEMO,
 } from "./WcbTeamPanel_StyleDesignation";
 import {
-	WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION,
-	WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO,
+	BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION,
+	BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO,
 } from "./WcbTeamPanel_StyleDescription";
 import {
-	WCB_ICON_BOX_PANEL_STYLE_TITLE,
-	WCB_ICON_BOX_PANEL_STYLE_TITLE_DEMO,
+	BCB_ICON_BOX_PANEL_STYLE_TITLE,
+	BCB_ICON_BOX_PANEL_STYLE_TITLE_DEMO,
 } from "./WcbTeamPanel_StyleTitle";
 import {
-	WCB_ICON_BOX_PANEL_STYLE_ICON,
-	WCB_ICON_BOX_PANEL_STYLE_ICON_DEMO,
+	BCB_ICON_BOX_PANEL_STYLE_ICON,
+	BCB_ICON_BOX_PANEL_STYLE_ICON_DEMO,
 } from "./WcbIconBoxPanel_StyleIcons";
 
 import {
-	WCB_ICON_BOX_PANEL_STYLE_SEPARATOR,
-	WCB_ICON_BOX_PANEL_STYLE_SEPARATOR_DEMO,
+	BCB_ICON_BOX_PANEL_STYLE_SEPARATOR,
+	BCB_ICON_BOX_PANEL_STYLE_SEPARATOR_DEMO,
 } from "./WcbIconBoxPanel_StyleSeparator";
 import {
-	WCB_ICON_BOX_PANEL_STYLE_DIMENSION,
-	WCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO,
+	BCB_ICON_BOX_PANEL_STYLE_DIMENSION,
+	BCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbIconBoxPanel_StyleDimension";
 import {
-	WCB_ICON_BOX_PANEL_SEPARATOR,
-	WCB_ICON_BOX_PANEL_SEPARATOR_DEMO,
+	BCB_ICON_BOX_PANEL_SEPARATOR,
+	BCB_ICON_BOX_PANEL_SEPARATOR_DEMO,
 } from "./WcbIconBoxPanelSeparator";
 import {
 	MY_MOTION_EFFECT_DEMO,
@@ -58,15 +58,15 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	designation: string;
 	description: string;
 	//
-	general_layout: WCB_ICON_BOX_PANEL_LAYOUT;
-	general_icon: WCB_ICON_BOX_PANEL_ICON;
-	general_separator: WCB_ICON_BOX_PANEL_SEPARATOR;
-	style_title: WCB_ICON_BOX_PANEL_STYLE_TITLE;
-	style_desination: WCB_ICON_BOX_PANEL_STYLE_DESIGNATION;
-	style_separator: WCB_ICON_BOX_PANEL_STYLE_SEPARATOR;
-	style_description: WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION;
-	style_Icon: WCB_ICON_BOX_PANEL_STYLE_ICON;
-	style_dimension: WCB_ICON_BOX_PANEL_STYLE_DIMENSION;
+	general_layout: BCB_ICON_BOX_PANEL_LAYOUT;
+	general_icon: BCB_ICON_BOX_PANEL_ICON;
+	general_separator: BCB_ICON_BOX_PANEL_SEPARATOR;
+	style_title: BCB_ICON_BOX_PANEL_STYLE_TITLE;
+	style_desination: BCB_ICON_BOX_PANEL_STYLE_DESIGNATION;
+	style_separator: BCB_ICON_BOX_PANEL_STYLE_SEPARATOR;
+	style_description: BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION;
+	style_Icon: BCB_ICON_BOX_PANEL_STYLE_ICON;
+	style_dimension: BCB_ICON_BOX_PANEL_STYLE_DIMENSION;
 	//
 	advance_responsiveCondition: MyResponsiveConditionControlData;
 	advance_zIndex: MyZIndexControlData;
@@ -83,19 +83,19 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	heading: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-icon-box__heading",
+		selector: ".bcb-icon-box__heading",
 		default: "John Doe",
 	},
 	designation: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-icon-box__designation",
+		selector: ".bcb-icon-box__designation",
 		default: "Write a Prefix",
 	},
 	description: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-icon-box__description",
+		selector: ".bcb-icon-box__description",
 		default:
 			"Click here to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
 	},
@@ -103,41 +103,41 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 
 	general_layout: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_LAYOUT_DEMO,
+		default: BCB_ICON_BOX_PANEL_LAYOUT_DEMO,
 	},
 	general_icon: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_ICON_DEMO,
+		default: BCB_ICON_BOX_PANEL_ICON_DEMO,
 	},
 	general_separator: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_SEPARATOR_DEMO,
+		default: BCB_ICON_BOX_PANEL_SEPARATOR_DEMO,
 	},
 
 	style_title: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_STYLE_TITLE_DEMO,
+		default: BCB_ICON_BOX_PANEL_STYLE_TITLE_DEMO,
 	},
 	style_desination: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_STYLE_DESIGNATION_DEMO,
+		default: BCB_ICON_BOX_PANEL_STYLE_DESIGNATION_DEMO,
 	},
 	style_separator: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_STYLE_SEPARATOR_DEMO,
+		default: BCB_ICON_BOX_PANEL_STYLE_SEPARATOR_DEMO,
 	},
 	style_description: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO,
+		default: BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO,
 	},
 	style_Icon: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_STYLE_ICON_DEMO,
+		default: BCB_ICON_BOX_PANEL_STYLE_ICON_DEMO,
 	},
 
 	style_dimension: {
 		type: "object",
-		default: WCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO,
+		default: BCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO,
 	},
 
 	// ADVANCE

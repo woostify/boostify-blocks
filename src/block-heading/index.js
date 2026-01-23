@@ -28,15 +28,15 @@ import {
 	RichTextShortcut,
 } from "@wordpress/block-editor";
 import { registerFormatType, toggleFormat } from "@wordpress/rich-text";
-import MyCustomButton, { WCB_FORMAT_HIGHLIGHT } from "./MyCustomButton";
+import MyCustomButton, { BCB_FORMAT_HIGHLIGHT } from "./MyCustomButton";
 import deprecated from "./deprecated";
 import convertObjectAttrToPreview from "../utils/convertAttsToPreview";
 //------------------ TAILWINDCSS AND COMMON CSS -----------------
 
-registerFormatType(WCB_FORMAT_HIGHLIGHT, {
+registerFormatType(BCB_FORMAT_HIGHLIGHT, {
 	title: "Highlight",
 	tagName: "mark",
-	className: "wcb-highlight-text",
+	className: "bcb-highlight-text",
 	edit: MyCustomButton,
 });
 
@@ -48,7 +48,7 @@ registerBlockType(metadata.name, {
 	example: convertObjectAttrToPreview(attributes),
 	icon: (
 		<svg
-			className="wcb-editor-block-icons fill-none "
+			className="bcb-editor-block-icons fill-none "
 			width={24}
 			height={24}
 			viewBox="0 0 24 24"
