@@ -12,7 +12,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import MySelect from "../components/controls/MySelect";
 import { MySelectOption } from "../types";
 
-export interface WCB_TAGS_PANEL_GENERAL {
+export interface BCB_TAGS_PANEL_GENERAL {
     layout: "accordion" | "grid";
     style: "horizontalStyle1" | "horizontalStyle2" | "verticalStyle1" | "verticalStyle2";
     headingTag: keyof HTMLElementTagNameMap;
@@ -25,7 +25,7 @@ export interface WCB_TAGS_PANEL_GENERAL {
     textAlignment: TextAlignment;
 }
 
-export const WCB_TAGS_PANEL_GENERAL_DEMO: WCB_TAGS_PANEL_GENERAL = {
+export const BCB_TAGS_PANEL_GENERAL_DEMO: BCB_TAGS_PANEL_GENERAL = {
     layout: "accordion",
     style: "horizontalStyle1",
     headingTag: "div",
@@ -39,12 +39,12 @@ export const WCB_TAGS_PANEL_GENERAL_DEMO: WCB_TAGS_PANEL_GENERAL = {
 };
 
 interface Props extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-    panelData: WCB_TAGS_PANEL_GENERAL;
-    setAttr__: (data: WCB_TAGS_PANEL_GENERAL) => void;
+    panelData: BCB_TAGS_PANEL_GENERAL;
+    setAttr__: (data: BCB_TAGS_PANEL_GENERAL) => void;
 }
 
 const WcbTabsPanelGeneral: FC<Props> = ({
-    panelData = WCB_TAGS_PANEL_GENERAL_DEMO,
+    panelData = BCB_TAGS_PANEL_GENERAL_DEMO,
     setAttr__,
     initialOpen,
     onToggle,
@@ -66,7 +66,7 @@ const WcbTabsPanelGeneral: FC<Props> = ({
 
     const { currentDeviceValue: COLUMNS } = getValueFromAttrsResponsives(columns, deviceType);
 
-    const PLANS_DEMO: MyRadioItem<WCB_TAGS_PANEL_GENERAL["layout"]>[] = [
+    const PLANS_DEMO: MyRadioItem<BCB_TAGS_PANEL_GENERAL["layout"]>[] = [
         { icon: "Accordion", name: "accordion" },
         { icon: "Grid", name: "grid" },
     ];
@@ -99,7 +99,7 @@ const WcbTabsPanelGeneral: FC<Props> = ({
         );
     };
 
-    const OPTION_STYLE_OPEN_TAB_DEMO: MySelectOption<WCB_TAGS_PANEL_GENERAL["style"]>[] = [
+    const OPTION_STYLE_OPEN_TAB_DEMO: MySelectOption<BCB_TAGS_PANEL_GENERAL["style"]>[] = [
         { label: "Horizontal Style 1", value: "horizontalStyle1" },
         { label: "Horizontal Style 2", value: "horizontalStyle2" },
         { label: "Vertical Style 1", value: "verticalStyle1" },
@@ -114,23 +114,23 @@ const WcbTabsPanelGeneral: FC<Props> = ({
 
 
     return (
-        <PanelBody initialOpen={initialOpen} onToggle={onToggle} opened={opened} title={__("General", "boostify-blocks")}>
+        <PanelBody initialOpen={initialOpen} onToggle={onToggle} opened={opened} title={__("General", "wcb")}>
             <div className="space-y-5">
                 <MySelect
-                    label={__("Style", "boostify-blocks")}
+                    label={__("Style", "Wcb")}
                     options={filteredStyleOptions}
                     value={style}
                     onChange={(value) => {
                         setAttr__({
                             ...panelData,
-                            style: value as WCB_TAGS_PANEL_GENERAL["style"],
+                            style: value as BCB_TAGS_PANEL_GENERAL["style"],
                         });
                     }}
                 />
                 <MyRadioGroup
                     hasResponsive={false}
-                    label={__("Layout", "boostify-blocks")}
-                    onChange={(value) => setAttr__({ ...panelData, layout: value as WCB_TAGS_PANEL_GENERAL["layout"] })}
+                    label={__("Layout", "wcb")}
+                    onChange={(value) => setAttr__({ ...panelData, layout: value as BCB_TAGS_PANEL_GENERAL["layout"] })}
                     value={layout}
                     plans={PLANS_DEMO}
                 />
@@ -149,7 +149,7 @@ const WcbTabsPanelGeneral: FC<Props> = ({
                 />
                 {layout === "grid" && (
                     <RangeControl
-                        label={<MyLabelControl hasResponsive>{__("Columns", "boostify-blocks")}</MyLabelControl>}
+                        label={<MyLabelControl hasResponsive>{__("Columns", "wcb")}</MyLabelControl>}
                         value={COLUMNS || 2}
                         onChange={(value) => setAttr__({ ...panelData, columns: { ...columns, [deviceType]: value } })}
                         min={1}

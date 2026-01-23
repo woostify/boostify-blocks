@@ -1,10 +1,10 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
+  "apiVersion": 2,
   "name": "wcb/default",
   "version": "0.1.0",
   "title": "Heading",
-  "category": "wcb-blocks",
+  "category": "bcb-blocks",
   "icon": "heart",
   "description": "Example static block scaffolded with Create Block tool.",
   "supports": {
@@ -14,7 +14,7 @@
       "full"
     ]
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "bcb-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",

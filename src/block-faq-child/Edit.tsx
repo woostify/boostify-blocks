@@ -9,8 +9,8 @@ import { WcbAttrs } from "./attributes";
 import { EditProps } from "../block-container/Edit";
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
-import { WCB_FAQ_PANEL_ICON } from "../block-faq/WcbFaqPanelIcon";
-import { WCB_FAQ_PANEL_GENERAL } from "../block-faq/WcbFaqPanelGeneral";
+import { BCB_FAQ_PANEL_ICON } from "../block-faq/WcbFaqPanelIcon";
+import { BCB_FAQ_PANEL_GENERAL } from "../block-faq/WcbFaqPanelGeneral";
 import { useSelect } from "@wordpress/data";
 import MyCacheProvider from "../components/MyCacheProvider";
 import MyIconFull from "../components/controls/MyIconFull";
@@ -20,8 +20,8 @@ const Edit: FC<
 	EditProps<
 		WcbAttrs,
 		{
-			"wcb/faq_icon"?: WCB_FAQ_PANEL_ICON;
-			"wcb/faq_general"?: WCB_FAQ_PANEL_GENERAL;
+			"wcb/faq_icon"?: BCB_FAQ_PANEL_ICON;
+			"wcb/faq_general"?: BCB_FAQ_PANEL_GENERAL;
 		}
 	>
 > = (props) => {
@@ -82,13 +82,13 @@ const Edit: FC<
 			<>
 				{general_icon.icon && (
 					<MyIconFull
-						className="wcb-faq-child__icon wcb-faq-child__icon--active"
+						className="bcb-faq-child__icon bcb-faq-child__icon--active"
 						icon={general_icon.icon}
 					/>
 				)}
 				{general_icon.inactiveIcon && (
 					<MyIconFull
-						className="wcb-faq-child__icon wcb-faq-child__icon--inactive"
+						className="bcb-faq-child__icon bcb-faq-child__icon--inactive"
 						icon={general_icon.inactiveIcon}
 					/>
 				)}
@@ -104,14 +104,14 @@ const Edit: FC<
 				{...wrapBlockProps}
 				className={`${
 					wrapBlockProps?.className
-				} wcb-faq-child__wrap wcb-faq-child__wrap--${layout} ${
+				} bcb-faq-child__wrap bcb-faq-child__wrap--${layout} ${
 					ACTIVE ? "active" : ""
 				} ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				<div className="ac-header">
 					<div
-						className={`wcb-faq-child__question wcb-faq-child__question--icon-${general_icon.iconPosition}`}
+						className={`bcb-faq-child__question bcb-faq-child__question--icon-${general_icon.iconPosition}`}
 					>
 						{general_icon.iconPosition === "left" && renderIcon()}
 						<RichText
@@ -120,7 +120,7 @@ const Edit: FC<
 							allowedFormats={["core/bold", "core/italic"]}
 							onChange={(content) => setAttributes({ question: content })}
 							placeholder={__("Question...")}
-							className="wcb-faq-child__question-text"
+							className="bcb-faq-child__question-text"
 						/>
 
 						{general_icon.iconPosition === "right" && renderIcon()}
@@ -129,16 +129,16 @@ const Edit: FC<
 				{(ACTIVE || layout === "grid") && (
 					<div className="ac-panel">
 						{enableSeparator && (
-							<div className="wcb-faq-child__separator"></div>
+							<div className="bcb-faq-child__separator"></div>
 						)}
-						<div className="wcb-faq-child__answer">
+						<div className="bcb-faq-child__answer">
 							<RichText
 								tagName="p"
 								value={answer}
 								allowedFormats={["core/bold", "core/italic"]}
 								onChange={(content) => setAttributes({ answer: content })}
 								placeholder={__("Answer...")}
-								className="wcb-faq-child__answer-text"
+								className="bcb-faq-child__answer-text"
 							/>
 						</div>
 					</div>

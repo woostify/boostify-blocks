@@ -45,7 +45,7 @@ export const INSPECTOR_CONTROLS_TABS: InspectorControlsTabs = [
 						strokeLinejoin="round"
 					/>
 				</svg>
-				<div>{__("General", "boostify-blocks")}</div>
+				<div>{__("General", "wcb")}</div>
 			</div>
 		),
 	},
@@ -97,7 +97,7 @@ export const INSPECTOR_CONTROLS_TABS: InspectorControlsTabs = [
 						strokeLinecap="round"
 					/>
 				</svg>
-				<div>{__("Styles", "boostify-blocks")}</div>
+				<div>{__("Styles", "wcb")}</div>
 			</div>
 		),
 	},
@@ -123,7 +123,7 @@ export const INSPECTOR_CONTROLS_TABS: InspectorControlsTabs = [
 						strokeLinejoin="round"
 					/>
 				</svg>
-				<div>{__("Advances", "boostify-blocks")}</div>
+				<div>{__("Advances", "wcb")}</div>
 			</div>
 		),
 	},
@@ -183,7 +183,7 @@ const HOCInspectorControls: FC<Props> = ({
 	const renderContent = () => {
 		return (
 			<TabPanel
-				className={`wcb-inspectorControls__panel ${uniqueId}`}
+				className={`bcb-inspectorControls__panel ${uniqueId}`}
 				activeClass="HOCInspectorControls__ative-tab active-tab"
 				tabs={tabs}
 				onSelect={handleChageTab}

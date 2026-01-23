@@ -1,7 +1,7 @@
-.wcb-button__wrap {
+.bcb-button__wrap {
 	text-decoration: none;
 }
-.wcb-button__main {
+.bcb-button__main {
 	text-decoration: none;
 	display: inline-flex;
 	align-items: center;
@@ -36,10 +36,10 @@
 	}
 }
 
-.wcb-button__text {
+.bcb-button__text {
 }
 
-.wcb-button__icon {
+.bcb-button__icon {
 	@apply flex items-center flex-shrink-0;
 	&.is-image img,
 	&.is-svg svg {
@@ -47,7 +47,7 @@
 	}
 }
 
-.wcb-button__main-icon-top,
-.wcb-button__main-icon-bottom {
+.bcb-button__main-icon-top,
+.bcb-button__main-icon-bottom {
 	flex-direction: column;
 }

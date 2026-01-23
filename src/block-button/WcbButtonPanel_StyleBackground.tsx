@@ -8,33 +8,33 @@ import MyBackgroundNoImageControl, {
 	STYLES_BG_NO_IMAGE_DEMO,
 } from "../components/controls/MyBackgroundControl/MyBackgroundNoImageControl";
 
-export interface WCB_BUTTON_PANEL_STYLE_BACKGROUND {
+export interface BCB_BUTTON_PANEL_STYLE_BACKGROUND {
 	normal: BackgroundNoImageControlData;
 	hover: BackgroundNoImageControlData;
 }
 
-export const WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY: WCB_BUTTON_PANEL_STYLE_BACKGROUND =
+export const BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY: BCB_BUTTON_PANEL_STYLE_BACKGROUND =
 	{
 		normal: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#0284c7" },
 		hover: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#0369a1" },
 	};
-export const WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_SECONDARY: WCB_BUTTON_PANEL_STYLE_BACKGROUND =
+export const BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_SECONDARY: BCB_BUTTON_PANEL_STYLE_BACKGROUND =
 	{
 		normal: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#e0f2fe" },
 		hover: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#bae6fd" },
 	};
-export const WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE: WCB_BUTTON_PANEL_STYLE_BACKGROUND =
+export const BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE: BCB_BUTTON_PANEL_STYLE_BACKGROUND =
 	{
 		normal: STYLES_BG_NO_IMAGE_DEMO,
 		hover: STYLES_BG_NO_IMAGE_DEMO,
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO =
-	WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY;
+export const BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO =
+	BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_PRIMARY;
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_STYLE_BACKGROUND;
-	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_BACKGROUND) => void;
+	panelData: BCB_BUTTON_PANEL_STYLE_BACKGROUND;
+	setAttr__: (data: BCB_BUTTON_PANEL_STYLE_BACKGROUND) => void;
 }
 
 type TabsHere = "normal" | "hover";
@@ -42,12 +42,12 @@ const PanelTab: {
 	name: TabsHere;
 	title: string;
 }[] = [
-	{ name: "normal", title: __("Normal", "boostify-blocks") },
-	{ name: "hover", title: __("Hover", "boostify-blocks") },
+	{ name: "normal", title: __("Normal", "wcb") },
+	{ name: "hover", title: __("Hover", "wcb") },
 ];
 
 const WcbButtonPanel_StyleBackground: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO,
+	panelData = BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -59,10 +59,10 @@ const WcbButtonPanel_StyleBackground: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Background", "boostify-blocks")}
+			title={__("Background", "wcb")}
 		>
 			<TabPanel
-				className={`wcb-bodyControls__panel `}
+				className={`bcb-bodyControls__panel `}
 				activeClass="active-tab"
 				initialTabName={"normal"}
 				tabs={PanelTab}

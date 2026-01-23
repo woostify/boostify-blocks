@@ -19,7 +19,7 @@ export interface Props
 
 const MySpacingSizesControl: FC<Props> = ({
 	className = "",
-	label = __("Margin bottom", "boostify-blocks"),
+	label = __("Margin bottom", "wcb"),
 	hasResponsive = true,
 	units,
 	minCustomValue,

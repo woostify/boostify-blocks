@@ -14,13 +14,13 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION {
+export interface BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO: WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION =
+export const BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO: BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "#171717",
@@ -29,12 +29,12 @@ export const WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO: WCB_ICON_BOX_PANEL_STYLE
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION;
-	setAttr__: (data: WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION) => void;
+	panelData: BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION;
+	setAttr__: (data: BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION) => void;
 }
 
 const WcbTeamPanel_StyleDescription: FC<Props> = ({
-	panelData = WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO,
+	panelData = BCB_ICON_BOX_PANEL_STYLE_DESCRIPTION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -53,7 +53,7 @@ const WcbTeamPanel_StyleDescription: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Description", "boostify-blocks")}
+			title={__("Description", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -88,7 +88,7 @@ const WcbTeamPanel_StyleDescription: FC<Props> = ({
 							});
 						}}
 						value={MARGIN_BOTTOM || ""}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 					/>
 				</MyDisclosure>

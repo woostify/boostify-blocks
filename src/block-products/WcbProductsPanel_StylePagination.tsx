@@ -55,13 +55,13 @@ const MY_POST_GRID_MAIN_STYLE_PAGINATION_DEMO: PostGridPagiantionType = {
 	},
 };
 
-export interface WCB_PRODUCTS_PANEL_STYLE_PAGINATION {
+export interface BCB_PRODUCTS_PANEL_STYLE_PAGINATION {
 	mainStyle: PostGridPagiantionType;
 	marginTop: HasResponsive<string>;
 	justifyContent: CSSProperties["justifyContent"];
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO: WCB_PRODUCTS_PANEL_STYLE_PAGINATION =
+export const BCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO: BCB_PRODUCTS_PANEL_STYLE_PAGINATION =
 	{
 		mainStyle: MY_POST_GRID_MAIN_STYLE_PAGINATION_DEMO,
 		marginTop: { Desktop: "2rem" },
@@ -70,12 +70,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO: WCB_PRODUCTS_PANEL_STYLE_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_PAGINATION;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_PAGINATION) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_PAGINATION;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_PAGINATION) => void;
 }
 
 const WcbProductsPanel_StylePagination: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -93,8 +93,8 @@ const WcbProductsPanel_StylePagination: FC<Props> = ({
 		name: MyTabsForActive;
 		title: string;
 	}[] = [
-		{ name: "Normal", title: __("Normal", "boostify-blocks") },
-		{ name: "Active", title: __("Active", "boostify-blocks") },
+		{ name: "Normal", title: __("Normal", "wcb") },
+		{ name: "Active", title: __("Active", "wcb") },
 	];
 
 	const renderTabContent = (tab: TabPanel.Tab) => {
@@ -104,7 +104,7 @@ const WcbProductsPanel_StylePagination: FC<Props> = ({
 			<div className="space-y-3.5">
 				{color && (
 					<MyColorPicker
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 						onChange={(value) =>
 							setAttr__({
 								...panelData,
@@ -122,7 +122,7 @@ const WcbProductsPanel_StylePagination: FC<Props> = ({
 				)}
 				{backgroundColor && (
 					<MyColorPicker
-						label={__("Background color", "boostify-blocks")}
+						label={__("Background color", "wcb")}
 						onChange={(value) =>
 							setAttr__({
 								...panelData,
@@ -163,11 +163,11 @@ const WcbProductsPanel_StylePagination: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Pagination", "boostify-blocks")}
+			title={__("Pagination", "wcb")}
 		>
 			<div className="space-y-4">
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="Normal"
 					tabs={PANEL_PAGINATION_TABS}
@@ -176,7 +176,7 @@ const WcbProductsPanel_StylePagination: FC<Props> = ({
 				</TabPanel>
 
 				<MyRadioGroup
-					label={__("Justify content", "boostify-blocks")}
+					label={__("Justify content", "wcb")}
 					hasResponsive={false}
 					onChange={(value) => {
 						setAttr__({
@@ -199,7 +199,7 @@ const WcbProductsPanel_StylePagination: FC<Props> = ({
 					}}
 					value={MARGIN_TOP}
 					units={MY_GAP_UNITS}
-					label={__("Margin Top", "boostify-blocks")}
+					label={__("Margin Top", "wcb")}
 					hasResponsive
 				/>
 			</div>

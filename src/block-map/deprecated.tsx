@@ -1,7 +1,7 @@
 import Save__260523 from "./Save__260523";
 import Save_100623 from "./Save_100623";
 import blokc1Attrs from "./attributes";
-import { WCB_MAP_PANEL_GENERAL_DEMO } from "./WcbMapPanelGeneral";
+import { BCB_MAP_PANEL_GENERAL_DEMO } from "./WcbMapPanelGeneral";
 import save from "./Save";
 
 const v1 = {};
@@ -12,7 +12,7 @@ const v3 = {
 		general_general: {
 			type: "object",
 			default: {
-				...WCB_MAP_PANEL_GENERAL_DEMO,
+				...BCB_MAP_PANEL_GENERAL_DEMO,
 				placeQuery: {
 					name: "Amsterdam Centraal railway station",
 					place_id: "ChIJdan7FLcJxkcRQrwvoy3DwiM",
@@ -30,7 +30,7 @@ const v4 = {
 		general_general: {
 			type: "object",
 			default: {
-				...WCB_MAP_PANEL_GENERAL_DEMO,
+				...BCB_MAP_PANEL_GENERAL_DEMO,
 				placeQuery: {
 					name: "Amsterdam Centraal railway station",
 					place_id: "ChIJdan7FLcJxkcRQrwvoy3DwiM",

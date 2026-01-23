@@ -18,7 +18,7 @@ import SelecIcon, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 
-export interface WCB_BUTTON_PANEL_CONTENT {
+export interface BCB_BUTTON_PANEL_CONTENT {
 	enableIcon: boolean;
 	icon: MyIcon;
 	iconPosition: "top" | "left" | "right" | "bottom";
@@ -28,7 +28,7 @@ export interface WCB_BUTTON_PANEL_CONTENT {
 	addNofollowToLink: boolean;
 }
 
-export const WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON: WCB_BUTTON_PANEL_CONTENT =
+export const BCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON: BCB_BUTTON_PANEL_CONTENT =
 	{
 		enableIcon: false,
 		iconPosition: "left",
@@ -39,7 +39,7 @@ export const WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON: WCB_BUTTON_PANEL_CONT
 		icon: DEFAULT_MY_ICON,
 	};
 
-export const WCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon: WCB_BUTTON_PANEL_CONTENT =
+export const BCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon: BCB_BUTTON_PANEL_CONTENT =
 	{
 		enableIcon: true,
 		iconPosition: "left",
@@ -49,7 +49,7 @@ export const WCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon: WCB_BUTTON_PANEL_C
 		addNofollowToLink: true,
 		icon: DEFAULT_MY_ICON,
 	};
-export const WCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons: WCB_BUTTON_PANEL_CONTENT =
+export const BCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons: BCB_BUTTON_PANEL_CONTENT =
 	{
 		enableIcon: true,
 		iconPosition: "right",
@@ -60,7 +60,7 @@ export const WCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons: WCB_BUTTON_PANEL
 		icon: DEFAULT_MY_ICON,
 	};
 
-export const WCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR: WCB_BUTTON_PANEL_CONTENT =
+export const BCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR: BCB_BUTTON_PANEL_CONTENT =
 	{
 		enableIcon: true,
 		iconPosition: "left",
@@ -71,17 +71,17 @@ export const WCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR: WCB_BUTTON_PANEL_CONTENT =
 		icon: DEFAULT_MY_ICON,
 	};
 
-export const WCB_BUTTON_PANEL_CONTENT_DEMO =
-	WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON;
+export const BCB_BUTTON_PANEL_CONTENT_DEMO =
+	BCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_CONTENT;
-	setAttr__: (data: WCB_BUTTON_PANEL_CONTENT) => void;
+	panelData: BCB_BUTTON_PANEL_CONTENT;
+	setAttr__: (data: BCB_BUTTON_PANEL_CONTENT) => void;
 }
 
 const WcbButtonPanelContent: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_CONTENT_DEMO,
+	panelData = BCB_BUTTON_PANEL_CONTENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -98,7 +98,7 @@ const WcbButtonPanelContent: FC<Props> = ({
 		openInNewWindow
 	} = panelData;
 
-	const PLANS_DEMO: MyRadioItem<WCB_BUTTON_PANEL_CONTENT["iconPosition"]>[] = [
+	const PLANS_DEMO: MyRadioItem<BCB_BUTTON_PANEL_CONTENT["iconPosition"]>[] = [
 		{ name: "left", icon: "Left" },
 		{ name: "right", icon: "Right" },
 		{ name: "top", icon: "Top" },
@@ -113,12 +113,12 @@ const WcbButtonPanelContent: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Content", "boostify-blocks")}
+			title={__("Content", "wcb")}
 			className="WcbButtonPanelContent"
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Enable Icon", "boostify-blocks")}
+					label={__("Enable Icon", "wcb")}
 					checked={enableIcon}
 					className="mb-0"
 					onChange={(checked) => {
@@ -140,7 +140,7 @@ const WcbButtonPanelContent: FC<Props> = ({
 							/>
 
 							<MyRadioGroup
-								label={__("Icon position", "boostify-blocks")}
+								label={__("Icon position", "wcb")}
 								value={iconPosition}
 								onChange={(value) => {
 									setAttr__({
@@ -156,7 +156,7 @@ const WcbButtonPanelContent: FC<Props> = ({
 				}
 
 				<div>
-					<MyLabelControl className="mb-0">{__("Link", "boostify-blocks")}</MyLabelControl>
+					<MyLabelControl className="mb-0">{__("Link", "wcb")}</MyLabelControl>
 
 					<LinkControl
 						className="WcbButtonPanelContent__inline-link-input"
@@ -181,7 +181,7 @@ const WcbButtonPanelContent: FC<Props> = ({
 				</div>
 
 				{/* <TextControl
-					label={__("Link", "boostify-blocks")}
+					label={__("Link", "wcb")}
 					type="text"
 					value={link}
 					onChange={(value) => {
@@ -190,7 +190,7 @@ const WcbButtonPanelContent: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Open in new window", "boostify-blocks")}
+					label={__("Open in new window", "wcb")}
 					checked={openInNewWindow}
 					onChange={(checked) => {
 						setAttr__({ ...panelData, openInNewWindow: checked });
@@ -198,7 +198,7 @@ const WcbButtonPanelContent: FC<Props> = ({
 				/> */}
 
 				<ToggleControl
-					label={__('Add "nofollow" to link', "boostify-blocks")}
+					label={__('Add "nofollow" to link', "wcb")}
 					checked={addNofollowToLink}
 					onChange={(checked) => {
 						setAttr__({ ...panelData, addNofollowToLink: checked });
@@ -206,14 +206,14 @@ const WcbButtonPanelContent: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Hidden text", "boostify-blocks")}
+					label={__("Hidden text", "wcb")}
 					checked={isHiddenText}
 					onChange={(checked) => {
 						setAttr__({ ...panelData, isHiddenText: checked });
 					}}
 				/>
 				<ToggleControl
-					label={__("Open in new windown", "boostify-blocks")}
+					label={__("Open in new windown", "wcb")}
 					checked={openInNewWindow}
 					onChange={(checked) => {
 						setAttr__({ ...panelData, openInNewWindow: checked });

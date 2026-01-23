@@ -1,5 +1,5 @@
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
 interface Props extends WcbAttrsForSave {}
@@ -54,13 +54,13 @@ export function initCarouselForWcbTestimonials(div: Element, props: Props) {
 		pauseOnHover: hoverpause,
 		responsive: [
 			{
-				breakpoint: parseInt(DEMO_WCB_GLOBAL_VARIABLES.media_desktop),
+				breakpoint: parseInt(DEMO_BCB_GLOBAL_VARIABLES.media_desktop),
 				settings: {
 					slidesToShow: col_tablet,
 				},
 			},
 			{
-				breakpoint: parseInt(DEMO_WCB_GLOBAL_VARIABLES.media_tablet),
+				breakpoint: parseInt(DEMO_BCB_GLOBAL_VARIABLES.media_tablet),
 				settings: {
 					slidesToShow: col_mobile,
 				},
@@ -68,5 +68,5 @@ export function initCarouselForWcbTestimonials(div: Element, props: Props) {
 		],
 	};
 	// @ts-ignore
-	$(`.${dataUniqueid} .wcb-testimonials__wrap-items`)?.slick?.(settings);
+	$(`.${dataUniqueid} .bcb-testimonials__wrap-items`)?.slick?.(settings);
 }

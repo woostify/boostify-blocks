@@ -8,24 +8,24 @@ import MyTextAlignControl, {
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_HEADING_PANEL_HEADING {
+export interface BCB_HEADING_PANEL_HEADING {
 	textAlignment: HasResponsive<TextAlignment>;
 	headingTag: React.ElementType<any>;
 }
 
-export const WCB_HEADING_PANEL_HEADING_DEMO: WCB_HEADING_PANEL_HEADING = {
+export const BCB_HEADING_PANEL_HEADING_DEMO: BCB_HEADING_PANEL_HEADING = {
 	textAlignment: { Desktop: "left" },
 	headingTag: "h2",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_HEADING_PANEL_HEADING;
-	setAttr__: (data: WCB_HEADING_PANEL_HEADING) => void;
+	panelData: BCB_HEADING_PANEL_HEADING;
+	setAttr__: (data: BCB_HEADING_PANEL_HEADING) => void;
 }
 
 const WcbHeadingPanelHeading: FC<Props> = ({
-	panelData = WCB_HEADING_PANEL_HEADING_DEMO,
+	panelData = BCB_HEADING_PANEL_HEADING_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -54,7 +54,7 @@ const WcbHeadingPanelHeading: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Panel Heading", "boostify-blocks")}
+			title={__("Panel Heading", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyTextAlignControl

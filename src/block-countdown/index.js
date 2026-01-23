@@ -62,7 +62,7 @@ registerBlockType(metadata.name, {
 			height={24}
 			viewBox="0 0 24 24"
 			fill="none"
-			className="wcb-editor-block-icons fill-none "
+			className="bcb-editor-block-icons fill-none "
 			aria-hidden="true"
 			focusable="false"
 		>

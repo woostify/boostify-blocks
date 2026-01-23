@@ -10,24 +10,24 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_TEAM_PANEL_LAYOUT {
+export interface BCB_TEAM_PANEL_LAYOUT {
 	textAlignment: HasResponsive<TextAlignment>;
 	headingTag: keyof HTMLElementTagNameMap;
 }
 
-export const WCB_TEAM_PANEL_LAYOUT_DEMO: WCB_TEAM_PANEL_LAYOUT = {
+export const BCB_TEAM_PANEL_LAYOUT_DEMO: BCB_TEAM_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "center" },
 	headingTag: "h3",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_LAYOUT;
-	setAttr__: (data: WCB_TEAM_PANEL_LAYOUT) => void;
+	panelData: BCB_TEAM_PANEL_LAYOUT;
+	setAttr__: (data: BCB_TEAM_PANEL_LAYOUT) => void;
 }
 
 const WcbTeamPanelLayout: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_LAYOUT_DEMO,
+	panelData = BCB_TEAM_PANEL_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -59,7 +59,7 @@ const WcbTeamPanelLayout: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Layout", "boostify-blocks")}
+			title={__("Layout", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyTextAlignControl

@@ -1,15 +1,15 @@
-.wcb-products__wrap {
+.bcb-products__wrap {
 	display: none;
 	position: relative;
 
-	.wcb-products__product-image-link {
+	.bcb-products__product-image-link {
 		position: relative;
 		display: block;
 		overflow: hidden;
 
 		/* zoom hover */
 		&__zoom {
-			.wcb-products__product-image {
+			.bcb-products__product-image {
 				@apply block relative aspect-square overflow-hidden;
 			}
 
@@ -25,14 +25,14 @@
 		}
 
 		/* hover swap  */
-		.wcb-products__product-galley_image_1 {
+		.bcb-products__product-galley_image_1 {
 			img {
 				@apply absolute inset-0 object-cover opacity-0 transition-opacity w-full h-full duration-300;
 			}
 		}
 
 		&:hover {
-			.wcb-products__product-galley_image_1 {
+			.bcb-products__product-galley_image_1 {
 				img {
 					@apply opacity-100 z-[1];
 				}
@@ -54,35 +54,35 @@
 	}
 } */
 
-.wcb-products__product {
+.bcb-products__product {
 	font-size: 16px;
 
-	&.wcb-products__product--btnInsideImage {
-		.wcb-products__product-featured {
+	&.bcb-products__product--btnInsideImage {
+		.bcb-products__product-featured {
             position: relative; /* Đảm bảo container của ảnh là tham chiếu cho button */
         }
 	
-		.wcb-products__product-add-to-cart {
+		.bcb-products__product-add-to-cart {
 			@apply absolute left-1/2 z-10 opacity-0 invisible transition-opacity;
 			top: 40%;
 			transform: translateX(-50%);
 		}
 		&:hover {
-			.wcb-products__product-add-to-cart {
+			.bcb-products__product-add-to-cart {
 				@apply opacity-100 visible;
 			}
 		}
 	}
-	&.wcb-products__product--onsaleInsideImage {
-		.wcb-products__product-salebadge {
+	&.bcb-products__product--onsaleInsideImage {
+		.bcb-products__product-salebadge {
 			@apply absolute left-2 top-2 z-10;
 		}
 	}
 
-	.wcb-products__product-rating {
+	.bcb-products__product-rating {
 		display: inline-block;
 	}
-	.wcb-products__product-onsale {
+	.bcb-products__product-onsale {
 		border: none;
 		padding: 0.25rem 0.75rem;
 		text-align: center;
@@ -162,19 +162,19 @@
 	}
 }
 
-.wcb-products__product-onsale {
+.bcb-products__product-onsale {
 	display: inline-block;
 }
 
-.wcb-products__product-featured {
+.bcb-products__product-featured {
 	position: relative;
 }
 
-.wcb-products__product-title {
+.bcb-products__product-title {
 	margin-top: 0;
 }
 
-.wcb-products__product-image {
+.bcb-products__product-image {
 	img {
 		width: 100%;
 		border-radius: inherit;
@@ -182,7 +182,7 @@
 	}
 }
 
-.wcb-products__product-featured {
+.bcb-products__product-featured {
 	.wp-block-button__link,
 	.added_to_cart {
 		margin-left: auto;
@@ -190,7 +190,7 @@
 	}
 }
 
-.wcb-products__product-add-to-cart {
+.bcb-products__product-add-to-cart {
 	display: inline-grid;
 	gap: 8px;
 
@@ -223,7 +223,7 @@ body:not(.wp-admin) {
 	}
 }
 
-.wcb-products__wrap {
+.bcb-products__wrap {
 	.scroll-snap-slider {
 		display: flex;
 		flex-wrap: nowrap;

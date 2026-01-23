@@ -18,7 +18,7 @@ const MySelect: FC<Props> = ({
 	...props
 }) => {
 	return (
-		<div className="wcb-MySelect w-full flex justify-between items-center">
+		<div className="bcb-MySelect w-full flex justify-between items-center">
 			<MyLabelControl
 				className={labelClass}
 				hasResponsive={hasResponsive}

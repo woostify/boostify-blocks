@@ -13,13 +13,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_NAME {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_NAME {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_TESTIMONIALS_PANEL_STYLE_NAME_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_NAME =
+export const BCB_TESTIMONIALS_PANEL_STYLE_NAME_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_NAME =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -37,12 +37,12 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_NAME_DEMO: WCB_TESTIMONIALS_PANEL_STYL
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_NAME;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_NAME) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_NAME;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_NAME) => void;
 }
 
 const WcbTestimonialsPanel_StyleName: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_NAME_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_NAME_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -58,11 +58,11 @@ const WcbTestimonialsPanel_StyleName: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Name", "boostify-blocks")}
+			title={__("Name", "wcb")}
 		>
 			<div className="space-y-5">
 				<MyColorPicker
-					label={__("Color", "boostify-blocks")}
+					label={__("Color", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -93,7 +93,7 @@ const WcbTestimonialsPanel_StyleName: FC<Props> = ({
 						});
 					}}
 					value={currentMarginBottom || ""}
-					label={__("Margin bottom", "boostify-blocks")}
+					label={__("Margin bottom", "wcb")}
 				/>
 			</div>
 		</PanelBody>

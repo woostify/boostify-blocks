@@ -17,13 +17,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_ICON_LIST_PANEL_STYLE_SEPARATOR {
+export interface BCB_ICON_LIST_PANEL_STYLE_SEPARATOR {
 	border: BorderMainSingleSide;
 	width: HasResponsive<string>;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_ICON_LIST_PANEL_STYLE_SEPARATOR_DEMO: WCB_ICON_LIST_PANEL_STYLE_SEPARATOR =
+export const BCB_ICON_LIST_PANEL_STYLE_SEPARATOR_DEMO: BCB_ICON_LIST_PANEL_STYLE_SEPARATOR =
 	{
 		border: {
 			...DEFAULT_BORDER_MAIN_SINGLE_SIDE,
@@ -35,12 +35,12 @@ export const WCB_ICON_LIST_PANEL_STYLE_SEPARATOR_DEMO: WCB_ICON_LIST_PANEL_STYLE
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_LIST_PANEL_STYLE_SEPARATOR;
-	setAttr__: (data: WCB_ICON_LIST_PANEL_STYLE_SEPARATOR) => void;
+	panelData: BCB_ICON_LIST_PANEL_STYLE_SEPARATOR;
+	setAttr__: (data: BCB_ICON_LIST_PANEL_STYLE_SEPARATOR) => void;
 }
 
 const WcbIconListPanel_StyleSeparator: FC<Props> = ({
-	panelData = WCB_ICON_LIST_PANEL_STYLE_SEPARATOR_DEMO,
+	panelData = BCB_ICON_LIST_PANEL_STYLE_SEPARATOR_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -66,7 +66,7 @@ const WcbIconListPanel_StyleSeparator: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Separator", "boostify-blocks")}
+			title={__("Separator", "wcb")}
 		>
 			<div className="space-y-5">
 				<MySpacingSizesControl
@@ -80,7 +80,7 @@ const WcbIconListPanel_StyleSeparator: FC<Props> = ({
 							},
 						});
 					}}
-					label={__("Custom Width", "boostify-blocks")}
+					label={__("Custom Width", "wcb")}
 				/>
 				<BorderControl
 					label={__("Border styles")}
@@ -105,7 +105,7 @@ const WcbIconListPanel_StyleSeparator: FC<Props> = ({
 						});
 					}}
 					value={MARGIN_BOTTOM || ""}
-					label={__("Margin bottom", "boostify-blocks")}
+					label={__("Margin bottom", "wcb")}
 					hasResponsive
 				/>
 			</div>

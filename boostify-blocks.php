@@ -5,7 +5,7 @@
  * Description:       Boostify Blocks offers an extensive library of customizable blocks that seamlessly integrate with the Gutenberg editor
  * Requires at least: 5.8
  * Requires PHP:      7.3
- * Version:           1.0.0
+ * Version:           1.1.13
  * Author:            Woostify
  * Author URI:        https://woostify.com/about/
  * License:           GPL-2.0-or-later
@@ -19,15 +19,15 @@
 defined('ABSPATH') || exit;
 
 // Define Constants.
-define('BOOSTIFY_BLOCKS_UNIQUE_NAME', 'boostify-blocks');
+define('BCB_UNIQUE_NAME', 'bcb-woostify-blocks-unique');
 
-define('BOOSTIFY_BLOCKS_VERSION', '1.1.13');
+define('BCB_VERSION', '1.1.13');
 
-define('BOOSTIFY_BLOCKS_FILE', __FILE__);
-define('BOOSTIFY_BLOCKS_PLUGIN_BASE', plugin_basename(BOOSTIFY_BLOCKS_FILE));
-define('BOOSTIFY_BLOCKS_PATH', plugin_dir_path(BOOSTIFY_BLOCKS_FILE));
-define('BOOSTIFY_BLOCKS_URI', plugins_url('/', BOOSTIFY_BLOCKS_FILE));
-define('BOOSTIFY_BLOCKS_BUILD_PATH', __DIR__ . '/build');
+define('BCB_FILE', __FILE__);
+define('BCB_PLUGIN_BASE', plugin_basename(BCB_FILE));
+define('BCB_PATH', plugin_dir_path(BCB_FILE));
+define('BCB_URI', plugins_url('/', BCB_FILE));
+define('BCB_BUILD_PATH', __DIR__ . '/build');
 
 
 

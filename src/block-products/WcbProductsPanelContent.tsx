@@ -9,7 +9,7 @@ import { __experimentalInputControl as InputControl } from "@wordpress/component
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 import MySelect from "../components/controls/MySelect";
 
-export interface WCB_PRODUCTS_PANEL_COTENT {
+export interface BCB_PRODUCTS_PANEL_COTENT {
 	// isShowAddToCartBtn: boolean;
 	isShowPrice: boolean;
 	isShowRating: boolean;
@@ -25,13 +25,13 @@ export interface WCB_PRODUCTS_PANEL_COTENT {
 }
 
 const SALE_POSITION_OPTIONS: MyRadioItem<
-	WCB_PRODUCTS_PANEL_COTENT["saleBadgePosition"]
+	BCB_PRODUCTS_PANEL_COTENT["saleBadgePosition"]
 >[] = [
 	{ name: "Inside image", icon: "Inside image" },
 	{ name: "bottom", icon: "Bottom" },
 ];
 
-export const WCB_PRODUCTS_PANEL_COTENT_DEMO: WCB_PRODUCTS_PANEL_COTENT = {
+export const BCB_PRODUCTS_PANEL_COTENT_DEMO: BCB_PRODUCTS_PANEL_COTENT = {
 	// isShowAddToCartBtn: true,
 	isShowPrice: true,
 	isShowRating: true,
@@ -48,12 +48,12 @@ export const WCB_PRODUCTS_PANEL_COTENT_DEMO: WCB_PRODUCTS_PANEL_COTENT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_COTENT;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_COTENT) => void;
+	panelData: BCB_PRODUCTS_PANEL_COTENT;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_COTENT) => void;
 }
 
 const WcbProductsPanelContent: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_COTENT_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_COTENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -76,7 +76,7 @@ const WcbProductsPanelContent: FC<Props> = ({
 		return (
 			<MyDisclosure label="Sale badge" defaultOpen>
 				<ToggleControl
-					label={__("Sale badge", "boostify-blocks")}
+					label={__("Sale badge", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowSaleBadge: checked })
 					}
@@ -84,7 +84,7 @@ const WcbProductsPanelContent: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Show discount percentage", "boostify-blocks")}
+					label={__("Show discount percentage", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, showSaleBadgeDiscoutPercent: checked })
 					}
@@ -132,11 +132,11 @@ const WcbProductsPanelContent: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Content", "boostify-blocks")}
+			title={__("Content", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Product category", "boostify-blocks")}
+					label={__("Product category", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowCategory: checked })
 					}
@@ -144,7 +144,7 @@ const WcbProductsPanelContent: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Product title", "boostify-blocks")}
+					label={__("Product title", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowTitle: checked })
 					}
@@ -154,13 +154,13 @@ const WcbProductsPanelContent: FC<Props> = ({
 				{isShowTitle ? (
 					<MyHeadingTagControl
 						tag={titleHtmlTag}
-						label={__("Title HTML tag", "boostify-blocks")}
+						label={__("Title HTML tag", "wcb")}
 						onChange={(tag) => setAttr__({ ...panelData, titleHtmlTag: tag })}
 					/>
 				) : null}
 
 				<ToggleControl
-					label={__("Product price", "boostify-blocks")}
+					label={__("Product price", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowPrice: checked })
 					}
@@ -171,7 +171,7 @@ const WcbProductsPanelContent: FC<Props> = ({
 					renderSaleDisclosure()
 				) : (
 					<ToggleControl
-						label={__("Sale badge", "boostify-blocks")}
+						label={__("Sale badge", "wcb")}
 						onChange={(checked) =>
 							setAttr__({ ...panelData, isShowSaleBadge: checked })
 						}
@@ -180,7 +180,7 @@ const WcbProductsPanelContent: FC<Props> = ({
 				)}
 
 				<ToggleControl
-					label={__("Product rating", "boostify-blocks")}
+					label={__("Product rating", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowRating: checked })
 					}
@@ -188,7 +188,7 @@ const WcbProductsPanelContent: FC<Props> = ({
 				/>
 
 				{/* <ToggleControl
-					label={__("Add to Cart button", "boostify-blocks")}
+					label={__("Add to Cart button", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowAddToCartBtn: checked })
 					}

@@ -26,15 +26,15 @@ export const PRODUCT_TAGS_OPERATOR_OPTIONS: {
 	value: ProductTaxOperator;
 }[] = [
 	{
-		label: __("Any selected tags", "boostify-blocks"),
+		label: __("Any selected tags", "wcb"),
 		value: "any",
 	},
 	{
-		label: __("All selected tags", "boostify-blocks"),
+		label: __("All selected tags", "wcb"),
 		value: "all",
 	},
 	{
-		label: __("Not in all selected tags", "boostify-blocks"),
+		label: __("Not in all selected tags", "wcb"),
 		value: "not_in",
 	},
 ];
@@ -93,7 +93,7 @@ const ProductTagControl: FC<Props> = ({
 						"%1$s, has %2$d review",
 						"%1$s, has %2$d reviews",
 						item.review_count,
-						"boostify-blocks"
+						"wcb"
 					),
 					accessibleName,
 					item.review_count
@@ -104,7 +104,7 @@ const ProductTagControl: FC<Props> = ({
 						"%1$s, has %2$d product",
 						"%1$s, has %2$d products",
 						item.count,
-						"boostify-blocks"
+						"wcb"
 					),
 					accessibleName,
 					item.count
@@ -113,12 +113,12 @@ const ProductTagControl: FC<Props> = ({
 		const listItemCountLabel = showReviewCount
 			? sprintf(
 					/* translators: %d is the count of reviews. */
-					_n("%d review", "%d reviews", item.review_count, "boostify-blocks"),
+					_n("%d review", "%d reviews", item.review_count, "wcb"),
 					item.review_count
 			  )
 			: sprintf(
 					/* translators: %d is the count of products. */
-					_n("%d product", "%d products", item.count, "boostify-blocks"),
+					_n("%d product", "%d products", item.count, "wcb"),
 					item.count
 			  );
 		return (
@@ -139,17 +139,17 @@ const ProductTagControl: FC<Props> = ({
 	};
 
 	const messages = {
-		clear: __("Clear all product tags", "boostify-blocks"),
-		list: __("Product Tags", "boostify-blocks"),
-		noItems: __("Your store doesn't have any product tags.", "boostify-blocks"),
-		search: __("Search for product tags", "boostify-blocks"),
+		clear: __("Clear all product tags", "wcb"),
+		list: __("Product Tags", "wcb"),
+		noItems: __("Your store doesn't have any product tags.", "wcb"),
+		search: __("Search for product tags", "wcb"),
 		selected: (n) =>
 			sprintf(
 				/* translators: %d is the count of selected tags. */
-				_n("%d tag selected", "%d tags selected", n, "boostify-blocks"),
+				_n("%d tag selected", "%d tags selected", n, "wcb"),
 				n
 			),
-		updated: __("Tag search results updated.", "boostify-blocks"),
+		updated: __("Tag search results updated.", "wcb"),
 	};
 
 	if (error) {
@@ -181,8 +181,8 @@ const ProductTagControl: FC<Props> = ({
 				<div hidden={selected.length < 1}>
 					<SelectControl
 						className="woocommerce-product-categories__operator"
-						label={__("Display products matching", "boostify-blocks")}
-						help={__("Select the operator of the tag items.", "boostify-blocks")}
+						label={__("Display products matching", "wcb")}
+						help={__("Select the operator of the tag items.", "wcb")}
 						value={operator}
 						onChange={onOperatorChange}
 						options={PRODUCT_TAGS_OPERATOR_OPTIONS}

@@ -17,13 +17,13 @@ const MyTextAlignControl: FC<Props> = ({
 	textAlignment,
 	className,
 	hasResponsive,
-	label = __("Alignment", "boostify-blocks"),
+	label = __("Alignment", "wcb"),
 }) => {
 	return (
 		<MyRadioGroup
 			className={className}
-			// @ts-ignore
 			onChange={onChange}
+			// @ts-ignore
 			value={textAlignment || ""}
 			hasResponsive={hasResponsive}
 			label={label}

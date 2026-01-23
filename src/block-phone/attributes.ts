@@ -3,8 +3,8 @@ import {
 	WcbAttrsCommonFromWp,
 } from "../block-container/attributes";
 import {
-	WCB_PHONE_PANEL_GENERAL,
-	WCB_PHONE_PANEL_GENERAL_DEMO,
+	BCB_PHONE_PANEL_GENERAL,
+	BCB_PHONE_PANEL_GENERAL_DEMO,
 } from "./WcbPhonePanelGeneral";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
@@ -12,7 +12,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	countryCode: string;
 	pattern: string;
 	//
-	general_general: WCB_PHONE_PANEL_GENERAL;
+	general_general: BCB_PHONE_PANEL_GENERAL;
 	//
 }
 
@@ -31,13 +31,13 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	label: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-form__label",
+		selector: ".bcb-form__label",
 		default: "Label",
 	},
 	//
 	general_general: {
 		type: "object",
-		default: WCB_PHONE_PANEL_GENERAL_DEMO,
+		default: BCB_PHONE_PANEL_GENERAL_DEMO,
 	},
 };
 

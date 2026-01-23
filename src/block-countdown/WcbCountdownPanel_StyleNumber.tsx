@@ -9,12 +9,12 @@ import {
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 
-export interface WCB_COUNTDOWN_PANEL_STYLE_NUMBER {
+export interface BCB_COUNTDOWN_PANEL_STYLE_NUMBER {
 	typography: MyTypographyControlData;
 	textColor: string;
 }
 
-export const WCB_COUNTDOWN_PANEL_STYLE_NUMBER_DEMO: WCB_COUNTDOWN_PANEL_STYLE_NUMBER = {
+export const BCB_COUNTDOWN_PANEL_STYLE_NUMBER_DEMO: BCB_COUNTDOWN_PANEL_STYLE_NUMBER = {
 	typography: {
 		...TYPOGRAPHY_CONTROL_DEMO,
 		fontSizes: {
@@ -35,12 +35,12 @@ export const WCB_COUNTDOWN_PANEL_STYLE_NUMBER_DEMO: WCB_COUNTDOWN_PANEL_STYLE_NU
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_COUNTDOWN_PANEL_STYLE_NUMBER;
-	setAttr__: (data: WCB_COUNTDOWN_PANEL_STYLE_NUMBER) => void;
+	panelData: BCB_COUNTDOWN_PANEL_STYLE_NUMBER;
+	setAttr__: (data: BCB_COUNTDOWN_PANEL_STYLE_NUMBER) => void;
 }
 
 const WcbCountdownPanel_StyleNumber: FC<Props> = ({
-	panelData = WCB_COUNTDOWN_PANEL_STYLE_NUMBER_DEMO,
+	panelData = BCB_COUNTDOWN_PANEL_STYLE_NUMBER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -54,7 +54,7 @@ const WcbCountdownPanel_StyleNumber: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Number", "boostify-blocks")}
+			title={__("Number", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl

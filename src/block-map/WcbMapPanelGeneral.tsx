@@ -11,7 +11,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 import _ from "lodash";
 
-export interface WCB_MAP_PANEL_GENERAL {
+export interface BCB_MAP_PANEL_GENERAL {
 	height: HasResponsive<string>;
 	zoom: number;
 	language: string;
@@ -19,7 +19,7 @@ export interface WCB_MAP_PANEL_GENERAL {
 	placeQuery: string;
 }
 
-export const WCB_MAP_PANEL_GENERAL_DEMO: WCB_MAP_PANEL_GENERAL = {
+export const BCB_MAP_PANEL_GENERAL_DEMO: BCB_MAP_PANEL_GENERAL = {
 	height: { Desktop: "400px" },
 	zoom: 13,
 	mapTypeId: "roadmap",
@@ -29,12 +29,12 @@ export const WCB_MAP_PANEL_GENERAL_DEMO: WCB_MAP_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_MAP_PANEL_GENERAL;
-	setAttr__: (data: WCB_MAP_PANEL_GENERAL) => void;
+	panelData: BCB_MAP_PANEL_GENERAL;
+	setAttr__: (data: BCB_MAP_PANEL_GENERAL) => void;
 }
 
 const WcbMapPanelGeneral: FC<Props> = ({
-	panelData = WCB_MAP_PANEL_GENERAL_DEMO,
+	panelData = BCB_MAP_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -49,7 +49,7 @@ const WcbMapPanelGeneral: FC<Props> = ({
 		deviceType
 	);
 
-	const debounce_fun = _.debounce(function (data: WCB_MAP_PANEL_GENERAL) {
+	const debounce_fun = _.debounce(function (data: BCB_MAP_PANEL_GENERAL) {
 		console.log("Function debounced after 300ms!", { data });
 		setAttr__(data);
 	}, 500);
@@ -59,15 +59,15 @@ const WcbMapPanelGeneral: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"WcbMapPanelGeneral space-y-5"}>
 				<div>
-					<MyLabelControl>{__("Location", "boostify-blocks")}</MyLabelControl>
+					<MyLabelControl>{__("Location", "wcb")}</MyLabelControl>
 					<input
 						type="text"
 						className="w-full text-sm"
-						placeholder={__("Enter a location", "boostify-blocks")}
+						placeholder={__("Enter a location", "wcb")}
 						defaultValue={placeQuery}
 						onChange={(e) => {
 							debounce_fun({ ...panelData, placeQuery: e.currentTarget.value });
@@ -76,7 +76,7 @@ const WcbMapPanelGeneral: FC<Props> = ({
 				</div>
 
 				<MyRadioGroup
-					label={__("Map Type", "boostify-blocks")}
+					label={__("Map Type", "wcb")}
 					hasResponsive={false}
 					// "roadmap" | "satellite";
 					plans={[
@@ -87,19 +87,19 @@ const WcbMapPanelGeneral: FC<Props> = ({
 					onChange={(data) => {
 						setAttr__({
 							...panelData,
-							mapTypeId: data as WCB_MAP_PANEL_GENERAL["mapTypeId"],
+							mapTypeId: data as BCB_MAP_PANEL_GENERAL["mapTypeId"],
 						});
 					}}
 				/>
 
 				<MySelect
-					label={__("Language", "boostify-blocks")}
+					label={__("Language", "wcb")}
 					onChange={(value) => {
 						setAttr__({ ...panelData, language: value });
 					}}
 					value={language}
 				>
-					<option value="">{__("Change map language", "boostify-blocks")}</option>
+					<option value="">{__("Change map language", "wcb")}</option>
 					<option value="af">AFRIKAANS</option>
 					<option value="sq">ALBANIAN</option>
 					<option value="am">AMHARIC</option>
@@ -184,14 +184,14 @@ const WcbMapPanelGeneral: FC<Props> = ({
 				</MySelect>
 
 				<RangeControl
-					label={__("Zoom", "boostify-blocks")}
+					label={__("Zoom", "wcb")}
 					value={zoom}
 					onChange={(value) => setAttr__({ ...panelData, zoom: value || 1 })}
 					min={1}
 					max={22}
 				/>
 				<MySpacingSizesControl
-					label={__("Height", "boostify-blocks")}
+					label={__("Height", "wcb")}
 					hasResponsive
 					onChange={(data) => {
 						setAttr__({

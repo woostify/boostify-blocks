@@ -19,7 +19,7 @@ import {
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 
-export interface WCB_ICON_BOX_PANEL_STYLE_ICON {
+export interface BCB_ICON_BOX_PANEL_STYLE_ICON {
 	color: string;
 	hoverColor: string;
 	iconSize: HasResponsive<string>;
@@ -27,7 +27,7 @@ export interface WCB_ICON_BOX_PANEL_STYLE_ICON {
 	border: MyBorderControlData;
 }
 
-export const WCB_ICON_BOX_PANEL_STYLE_ICON_DEMO: WCB_ICON_BOX_PANEL_STYLE_ICON =
+export const BCB_ICON_BOX_PANEL_STYLE_ICON_DEMO: BCB_ICON_BOX_PANEL_STYLE_ICON =
 	{
 		color: "#334155",
 		hoverColor: "",
@@ -56,12 +56,12 @@ export const WCB_ICON_BOX_PANEL_STYLE_ICON_DEMO: WCB_ICON_BOX_PANEL_STYLE_ICON =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_BOX_PANEL_STYLE_ICON;
-	setAttr__: (data: WCB_ICON_BOX_PANEL_STYLE_ICON) => void;
+	panelData: BCB_ICON_BOX_PANEL_STYLE_ICON;
+	setAttr__: (data: BCB_ICON_BOX_PANEL_STYLE_ICON) => void;
 }
 
 const WcbIconBoxPanel_StyleIcons: FC<Props> = ({
-	panelData = WCB_ICON_BOX_PANEL_STYLE_ICON_DEMO,
+	panelData = BCB_ICON_BOX_PANEL_STYLE_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -80,7 +80,7 @@ const WcbIconBoxPanel_StyleIcons: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Icon", "boostify-blocks")}
+			title={__("Icon", "wcb")}
 		>
 			<div className="space-y-5">
 				<MySpacingSizesControl
@@ -94,7 +94,7 @@ const WcbIconBoxPanel_StyleIcons: FC<Props> = ({
 						});
 					}}
 					value={currentIconSize || ""}
-					label={__("Icon size", "boostify-blocks")}
+					label={__("Icon size", "wcb")}
 					hasResponsive
 				/>
 
@@ -115,7 +115,7 @@ const WcbIconBoxPanel_StyleIcons: FC<Props> = ({
 						});
 					}}
 					color={hoverColor}
-					label={__("Hover color", "boostify-blocks")}
+					label={__("Hover color", "wcb")}
 				/>
 
 				<div className="space-y-4">

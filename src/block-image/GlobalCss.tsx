@@ -7,7 +7,7 @@ import getBoxShadowStyles from "../utils/getBoxShadowStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
 interface Props extends WcbAttrsForSave {}
@@ -22,14 +22,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_image,
 		style_overlay,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const IMAGE_FIGURE = `${WRAP_CLASSNAME}.wp-block-wcb-image`;
+	const IMAGE_FIGURE = `${WRAP_CLASSNAME}.wp-block-bcb-image`;
 	const IMAGE_CLASSNAME = `${WRAP_CLASSNAME} img`;
 	const CAPTION_CLASSNAME = `${WRAP_CLASSNAME} figcaption.wp-element-caption`;
-	const OVERLAY_BG_CLASSNAME = `${WRAP_CLASSNAME} .wcb-image__overlay-bg`;
-	const OVERLAY_CONTENT_CLASSNAME = `${WRAP_CLASSNAME} .wcb-image__overlay-content`;
+	const OVERLAY_BG_CLASSNAME = `${WRAP_CLASSNAME} .bcb-image__overlay-bg`;
+	const OVERLAY_CONTENT_CLASSNAME = `${WRAP_CLASSNAME} .bcb-image__overlay-content`;
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject => {
@@ -55,7 +55,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						padding: style_image.padding,
 					}),
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME} .wcb-image__overlay-wrap`,
+						className: `${WRAP_CLASSNAME} .bcb-image__overlay-wrap`,
 						padding: style_image.padding,
 					}),
 				]}

@@ -42,7 +42,7 @@ interface Props {
 const SelecIcon: FC<Props> = ({
 	onChange,
 	iconData,
-	label = __("Icon:", "boostify-blocks"),
+	label = __("Icon:", "wcb"),
 }) => {
 	const [query, setQuery] = useState("");
 	const [isCorrectSvgCode, setIsCorrectSvgCode] = useState(
@@ -143,7 +143,7 @@ const SelecIcon: FC<Props> = ({
 					onChange={(event) => setQuery(event.target.value)}
 					type="text"
 					className="block w-full py-1.5 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-800 border-transparent text-white"
-					placeholder={__("Search for an icon...", "boostify-blocks")}
+					placeholder={__("Search for an icon...", "wcb")}
 					defaultValue={query}
 					name="icon-query"
 					autoFocus
@@ -223,13 +223,13 @@ const SelecIcon: FC<Props> = ({
 					rows={17}
 					label=""
 					placeholder={`<svg xmlns="http://www.w3.org/2000/svg" fill="none" ...`}
-					className="Wcb-SelectIcon__textarea text-slate-200"
+					className="Bcb-SelectIcon__textarea text-slate-200"
 					help={
 						!svgCodeState || isCorrectSvgCode ? (
-							__("Enter your SVG code here", "boostify-blocks")
+							__("Enter your SVG code here", "wcb")
 						) : (
 							<p className="text-red-500">
-								{__("Please write a valid SVG code", "boostify-blocks")}
+								{__("Please write a valid SVG code", "wcb")}
 							</p>
 						)
 					}
@@ -300,7 +300,7 @@ const SelecIcon: FC<Props> = ({
 		<Dropdown
 			position="middle left"
 			className="w-full"
-			contentClassName="Wcb-SelectIcon z-[100]"
+			contentClassName="Bcb-SelectIcon z-[100]"
 			renderToggle={({ isOpen, onToggle }) => (
 				<div className="flex items-center space-x-4">
 					<button
@@ -316,7 +316,7 @@ const SelecIcon: FC<Props> = ({
 						<MyIconFull
 							icon={iconData}
 							className="w-6 h-6 text-[24px] flex items-center "
-							renderIfNone={<strong>{__("None", "boostify-blocks")}</strong>}
+							renderIfNone={<strong>{__("None", "wcb")}</strong>}
 						/>
 					</button>
 					<ResetButton

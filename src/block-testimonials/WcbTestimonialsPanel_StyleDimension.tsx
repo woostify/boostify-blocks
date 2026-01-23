@@ -14,10 +14,10 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_DIMENSION {
 	padding: HasResponsive<DimensionSettings>;
 }
-export const WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION =
+export const BCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_DIMENSION =
 	{
 		padding: {
 			Desktop: {
@@ -31,12 +31,12 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO: WCB_TESTIMONIALS_PANEL
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_DIMENSION;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_DIMENSION) => void;
 }
 
 const WcbTestimonialsPanel_StyleDimension: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -55,13 +55,13 @@ const WcbTestimonialsPanel_StyleDimension: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Dimension", "boostify-blocks")}
+			title={__("Dimension", "wcb")}
 		>
 			<div className="space-y-5">
 				<BoxControl
 					label={
 						<MyLabelControl className="" hasResponsive>
-							{__("Padding", "boostify-blocks")}
+							{__("Padding", "wcb")}
 						</MyLabelControl>
 					}
 					values={currentPadding}

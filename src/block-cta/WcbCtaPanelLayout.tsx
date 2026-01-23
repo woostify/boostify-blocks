@@ -14,27 +14,27 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_CTA_PANEL_LAYOUT {
+export interface BCB_CTA_PANEL_LAYOUT {
 	textAlignment: HasResponsive<TextAlignment>;
 	headingTag: keyof HTMLElementTagNameMap;
 	contentWidth: HasResponsive<string>;
 	flexDirection: HasResponsive<CSSProperties["flexDirection"]>;
 }
 
-export const WCB_CTA_PANEL_LAYOUT_PRESET_LEFT_DEMO: WCB_CTA_PANEL_LAYOUT = {
+export const BCB_CTA_PANEL_LAYOUT_PRESET_LEFT_DEMO: BCB_CTA_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "left" },
 	headingTag: "h3",
 	contentWidth: { Desktop: "70%" },
 	flexDirection: { Desktop: "column" },
 };
-export const WCB_CTA_PANEL_LAYOUT_PRESET_CENTER_DEMO: WCB_CTA_PANEL_LAYOUT = {
+export const BCB_CTA_PANEL_LAYOUT_PRESET_CENTER_DEMO: BCB_CTA_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "center" },
 	headingTag: "h3",
 	contentWidth: { Desktop: "70%" },
 	flexDirection: { Desktop: "column" },
 };
 
-export const WCB_CTA_PANEL_LAYOUT_DEMO: WCB_CTA_PANEL_LAYOUT = {
+export const BCB_CTA_PANEL_LAYOUT_DEMO: BCB_CTA_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "left" },
 	headingTag: "h3",
 	contentWidth: { Desktop: "70%" },
@@ -43,12 +43,12 @@ export const WCB_CTA_PANEL_LAYOUT_DEMO: WCB_CTA_PANEL_LAYOUT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_CTA_PANEL_LAYOUT;
-	setAttr__: (data: WCB_CTA_PANEL_LAYOUT) => void;
+	panelData: BCB_CTA_PANEL_LAYOUT;
+	setAttr__: (data: BCB_CTA_PANEL_LAYOUT) => void;
 }
 
 const WcbCtaPanelLayout: FC<Props> = ({
-	panelData = WCB_CTA_PANEL_LAYOUT_DEMO,
+	panelData = BCB_CTA_PANEL_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -77,7 +77,7 @@ const WcbCtaPanelLayout: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Layout", "boostify-blocks")}
+			title={__("Layout", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyTextAlignControl
@@ -95,7 +95,7 @@ const WcbCtaPanelLayout: FC<Props> = ({
 
 				<div>
 					<MyRadioGroup
-						label={__("Flex Direction", "boostify-blocks")}
+						label={__("Flex Direction", "wcb")}
 						onChange={(value) => {
 							setAttr__({
 								...panelData,
@@ -119,7 +119,7 @@ const WcbCtaPanelLayout: FC<Props> = ({
 				/>
 
 				<MySpacingSizesControl
-					label={__("Content width", "boostify-blocks")}
+					label={__("Content width", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,

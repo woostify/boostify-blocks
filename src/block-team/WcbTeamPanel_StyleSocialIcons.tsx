@@ -8,14 +8,14 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_TEAM_PANEL_STYLE_SOCIALICONS {
+export interface BCB_TEAM_PANEL_STYLE_SOCIALICONS {
 	color: string;
 	hoverColor: string;
 	iconSize: HasResponsive<string>;
 	iconSpacing: HasResponsive<string>;
 }
 
-export const WCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO: WCB_TEAM_PANEL_STYLE_SOCIALICONS =
+export const BCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO: BCB_TEAM_PANEL_STYLE_SOCIALICONS =
 	{
 		color: "#334155",
 		hoverColor: "",
@@ -25,12 +25,12 @@ export const WCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO: WCB_TEAM_PANEL_STYLE_SOCIALI
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_STYLE_SOCIALICONS;
-	setAttr__: (data: WCB_TEAM_PANEL_STYLE_SOCIALICONS) => void;
+	panelData: BCB_TEAM_PANEL_STYLE_SOCIALICONS;
+	setAttr__: (data: BCB_TEAM_PANEL_STYLE_SOCIALICONS) => void;
 }
 
 const WcbTeamPanel_StyleSocialIcons: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO,
+	panelData = BCB_TEAM_PANEL_STYLE_SOCIALICONS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -50,7 +50,7 @@ const WcbTeamPanel_StyleSocialIcons: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Social icons", "boostify-blocks")}
+			title={__("Social icons", "wcb")}
 		>
 			<div className="space-y-5">
 				<MySpacingSizesControl
@@ -64,7 +64,7 @@ const WcbTeamPanel_StyleSocialIcons: FC<Props> = ({
 						});
 					}}
 					value={currentIconSize || ""}
-					label={__("Icon size", "boostify-blocks")}
+					label={__("Icon size", "wcb")}
 					hasResponsive
 				/>
 
@@ -79,7 +79,7 @@ const WcbTeamPanel_StyleSocialIcons: FC<Props> = ({
 						});
 					}}
 					value={currentIconSpacing || ""}
-					label={__("Icon spacing", "boostify-blocks")}
+					label={__("Icon spacing", "wcb")}
 					hasResponsive
 				/>
 
@@ -100,7 +100,7 @@ const WcbTeamPanel_StyleSocialIcons: FC<Props> = ({
 						});
 					}}
 					color={hoverColor}
-					label={__("Hover color", "boostify-blocks")}
+					label={__("Hover color", "wcb")}
 				/>
 			</div>
 		</PanelBody>

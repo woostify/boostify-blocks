@@ -22,7 +22,7 @@ import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 
 export type Alignment = "left" | "right" | "center" | "wide" | "full" | "none";
 
-export interface WCB_IMAGE_PANEL_SETTINGS {
+export interface BCB_IMAGE_PANEL_SETTINGS {
 	alignment: HasResponsive<Alignment>;
 	sizeSlug: HasResponsive<string | undefined>;
 	width: HasResponsive<number | undefined>;
@@ -34,7 +34,7 @@ export interface WCB_IMAGE_PANEL_SETTINGS {
 	contentAlignment: CSSProperties["justifyItems"];
 }
 
-export const WCB_IMAGE_PANEL_SETTINGS_DEMO: WCB_IMAGE_PANEL_SETTINGS = {
+export const BCB_IMAGE_PANEL_SETTINGS_DEMO: BCB_IMAGE_PANEL_SETTINGS = {
 	alignment: { Desktop: "center" },
 	captionAlignment: { Desktop: "center" },
 	height: { Desktop: undefined },
@@ -48,8 +48,8 @@ export const WCB_IMAGE_PANEL_SETTINGS_DEMO: WCB_IMAGE_PANEL_SETTINGS = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_IMAGE_PANEL_SETTINGS;
-	setAttr__: (data: WCB_IMAGE_PANEL_SETTINGS) => void;
+	panelData: BCB_IMAGE_PANEL_SETTINGS;
+	setAttr__: (data: BCB_IMAGE_PANEL_SETTINGS) => void;
 	//
 	updateImage: (data) => void;
 	setAttributes: (data) => void;
@@ -63,7 +63,7 @@ interface Props
 }
 
 const WcbImagePanelSettings: FC<Props> = ({
-	panelData = WCB_IMAGE_PANEL_SETTINGS_DEMO,
+	panelData = BCB_IMAGE_PANEL_SETTINGS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -141,7 +141,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 	];
 
 	const HOVER_IMAGE_OPTIONS: MySelectOption<
-		NonNullable<WCB_IMAGE_PANEL_SETTINGS["hoverImage"]>>[] = [
+		NonNullable<BCB_IMAGE_PANEL_SETTINGS["hoverImage"]>>[] = [
 		{ value: "static", label: "Static" },
 		{ value: "zoomin", label: "Zoom In" },
 		{ value: "slide", label: "Slide" },
@@ -149,13 +149,13 @@ const WcbImagePanelSettings: FC<Props> = ({
 		{ value: "blur", label: "Blur" },
 	];
 
-	const PLANS_LAYOUT: MyRadioItem<WCB_IMAGE_PANEL_SETTINGS["layout"]>[] = [
+	const PLANS_LAYOUT: MyRadioItem<BCB_IMAGE_PANEL_SETTINGS["layout"]>[] = [
 		{ name: "normal", icon: "Normal" },
 		{ name: "overlay", icon: "Overlay" },
 	];
 
 	const PLANS_CONTENT_ALIGNMENT: MyRadioItem<
-		NonNullable<WCB_IMAGE_PANEL_SETTINGS["contentAlignment"]>
+		NonNullable<BCB_IMAGE_PANEL_SETTINGS["contentAlignment"]>
 	>[] = [
 		{ name: "flex-start", icon: "Top" },
 		{ name: "center", icon: "Middle" },
@@ -167,7 +167,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Settings", "boostify-blocks")}
+			title={__("Settings", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyRadioGroup
@@ -198,11 +198,11 @@ const WcbImagePanelSettings: FC<Props> = ({
 					plans={PLANS_LAYOUT}
 					value={panelData.layout}
 					hasResponsive={false}
-					label={__("Layout", "boostify-blocks")}
+					label={__("Layout", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							layout: value as WCB_IMAGE_PANEL_SETTINGS["layout"],
+							layout: value as BCB_IMAGE_PANEL_SETTINGS["layout"],
 						});
 					}}
 				/>
@@ -212,12 +212,12 @@ const WcbImagePanelSettings: FC<Props> = ({
 						plans={PLANS_CONTENT_ALIGNMENT}
 						value={panelData.contentAlignment}
 						hasResponsive={false}
-						label={__("Content alignment", "boostify-blocks")}
+						label={__("Content alignment", "wcb")}
 						onChange={(value) => {
 							setAttr__({
 								...panelData,
 								contentAlignment:
-									value as WCB_IMAGE_PANEL_SETTINGS["contentAlignment"],
+									value as BCB_IMAGE_PANEL_SETTINGS["contentAlignment"],
 							});
 						}}
 					/>
@@ -242,7 +242,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 									height: { ...panelData.height, [deviceType]: undefined },
 								});
 							} else {
-								const W: Partial<WCB_IMAGE_PANEL_SETTINGS> = width
+								const W: Partial<BCB_IMAGE_PANEL_SETTINGS> = width
 									? {
 											width: {
 												...panelData.width,
@@ -250,7 +250,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 											},
 									  }
 									: {};
-								const H: Partial<WCB_IMAGE_PANEL_SETTINGS> = height
+								const H: Partial<BCB_IMAGE_PANEL_SETTINGS> = height
 									? {
 											height: {
 												...panelData.height,
@@ -273,7 +273,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 				</MyDisclosure>
 
 				<MySelect
-					label={__("Object Fit", "boostify-blocks")}
+					label={__("Object Fit", "wcb")}
 					hasResponsive
 					onChange={(value) => {
 						setAttr__({
@@ -289,11 +289,11 @@ const WcbImagePanelSettings: FC<Props> = ({
 				/>
 
 				<MySelect
-					label={__("On Hover Image", "boostify-blocks")}
+					label={__("On Hover Image", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							hoverImage: value as WCB_IMAGE_PANEL_SETTINGS["hoverImage"],
+							hoverImage: value as BCB_IMAGE_PANEL_SETTINGS["hoverImage"],
 						});
 					}}
 					value={panelData.hoverImage}
@@ -302,7 +302,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 
 				{panelData.layout !== "overlay" && (
 					<ToggleControl
-						label={__("Enable caption", "boostify-blocks")}
+						label={__("Enable caption", "wcb")}
 						checked={enableCaption}
 						onChange={toggleEnableCaption}
 					/>
@@ -311,7 +311,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 					<MyTextAlignControl
 						textAlignment={CAPTION_ALIGNMENT}
 						onChange={handleChangeCaptionAlignment}
-						label={__("Caption alignment", "boostify-blocks")}
+						label={__("Caption alignment", "wcb")}
 					/>
 				)}
 			</div>

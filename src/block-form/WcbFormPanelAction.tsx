@@ -10,7 +10,7 @@ import React, { FC, useState } from "react";
 
 type TabsHere = "To" | "CC" | "BCC";
 
-export type WCB_FORM_PANEL_ACTION = {
+export type BCB_FORM_PANEL_ACTION = {
 	main: {
 		[K in TabsHere]: {
 			email: string;
@@ -19,7 +19,7 @@ export type WCB_FORM_PANEL_ACTION = {
 	subject: string;
 };
 
-export const WCB_FORM_PANEL_ACTION_DEMO: WCB_FORM_PANEL_ACTION = {
+export const BCB_FORM_PANEL_ACTION_DEMO: BCB_FORM_PANEL_ACTION = {
 	main: {
 		To: { email: "" },
 		BCC: { email: "" },
@@ -30,12 +30,12 @@ export const WCB_FORM_PANEL_ACTION_DEMO: WCB_FORM_PANEL_ACTION = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_ACTION;
-	setAttr__: (data: WCB_FORM_PANEL_ACTION) => void;
+	panelData: BCB_FORM_PANEL_ACTION;
+	setAttr__: (data: BCB_FORM_PANEL_ACTION) => void;
 }
 
 const WcbFormPanelAction: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_ACTION_DEMO,
+	panelData = BCB_FORM_PANEL_ACTION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -47,36 +47,36 @@ const WcbFormPanelAction: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "To", title: __("To", "boostify-blocks") },
-		{ name: "CC", title: __("CC", "boostify-blocks") },
-		{ name: "BCC", title: __("BCC", "boostify-blocks") },
+		{ name: "To", title: __("To", "wcb") },
+		{ name: "CC", title: __("CC", "wcb") },
+		{ name: "BCC", title: __("BCC", "wcb") },
 	];
 	return (
 		<PanelBody
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Action", "boostify-blocks")}
+			title={__("Action", "wcb")}
 		>
 			<div className="space-y-5">
 				<Notice status="warning" className="m-0" isDismissible={false}>
-					<strong>{__("Note: ", "boostify-blocks")}</strong>
+					<strong>{__("Note: ", "wcb")}</strong>
 					{__(
 						" It is required to enter an email ID to receive the data submitted via Form. Else you will not receive any data.",
-						"boostify-blocks"
+						"wcb"
 					)}
 				</Notice>
 				<TabPanel
-					className={`wcb-bodyControls__panel `}
+					className={`bcb-bodyControls__panel `}
 					activeClass="active-tab"
 					initialTabName="To"
 					tabs={PanelTab}
 				>
 					{(tab) => (
 						<InputControl
-							label={__("Email", "boostify-blocks")}
+							label={__("Email", "wcb")}
 							type="email"
-							placeholder={__("email@example.com", "boostify-blocks")}
+							placeholder={__("email@example.com", "wcb")}
 							value={main[tab.name as TabsHere].email}
 							onChange={(nextValue) => {
 								setAttr__({
@@ -95,7 +95,7 @@ const WcbFormPanelAction: FC<Props> = ({
 				</TabPanel>
 
 				<InputControl
-					label={__("SUBJECT", "boostify-blocks")}
+					label={__("SUBJECT", "wcb")}
 					value={subject}
 					onChange={(nextValue) => {
 						setAttr__({

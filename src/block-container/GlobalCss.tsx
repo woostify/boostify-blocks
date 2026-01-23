@@ -6,7 +6,7 @@ import getFlexPropertiesStyles from "../utils/getFlexPropertiesStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleBackground from "../utils/getStyleBackground";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { getAdvanveDivWrapStyles } from "./getAdvanveStyles";
 import { WcbAttrsForSave } from "./Save";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
@@ -27,9 +27,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
-	const WRAP_CLASSNAME = `.wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-container__inner`;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
+	const WRAP_CLASSNAME = `.bcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
+	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .bcb-container__inner`;
+	const INNER_CLASSNAME_CHILD = `${WRAP_CLASSNAME} .bcb-container__inner .is_bcb_container_child`;
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject[] => {
@@ -82,14 +83,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 					maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
 					// width: cWidthMobile_new,
 					minHeight: minHeightMobile_new,
-					"&.is_wcb_container_child": {
+					"&.is_bcb_container_child": {
 						width: cWidthMobile_new,
 					},
 					[`@media (min-width: ${media_tablet})`]: {
 						maxWidth: cWidthTablet_new ? cWidthTablet_new + " !important" : "",
 						// width: cWidthTablet_new,
 						minHeight: minHeightTablet_new,
-						"&.is_wcb_container_child": {
+						"&.is_bcb_container_child": {
 							width: cWidthTablet_new,
 						},
 					},
@@ -99,7 +100,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							: "",
 						// width: cWidthDesktop_new,
 						minHeight: minHeightDesktop_new,
-						"&.is_wcb_container_child": {
+						"&.is_bcb_container_child": {
 							width: cWidthDesktop_new,
 						},
 					},
@@ -184,12 +185,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 			};
 		}
 
-		if (!contentBoxWidth.Desktop) {
+		if (!contentBoxWidth.Desktop && !contentBoxWidth.Tablet && !contentBoxWidth.Mobile ) {
 			contentBoxWidth = {
-				Desktop: DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth || "",
+				Desktop: DEMO_BCB_GLOBAL_VARIABLES.defaultContentWidth || "",
 			};
 		}
-
 		const {
 			value_Desktop: contentBoxWidthDesktop,
 			value_Tablet: contentBoxWidthTablet,
@@ -205,7 +205,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 			tablet_v: contentBoxWidthTablet,
 			desktop_v: contentBoxWidthDesktop,
 		});
-
 		if (
 			!contentBoxWidthMobile_new &&
 			!contentBoxWidthTablet_new &&

@@ -16,13 +16,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_HEADING_PANEL_SUB_HEADING {
+export interface BCB_HEADING_PANEL_SUB_HEADING {
 	typography: MyTypographyControlData;
 	textColor: TextColorControlData;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_HEADING_PANEL_SUB_HEADING_DEMO: WCB_HEADING_PANEL_SUB_HEADING =
+export const BCB_HEADING_PANEL_SUB_HEADING_DEMO: BCB_HEADING_PANEL_SUB_HEADING =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: TEXT_COLOR_CONTROL_DEMO,
@@ -31,12 +31,12 @@ export const WCB_HEADING_PANEL_SUB_HEADING_DEMO: WCB_HEADING_PANEL_SUB_HEADING =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_HEADING_PANEL_SUB_HEADING;
-	setAttr__: (data: WCB_HEADING_PANEL_SUB_HEADING) => void;
+	panelData: BCB_HEADING_PANEL_SUB_HEADING;
+	setAttr__: (data: BCB_HEADING_PANEL_SUB_HEADING) => void;
 }
 
 const WcbHeadingPanelSubHeading: FC<Props> = ({
-	panelData = WCB_HEADING_PANEL_SUB_HEADING_DEMO,
+	panelData = BCB_HEADING_PANEL_SUB_HEADING_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -54,7 +54,7 @@ const WcbHeadingPanelSubHeading: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Sub heading", "boostify-blocks")}
+			title={__("Sub heading", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -87,7 +87,7 @@ const WcbHeadingPanelSubHeading: FC<Props> = ({
 						});
 					}}
 					value={MARGIN_BOTTOM || ""}
-					label={__("Margin bottom", "boostify-blocks")}
+					label={__("Margin bottom", "wcb")}
 					hasResponsive
 				/>
 			</div>

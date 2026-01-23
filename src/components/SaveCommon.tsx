@@ -74,23 +74,23 @@ function SaveCommon<T>({
 
 	const rc = attributes?.advance_responsiveCondition || {};
 	const responsiveClasses = [
-		rc?.isHiddenOnDesktop ? 'wcb-hide-desktop' : '',
-		rc?.isHiddenOnTablet ? 'wcb-hide-tab' : '',
-		rc?.isHiddenOnMobile ? 'wcb-hide-mob' : '',
+		rc?.isHiddenOnDesktop ? 'bcb-hide-desktop' : '',
+		rc?.isHiddenOnTablet ? 'bcb-hide-tab' : '',
+		rc?.isHiddenOnMobile ? 'bcb-hide-mob' : '',
 	].filter(Boolean).join(' ');
 
 	return (
 		<HtmlTag
 			{...props}
-			className={`wcb-cm wcb-update-div ${responsiveClasses} ${className.trim()} ${uniqueId.trim()}`}
+			className={`bcb-cm bcb-update-div ${responsiveClasses} ${className.trim()} ${uniqueId.trim()}`}
 			id={id || attributes?.anchor}
 			data-uniqueid={uniqueId}
-			data-is-wcb-save-common
+			data-is-bcb-save-common
 		>
 			{children}
 			{/*  */}
-			<div data-wcb-global-styles={uniqueId}></div>
-			<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
+			<div data-bcb-global-styles={uniqueId}></div>
+			<pre data-bcb-block-attrs={uniqueId} style={{ display: "none" }}>
 				{blockJson}
 			</pre>
 		</HtmlTag>

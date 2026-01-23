@@ -31,7 +31,7 @@ import MyUnitControl from "../components/controls/MyUnitControl";
 import { MY_GAP_UNITS } from "../components/controls/MyDimensionsControl/MyDimensionsControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_READMORE_LINK {
+export interface BCB_POST_GRID_PANEL_STYLE_READMORE_LINK {
 	colorAndBackgroundColor: MyColorBackgroundColorControlData;
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
@@ -39,7 +39,7 @@ export interface WCB_POST_GRID_PANEL_STYLE_READMORE_LINK {
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_READMORE_LINK_DEMO: WCB_POST_GRID_PANEL_STYLE_READMORE_LINK =
+export const BCB_POST_GRID_PANEL_STYLE_READMORE_LINK_DEMO: BCB_POST_GRID_PANEL_STYLE_READMORE_LINK =
 	{
 		colorAndBackgroundColor: MY_COLOR_BGCOLOR_CONTROL_FOR_BUTTON_DEMO,
 		typography: {
@@ -59,12 +59,12 @@ export const WCB_POST_GRID_PANEL_STYLE_READMORE_LINK_DEMO: WCB_POST_GRID_PANEL_S
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_READMORE_LINK;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_READMORE_LINK) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_READMORE_LINK;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_READMORE_LINK) => void;
 }
 
 const WcbPostGridPanel_StyleReadmoreLink: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_READMORE_LINK_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_READMORE_LINK_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -95,7 +95,7 @@ const WcbPostGridPanel_StyleReadmoreLink: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Read more link", "boostify-blocks")}
+			title={__("Read more link", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -127,7 +127,7 @@ const WcbPostGridPanel_StyleReadmoreLink: FC<Props> = ({
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
+								{__("Padding", "wcb")}
 							</MyLabelControl>
 						}
 						values={padding}
@@ -154,7 +154,7 @@ const WcbPostGridPanel_StyleReadmoreLink: FC<Props> = ({
 						}}
 						value={MARGIN_BOTTOM || ""}
 						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 					/>
 				</MyDisclosure>

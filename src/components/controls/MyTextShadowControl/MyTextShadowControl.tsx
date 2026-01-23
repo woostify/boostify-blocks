@@ -61,7 +61,7 @@ const MyTextShadowControl: FC<Props> = ({
 	const renderBlurRange = () => {
 		return (
 			<RangeControl
-				label={__("Blur", "boostify-blocks")}
+				label={__("Blur", "wcb")}
 				value={blur}
 				onChange={setBlur}
 				min={0}
@@ -73,7 +73,7 @@ const MyTextShadowControl: FC<Props> = ({
 	const renderVerticalRange = () => {
 		return (
 			<RangeControl
-				label={__("Vertical", "boostify-blocks")}
+				label={__("Vertical", "wcb")}
 				value={vertical}
 				onChange={setVertical}
 				min={-100}
@@ -84,7 +84,7 @@ const MyTextShadowControl: FC<Props> = ({
 	const renderHorizontalRange = () => {
 		return (
 			<RangeControl
-				label={__("Horizontal", "boostify-blocks")}
+				label={__("Horizontal", "wcb")}
 				className="mb-0"
 				value={horizontal}
 				onChange={setHorizontal}
@@ -97,7 +97,7 @@ const MyTextShadowControl: FC<Props> = ({
 	const renderShadowColorPicker = () => {
 		return (
 			<MyColorPicker
-				label={__("Color", "boostify-blocks")}
+				label={__("Color", "wcb")}
 				onChange={handleChangeColor}
 				color={color}
 			/>

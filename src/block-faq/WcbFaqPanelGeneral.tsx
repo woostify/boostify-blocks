@@ -12,7 +12,7 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_FAQ_PANEL_GENERAL {
+export interface BCB_FAQ_PANEL_GENERAL {
 	layout: "accordion" | "grid";
 	headingTag: keyof HTMLElementTagNameMap;
 	collapseOtherItems: boolean;
@@ -24,7 +24,7 @@ export interface WCB_FAQ_PANEL_GENERAL {
 	textAlignment: TextAlignment;
 }
 
-export const WCB_FAQ_PANEL_GENERAL_DEMO: WCB_FAQ_PANEL_GENERAL = {
+export const BCB_FAQ_PANEL_GENERAL_DEMO: BCB_FAQ_PANEL_GENERAL = {
 	layout: "accordion",
 	headingTag: "div",
 	collapseOtherItems: true,
@@ -38,12 +38,12 @@ export const WCB_FAQ_PANEL_GENERAL_DEMO: WCB_FAQ_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FAQ_PANEL_GENERAL;
-	setAttr__: (data: WCB_FAQ_PANEL_GENERAL) => void;
+	panelData: BCB_FAQ_PANEL_GENERAL;
+	setAttr__: (data: BCB_FAQ_PANEL_GENERAL) => void;
 }
 
 const WcbFaqPanelGeneral: FC<Props> = ({
-	panelData = WCB_FAQ_PANEL_GENERAL_DEMO,
+	panelData = BCB_FAQ_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -76,7 +76,7 @@ const WcbFaqPanelGeneral: FC<Props> = ({
 	};
 	//
 
-	const PLANS_DEMO: MyRadioItem<WCB_FAQ_PANEL_GENERAL["layout"]>[] = [
+	const PLANS_DEMO: MyRadioItem<BCB_FAQ_PANEL_GENERAL["layout"]>[] = [
 		{ icon: "Accordion", name: "accordion" },
 		{ icon: "Grid", name: "grid" },
 	];
@@ -124,16 +124,16 @@ const WcbFaqPanelGeneral: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyRadioGroup
 					hasResponsive={false}
-					label={__("Layout", "boostify-blocks")}
+					label={__("Layout", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							layout: value as WCB_FAQ_PANEL_GENERAL["layout"],
+							layout: value as BCB_FAQ_PANEL_GENERAL["layout"],
 						});
 					}}
 					value={layout}
@@ -163,7 +163,7 @@ const WcbFaqPanelGeneral: FC<Props> = ({
 					<RangeControl
 						label={
 							<MyLabelControl hasResponsive className="">
-								{__("Columns", "boostify-blocks")}
+								{__("Columns", "wcb")}
 							</MyLabelControl>
 						}
 						value={COLUMNS || 2}

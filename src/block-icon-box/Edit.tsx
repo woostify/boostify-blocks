@@ -323,8 +323,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return (
 			<>
 				{general_icon.enableIcon && (
-					<div className="wcb-icon-box__icon-wrap">
-						<div className="wcb-icon-box__icon">
+					<div className="bcb-icon-box__icon-wrap">
+						<div className="bcb-icon-box__icon">
 							<MyIconFull icon={general_icon.icon} />
 						</div>
 					</div>
@@ -339,8 +339,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			return null;
 		}
 		return (
-			<div className="wcb-icon-box__separator-wrap">
-				<div className="wcb-icon-box__separator"></div>
+			<div className="bcb-icon-box__separator-wrap">
+				<div className="bcb-icon-box__separator"></div>
 			</div>
 		);
 	};
@@ -351,7 +351,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-icon-box__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-icon-box__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}
@@ -368,10 +368,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					renderIcon()}
 
 				{/* CHILD CONTENT  */}
-				<div className="wcb-icon-box__content">
-					<div className="wcb-icon-box__content-title-wrap">
+				<div className="bcb-icon-box__content">
+					<div className="bcb-icon-box__content-title-wrap">
 						{general_icon.iconPosition === "leftOfTitle" && renderIcon()}
-						<div className="wcb-icon-box__content-title">
+						<div className="bcb-icon-box__content-title">
 							{general_layout.enablePrefix && (
 								<RichText
 									tagName="div"
@@ -381,7 +381,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										setAttributes({ designation: content })
 									}
 									placeholder={__("Write a Prefix")}
-									className="wcb-icon-box__designation"
+									className="bcb-icon-box__designation"
 								/>
 							)}
 
@@ -395,7 +395,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									allowedFormats={["core/bold", "core/italic"]}
 									onChange={(content) => setAttributes({ heading: content })}
 									placeholder={__("Heading of box")}
-									className="wcb-icon-box__heading"
+									className="bcb-icon-box__heading"
 								/>
 							)}
 						</div>
@@ -413,7 +413,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							allowedFormats={["core/bold", "core/italic"]}
 							onChange={(content) => setAttributes({ description: content })}
 							placeholder={__("Description of box ...")}
-							className="wcb-icon-box__description"
+							className="bcb-icon-box__description"
 						/>
 					)}
 

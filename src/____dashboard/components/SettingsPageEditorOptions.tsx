@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 import InputNumber from "./InputNumber";
 import MyToggle from "./MyToggle";
-import { Wcb_theme_layout_global_settings } from "../../types";
+import { Bcb_theme_layout_global_settings } from "../../types";
 import _ from "lodash";
 
 interface Props {
 	allSettings: typeof window.wcbGlobalVariables;
 	onChange: (data: typeof window.wcbGlobalVariables) => void;
-	themeLayoutGlobal?: Wcb_theme_layout_global_settings;
+	themeLayoutGlobal?: Bcb_theme_layout_global_settings;
 }
 
 const SettingsPageEditorOptions: FC<Props> = ({
@@ -54,7 +54,7 @@ const SettingsPageEditorOptions: FC<Props> = ({
 					}}
 				/>
 			</div>
-			{/* <div className="py-8 wcb-field-disabled">
+			{/* <div className="py-8 bcb-field-disabled">
 				<InputNumber
 					label="Container Padding"
 					desc="This setting will apply default padding in the Container Block."
@@ -83,10 +83,10 @@ const SettingsPageEditorOptions: FC<Props> = ({
 					id="MyToggle_CollapsePanels"
 				/>
 			</div> */}
-			<div className="py-8 wcb-field-disabled">
+			<div className="py-8 bcb-field-disabled">
 				<MyToggle
 					checked={allSettings.enableCopyPasteStyles === "true"}
-					disabled={!!"wcb-field-disabled"}
+					disabled={!!"bcb-field-disabled"}
 					onChange={(checked) => {
 						debounce_fun({
 							...allSettings,

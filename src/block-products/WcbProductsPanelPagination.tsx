@@ -5,7 +5,7 @@ import React, { FC, CSSProperties } from "react";
 import { __experimentalInputControl as InputControl } from "@wordpress/components";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 import MaxPageToShowInput from "../components/controls/MaxPageToShowInput";
-export interface WCB_PRODUCTS_PANEL_PAGINATION {
+export interface BCB_PRODUCTS_PANEL_PAGINATION {
 	isShowPagination: boolean;
 	pageLimit: number;
 	previousText: string;
@@ -13,7 +13,7 @@ export interface WCB_PRODUCTS_PANEL_PAGINATION {
 	iconName: "none" | "arrow" | "chevron" | "chevron-double";
 }
 
-export const WCB_PRODUCTS_PANEL_PAGINATION_DEMO: WCB_PRODUCTS_PANEL_PAGINATION =
+export const BCB_PRODUCTS_PANEL_PAGINATION_DEMO: BCB_PRODUCTS_PANEL_PAGINATION =
 	{
 		isShowPagination: true,
 		pageLimit: 0,
@@ -24,12 +24,12 @@ export const WCB_PRODUCTS_PANEL_PAGINATION_DEMO: WCB_PRODUCTS_PANEL_PAGINATION =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_PAGINATION;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_PAGINATION) => void;
+	panelData: BCB_PRODUCTS_PANEL_PAGINATION;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_PAGINATION) => void;
 }
 
-export const WCB_POSTS_GRID_PAGINATION_PLANS_ICONS: MyRadioItem<
-	WCB_PRODUCTS_PANEL_PAGINATION["iconName"]
+export const BCB_POSTS_GRID_PAGINATION_PLANS_ICONS: MyRadioItem<
+	BCB_PRODUCTS_PANEL_PAGINATION["iconName"]
 >[] = [
 	{
 		name: "none",
@@ -56,7 +56,7 @@ export const WCB_POSTS_GRID_PAGINATION_PLANS_ICONS: MyRadioItem<
 ];
 
 const WcbProductsPanelPagination: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_PAGINATION_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_PAGINATION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -68,11 +68,11 @@ const WcbProductsPanelPagination: FC<Props> = ({
 	const renderRadioIcons = () => {
 		return (
 			<MyRadioGroup
-				label={__("Prev & Next Icons", "boostify-blocks")}
+				label={__("Prev & Next Icons", "wcb")}
 				onChange={(name) => {
 					setAttr__({ ...panelData, iconName: name as any });
 				}}
-				plans={WCB_POSTS_GRID_PAGINATION_PLANS_ICONS}
+				plans={BCB_POSTS_GRID_PAGINATION_PLANS_ICONS}
 				value={iconName}
 				hasResponsive={false}
 			/>
@@ -94,7 +94,7 @@ const WcbProductsPanelPagination: FC<Props> = ({
 
 				<InputControl
 					value={panelData.previousText}
-					label={__("Previous text", "boostify-blocks")}
+					label={__("Previous text", "wcb")}
 					onChange={(nextValue) =>
 						setAttr__({ ...panelData, previousText: nextValue })
 					}
@@ -102,7 +102,7 @@ const WcbProductsPanelPagination: FC<Props> = ({
 
 				<InputControl
 					value={panelData.nextText}
-					label={__("Next text", "boostify-blocks")}
+					label={__("Next text", "wcb")}
 					onChange={(nextValue) =>
 						setAttr__({ ...panelData, nextText: nextValue })
 					}
@@ -118,11 +118,11 @@ const WcbProductsPanelPagination: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Pagination", "boostify-blocks")}
+			title={__("Pagination", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Show pagination", "boostify-blocks")}
+					label={__("Show pagination", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowPagination: checked })
 					}

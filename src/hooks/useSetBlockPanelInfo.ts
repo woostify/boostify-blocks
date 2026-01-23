@@ -4,7 +4,7 @@ import { useSelect, useDispatch } from "@wordpress/data";
 import {
 	BlockInPanelStore,
 	WcbPanelStoreState,
-	WCB_STORE_PANELS,
+	BCB_STORE_PANELS,
 } from "../data";
 import { InspectorControlsTabTitle } from "../components/HOCInspectorControls";
 
@@ -14,13 +14,13 @@ const useSetBlockPanelInfo = (uniqueId: string) => {
 		setBlockPanelInfo,
 	}: {
 		setBlockPanelInfo?: (blockId: string, block: BlockInPanelStore) => void;
-	} = useDispatch(WCB_STORE_PANELS);
+	} = useDispatch(BCB_STORE_PANELS);
 
 	const { blockStores } = useSelect(
 		(select) => {
 			return {
 				blockStores: select(
-					WCB_STORE_PANELS
+					BCB_STORE_PANELS
 					// @ts-ignore
 				)?.getBlockPanelInfo() as WcbPanelStoreState,
 			};

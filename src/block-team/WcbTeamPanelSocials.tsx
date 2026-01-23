@@ -21,7 +21,7 @@ export interface TeamSociaItem {
 	url: string;
 }
 
-export interface WCB_TEAM_PANEL_SOCIALS {
+export interface BCB_TEAM_PANEL_SOCIALS {
 	enableSocials: boolean;
 	openLinkInNewTab: boolean;
 	numberOfItems: number;
@@ -36,7 +36,7 @@ export const DEFAULT_MY_TEAM_SOCIAL: TeamSociaItem = {
 	},
 };
 
-export const WCB_TEAM_PANEL_SOCIALS_DEMO: WCB_TEAM_PANEL_SOCIALS = {
+export const BCB_TEAM_PANEL_SOCIALS_DEMO: BCB_TEAM_PANEL_SOCIALS = {
 	enableSocials: true,
 	openLinkInNewTab: false,
 	numberOfItems: 4,
@@ -68,13 +68,13 @@ export const WCB_TEAM_PANEL_SOCIALS_DEMO: WCB_TEAM_PANEL_SOCIALS = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_SOCIALS;
-	setAttr__: (data: WCB_TEAM_PANEL_SOCIALS) => void;
+	panelData: BCB_TEAM_PANEL_SOCIALS;
+	setAttr__: (data: BCB_TEAM_PANEL_SOCIALS) => void;
 }
 type TabsHere = "Settings" | "Socials";
 
 const WcbTeamPanelSocials: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_SOCIALS_DEMO,
+	panelData = BCB_TEAM_PANEL_SOCIALS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -85,15 +85,15 @@ const WcbTeamPanelSocials: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "Settings", title: __("Settings", "boostify-blocks") },
-		{ name: "Socials", title: __("Socials", "boostify-blocks") },
+		{ name: "Settings", title: __("Settings", "wcb") },
+		{ name: "Socials", title: __("Socials", "wcb") },
 	];
 
 	const renderSettings = () => {
 		return (
 			<div className="space-y-5">
 				<ToggleControl
-					label={__("Enable Socials", "boostify-blocks")}
+					label={__("Enable Socials", "wcb")}
 					checked={enableSocials}
 					onChange={(checked) => {
 						setAttr__({ ...panelData, enableSocials: checked });
@@ -102,7 +102,7 @@ const WcbTeamPanelSocials: FC<Props> = ({
 				{enableSocials && (
 					<>
 						<ToggleControl
-							label={__("Open Links in New Window", "boostify-blocks")}
+							label={__("Open Links in New Window", "wcb")}
 							checked={openLinkInNewTab}
 							onChange={(checked) => {
 								setAttr__({ ...panelData, openLinkInNewTab: checked });
@@ -137,7 +137,7 @@ const WcbTeamPanelSocials: FC<Props> = ({
 				<HelpText>
 					{__(
 						'Please enable the "Enable Socials" field to settings socials...',
-						"boostify-blocks"
+						"wcb"
 					)}
 				</HelpText>
 			);
@@ -148,7 +148,7 @@ const WcbTeamPanelSocials: FC<Props> = ({
 					return (
 						<div key={index + "--"}>
 							<MyLabelControl>
-								{`${__("Social", "boostify-blocks")} ${index + 1}`}
+								{`${__("Social", "wcb")} ${index + 1}`}
 							</MyLabelControl>
 							<div className="p-3 border rounded-lg space-y-3">
 								<SelecIcon
@@ -169,7 +169,7 @@ const WcbTeamPanelSocials: FC<Props> = ({
 									}}
 								/>
 								<TextControl
-									label={__("Social URL", "boostify-blocks")}
+									label={__("Social URL", "wcb")}
 									placeholder="https://example.com"
 									value={social.url}
 									type="text"
@@ -209,11 +209,11 @@ const WcbTeamPanelSocials: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Socials", "boostify-blocks")}
+			title={__("Socials", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="Settings"
 					tabs={TABS}

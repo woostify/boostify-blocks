@@ -27,7 +27,7 @@ import {
 } from "../components/controls/MyTypographyControl/types";
 import MyTypographyControl from "../components/controls/MyTypographyControl/MyTypographyControl";
 
-export interface WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON {
+export interface BCB_FORM_PANEL_STYLE_SUBMIT_BUTTON {
 	colorAndBackgroundColor: MyColorBackgroundColorControlData;
 	padding: HasResponsive<DimensionSettings>;
 	margin?: HasResponsive<DimensionSettings>;
@@ -35,7 +35,7 @@ export interface WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON {
 	typography: MyTypographyControlData;
 }
 
-export const WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON_DEMO: WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON =
+export const BCB_FORM_PANEL_STYLE_SUBMIT_BUTTON_DEMO: BCB_FORM_PANEL_STYLE_SUBMIT_BUTTON =
 	{
 		colorAndBackgroundColor: MY_COLOR_BGCOLOR_CONTROL_FOR_BUTTON_DEMO,
 		padding: {
@@ -53,12 +53,12 @@ export const WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON_DEMO: WCB_FORM_PANEL_STYLE_SUBMI
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON) => void;
+	panelData: BCB_FORM_PANEL_STYLE_SUBMIT_BUTTON;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_SUBMIT_BUTTON) => void;
 }
 
 const WcbPostGridPanel_StyleSubmitButton: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_SUBMIT_BUTTON_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_SUBMIT_BUTTON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -96,7 +96,7 @@ const WcbPostGridPanel_StyleSubmitButton: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Submit button", "boostify-blocks")}
+			title={__("Submit button", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyDisclosure defaultOpen label="Colors">
@@ -121,7 +121,7 @@ const WcbPostGridPanel_StyleSubmitButton: FC<Props> = ({
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
+								{__("Padding", "wcb")}
 							</MyLabelControl>
 						}
 						values={padding}
@@ -138,7 +138,7 @@ const WcbPostGridPanel_StyleSubmitButton: FC<Props> = ({
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("margin", "boostify-blocks")}
+								{__("margin", "wcb")}
 							</MyLabelControl>
 						}
 						values={margin}

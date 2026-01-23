@@ -18,13 +18,13 @@ import { BorderRadiusSettings } from "../components/controls/MyBorderControl/typ
 import { Option } from "../types";
 import MySelect from "../components/controls/MySelect";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_IMAGE {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_IMAGE {
 	padding: HasResponsive<DimensionSettings>;
 	imageSize: HasResponsive<string>;
 	radius: HasResponsive<BorderRadiusSettings>;
 	objectFit: CSSProperties["objectFit"];
 }
-export const WCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_IMAGE =
+export const BCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_IMAGE =
 	{
 		padding: {
 			Desktop: {
@@ -47,12 +47,12 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO: WCB_TESTIMONIALS_PANEL_STY
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_IMAGE;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_IMAGE) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_IMAGE;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_IMAGE) => void;
 }
 
 const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -74,7 +74,7 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 	);
 
 	const OBJECT_FIT_DEMO: Option<
-		WCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"]
+		BCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"]
 	>[] = [
 		{ value: "none", label: "None" },
 		{ value: "cover", label: "Cover" },
@@ -88,7 +88,7 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Image", "boostify-blocks")}
+			title={__("Image", "wcb")}
 		>
 			<div className="space-y-5">
 				<MySpacingSizesControl
@@ -103,18 +103,18 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 					}}
 					value={currentImageSize || "2rem"}
 					hasResponsive
-					label={__("Image size", "boostify-blocks")}
+					label={__("Image size", "wcb")}
 				/>
 
 				<MySelect
-					label={__("Object Fit", "boostify-blocks")}
+					label={__("Object Fit", "Wcb")}
 					options={OBJECT_FIT_DEMO}
 					value={objectFit}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
 							objectFit:
-								value as WCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"],
+								value as BCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"],
 						});
 					}}
 				/>
@@ -132,7 +132,7 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 					}}
 					label={
 						<MyLabelControl className="" hasResponsive>
-							{__("Border radius", "boostify-blocks")}
+							{__("Border radius", "wcb")}
 						</MyLabelControl>
 					}
 				/>
@@ -140,7 +140,7 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 				<BoxControl
 					label={
 						<MyLabelControl className="" hasResponsive>
-							{__("Padding", "boostify-blocks")}
+							{__("Padding", "wcb")}
 						</MyLabelControl>
 					}
 					values={currentPadding}

@@ -26,7 +26,7 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
 type TabsHere = "Normal" | "Hover" | "Active";
-export interface WCB_FORM_PANEL_STYLE_INPUT {
+export interface BCB_FORM_PANEL_STYLE_INPUT {
 	typography: MyTypographyControlData;
 	textColor: string;
 	bgAndPlaceholder: {
@@ -39,7 +39,7 @@ export interface WCB_FORM_PANEL_STYLE_INPUT {
 	padding: HasResponsive<DimensionSettings>;
 }
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE: WCB_FORM_PANEL_STYLE_INPUT =
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE: BCB_FORM_PANEL_STYLE_INPUT =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "",
@@ -66,7 +66,7 @@ export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE: WCB_FORM_PANEL_STYLE_INPUT
 		},
 	};
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID: WCB_FORM_PANEL_STYLE_INPUT =
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID: BCB_FORM_PANEL_STYLE_INPUT =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "",
@@ -93,7 +93,7 @@ export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID: WCB_FORM_PANEL_STYLE_INPUT 
 		},
 	};
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE: WCB_FORM_PANEL_STYLE_INPUT =
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE: BCB_FORM_PANEL_STYLE_INPUT =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "",
@@ -145,16 +145,16 @@ export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE: WCB_FORM_PANEL_STYLE_IN
 		},
 	};
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO =
-	WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE;
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO =
+	BCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE;
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_INPUT;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_INPUT) => void;
+	panelData: BCB_FORM_PANEL_STYLE_INPUT;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_INPUT) => void;
 }
 
 const WcbFormPanel_StyleInput: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_INPUT_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_INPUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -178,9 +178,9 @@ const WcbFormPanel_StyleInput: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "Normal", title: __("Normal", "boostify-blocks") },
-		{ name: "Hover", title: __("Hover", "boostify-blocks") },
-		{ name: "Active", title: __("Active", "boostify-blocks") },
+		{ name: "Normal", title: __("Normal", "wcb") },
+		{ name: "Hover", title: __("Hover", "wcb") },
+		{ name: "Active", title: __("Active", "wcb") },
 	];
 	const initialTabName: TabsHere = "Normal";
 
@@ -189,11 +189,11 @@ const WcbFormPanel_StyleInput: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Input", "boostify-blocks")}
+			title={__("Input", "wcb")}
 		>
 			<div className={"space-y-4"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel `}
+					className={`bcb-bodyControls__panel `}
 					activeClass="active-tab"
 					initialTabName={initialTabName}
 					tabs={PanelTab}
@@ -201,7 +201,7 @@ const WcbFormPanel_StyleInput: FC<Props> = ({
 					{(tab) => (
 						<div className="space-y-3.5">
 							<MyColorPicker
-								label={__("Placeholder color", "boostify-blocks")}
+								label={__("Placeholder color", "wcb")}
 								color={bgAndPlaceholder[tab.name as TabsHere].placeholderColor}
 								onChange={(value) => {
 									setAttr__({
@@ -217,7 +217,7 @@ const WcbFormPanel_StyleInput: FC<Props> = ({
 								}}
 							/>
 							<MyColorPicker
-								label={__("Background color", "boostify-blocks")}
+								label={__("Background color", "wcb")}
 								color={bgAndPlaceholder[tab.name as TabsHere].backgroundColor}
 								onChange={(value) => {
 									setAttr__({
@@ -238,7 +238,7 @@ const WcbFormPanel_StyleInput: FC<Props> = ({
 				<div className={"space-y-3.5"}>
 					<MyDisclosure label="Color, Border & Padding" className="space-y-5">
 						<MyColorPicker
-							label={__("Color", "boostify-blocks")}
+							label={__("Color", "wcb")}
 							color={textColor}
 							onChange={(value) => {
 								setAttr__({
@@ -260,7 +260,7 @@ const WcbFormPanel_StyleInput: FC<Props> = ({
 						<BoxControl
 							label={
 								<MyLabelControl className="" hasResponsive>
-									{__("Padding", "boostify-blocks")}
+									{__("Padding", "wcb")}
 								</MyLabelControl>
 							}
 							values={padding}

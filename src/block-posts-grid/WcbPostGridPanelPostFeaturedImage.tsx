@@ -6,14 +6,14 @@ import { useSelect, useDispatch } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 
-export interface WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE {
+export interface BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE {
 	isShowFeaturedImage: boolean;
 	featuredImageSize: string;
 	featuredImagePosition: "top" | "left" | "right" | "background";
 	linkCompleteBox: boolean;
 }
 
-export const WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE =
+export const BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE =
 	{
 		isShowFeaturedImage: true,
 		featuredImageSize: "large",
@@ -23,12 +23,12 @@ export const WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_P
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE;
-	setAttr__: (data: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE) => void;
+	panelData: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE;
+	setAttr__: (data: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE) => void;
 }
 
 const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO,
+	panelData = BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -55,7 +55,7 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 		})) || [];
 
 	const POSTION_PLANS: MyRadioItem<
-		WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE["featuredImagePosition"]
+		BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE["featuredImagePosition"]
 	>[] = [
 		{ name: "top", icon: "Top" },
 		// { name: "left", icon: "Left" },
@@ -68,11 +68,11 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Featured image settings", "boostify-blocks")}
+			title={__("Featured image settings", "wcb")}
 		>
 			<div className={"space-y-5 "}>
 				<ToggleControl
-					label={__("Show featured image", "boostify-blocks")}
+					label={__("Show featured image", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowFeaturedImage: checked })
 					}
@@ -83,7 +83,7 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 					<MySelect
 						value={featuredImageSize}
 						options={imageSizeOptions}
-						label={__("Image size", "boostify-blocks")}
+						label={__("Image size", "wcb")}
 						onChange={(size) => {
 							setAttr__({ ...panelData, featuredImageSize: size });
 						}}
@@ -111,14 +111,14 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 
 				{isShowFeaturedImage ? (
 					<ToggleControl
-						label={__("Link Complete Box", "boostify-blocks")}
+						label={__("Link Complete Box", "wcb")}
 						onChange={(checked) =>
 							setAttr__({ ...panelData, linkCompleteBox: checked })
 						}
 						checked={linkCompleteBox}
 						help={__(
 							"When enabled, the link to the article page will cover the entire card",
-							"boostify-blocks"
+							"wcb"
 						)}
 					/>
 				) : null}

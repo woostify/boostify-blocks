@@ -50,7 +50,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-icon__wrap",
+		className: "bcb-icon__wrap",
 	});
 	const HtmlTag = enableLink ? "a" : "div";
 	var url = general_icon.link;
@@ -65,7 +65,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		>
 			{/* CHILD CONTENT  */}
 
-			<HtmlTag className="wcb-icon__content"
+			<HtmlTag className="bcb-icon__content"
 				target={openInNewWindow ? "_blank" : undefined}
 				href={enableLink ? url : undefined}
 				rel={addNofollowToLink ? "noopener noreferrer" : undefined}

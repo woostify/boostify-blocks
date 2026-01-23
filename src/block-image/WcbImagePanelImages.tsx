@@ -11,26 +11,26 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import useGetImageSizeOptions from "../hooks/useGetImageSizeOptions";
 
-export interface WCB_IMAGE_PANEL_IMAGES {
+export interface BCB_IMAGE_PANEL_IMAGES {
 	image: MediaUploadData;
 	isShowImage: boolean;
 }
 
 type TabsHere = "Settings" | "SelectImages";
 
-export const WCB_IMAGE_PANEL_IMAGES_DEMO: WCB_IMAGE_PANEL_IMAGES = {
+export const BCB_IMAGE_PANEL_IMAGES_DEMO: BCB_IMAGE_PANEL_IMAGES = {
 	image: INIT_IMAGE_DATA_UPLOAD_DEMO,
 	isShowImage: true,
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_IMAGE_PANEL_IMAGES;
-	setAttr__: (data: WCB_IMAGE_PANEL_IMAGES) => void;
+	panelData: BCB_IMAGE_PANEL_IMAGES;
+	setAttr__: (data: BCB_IMAGE_PANEL_IMAGES) => void;
 }
 
 const WcbImagePanelImages: FC<Props> = ({
-	panelData = WCB_IMAGE_PANEL_IMAGES_DEMO,
+	panelData = BCB_IMAGE_PANEL_IMAGES_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -50,7 +50,7 @@ const WcbImagePanelImages: FC<Props> = ({
 				<HelpText>
 					{__(
 						'Please enable the "Show Image" field to select images for testimonials...',
-						"boostify-blocks"
+						"wcb"
 					)}
 				</HelpText>
 			);
@@ -60,7 +60,7 @@ const WcbImagePanelImages: FC<Props> = ({
 			<div className={"space-y-5"}>
 				<div>
 					<MyLabelControl hasResponsive={false}>
-						{__("Choose Image", "boostify-blocks")}
+						{__("Choose Image", "wcb")}
 					</MyLabelControl>
 					<MyMediaUploadCheck
 						imageData={image}
@@ -80,7 +80,7 @@ const WcbImagePanelImages: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "SelectImages", title: __("Select Images", "boostify-blocks") },
+		{ name: "SelectImages", title: __("Select Images", "wcb") },
 	];
 
 	return (
@@ -88,11 +88,11 @@ const WcbImagePanelImages: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Images", "boostify-blocks")}
+			title={__("Images", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="SelectImages"
 					tabs={TABS}

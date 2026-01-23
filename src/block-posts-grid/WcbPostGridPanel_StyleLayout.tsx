@@ -18,13 +18,13 @@ import {
 	MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO,
 } from "../components/controls/MyDimensionsControl/types";
 
-export interface WCB_POST_GRID_PANEL_STYLE_LAYOUT
+export interface BCB_POST_GRID_PANEL_STYLE_LAYOUT
 	extends MyDimensionsNoMarginControlData {
 	textAlignment: TextAlignment;
 	backgroundColor: string;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_LAYOUT_DEMO: WCB_POST_GRID_PANEL_STYLE_LAYOUT =
+export const BCB_POST_GRID_PANEL_STYLE_LAYOUT_DEMO: BCB_POST_GRID_PANEL_STYLE_LAYOUT =
 	{
 		...MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO,
 		textAlignment: "left",
@@ -41,12 +41,12 @@ export const WCB_POST_GRID_PANEL_STYLE_LAYOUT_DEMO: WCB_POST_GRID_PANEL_STYLE_LA
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_LAYOUT;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_LAYOUT) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_LAYOUT;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_LAYOUT) => void;
 }
 
 const WcbPostGridPanel_StyleLayout: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_LAYOUT_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -78,7 +78,7 @@ const WcbPostGridPanel_StyleLayout: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Layout", "boostify-blocks")}
+			title={__("Layout", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyTextAlignControl
@@ -88,7 +88,7 @@ const WcbPostGridPanel_StyleLayout: FC<Props> = ({
 				/>
 
 				<MyColorPicker
-					label={__("Background color", "boostify-blocks")}
+					label={__("Background color", "wcb")}
 					onChange={handleChangeBgColor}
 					color={backgroundColor}
 				/>
@@ -101,7 +101,7 @@ const WcbPostGridPanel_StyleLayout: FC<Props> = ({
 							...data,
 						});
 					}}
-					paddingLabel={__("Padding content", "boostify-blocks")}
+					paddingLabel={__("Padding content", "wcb")}
 				/>
 			</div>
 		</PanelBody>

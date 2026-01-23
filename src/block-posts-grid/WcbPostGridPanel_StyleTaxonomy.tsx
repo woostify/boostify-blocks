@@ -15,14 +15,14 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_TAXONOMY {
+export interface BCB_POST_GRID_PANEL_STYLE_TAXONOMY {
 	typography: MyTypographyControlData;
 	textColor: string;
 	backgroundColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO: WCB_POST_GRID_PANEL_STYLE_TAXONOMY =
+export const BCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO: BCB_POST_GRID_PANEL_STYLE_TAXONOMY =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -43,12 +43,12 @@ export const WCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO: WCB_POST_GRID_PANEL_STYLE_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_TAXONOMY;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_TAXONOMY) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_TAXONOMY;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_TAXONOMY) => void;
 }
 
 const WcbPostGridPanel_StyleTaxonomy: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_TAXONOMY_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -67,7 +67,7 @@ const WcbPostGridPanel_StyleTaxonomy: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Taxonomy", "boostify-blocks")}
+			title={__("Taxonomy", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -82,7 +82,7 @@ const WcbPostGridPanel_StyleTaxonomy: FC<Props> = ({
 
 				<MyDisclosure defaultOpen label="More styles">
 					<MyColorPicker
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 						onChange={(color) => {
 							setAttr__({
 								...panelData,
@@ -93,7 +93,7 @@ const WcbPostGridPanel_StyleTaxonomy: FC<Props> = ({
 					/>
 
 					<MyColorPicker
-						label={__("Background", "boostify-blocks")}
+						label={__("Background", "wcb")}
 						onChange={(color) => {
 							setAttr__({
 								...panelData,
@@ -115,7 +115,7 @@ const WcbPostGridPanel_StyleTaxonomy: FC<Props> = ({
 						}}
 						value={MARGIN_BOTTOM || ""}
 						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 						className="flex-col space-y-2"
 					/>

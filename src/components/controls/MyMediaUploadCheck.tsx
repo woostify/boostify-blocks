@@ -82,7 +82,7 @@ const MyMediaUploadCheck: FC<Props> = ({
 							{mediaId == 0 && (
 								<div className="text-center flex flex-col items-center justify-center rounded-lg">
 									<Icon icon={plus} className="text-inherit" />
-									<span className="mt-0.5">{__("Choose an image", "boostify-blocks")}</span>
+									<span className="mt-0.5">{__("Choose an image", "wcb")}</span>
 								</div>
 							)}
 							{!!mediaUrl && (
@@ -101,7 +101,7 @@ const MyMediaUploadCheck: FC<Props> = ({
 				<div className="flex justify-between gap-2 mt-2">
 					<MediaUploadCheck>
 						<MediaUpload
-							title={__("Replace image", "boostify-blocks")}
+							title={__("Replace image", "wcb")}
 							value={mediaId}
 							onSelect={onSelectMedia}
 							allowedTypes={["image"]}
@@ -111,7 +111,7 @@ const MyMediaUploadCheck: FC<Props> = ({
 									onClick={open}
 									variant="secondary"
 								>
-									{__("Replace", "boostify-blocks")}
+									{__("Replace", "wcb")}
 								</MyButton>
 							)}
 						/>
@@ -122,7 +122,7 @@ const MyMediaUploadCheck: FC<Props> = ({
 							onClick={removeMedia}
 							isDestructive
 						>
-							{__("Remove", "boostify-blocks")}
+							{__("Remove", "wcb")}
 						</MyButton>
 					</MediaUploadCheck>
 				</div>

@@ -5,22 +5,22 @@ import React, { FC, CSSProperties } from "react";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import ResetButton from "../components/controls/ResetButton";
 import useGetDeviceType from "../hooks/useGetDeviceType";
-export interface WCB_CTA_PANEL_PRESET {
+export interface BCB_CTA_PANEL_PRESET {
 	preset: "preset-left" | "preset-center" | "";
 }
 
-export const WCB_CTA_PANEL_PRESET_DEMO: WCB_CTA_PANEL_PRESET = {
+export const BCB_CTA_PANEL_PRESET_DEMO: BCB_CTA_PANEL_PRESET = {
 	preset: "",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_CTA_PANEL_PRESET;
-	setAttr__: (data: WCB_CTA_PANEL_PRESET) => void;
+	panelData: BCB_CTA_PANEL_PRESET;
+	setAttr__: (data: BCB_CTA_PANEL_PRESET) => void;
 }
 
 export const CTA_PRESET: {
-	name: WCB_CTA_PANEL_PRESET["preset"];
+	name: BCB_CTA_PANEL_PRESET["preset"];
 	twClass: string;
 }[] = [
 	{ name: "preset-left", twClass: "" },
@@ -28,14 +28,14 @@ export const CTA_PRESET: {
 ];
 
 const WcbCtaPanelPreset: FC<Props> = ({
-	panelData = WCB_CTA_PANEL_PRESET_DEMO,
+	panelData = BCB_CTA_PANEL_PRESET_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
 	opened,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-	const setPreset = (preset: WCB_CTA_PANEL_PRESET["preset"]) => {
+	const setPreset = (preset: BCB_CTA_PANEL_PRESET["preset"]) => {
 		setAttr__({ preset: preset });
 	};
 
@@ -43,7 +43,7 @@ const WcbCtaPanelPreset: FC<Props> = ({
 		return (
 			<RadioGroup value={panelData.preset} onChange={setPreset}>
 				<RadioGroup.Label className="relative flex items-center justify-between ">
-					<span>{__("Select Preset", "boostify-blocks")}</span>
+					<span>{__("Select Preset", "wcb")}</span>
 					<ResetButton onClick={() => setPreset("")} />
 				</RadioGroup.Label>
 				<div className={"relative p-3 bg-slate-50 mt-3 rounded-lg"}>
@@ -81,7 +81,7 @@ const WcbCtaPanelPreset: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Preset", "boostify-blocks")}
+			title={__("Preset", "wcb")}
 		>
 			{renderRadioPreset()}
 		</PanelBody>

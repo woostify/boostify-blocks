@@ -6,29 +6,29 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import ResetButton from "../components/controls/ResetButton";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import { COUNTDOWN_PRESET } from "./types";
-export interface WCB_COUNTDOWN_PANEL_PRESET {
-	preset: "wcb-countdown-1" | "wcb-countdown-2" | "wcb-countdown-3" | "wcb-countdown-4" | "wcb-countdown-5" | "";
+export interface BCB_COUNTDOWN_PANEL_PRESET {
+	preset: "bcb-countdown-1" | "bcb-countdown-2" | "bcb-countdown-3" | "bcb-countdown-4" | "bcb-countdown-5" | "";
 }
 
-export const WCB_COUNTDOWN_PANEL_PRESET_DEMO: WCB_COUNTDOWN_PANEL_PRESET = {
-	preset: "wcb-countdown-1",
+export const BCB_COUNTDOWN_PANEL_PRESET_DEMO: BCB_COUNTDOWN_PANEL_PRESET = {
+	preset: "bcb-countdown-1",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_COUNTDOWN_PANEL_PRESET;
-	setAttr__: (data: WCB_COUNTDOWN_PANEL_PRESET) => void;
+	panelData: BCB_COUNTDOWN_PANEL_PRESET;
+	setAttr__: (data: BCB_COUNTDOWN_PANEL_PRESET) => void;
 }
 
 const WcbCountdownPanelPreset: FC<Props> = ({
-	panelData = WCB_COUNTDOWN_PANEL_PRESET_DEMO,
+	panelData = BCB_COUNTDOWN_PANEL_PRESET_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
 	opened,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-	const setPreset = (preset: WCB_COUNTDOWN_PANEL_PRESET["preset"]) => {
+	const setPreset = (preset: BCB_COUNTDOWN_PANEL_PRESET["preset"]) => {
 		setAttr__({ preset: preset });
 	};
 
@@ -36,8 +36,8 @@ const WcbCountdownPanelPreset: FC<Props> = ({
 		return (
 			<RadioGroup value={panelData.preset} onChange={setPreset}>
 				<RadioGroup.Label className="relative flex items-center justify-between ">
-					<span>{__("Select Preset", "boostify-blocks")}</span>
-					<ResetButton onClick={() => setPreset(WCB_COUNTDOWN_PANEL_PRESET_DEMO.preset)} />
+					<span>{__("Select Preset", "wcb")}</span>
+					<ResetButton onClick={() => setPreset(BCB_COUNTDOWN_PANEL_PRESET_DEMO.preset)} />
 				</RadioGroup.Label>
 				<div className={"relative p-3 bg-slate-50 mt-3 rounded-lg"}>
 					<div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))]"></div>
@@ -71,7 +71,7 @@ const WcbCountdownPanelPreset: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Preset", "boostify-blocks")}
+			title={__("Preset", "wcb")}
 		>
 			{renderRadioPreset()}
 		</PanelBody>

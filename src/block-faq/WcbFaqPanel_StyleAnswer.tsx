@@ -19,14 +19,14 @@ import {
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 
-export interface WCB_FAQ_PANEL_STYLE_ANSWER {
+export interface BCB_FAQ_PANEL_STYLE_ANSWER {
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
 	color: string;
 	backgroundColor: string;
 }
 
-export const WCB_FAQ_PANEL_STYLE_ANSWER_DEMO: WCB_FAQ_PANEL_STYLE_ANSWER = {
+export const BCB_FAQ_PANEL_STYLE_ANSWER_DEMO: BCB_FAQ_PANEL_STYLE_ANSWER = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	padding: {
 		Desktop: {
@@ -42,12 +42,12 @@ export const WCB_FAQ_PANEL_STYLE_ANSWER_DEMO: WCB_FAQ_PANEL_STYLE_ANSWER = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FAQ_PANEL_STYLE_ANSWER;
-	setAttr__: (data: WCB_FAQ_PANEL_STYLE_ANSWER) => void;
+	panelData: BCB_FAQ_PANEL_STYLE_ANSWER;
+	setAttr__: (data: BCB_FAQ_PANEL_STYLE_ANSWER) => void;
 }
 
 const WcbFaqPanel_StyleAnswer: FC<Props> = ({
-	panelData = WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+	panelData = BCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -65,7 +65,7 @@ const WcbFaqPanel_StyleAnswer: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Answer", "boostify-blocks")}
+			title={__("Answer", "wcb")}
 		>
 			<div className={"space-y-3.5"}>
 				<MyTypographyControl
@@ -75,16 +75,16 @@ const WcbFaqPanel_StyleAnswer: FC<Props> = ({
 					}}
 				/>
 
-				<MyDisclosure defaultOpen label={__("Colors & Padding", "boostify-blocks")}>
+				<MyDisclosure defaultOpen label={__("Colors & Padding", "wcb")}>
 					<MyColorPicker
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 						onChange={(value) => {
 							setAttr__({ ...panelData, color: value });
 						}}
 						color={color}
 					/>
 					<MyColorPicker
-						label={__("Background color", "boostify-blocks")}
+						label={__("Background color", "wcb")}
 						onChange={(value) => {
 							setAttr__({ ...panelData, backgroundColor: value });
 						}}
@@ -94,7 +94,7 @@ const WcbFaqPanel_StyleAnswer: FC<Props> = ({
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
+								{__("Padding", "wcb")}
 							</MyLabelControl>
 						}
 						values={currentPadding}

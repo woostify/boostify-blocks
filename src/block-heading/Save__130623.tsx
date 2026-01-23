@@ -49,14 +49,14 @@ export default function save({
 
 	const renderSeparator = () => {
 		return general_content.showSeparator ? (
-			<div className="wcb-heading__separator-wrap">
-				<div className="wcb-heading__separator"></div>
+			<div className="bcb-heading__separator-wrap">
+				<div className="bcb-heading__separator"></div>
 			</div>
 		) : null;
 	};
 
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-heading__wrap" });
+	const wrapBlockProps = useBlockProps.save({ className: "bcb-heading__wrap" });
 	//
 	return (
 		<SaveCommon
@@ -70,7 +70,7 @@ export default function save({
 				{general_content.showHeading ? (
 					<RichText.Content
 						tagName={general_content.headingTag || "h2"}
-						className="wcb-heading__heading"
+						className="bcb-heading__heading"
 						value={heading}
 					/>
 				) : null}
@@ -80,7 +80,7 @@ export default function save({
 				{general_content.showSubHeading ? (
 					<RichText.Content
 						tagName="p"
-						className="wcb-heading__subHeading"
+						className="bcb-heading__subHeading"
 						value={subHeading}
 					/>
 				) : null}

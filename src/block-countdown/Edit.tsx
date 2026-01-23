@@ -17,22 +17,22 @@ import WcbCountdownPanel_StyleNumber from "./WcbCountdownPanel_StyleNumber";
 import WcbCountdownPanel_StyleDimension from "./WcbCountdownPanel_StyleDimension";
 import WcbCountdownPanelPreset from "./WcbCountdownPanelPreset";
 import WcbButtonPanel_StyleBorder, {
-	WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1,
-	WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_2,
-	WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_3,
-	WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_4,
-	WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_5,
+	BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1,
+	BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_2,
+	BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_3,
+	BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_4,
+	BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_5,
 } from "./WcbButtonPanel_StyleBorder";
 import WcbButtonPanel_StyleBackground, {
-	WCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_1,
-	WCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_3,
-	WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
+	BCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_1,
+	BCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_3,
+	BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
 } from "./WcbButtonPanel_StyleBackground";
 import WcbButtonPanel_StyleBoxshadow from "./WcbButtonPanel_StyleBoxshadow";
 import { WcbAttrsForSave } from "./Save";
 import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
-import '../../public/js/countdown/wcb-countdown.js';
+import '../../public/js/countdown/bcb-countdown.js';
 
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	if (props.attributes.cover) {
@@ -101,7 +101,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			'timerEndAction': cd_date[1],
 			'redirectURL': ''
 		}
-		WCBCountdown.changeEndTime(`#${UNIQUE_ID} .wcb-countdown__content`, data);
+		WCBCountdown.changeEndTime(`#${UNIQUE_ID} .bcb-countdown__content`, data);
 
 	}, [UNIQUE_ID, attributes]);
 	//
@@ -153,21 +153,21 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								});
 								setAttributes({
 									style_border:
-										preset === "wcb-countdown-1"
-											? WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1
-											: preset === "wcb-countdown-2"
-											? WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_2
-											: preset === "wcb-countdown-3"
-											? WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_3
-											: preset === "wcb-countdown-4"
-											? WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_4
-											: WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_5,
+										preset === "bcb-countdown-1"
+											? BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1
+											: preset === "bcb-countdown-2"
+											? BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_2
+											: preset === "bcb-countdown-3"
+											? BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_3
+											: preset === "bcb-countdown-4"
+											? BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_4
+											: BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_5,
 									style_background:
-										preset === "wcb-countdown-1"
-										? WCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_1
-										: preset === "wcb-countdown-3"
-										? WCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_3
-										: WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
+										preset === "bcb-countdown-1"
+										? BCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_1
+										: preset === "bcb-countdown-3"
+										? BCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_3
+										: BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
 								});
 							}}
 							panelData={general_preset}
@@ -314,7 +314,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-countdown__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-countdown__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}
@@ -328,59 +328,59 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 				{/* CHILD CONTENT  */}
 
-				<div className={`wcb-countdown__content ${general_preset.preset}`}>
+				<div className={`bcb-countdown__content ${general_preset.preset}`}>
 					{general_date.show_day && (
-						<div className="wcb-countdown__box">
-							<div className="wcb-countdown__number wcb-countdown-day"></div>
+						<div className="bcb-countdown__box">
+							<div className="bcb-countdown__number bcb-countdown-day"></div>
 							{general_date.enableLabel && (
 								<RichText
 									tagName="div"
 									value={daylabel}
 									allowedFormats={[]}
 									onChange={(content) => setAttributes({ daylabel: content })}
-									className="wcb-countdown__label wcb-countdown__daylabel"
+									className="bcb-countdown__label bcb-countdown__daylabel"
 								/>
 							)}
 						</div>
 					)}
 					{general_date.show_hour && (
-						<div className="wcb-countdown__box">
-							<div className="wcb-countdown__number wcb-countdown-hrs"></div>
+						<div className="bcb-countdown__box">
+							<div className="bcb-countdown__number bcb-countdown-hrs"></div>
 							{general_date.enableLabel && (
 								<RichText
 									tagName="div"
 									value={hrslabel}
 									allowedFormats={[]}
 									onChange={(content) => setAttributes({ hrslabel: content })}
-									className="wcb-countdown__label wcb-countdown__hrslabel"
+									className="bcb-countdown__label bcb-countdown__hrslabel"
 								/>
 							)}
 						</div>
 					)}
 
 					{general_date.show_minute && (
-						<div className="wcb-countdown__box">
-							<div className="wcb-countdown__number wcb-countdown-mins"></div>
+						<div className="bcb-countdown__box">
+							<div className="bcb-countdown__number bcb-countdown-mins"></div>
 							{general_date.enableLabel && (
 								<RichText
 									tagName="div"
 									value={minlabel}
 									allowedFormats={[]}
 									onChange={(content) => setAttributes({ minlabel: content })}
-									className="wcb-countdown__label wcb-countdown__minlabel"
+									className="bcb-countdown__label bcb-countdown__minlabel"
 								/>
 							)}
 						</div>
 					)}
-					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-secs"></div>
+					<div className="bcb-countdown__box">
+						<div className="bcb-countdown__number bcb-countdown-secs"></div>
 						{general_date.enableLabel && (
 							<RichText
 								tagName="div"
 								value={seclabel}
 								allowedFormats={[]}
 								onChange={(content) => setAttributes({ seclabel: content })}
-								className="wcb-countdown__label wcb-countdown__seclabel"
+								className="bcb-countdown__label bcb-countdown__seclabel"
 							/>
 						)}
 					</div>

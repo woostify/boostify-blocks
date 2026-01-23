@@ -10,7 +10,7 @@ import { PaintBrushIcon, FunnelIcon } from "@heroicons/react/24/outline";
 
 import { ResponsiveDevices } from "../MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../../../hooks/useGetDeviceType";
-import { BackgroundType, GRADIENT_DEFAULT } from "../MyBackgroundControl/types";
+import { BackgroundType, GRADIENT_DEFAULT } from "./types";
 
 const BG_TYPES_PLANS: {
 	name: BackgroundType;
@@ -77,7 +77,7 @@ const MyBackgroundNoImageControl: FC<Props> = ({
 	const renderTypeGroupBtn = () => {
 		return (
 			<PanelRow className="w-full flex justify-between items-center">
-				<p className="flex-1">{__("Type", "boostify-blocks")}</p>
+				<p className="flex-1">{__("Type", "wcb")}</p>
 				<div className="flex gap-1">
 					{bgTypesPlans.map((item) => {
 						const active = item.name === bgType;

@@ -25,7 +25,7 @@ import {
 } from "../components/controls/MyBorderControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 
-export interface WCB_TABS_PANEL_STYLE_BODY {
+export interface BCB_TABS_PANEL_STYLE_BODY {
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
 	margin: HasResponsive<DimensionSettings>;
@@ -36,7 +36,7 @@ export interface WCB_TABS_PANEL_STYLE_BODY {
 	border: MyBorderControlData;
 }
 
-export const WCB_TABS_PANEL_STYLE_BODY_DEMO: WCB_TABS_PANEL_STYLE_BODY = {
+export const BCB_TABS_PANEL_STYLE_BODY_DEMO: BCB_TABS_PANEL_STYLE_BODY = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	border: MY_BORDER_CONTROL_DEMO,
 	margin: {
@@ -67,18 +67,18 @@ export const PANEL_COLOR_TABS: {
 	name: TabHere;
 	title: string;
 }[] = [
-	{ name: "Normal", title: __("Normal", "boostify-blocks") },
-	{ name: "Hover", title: __("Hover", "boostify-blocks") },
+	{ name: "Normal", title: __("Normal", "wcb") },
+	{ name: "Hover", title: __("Hover", "wcb") },
 ];
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TABS_PANEL_STYLE_BODY;
-	setAttr__: (data: WCB_TABS_PANEL_STYLE_BODY) => void;
+	panelData: BCB_TABS_PANEL_STYLE_BODY;
+	setAttr__: (data: BCB_TABS_PANEL_STYLE_BODY) => void;
 }
 
 const WcbTabsPanel_StyleBody: FC<Props> = ({
-	panelData = WCB_TABS_PANEL_STYLE_BODY_DEMO,
+	panelData = BCB_TABS_PANEL_STYLE_BODY_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -111,14 +111,14 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 			return (
 				<div className="space-y-4">
 					<MyColorPicker
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 						onChange={(value) => {
 							setAttr__({ ...panelData, color: value });
 						}}
 						color={color}
 					/>
 					<MyColorPicker
-						label={__("Background color", "boostify-blocks")}
+						label={__("Background color", "wcb")}
 						onChange={(value) => {
 							setAttr__({ ...panelData, backgroundColor: value });
 						}}
@@ -131,14 +131,14 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 			return (
 				<div className="space-y-4">
 					<MyColorPicker
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 						onChange={(value) => {
 							setAttr__({ ...panelData, colorHover: value });
 						}}
 						color={colorHover}
 					/>
 					<MyColorPicker
-						label={__("Background color", "boostify-blocks")}
+						label={__("Background color", "wcb")}
 						onChange={(value) => {
 							setAttr__({ ...panelData, backgroundColorHover: value });
 						}}
@@ -155,7 +155,7 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Body", "boostify-blocks")}
+			title={__("Body", "wcb")}
 		>
 			<div className={"space-y-3.5"}>
 				<MyTypographyControl
@@ -165,11 +165,11 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 					}}
 				/>
 
-				<MyDisclosure label={__("Colors", "boostify-blocks")}>
+				<MyDisclosure label={__("Colors", "wcb")}>
 					<MyTabPanel tabs={PANEL_COLOR_TABS}>{renderColorTab}</MyTabPanel>
 				</MyDisclosure>
 
-				<MyDisclosure label={__("Border ", "boostify-blocks")}>
+				<MyDisclosure label={__("Border ", "wcb")}>
 					<MyBorderControl
 						borderControl={border}
 						setAttrs__border={(value) => {
@@ -178,11 +178,11 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 					/>
 				</MyDisclosure>
 
-				<MyDisclosure label={__("Dimension", "boostify-blocks")}>
+				<MyDisclosure label={__("Dimension", "wcb")}>
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
+								{__("Padding", "wcb")}
 							</MyLabelControl>
 						}
 						values={currentPadding}
@@ -199,7 +199,7 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("Margin", "boostify-blocks")}
+								{__("Margin", "wcb")}
 							</MyLabelControl>
 						}
 						values={currentMargin}

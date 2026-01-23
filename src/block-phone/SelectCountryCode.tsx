@@ -1225,7 +1225,7 @@ const SelectCountryCode: FC<Props> = ({
 	return (
 		<select
 			{...props}
-			className={`wcb-phone__country-code-select ${className}`}
+			className={`bcb-phone__country-code-select ${className}`}
 			onChange={(e) => onChange(e.currentTarget.value)}
 		>
 			{data.map((item) => (

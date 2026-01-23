@@ -13,14 +13,14 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 export type BtnGroupAlignment = CSSProperties["justifyContent"];
 export type BtnGroupSizes = "default" | "xs" | "sm" | "md" | "lg" | "xl";
 
-export interface WCB_BUTTONS_PANEL_GENERAL {
+export interface BCB_BUTTONS_PANEL_GENERAL {
 	alignment: HasResponsive<BtnGroupAlignment>;
 	stackOrientation: "none" | "Desktop" | "Tablet" | "Mobile";
 	gap: HasResponsive<string>;
 	size: HasResponsive<BtnGroupSizes>;
 }
 
-export const WCB_BUTTONS_PANEL_GENERAL_DEMO: WCB_BUTTONS_PANEL_GENERAL = {
+export const BCB_BUTTONS_PANEL_GENERAL_DEMO: BCB_BUTTONS_PANEL_GENERAL = {
 	alignment: { Desktop: "start" },
 	stackOrientation: "Mobile",
 	gap: { Desktop: "1rem" },
@@ -29,12 +29,12 @@ export const WCB_BUTTONS_PANEL_GENERAL_DEMO: WCB_BUTTONS_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTONS_PANEL_GENERAL;
-	setAttr__: (data: WCB_BUTTONS_PANEL_GENERAL) => void;
+	panelData: BCB_BUTTONS_PANEL_GENERAL;
+	setAttr__: (data: BCB_BUTTONS_PANEL_GENERAL) => void;
 }
 
 const WcbButtonsPanelGeneral: FC<Props> = ({
-	panelData = WCB_BUTTONS_PANEL_GENERAL_DEMO,
+	panelData = BCB_BUTTONS_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -101,7 +101,7 @@ const WcbButtonsPanelGeneral: FC<Props> = ({
 	];
 
 	const PLANS_stackOrientation: MyRadioItem<
-		WCB_BUTTONS_PANEL_GENERAL["stackOrientation"]
+		BCB_BUTTONS_PANEL_GENERAL["stackOrientation"]
 	>[] = [
 		{
 			name: "none",
@@ -139,7 +139,7 @@ const WcbButtonsPanelGeneral: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyRadioGroup
@@ -155,7 +155,7 @@ const WcbButtonsPanelGeneral: FC<Props> = ({
 					value={currentAlignment || ""}
 					plans={PLANS_alignment}
 					hasResponsive
-					label={__("Overall Alignment", "boostify-blocks")}
+					label={__("Overall Alignment", "wcb")}
 				/>
 
 				<div>
@@ -169,12 +169,12 @@ const WcbButtonsPanelGeneral: FC<Props> = ({
 						value={stackOrientation || ""}
 						plans={PLANS_stackOrientation}
 						hasResponsive={false}
-						label={__("Stack Orientation", "boostify-blocks")}
+						label={__("Stack Orientation", "wcb")}
 					/>
 					<HelpText>
 						{__(
 							"Note: Choose on what breakpoint the buttons will stack.",
-							"boostify-blocks"
+							"wcb"
 						)}
 					</HelpText>
 				</div>
@@ -191,13 +191,13 @@ const WcbButtonsPanelGeneral: FC<Props> = ({
 							});
 						}}
 						value={currentGap || "0"}
-						label={__("Gap", "boostify-blocks")}
+						label={__("Gap", "wcb")}
 					/>
-					<HelpText>{__("Spacing between buttons.", "boostify-blocks")}</HelpText>
+					<HelpText>{__("Spacing between buttons.", "wcb")}</HelpText>
 				</div>
 
 				<MySelect
-					label={__("Buttons Size", "boostify-blocks")}
+					label={__("Buttons Size", "wcb")}
 					labelClass="flex-[1.3]"
 					hasResponsive
 					onChange={(value) => {

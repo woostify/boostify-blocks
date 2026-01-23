@@ -180,7 +180,7 @@ const MyTypographyControl: FC<Props> = ({
 				<MyLabelControl
 					hasResponsive
 					className="flex-shrink-0"
-					children={__("Line height", "boostify-blocks")}
+					children={__("Line height", "wcb")}
 				/>
 				<NumberControl
 					onChange={handleChangeLineHeight}
@@ -188,7 +188,7 @@ const MyTypographyControl: FC<Props> = ({
 					step={0.1}
 					min={0}
 					max={100}
-					placeholder={__("1.5", "boostify-blocks")}
+					placeholder={__("1.5", "wcb")}
 				/>
 			</div>
 		);
@@ -200,7 +200,7 @@ const MyTypographyControl: FC<Props> = ({
 				<MyLabelControl
 					hasResponsive
 					className="flex-shrink-0"
-					children={__("Letter spacing", "boostify-blocks")}
+					children={__("Letter spacing", "wcb")}
 				/>
 				<UnitControl
 					onChange={handleChangeLetterSpacing}

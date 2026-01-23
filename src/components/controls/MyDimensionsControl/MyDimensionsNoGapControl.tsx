@@ -81,7 +81,7 @@ const MyDimensionsNoGapControl: FC<Props> = ({
 			<BoxControl
 				label={
 					<MyLabelControl hasResponsive className="">
-						{__("Padding", "boostify-blocks")}
+						{__("Padding", "wcb")}
 					</MyLabelControl>
 				}
 				values={padding}
@@ -90,7 +90,7 @@ const MyDimensionsNoGapControl: FC<Props> = ({
 			<BoxControl
 				label={
 					<MyLabelControl className="" hasResponsive>
-						{__("Margin", "boostify-blocks")}
+						{__("Margin", "wcb")}
 					</MyLabelControl>
 				}
 				values={margin}

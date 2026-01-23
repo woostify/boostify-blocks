@@ -5,7 +5,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
 interface Props extends WcbAttrsForSave {}
@@ -27,7 +27,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 
@@ -87,20 +87,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={[
 						getBorderStyles({
 							border: style_image.border,
-							className: `${WRAP_CLASSNAME} .wcb-team__image`,
+							className: `${WRAP_CLASSNAME} .bcb-team__image`,
 							isWithRadius: true,
 						}),
 						getPaddingMarginStyles({
-							className: `${WRAP_CLASSNAME} .wcb-team__image`,
+							className: `${WRAP_CLASSNAME} .bcb-team__image`,
 							margin: style_image.margin,
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-team__image`,
+							className: `${WRAP_CLASSNAME} .bcb-team__image`,
 							value: style_image.imageSize,
 							prefix: "width",
 						}),
 						{
-							[`${WRAP_CLASSNAME} .wcb-team__image, ${WRAP_CLASSNAME} .wcb-team__content-wrap`]:
+							[`${WRAP_CLASSNAME} .bcb-team__image, ${WRAP_CLASSNAME} .bcb-team__content-wrap`]:
 								{
 									alignSelf: general_image.imageAlignSelf,
 								},
@@ -114,15 +114,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					getTypographyStyles({
 						typography: style_title.typography,
-						className: `${WRAP_CLASSNAME} .wcb-team__heading`,
+						className: `${WRAP_CLASSNAME} .bcb-team__heading`,
 					}),
 					getStyleObjectFromResponsiveAttr({
-						className: `${WRAP_CLASSNAME} .wcb-team__heading`,
+						className: `${WRAP_CLASSNAME} .bcb-team__heading`,
 						value: style_title.marginBottom,
 						prefix: "marginBottom",
 					}),
 					{
-						[`${WRAP_CLASSNAME} .wcb-team__heading`]: {
+						[`${WRAP_CLASSNAME} .bcb-team__heading`]: {
 							color: style_title.textColor,
 						},
 					},
@@ -134,15 +134,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					getTypographyStyles({
 						typography: style_desination.typography,
-						className: `${WRAP_CLASSNAME} .wcb-team__designation`,
+						className: `${WRAP_CLASSNAME} .bcb-team__designation`,
 					}),
 					getStyleObjectFromResponsiveAttr({
-						className: `${WRAP_CLASSNAME} .wcb-team__designation`,
+						className: `${WRAP_CLASSNAME} .bcb-team__designation`,
 						value: style_desination.marginBottom,
 						prefix: "marginBottom",
 					}),
 					{
-						[`${WRAP_CLASSNAME} .wcb-team__designation`]: {
+						[`${WRAP_CLASSNAME} .bcb-team__designation`]: {
 							color: style_desination.textColor,
 						},
 					},
@@ -154,15 +154,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					getTypographyStyles({
 						typography: style_description.typography,
-						className: `${WRAP_CLASSNAME} .wcb-team__description`,
+						className: `${WRAP_CLASSNAME} .bcb-team__description`,
 					}),
 					getStyleObjectFromResponsiveAttr({
-						className: `${WRAP_CLASSNAME} .wcb-team__description`,
+						className: `${WRAP_CLASSNAME} .bcb-team__description`,
 						value: style_description.marginBottom,
 						prefix: "marginBottom",
 					}),
 					{
-						[`${WRAP_CLASSNAME} .wcb-team__description`]: {
+						[`${WRAP_CLASSNAME} .bcb-team__description`]: {
 							color: style_description.textColor,
 						},
 					},
@@ -174,18 +174,18 @@ const GlobalCss: FC<Props> = (attrs) => {
 				<Global
 					styles={[
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-icon-full`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-full`,
 							value: style_socialIcons.iconSize,
 							prefix: "width",
 							prefix_2: "fontSize",
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-team__socials-icons > a`,
+							className: `${WRAP_CLASSNAME} .bcb-team__socials-icons > a`,
 							value: style_socialIcons.iconSpacing,
 							prefix: "marginLeft",
 						}),
 						{
-							[`${WRAP_CLASSNAME} .wcb-icon-full`]: {
+							[`${WRAP_CLASSNAME} .bcb-icon-full`]: {
 								color: style_socialIcons.color,
 								":hover": {
 									color: style_socialIcons.hoverColor,

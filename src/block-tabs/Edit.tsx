@@ -16,8 +16,8 @@ import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import { useSelect, useDispatch } from "@wordpress/data";
-import WcbTabsPanel_StyleTitle, { WCB_TABS_PANEL_STYLE_TITLE_DEMO } from "./WcbTabsPanel_StyleTitle";
-import WcbTabsPanel_StyleIcon, { WCB_TABS_PANEL_STYLE_ICON_DEMO } from "./WcbTabsPanel_StyleIcon";
+import WcbTabsPanel_StyleTitle, { BCB_TABS_PANEL_STYLE_TITLE_DEMO } from "./WcbTabsPanel_StyleTitle";
+import WcbTabsPanel_StyleIcon, { BCB_TABS_PANEL_STYLE_ICON_DEMO } from "./WcbTabsPanel_StyleIcon";
 import WcbTabsPanelPreset from "./WcbTabsPanelPreset";
 import MyCacheProvider from "../components/MyCacheProvider";
 import { WcbAttrsForSave } from "./Save";
@@ -26,9 +26,9 @@ import WcbTabsPanelTabTitle from "./WcbTabsPanelTabTitle";
 import { createBlock, serialize } from "@wordpress/blocks";
 import { BlockTabTitleItem } from "./types";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import WcbTabsPanel_StyleBody, { WCB_TABS_PANEL_STYLE_BODY_DEMO } from "./WcbTabsPanel_StyleBody";
+import WcbTabsPanel_StyleBody, { BCB_TABS_PANEL_STYLE_BODY_DEMO } from "./WcbTabsPanel_StyleBody";
 import MyIconFull from "../components/controls/MyIconFull";
-import { WCB_TABS_PANEL_STYLE_CONTAINER_DEMO, WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID } from "./WcbTabsPanel_StyleContainer";
+import { BCB_TABS_PANEL_STYLE_CONTAINER_DEMO, BCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID } from "./WcbTabsPanel_StyleContainer";
 import WcbTabsPanelGeneral from "./WcbTabsPanelGeneral";
 
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
@@ -120,7 +120,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 
     useEffect(() => {
-        const childs = document.querySelectorAll(`#block-${clientId} .wcb-tab-child__wrap`);
+        const childs = document.querySelectorAll(`#block-${clientId} .bcb-tab-child__wrap`);
         if (!childs || !childs.length) return;
         Array.from(childs).forEach((item, index) => {
             if (index !== indexFocused) item.setAttribute("hidden", "");
@@ -157,35 +157,35 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
                                     setAttributes({
                                         general_preset: data,
                                         general_general: { ...general_general, layout: "accordion" },
-                                        style_container: WCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
-                                        style_title: WCB_TABS_PANEL_STYLE_TITLE_DEMO,
-                                        style_body: WCB_TABS_PANEL_STYLE_BODY_DEMO,
-                                        style_icon: WCB_TABS_PANEL_STYLE_ICON_DEMO,
+                                        style_container: BCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
+                                        style_title: BCB_TABS_PANEL_STYLE_TITLE_DEMO,
+                                        style_body: BCB_TABS_PANEL_STYLE_BODY_DEMO,
+                                        style_icon: BCB_TABS_PANEL_STYLE_ICON_DEMO,
                                     });
                                 } else if (data.preset === "carousel-solid") {
                                     setAttributes({
                                         general_preset: data,
                                         general_general: { ...general_general, layout: "accordion" },
-                                        style_container: WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID,
-                                        style_title: WCB_TABS_PANEL_STYLE_TITLE_DEMO,
-                                        style_body: WCB_TABS_PANEL_STYLE_BODY_DEMO,
-                                        style_icon: WCB_TABS_PANEL_STYLE_ICON_DEMO,
+                                        style_container: BCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID,
+                                        style_title: BCB_TABS_PANEL_STYLE_TITLE_DEMO,
+                                        style_body: BCB_TABS_PANEL_STYLE_BODY_DEMO,
+                                        style_icon: BCB_TABS_PANEL_STYLE_ICON_DEMO,
                                     });
                                 } else if (data.preset === "grid-simple") {
                                     setAttributes({
                                         general_preset: data,
                                         general_general: { ...general_general, layout: "grid" },
-                                        style_container: WCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
-                                        style_title: WCB_TABS_PANEL_STYLE_TITLE_DEMO,
-                                        style_body: WCB_TABS_PANEL_STYLE_BODY_DEMO,
+                                        style_container: BCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
+                                        style_title: BCB_TABS_PANEL_STYLE_TITLE_DEMO,
+                                        style_body: BCB_TABS_PANEL_STYLE_BODY_DEMO,
                                     });
                                 } else if (data.preset === "grid-solid") {
                                     setAttributes({
                                         general_preset: data,
                                         general_general: { ...general_general, layout: "grid" },
-                                        style_container: WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID,
-                                        style_title: WCB_TABS_PANEL_STYLE_TITLE_DEMO,
-                                        style_body: WCB_TABS_PANEL_STYLE_BODY_DEMO,
+                                        style_container: BCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID,
+                                        style_title: BCB_TABS_PANEL_STYLE_TITLE_DEMO,
+                                        style_body: BCB_TABS_PANEL_STYLE_BODY_DEMO,
                                     });
                                 } else {
                                     setAttributes({ general_preset: data });
@@ -271,7 +271,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
     const renderAddnewButton = () => (
         <button
             type="button"
-            className="relative wcb-tabs__title_inner_btn flex flex-shrink-0 items-center justify-center rounded-lg px-3 bg-sky-100/80 hover:bg-sky-100 text-sky-900 text-sm font-medium"
+            className="relative bcb-tabs__title_inner_btn flex flex-shrink-0 items-center justify-center rounded-lg px-3 bg-sky-100/80 hover:bg-sky-100 text-sky-900 text-sm font-medium"
             onClick={() => {
                 const newChild = createBlock("wcb/tab-child");
                 insertBlock(newChild, undefined, clientId);
@@ -284,14 +284,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
             }}
         >
             <PlusIcon className="w-5 h-5" />
-            <span className="ml-2.5">{__("Add tab", "boostify-blocks")}</span>
+            <span className="ml-2.5">{__("Add tab", "wcb")}</span>
         </button>
     );
 
     const renderRemoveBtn = (item: BlockTabTitleItem, index: number) => (
         <button
             className="absolute bottom-full left-1/2 -translate-x-1/2 hidden group-hover:flex flex-shrink-0 items-center justify-center rounded-md h-8 w-8 bg-red-50 hover:bg-red-100 text-red-600"
-            title={__("Remove", "boostify-blocks")}
+            title={__("Remove", "wcb")}
             onClick={() => {
                 const newTitles = titles.filter((j) => j.id !== item.id).map((t, i) => ({ ...t, dataTabIndex: i }));
                 removeBlock(childInnerBlocks?.[index]?.clientId);
@@ -306,24 +306,24 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
     const renderIcon = (index: number) => {
         if (!general_tabTitle.enableIcon) return null;
-        return general_tabTitle.icon ? <MyIconFull className={`wcb-tabs__icon ${activeTabIndex === index ? "wcb-tabs__icon-selected" : ""}`} icon={general_tabTitle.icon} /> : null;
+        return general_tabTitle.icon ? <MyIconFull className={`bcb-tabs__icon ${activeTabIndex === index ? "bcb-tabs__icon-selected" : ""}`} icon={general_tabTitle.icon} /> : null;
     };
 
     return (
         <MyCacheProvider uniqueKey={clientId}>
-            <div {...wrapBlockProps} className={`${wrapBlockProps?.className} wcb-tabs__wrap p-2 ${uniqueId}`} data-uniqueid={uniqueId}>
+            <div {...wrapBlockProps} className={`${wrapBlockProps?.className} bcb-tabs__wrap p-2 ${uniqueId}`} data-uniqueid={uniqueId}>
                 <HOCInspectorControls renderTabPanels={renderTabBodyPanels} uniqueId={uniqueId} />
                 {uniqueId && <GlobalCss {...WcbAttrsForSave()} />}
-                <div className="wcb-tabs__contents">
-                    <div className="wcb-tabs__titles">
+                <div className="bcb-tabs__contents">
+                    <div className="bcb-tabs__titles">
                         {titles.map((item, index) => (
-                            <div className={`wcb-tabs__title_inner relative group ${activeTabIndex === index ? "wcb-tabs__title_inner-selected" : ""}`} data-tab-index={item.dataTabIndex} key={item.id}>
+                            <div className={`bcb-tabs__title_inner relative group ${activeTabIndex === index ? "bcb-tabs__title_inner-selected" : ""}`} data-tab-index={item.dataTabIndex} key={item.id}>
                                 {renderRemoveBtn(item, index)}
                                 {(general_tabTitle.iconPosition === "left" || general_tabTitle.iconPosition === "top") && renderIcon(index)}
                                 <RichText
                                     key={item.id}
                                     tagName="p"
-                                    className={`wcb-tabs__title ${activeTabIndex === index ? "wcb-tabs__title-selected" : ""}`}
+                                    className={`bcb-tabs__title ${activeTabIndex === index ? "bcb-tabs__title-selected" : ""}`}
                                     value={item.title}
                                     onFocusCapture={() => setIndexFocused(index)}
                                     onChange={(value) => {

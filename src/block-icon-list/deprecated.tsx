@@ -50,27 +50,27 @@ const v5 = {
 		heading_1: {
 			type: "string",
 			source: "html",
-			selector: ".wcb-icon-list__heading",
+			selector: ".bcb-icon-list__heading",
 			default: "List item",
 		},
 		heading_2: {
 			type: "string",
 			source: "html",
-			selector: ".wcb-icon-list__heading",
+			selector: ".bcb-icon-list__heading",
 			default: "List item",
 		},
 		heading_3: {
 			type: "string",
 			source: "html",
-			selector: ".wcb-icon-list__heading",
+			selector: ".bcb-icon-list__heading",
 			default: "List item",
 		},
 	},
 	save: ({ attributes }) => {
 		const { uniqueId } = attributes;
 		return (
-			<div className="wcb-icon-list__wrap" data-uniqueid={uniqueId}>
-				<div className="wcb-icon-list__icon-wrap">
+			<div className="bcb-icon-list__wrap" data-uniqueid={uniqueId}>
+				<div className="bcb-icon-list__icon-wrap">
 					{/* Empty container for migration */}
 				</div>
 			</div>

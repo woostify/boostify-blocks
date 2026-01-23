@@ -33,9 +33,9 @@ import {
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
-import { WCB_HEADING_PANEL_CONTENT_DEMO } from "../block-heading/WcbHeadingPanelContent";
-import { WCB_HEADING_PANEL_DIMENSION_DEMO } from "../block-heading/WcbHeadingPanelDimension";
-import { WCB_HEADING_PANEL_SEPARATOR_DEMO } from "../block-heading/WcbHeadingPanelSeparator";
+import { BCB_HEADING_PANEL_CONTENT_DEMO } from "../block-heading/WcbHeadingPanelContent";
+import { BCB_HEADING_PANEL_DIMENSION_DEMO } from "../block-heading/WcbHeadingPanelDimension";
+import { BCB_HEADING_PANEL_SEPARATOR_DEMO } from "../block-heading/WcbHeadingPanelSeparator";
 import { DEFAULT_BORDER_MAIN_SINGLE_SIDE } from "../components/controls/MyBorderControl/types";
 import { WcbBlockHeadingAttrs } from "../block-heading/attributes";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
@@ -382,7 +382,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			heading: "Title of content",
 			subHeading: "Description of content",
 			styles_separator: {
-				...WCB_HEADING_PANEL_SEPARATOR_DEMO,
+				...BCB_HEADING_PANEL_SEPARATOR_DEMO,
 				width: { Desktop: "20%" },
 				border: {
 					...DEFAULT_BORDER_MAIN_SINGLE_SIDE,
@@ -390,16 +390,16 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				},
 			},
 			general_content: {
-				...WCB_HEADING_PANEL_CONTENT_DEMO,
+				...BCB_HEADING_PANEL_CONTENT_DEMO,
 				textAlignment: { Desktop: "center" },
 				showSeparator: true,
 				showSubHeading: true,
 				headingTag: "h3",
 			},
 			styles_dimensions: {
-				...WCB_HEADING_PANEL_DIMENSION_DEMO,
+				...BCB_HEADING_PANEL_DIMENSION_DEMO,
 				dimension: {
-					...WCB_HEADING_PANEL_DIMENSION_DEMO.dimension,
+					...BCB_HEADING_PANEL_DIMENSION_DEMO.dimension,
 					margin: {
 						Desktop: {
 							bottom: "1rem",
@@ -412,9 +412,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			},
 		};
 		return (
-			<div className="wcb-image__overlay-wrap">
-				<div className="wcb-image__overlay-bg">
-					<div className="wcb-image__overlay-content">
+			<div className="bcb-image__overlay-wrap">
+				<div className="bcb-image__overlay-bg">
+					<div className="bcb-image__overlay-content">
 						<InnerBlocks
 							allowedBlocks={[]}
 							template={[["wcb/heading", InitWcbBlockHeadingAttrs]]}
@@ -429,7 +429,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<figure
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-image__wrap wcb-image__wrap--${general_settings.layout} ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-image__wrap bcb-image__wrap--${general_settings.layout} ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CSS IN JS */}
@@ -440,7 +440,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					{(temporaryURL || url) && (
 						<>
 							<Image
-								className="wcb-image__image"
+								className="bcb-image__image"
 								temporaryURL={temporaryURL || ""}
 								attributes={attributes}
 								setAttributes={setAttributes}

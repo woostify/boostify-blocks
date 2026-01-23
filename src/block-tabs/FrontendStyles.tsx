@@ -48,15 +48,15 @@ export function initTabsForWcbTabs(div: Element, props: Props) {
         const dataUniqueid = div.getAttribute("data-uniqueid") || "";
 
         const tabWrap = document.querySelector(
-            `.wcb-tabs__wrap[data-uniqueid="${dataUniqueid}"]`
+            `.bcb-tabs__wrap[data-uniqueid="${dataUniqueid}"]`
         ) as HTMLElement;
         if (!tabWrap) {
-            console.warn("No .wcb-tabs__wrap element found for uniqueid:", dataUniqueid);
+            console.warn("No .bcb-tabs__wrap element found for uniqueid:", dataUniqueid);
             return;
         }
 
-        const titles = tabWrap.querySelectorAll(".wcb-tabs__title_inner");
-        const contents = tabWrap.querySelectorAll(".wcb-tab-child__wrap");
+        const titles = tabWrap.querySelectorAll(".bcb-tabs__title_inner");
+        const contents = tabWrap.querySelectorAll(".bcb-tab-child__wrap");
 
         if (!titles.length || !contents.length) {
             console.warn("Tabs block: No titles or contents found.");
@@ -87,23 +87,23 @@ export function initTabsForWcbTabs(div: Element, props: Props) {
 
                 // Remove selected classes from all tabs and icons
                 titles.forEach((t) => {
-                    t.classList.remove("active", "wcb-tabs__title_inner-selected");
+                    t.classList.remove("active", "bcb-tabs__title_inner-selected");
 
-                    const icon = t.querySelector(".wcb-tabs__icon");
-                    const titleText = t.querySelector(".wcb-tabs__title");
+                    const icon = t.querySelector(".bcb-tabs__icon");
+                    const titleText = t.querySelector(".bcb-tabs__title");
 
-                    icon?.classList.remove("wcb-tabs__icon-selected");
-                    titleText?.classList.remove("wcb-tabs__title-selected");
+                    icon?.classList.remove("bcb-tabs__icon-selected");
+                    titleText?.classList.remove("bcb-tabs__title-selected");
                 });
 
                 // Add selected classes to current tab and icon
-                title.classList.add("active", "wcb-tabs__title_inner-selected");
+                title.classList.add("active", "bcb-tabs__title_inner-selected");
 
-                const currentIcon = title.querySelector(".wcb-tabs__icon");
-                const currentTitleText = title.querySelector(".wcb-tabs__title");
+                const currentIcon = title.querySelector(".bcb-tabs__icon");
+                const currentTitleText = title.querySelector(".bcb-tabs__title");
 
-                currentIcon?.classList.add("wcb-tabs__icon-selected");
-                currentTitleText?.classList.add("wcb-tabs__title-selected");
+                currentIcon?.classList.add("bcb-tabs__icon-selected");
+                currentTitleText?.classList.add("bcb-tabs__title-selected");
 
                 // Show selected content
                 contents.forEach((content) => content.setAttribute("hidden", ""));
@@ -116,7 +116,7 @@ export function initTabsForWcbTabs(div: Element, props: Props) {
     const domObserver = new MutationObserver(() => {
         if (
             document.querySelector(
-                `.wcb-tabs__wrap[data-uniqueid="${div.getAttribute("data-uniqueid")}"]`
+                `.bcb-tabs__wrap[data-uniqueid="${div.getAttribute("data-uniqueid")}"]`
             )
         ) {
             domObserver.disconnect();

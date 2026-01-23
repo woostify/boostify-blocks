@@ -31,7 +31,7 @@ import MyUnitControl from "../components/controls/MyUnitControl";
 import { MY_GAP_UNITS } from "../components/controls/MyDimensionsControl/MyDimensionsControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN {
+export interface BCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN {
 	colorAndBackgroundColor: MyColorBackgroundColorControlData;
 	typography: MyTypographyControlData;
 	padding: HasResponsive<DimensionSettings>;
@@ -39,7 +39,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN {
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN =
+export const BCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO: BCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN =
 	{
 		colorAndBackgroundColor: MY_COLOR_BGCOLOR_CONTROL_FOR_BUTTON_DEMO,
 		typography: {
@@ -59,12 +59,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_S
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN) => void;
 }
 
 const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -95,7 +95,7 @@ const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Add to cart button", "boostify-blocks")}
+			title={__("Add to cart button", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -127,7 +127,7 @@ const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
+								{__("Padding", "wcb")}
 							</MyLabelControl>
 						}
 						values={padding}
@@ -154,7 +154,7 @@ const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
 						}}
 						value={MARGIN_BOTTOM || ""}
 						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 					/>
 				</MyDisclosure>

@@ -9,24 +9,24 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 
-export interface WCB_RADIO_PANEL_GENERAL {
+export interface BCB_RADIO_PANEL_GENERAL {
 	isRequired: boolean;
 	layout: "square" | "round";
 }
 
-export const WCB_RADIO_PANEL_GENERAL_DEMO: WCB_RADIO_PANEL_GENERAL = {
+export const BCB_RADIO_PANEL_GENERAL_DEMO: BCB_RADIO_PANEL_GENERAL = {
 	isRequired: false,
 	layout: "round",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_RADIO_PANEL_GENERAL;
-	setAttr__: (data: WCB_RADIO_PANEL_GENERAL) => void;
+	panelData: BCB_RADIO_PANEL_GENERAL;
+	setAttr__: (data: BCB_RADIO_PANEL_GENERAL) => void;
 }
 
 const WcbRadioPanelGeneral: FC<Props> = ({
-	panelData = WCB_RADIO_PANEL_GENERAL_DEMO,
+	panelData = BCB_RADIO_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -39,16 +39,16 @@ const WcbRadioPanelGeneral: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyRadioGroup
-					label={__("Layout", "boostify-blocks")}
+					label={__("Layout", "wcb")}
 					value={layout}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							layout: value as WCB_RADIO_PANEL_GENERAL["layout"],
+							layout: value as BCB_RADIO_PANEL_GENERAL["layout"],
 						});
 					}}
 					plans={[
@@ -58,7 +58,7 @@ const WcbRadioPanelGeneral: FC<Props> = ({
 					hasResponsive={false}
 				/>
 				<ToggleControl
-					label={__("Required", "boostify-blocks")}
+					label={__("Required", "wcb")}
 					checked={isRequired}
 					onChange={(isChecked) => {
 						setAttr__({ ...panelData, isRequired: isChecked });

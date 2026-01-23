@@ -3,12 +3,12 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 
-export interface WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN {
+export interface BCB_PRODUCTS_PANEL_ADD_TO_CART_BTN {
 	isShowButton: boolean;
 	position: "bottom" | "inside image";
 }
 
-export const WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN =
+export const BCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO: BCB_PRODUCTS_PANEL_ADD_TO_CART_BTN =
 	{
 		isShowButton: true,
 		position: "bottom",
@@ -16,12 +16,12 @@ export const WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_ADD_TO_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN) => void;
+	panelData: BCB_PRODUCTS_PANEL_ADD_TO_CART_BTN;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_ADD_TO_CART_BTN) => void;
 }
 
 const WcbProductsPanelButton: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -30,7 +30,7 @@ const WcbProductsPanelButton: FC<Props> = ({
 	const { position, isShowButton } = panelData;
 
 	const POSTION_PLANS: MyRadioItem<
-		WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN["position"]
+		BCB_PRODUCTS_PANEL_ADD_TO_CART_BTN["position"]
 	>[] = [
 		{ name: "inside image", icon: "Inside image" },
 		{ name: "bottom", icon: "Bottom" },
@@ -40,11 +40,11 @@ const WcbProductsPanelButton: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Add to Cart button", "boostify-blocks")}
+			title={__("Add to Cart button", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Add to Cart button", "boostify-blocks")}
+					label={__("Add to Cart button", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowButton: checked })
 					}

@@ -87,7 +87,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 	useEffect(() => {
 		let cl = "";
 		if (hasParent) {
-			cl = "is_wcb_container_child";
+			cl = "is_bcb_container_child";
 		}
 		setAttributes({ containerClassName: cl });
 	}, [hasParent, containerWidthType]);
@@ -102,7 +102,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 					tabStylesIsPanelOpen === "first"
 				}
 				opened={tabStylesIsPanelOpen === "Background" || undefined}
-				title={__("Background", "boostify-blocks")}
+				title={__("Background", "wcb")}
 			>
 				<MyBackgroundControl
 					backgroundControl={attributes.styles_background}
@@ -118,7 +118,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 		return (
 			<PanelBody
 				initialOpen={tabStylesIsPanelOpen === "Color"}
-				title={__("Color", "boostify-blocks")}
+				title={__("Color", "wcb")}
 				onToggle={() => handleTogglePanel("Styles", "Color")}
 				opened={tabStylesIsPanelOpen === "Styles" || undefined}
 			>
@@ -136,7 +136,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 				onToggle={() => handleTogglePanel("Styles", "Border")}
 				initialOpen={tabStylesIsPanelOpen === "Border"}
 				opened={tabStylesIsPanelOpen === "Border" || undefined}
-				title={__("Border", "boostify-blocks")}
+				title={__("Border", "wcb")}
 			>
 				<MyBorderControl
 					borderControl={attributes.styles_border}
@@ -152,7 +152,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 				onToggle={() => handleTogglePanel("Styles", "Box Shadow")}
 				initialOpen={tabStylesIsPanelOpen === "Box Shadow"}
 				opened={tabStylesIsPanelOpen === "Box Shadow" || undefined}
-				title={__("Box Shadow", "boostify-blocks")}
+				title={__("Box Shadow", "wcb")}
 			>
 				<MyBoxShadowControl
 					boxShadowControl={attributes.styles_boxShadow}
@@ -170,12 +170,13 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 				onToggle={() => handleTogglePanel("Styles", "Dimension")}
 				initialOpen={tabStylesIsPanelOpen === "Dimension"}
 				opened={tabStylesIsPanelOpen === "Dimension" || undefined}
-				title={__("Dimension", "boostify-blocks")}
+				title={__("Dimension", "wcb")}
 			>
 				<MyDimensionsControl
 					dimensionControl={attributes.styles_dimensions}
-					setAttrs__dimensions={(data) =>
-						setAttributes({ styles_dimensions: data })
+					setAttrs__dimensions={(data) => {
+							setAttributes({ styles_dimensions: data })
+						}
 					}
 				/>
 			</PanelBody>
@@ -188,7 +189,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 				return (
 					<>
 						<PanelBody
-							title={__("Container", "boostify-blocks")}
+							title={__("Container", "wcb")}
 							onToggle={() => handleTogglePanel("General", "Container", true)}
 							initialOpen={
 								tabGeneralIsPanelOpen === "Container" ||
@@ -220,7 +221,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 							onToggle={() => handleTogglePanel("General", "Flex Properties")}
 							initialOpen={tabGeneralIsPanelOpen === "Flex Properties"}
 							opened={tabGeneralIsPanelOpen === "Flex Properties" || undefined}
-							title={__("Flex Properties", "boostify-blocks")}
+							title={__("Flex Properties", "wcb")}
 						>
 							<MyFlexPropertiesControl
 								flexPropertiesControl={attributes.general_flexProperties}
@@ -274,7 +275,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 	//
 
 	const blockProps = useBlockProps({
-		className: `wcb-container__inner is-layout-flow`,
+		className: `bcb-container__inner is-layout-flow`,
 	});
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
@@ -320,7 +321,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 
 	const blockWrapProps = useBlockProps({
 		ref,
-		className: `wcb-container__wrap ${uniqueId} ${containerClassName}`.trim(),
+		className: `bcb-container__wrap ${uniqueId} ${containerClassName}`.trim(),
 	});
 
 	// make uniqueid

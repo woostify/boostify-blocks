@@ -12,7 +12,7 @@ import {
 	LinkIcon,
 } from "@heroicons/react/24/outline";
 import { gql, useLazyQuery } from "@apollo/client";
-import { GET_WCB_BLOCKS } from "./constant";
+import { GET_BCB_BLOCKS } from "./constant";
 import { Edge, Edge2, Node, WcbBlocksRoot } from "./type";
 import * as copy from "copy-to-clipboard";
 import { useTimeoutFn } from "react-use";
@@ -36,7 +36,7 @@ const HeaderToolBarPatterns = () => {
 
 	// CONSTS
 	const [loadGreeting, { called, loading, data }] =
-		useLazyQuery<WcbBlocksRoot>(GET_WCB_BLOCKS);
+		useLazyQuery<WcbBlocksRoot>(GET_BCB_BLOCKS);
 
 	let patternsEdge: Edge[] = [];
 	let categoriesEdge: Record<string, Edge2["node"]> = {};
@@ -351,7 +351,7 @@ const HeaderToolBarPatterns = () => {
 						<div className="ml-6 mr-3 h-5 w-px bg-slate-900/10 block"></div>
 						{renderSelectCategories()}
 						<a
-							href="https://woostifyblocks.com/wcb-blocks/"
+							href="https://boostify-blocks.com/bcb-blocks/"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="relative ml-2 h-9 w-9 items-center justify-center flex"
@@ -374,7 +374,7 @@ const HeaderToolBarPatterns = () => {
 	return (
 		<>
 			<Button
-				className="wcb-HeaderToolBarPatternsBtn flex-shrink-0 mx-2 button button-primary leading-none h-[33px] text-[13px] flex items-center justify-center"
+				className="bcb-HeaderToolBarPatternsBtn flex-shrink-0 mx-2 button button-primary leading-none h-[33px] text-[13px] flex items-center justify-center"
 				onClick={openModal}
 			>
 				<Logo className="w-4 h-4 text-white" />

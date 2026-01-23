@@ -9,26 +9,26 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_DATE_PANEL_GENERAL {
+export interface BCB_DATE_PANEL_GENERAL {
 	additionalValidation: boolean;
 	isRequired: boolean;
 	max?: string;
 	min?: string;
 }
 
-export const WCB_DATE_PANEL_GENERAL_DEMO: WCB_DATE_PANEL_GENERAL = {
+export const BCB_DATE_PANEL_GENERAL_DEMO: BCB_DATE_PANEL_GENERAL = {
 	isRequired: false,
 	additionalValidation: true,
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_DATE_PANEL_GENERAL;
-	setAttr__: (data: WCB_DATE_PANEL_GENERAL) => void;
+	panelData: BCB_DATE_PANEL_GENERAL;
+	setAttr__: (data: BCB_DATE_PANEL_GENERAL) => void;
 }
 
 const WcbDatePanelGenera: FC<Props> = ({
-	panelData = WCB_DATE_PANEL_GENERAL_DEMO,
+	panelData = BCB_DATE_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -41,11 +41,11 @@ const WcbDatePanelGenera: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Required", "boostify-blocks")}
+					label={__("Required", "wcb")}
 					checked={isRequired}
 					onChange={(isChecked) => {
 						setAttr__({ ...panelData, isRequired: isChecked });
@@ -53,8 +53,8 @@ const WcbDatePanelGenera: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Additional Validation", "boostify-blocks")}
-					help={__("Helps to set range of calender", "boostify-blocks")}
+					label={__("Additional Validation", "wcb")}
+					help={__("Helps to set range of calender", "wcb")}
 					checked={additionalValidation}
 					onChange={(isChecked) => {
 						setAttr__({ ...panelData, additionalValidation: isChecked });
@@ -64,7 +64,7 @@ const WcbDatePanelGenera: FC<Props> = ({
 				{additionalValidation && (
 					<>
 						<InputControl
-							label={__("Min", "boostify-blocks")}
+							label={__("Min", "wcb")}
 							value={min}
 							type="date"
 							onChange={(nextValue) => {
@@ -74,7 +74,7 @@ const WcbDatePanelGenera: FC<Props> = ({
 							}}
 						/>
 						<InputControl
-							label={__("Max", "boostify-blocks")}
+							label={__("Max", "wcb")}
 							value={max}
 							type="date"
 							onChange={(nextValue) => {

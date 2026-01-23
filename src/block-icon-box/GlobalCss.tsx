@@ -5,7 +5,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
 interface Props extends WcbAttrsForSave {}
@@ -28,7 +28,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		general_separator,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 
@@ -56,14 +56,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 								: "column"
 							: undefined,
 
-					".wcb-icon-box__icon-wrap, .wcb-icon-box__content": {
+					".bcb-icon-box__icon-wrap, .bcb-icon-box__content": {
 						alignSelf:
 							general_icon.verticalAlignment === "middle"
 								? "center"
 								: undefined,
 					},
 
-					".wcb-icon-box__content-title-wrap": {
+					".bcb-icon-box__content-title-wrap": {
 						display:
 							general_icon.iconPosition === "leftOfTitle" ||
 							general_icon.iconPosition === "rightOfTitle"
@@ -104,26 +104,26 @@ const GlobalCss: FC<Props> = (attrs) => {
 				<Global
 					styles={[
 						getPaddingMarginStyles({
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__icon-wrap`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__icon-wrap`,
 							margin: style_Icon.dimensions.margin,
 						}),
 						getPaddingMarginStyles({
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__icon`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__icon`,
 							padding: style_Icon.dimensions.padding,
 						}),
 						getBorderStyles({
 							border: style_Icon.border,
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__icon`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__icon`,
 							isWithRadius: true,
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-icon-full`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-full`,
 							value: style_Icon.iconSize,
 							prefix: "width",
 							prefix_2: "fontSize",
 						}),
 						{
-							[`${WRAP_CLASSNAME} .wcb-icon-full`]: {
+							[`${WRAP_CLASSNAME} .bcb-icon-full`]: {
 								color: style_Icon.color,
 								":hover": {
 									color: style_Icon.hoverColor,
@@ -140,15 +140,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={[
 						getTypographyStyles({
 							typography: style_desination.typography,
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__designation`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__designation`,
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__designation`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__designation`,
 							value: style_desination.marginBottom,
 							prefix: "marginBottom",
 						}),
 						{
-							[`${WRAP_CLASSNAME} .wcb-icon-box__designation`]: {
+							[`${WRAP_CLASSNAME} .bcb-icon-box__designation`]: {
 								color: style_desination.textColor,
 							},
 						},
@@ -162,15 +162,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={[
 						getTypographyStyles({
 							typography: style_title.typography,
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__heading`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__heading`,
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__heading`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__heading`,
 							value: style_title.marginBottom,
 							prefix: "marginBottom",
 						}),
 						{
-							[`${WRAP_CLASSNAME} .wcb-icon-box__heading`]: {
+							[`${WRAP_CLASSNAME} .bcb-icon-box__heading`]: {
 								color: style_title.textColor,
 							},
 						},
@@ -186,15 +186,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 							border: {
 								mainSettings: style_separator.border,
 							},
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__separator`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__separator`,
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__separator`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__separator`,
 							value: style_separator.width,
 							prefix: "width",
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__separator`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__separator`,
 							value: style_separator.marginBottom,
 							prefix: "marginBottom",
 						}),
@@ -208,15 +208,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={[
 						getTypographyStyles({
 							typography: style_description.typography,
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__description`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__description`,
 						}),
 						getStyleObjectFromResponsiveAttr({
-							className: `${WRAP_CLASSNAME} .wcb-icon-box__description`,
+							className: `${WRAP_CLASSNAME} .bcb-icon-box__description`,
 							value: style_description.marginBottom,
 							prefix: "marginBottom",
 						}),
 						{
-							[`${WRAP_CLASSNAME} .wcb-icon-box__description`]: {
+							[`${WRAP_CLASSNAME} .bcb-icon-box__description`]: {
 								color: style_description.textColor,
 							},
 						},

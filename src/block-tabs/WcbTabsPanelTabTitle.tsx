@@ -13,7 +13,7 @@ import SelecIcon, {
 import MySelect from "../components/controls/MySelect";
 import { BlockTabTitleItem } from "./types";
 
-export interface WCB_TABS_PANEL_TAB_TITLE {
+export interface BCB_TABS_PANEL_TAB_TITLE {
 	enableIcon: boolean;
 	iconPosition: MyPosition;
 	textAlignment: AlignmentH;
@@ -22,7 +22,7 @@ export interface WCB_TABS_PANEL_TAB_TITLE {
 	icon: MyIcon;
 }
 
-export const WCB_TABS_PANEL_TAB_TITLE_DEMO: WCB_TABS_PANEL_TAB_TITLE = {
+export const BCB_TABS_PANEL_TAB_TITLE_DEMO: BCB_TABS_PANEL_TAB_TITLE = {
 	textAlignment: "center",
 	tabAlignment: "left",
 	iconPosition: "left",
@@ -36,14 +36,14 @@ export const WCB_TABS_PANEL_TAB_TITLE_DEMO: WCB_TABS_PANEL_TAB_TITLE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TABS_PANEL_TAB_TITLE;
-	setAttr__: (data: WCB_TABS_PANEL_TAB_TITLE) => void;
+	panelData: BCB_TABS_PANEL_TAB_TITLE;
+	setAttr__: (data: BCB_TABS_PANEL_TAB_TITLE) => void;
 	//
 	tabTitles: BlockTabTitleItem[];
 }
 
 const WcbTabsPanelTabTitle: FC<Props> = ({
-	panelData = WCB_TABS_PANEL_TAB_TITLE_DEMO,
+	panelData = BCB_TABS_PANEL_TAB_TITLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -59,7 +59,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	} = panelData;
 
 	const OPTION_INIT_OPEN_TAB_DEMO: Option<
-		WCB_TABS_PANEL_TAB_TITLE["initOpenTab"]
+		BCB_TABS_PANEL_TAB_TITLE["initOpenTab"]
 	>[] = [
 		{ value: "tab1", label: "Tab1" },
 		{ value: "tab2", label: "Tab2" },
@@ -67,7 +67,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	];
 
 	const PLANS_ICON_POS_DEMO: MyRadioItem<
-		WCB_TABS_PANEL_TAB_TITLE["iconPosition"]
+		BCB_TABS_PANEL_TAB_TITLE["iconPosition"]
 	>[] = [
 		{ icon: "Left", name: "left" },
 		{ icon: "Right", name: "right" },
@@ -80,11 +80,11 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Tab title", "boostify-blocks")}
+			title={__("Tab title", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MySelect
-					label={__("Init Open tab", "boostify-blocks")}
+					label={__("Init Open tab", "Wcb")}
 					options={OPTION_INIT_OPEN_TAB_DEMO}
 					value={initOpenTab}
 					onChange={(value) => {
@@ -97,7 +97,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 
 				<MyRadioGroup
 					hasResponsive={false}
-					label={__("Tab Alignment", "boostify-blocks")}
+					label={__("Tab Alignment", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -109,7 +109,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 				/>
 				<MyRadioGroup
 					hasResponsive={false}
-					label={__("Text Alignment", "boostify-blocks")}
+					label={__("Text Alignment", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -142,7 +142,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 
 						<MyRadioGroup
 							hasResponsive={false}
-							label={__("Icon Position", "boostify-blocks")}
+							label={__("Icon Position", "wcb")}
 							onChange={(value) => {
 								setAttr__({
 									...panelData,

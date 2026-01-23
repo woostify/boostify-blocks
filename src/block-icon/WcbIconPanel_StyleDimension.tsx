@@ -7,10 +7,10 @@ import {
 	MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 } from "../components/controls/MyDimensionsControl/types";
 
-export interface WCB_ICON_PANEL_STYLE_DIMENSION
+export interface BCB_ICON_PANEL_STYLE_DIMENSION
 	extends MyDimensionsNoGapControlData {}
 
-export const WCB_ICON_PANEL_STYLE_DIMENSION_DEMO: WCB_ICON_PANEL_STYLE_DIMENSION =
+export const BCB_ICON_PANEL_STYLE_DIMENSION_DEMO: BCB_ICON_PANEL_STYLE_DIMENSION =
 	{
 		...MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 		padding: {
@@ -33,12 +33,12 @@ export const WCB_ICON_PANEL_STYLE_DIMENSION_DEMO: WCB_ICON_PANEL_STYLE_DIMENSION
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_PANEL_STYLE_DIMENSION;
-	setAttr__: (data: WCB_ICON_PANEL_STYLE_DIMENSION) => void;
+	panelData: BCB_ICON_PANEL_STYLE_DIMENSION;
+	setAttr__: (data: BCB_ICON_PANEL_STYLE_DIMENSION) => void;
 }
 
 const WcbIconBoxPanel_StyleDimension: FC<Props> = ({
-	panelData = WCB_ICON_PANEL_STYLE_DIMENSION_DEMO,
+	panelData = BCB_ICON_PANEL_STYLE_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -49,7 +49,7 @@ const WcbIconBoxPanel_StyleDimension: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Dimension", "boostify-blocks")}
+			title={__("Dimension", "wcb")}
 		>
 			<div className="space-y-5">
 				<MyDimensionsNoGapControl

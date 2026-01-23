@@ -14,13 +14,13 @@ import {
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 import MyDisclosure from "../components/controls/MyDisclosure";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS {
 	arrowSize: string;
 	border: MyBorderControlData;
 	dotsMarginTop: HasResponsive<string>;
 	color: string;
 }
-export const WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS =
+export const BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS =
 	{
 		arrowSize: "1.25rem",
 		border: {
@@ -34,18 +34,18 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_TESTIMONIALS_PANE
 			hoverColor: "#6b7280",
 			radius: { Desktop: "99px" },
 		},
-		dotsMarginTop: { Desktop: "1rem" },
+		dotsMarginTop: { Desktop: "8px" },
 		color: "#374151",
 	};
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS) => void;
 }
 
 const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -61,7 +61,7 @@ const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Arrow & Dots", "boostify-blocks")}
+			title={__("Arrow & Dots", "wcb")}
 		>
 			<div className="space-y-5">
 				<MyDisclosure defaultOpen label="Arrow settings">
@@ -74,7 +74,7 @@ const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
 						}}
 						value={arrowSize || "2rem"}
 						hasResponsive={false}
-						label={__("Arrow size", "boostify-blocks")}
+						label={__("Arrow size", "wcb")}
 					/>
 
 					<MyBorderControl
@@ -99,7 +99,7 @@ const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
 						});
 					}}
 					value={currentDotsMarginTop || "2rem"}
-					label={__("Dots Margin top", "boostify-blocks")}
+					label={__("Dots Margin top", "wcb")}
 				/>
 
 				<MyColorPicker

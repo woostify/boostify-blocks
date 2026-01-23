@@ -22,14 +22,14 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_IMAGE_PANEL_STYLE_IMAGE {
+export interface BCB_IMAGE_PANEL_STYLE_IMAGE {
 	border: MyBorderControlData;
 	boxShadow: MyBoxShadowControlData;
 	padding: HasResponsive<DimensionSettings>;
 	margin: HasResponsive<DimensionSettings>;
 }
 
-export const WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO: WCB_IMAGE_PANEL_STYLE_IMAGE = {
+export const BCB_IMAGE_PANEL_STYLE_IMAGE_DEMO: BCB_IMAGE_PANEL_STYLE_IMAGE = {
 	border: MY_BORDER_CONTROL_DEMO,
 	boxShadow: MY_BOX_SHADOW_CONTROL_DEMO,
 	padding: {
@@ -52,12 +52,12 @@ export const WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO: WCB_IMAGE_PANEL_STYLE_IMAGE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_IMAGE_PANEL_STYLE_IMAGE;
-	setAttr__: (data: WCB_IMAGE_PANEL_STYLE_IMAGE) => void;
+	panelData: BCB_IMAGE_PANEL_STYLE_IMAGE;
+	setAttr__: (data: BCB_IMAGE_PANEL_STYLE_IMAGE) => void;
 }
 
 const WcbImagePanel_StyleImage: FC<Props> = ({
-	panelData = WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
+	panelData = BCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -79,10 +79,10 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Image", "boostify-blocks")}
+			title={__("Image", "wcb")}
 		>
 			<div className={"space-y-4"}>
-				<MyDisclosure defaultOpen label={__("Border", "boostify-blocks")}>
+				<MyDisclosure defaultOpen label={__("Border", "wcb")}>
 					<MyBorderControl
 						borderControl={border}
 						setAttrs__border={(data) => {
@@ -93,7 +93,7 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 						}}
 					/>
 				</MyDisclosure>
-				<MyDisclosure label={__("Box shadow", "boostify-blocks")}>
+				<MyDisclosure label={__("Box shadow", "wcb")}>
 					<MyBoxShadowControl
 						boxShadowControl={boxShadow}
 						setAttrs__boxShadow={(data) => {
@@ -108,7 +108,7 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 				<BoxControl
 					label={
 						<MyLabelControl hasResponsive className="">
-							{__("Margin", "boostify-blocks")}
+							{__("Margin", "wcb")}
 						</MyLabelControl>
 					}
 					values={currentMargin}
@@ -125,7 +125,7 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 				<BoxControl
 					label={
 						<MyLabelControl hasResponsive className="">
-							{__("Padding", "boostify-blocks")}
+							{__("Padding", "wcb")}
 						</MyLabelControl>
 					}
 					values={currentPadding}

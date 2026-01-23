@@ -22,8 +22,8 @@ export const convertToResponsiveStyle = () => {
 		const settings = new models.Settings();
 		settings.fetch().then((response) => {
 
-			const typography = head(response.wcb_global_typography);
-			const colors = response.wcb_global_colors;
+			const typography = head(response.bcb_global_typography);
+			const colors = response.bcb_global_colors;
 
 			for (const selector in typography) {
 				//styleContent += `${cssPrefix} ${selector}{${JSToCSS(typo[selector])}}`;
@@ -70,7 +70,7 @@ export const createStyleTagWithGlobalStyleContent = () => {
         cssPrefix = '.editor-styles-wrapper .woostify-block';
     }
 	const style = document.createElement('style');
-	style.classList.add('wcb-global-style');
+	style.classList.add('bcb-global-style');
     style.textContent = convertToResponsiveStyle();
 
 	return style;
@@ -81,10 +81,10 @@ export const removeOldStyleTag = (head = document.querySelector('head')) => {
 		return;
 	}
 
-	const oldTag = head.querySelector('.wcb-global-style');
+	const oldTag = head.querySelector('.bcb-global-style');
 	oldTag.remove();
 };
 
 export const isStyleTagAdded = (head = document.querySelector('head')) => {
-	return head.querySelector('.wcb-global-style');
+	return head.querySelector('.bcb-global-style');
 };

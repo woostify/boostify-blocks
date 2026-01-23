@@ -35,12 +35,12 @@ type A = {
 	};
 };
 
-export interface WCB_FORM_PANEL_STYLE_MESSAGES extends A {
+export interface BCB_FORM_PANEL_STYLE_MESSAGES extends A {
 	typography: MyTypographyControlData;
 	margin?: HasResponsive<DimensionSettings>;
 }
 
-export const WCB_FORM_PANEL_STYLE_MESSAGES_DEMO: WCB_FORM_PANEL_STYLE_MESSAGES =
+export const BCB_FORM_PANEL_STYLE_MESSAGES_DEMO: BCB_FORM_PANEL_STYLE_MESSAGES =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		margin: undefined,
@@ -58,12 +58,12 @@ export const WCB_FORM_PANEL_STYLE_MESSAGES_DEMO: WCB_FORM_PANEL_STYLE_MESSAGES =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_MESSAGES;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_MESSAGES) => void;
+	panelData: BCB_FORM_PANEL_STYLE_MESSAGES;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_MESSAGES) => void;
 }
 
 const WcbPostGridPanel_StyleMessages: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_MESSAGES_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_MESSAGES_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -74,8 +74,8 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "Success", title: __("Success", "boostify-blocks") },
-		{ name: "Error", title: __("Error", "boostify-blocks") },
+		{ name: "Success", title: __("Success", "wcb") },
+		{ name: "Error", title: __("Error", "wcb") },
 	];
 
 	const {
@@ -100,7 +100,7 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Messages", "boostify-blocks")}
+			title={__("Messages", "wcb")}
 		>
 			<div className="space-y-4">
 				<MyTypographyControl
@@ -114,7 +114,7 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 				/>
 
 				<TabPanel
-					className={`wcb-bodyControls__panel `}
+					className={`bcb-bodyControls__panel `}
 					activeClass="active-tab"
 					initialTabName={initialTabName}
 					tabs={PanelTab}
@@ -122,7 +122,7 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 					{(tab) => (
 						<div className="space-y-5">
 							<MyColorPicker
-								label={__("Text color", "boostify-blocks")}
+								label={__("Text color", "wcb")}
 								color={panelData[tab.name as TabsHere].color}
 								onChange={(value) => {
 									setAttr__({
@@ -135,7 +135,7 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 								}}
 							/>
 							<MyColorPicker
-								label={__("Background color", "boostify-blocks")}
+								label={__("Background color", "wcb")}
 								color={panelData[tab.name as TabsHere].backgroundColor}
 								onChange={(value) => {
 									setAttr__({
@@ -163,7 +163,7 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 								<BoxControl
 									label={
 										<MyLabelControl className="" hasResponsive>
-											{__("margin", "boostify-blocks")}
+											{__("margin", "wcb")}
 										</MyLabelControl>
 									}
 									values={margin}

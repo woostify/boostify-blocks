@@ -16,7 +16,7 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_FORM_PANEL_GENERAL {
+export interface BCB_FORM_PANEL_GENERAL {
 	textAlignment: HasResponsive<TextAlignment>;
 	isShowLabel: boolean;
 	formStyle: "simple" | "underline" | "solid";
@@ -26,7 +26,7 @@ export interface WCB_FORM_PANEL_GENERAL {
 	successRedirectUrl: string;
 }
 
-export const WCB_FORM_PANEL_GENERAL_DEMO: WCB_FORM_PANEL_GENERAL = {
+export const BCB_FORM_PANEL_GENERAL_DEMO: BCB_FORM_PANEL_GENERAL = {
 	textAlignment: { Desktop: "left" },
 	isShowLabel: true,
 	formStyle: "simple",
@@ -39,12 +39,12 @@ export const WCB_FORM_PANEL_GENERAL_DEMO: WCB_FORM_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_GENERAL;
-	setAttr__: (data: WCB_FORM_PANEL_GENERAL) => void;
+	panelData: BCB_FORM_PANEL_GENERAL;
+	setAttr__: (data: BCB_FORM_PANEL_GENERAL) => void;
 }
 
 const WcbFormPanelGeneral: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_GENERAL_DEMO,
+	panelData = BCB_FORM_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -67,13 +67,13 @@ const WcbFormPanelGeneral: FC<Props> = ({
 	);
 
 	//
-	const form_style_plans: MyRadioItem<WCB_FORM_PANEL_GENERAL["formStyle"]>[] = [
+	const form_style_plans: MyRadioItem<BCB_FORM_PANEL_GENERAL["formStyle"]>[] = [
 		{ name: "simple", icon: "Simple" },
 		{ name: "underline", icon: "Underline" },
 		{ name: "solid", icon: "Solid" },
 	];
 	const confirmationType_plans: MyRadioItem<
-		WCB_FORM_PANEL_GENERAL["confirmationType"]
+		BCB_FORM_PANEL_GENERAL["confirmationType"]
 	>[] = [
 		{ name: "message", icon: "Message" },
 		{ name: "url-text", icon: "Url text" },
@@ -85,12 +85,12 @@ const WcbFormPanelGeneral: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
 					checked={isShowLabel}
-					label={__("Display label", "boostify-blocks")}
+					label={__("Display label", "wcb")}
 					onChange={(e) => {
 						setAttr__({
 							...panelData,
@@ -142,10 +142,10 @@ const WcbFormPanelGeneral: FC<Props> = ({
 				{confirmationType === "message" && (
 					<>
 						<TextareaControl
-							label={__("SUCCESS MESSAGE TEXT", "boostify-blocks")}
+							label={__("SUCCESS MESSAGE TEXT", "wcb")}
 							help={__(
 								"Enter a message you want to display after successfull form submission",
-								"boostify-blocks"
+								"wcb"
 							)}
 							value={successMessageText}
 							onChange={(value) => {
@@ -156,10 +156,10 @@ const WcbFormPanelGeneral: FC<Props> = ({
 							}}
 						/>
 						<TextareaControl
-							label={__("ERROR MESSAGE TEXT", "boostify-blocks")}
+							label={__("ERROR MESSAGE TEXT", "wcb")}
 							help={__(
 								"Enter a message you want to display after unsuccessfull form submission",
-								"boostify-blocks"
+								"wcb"
 							)}
 							value={errorMessageText}
 							onChange={(value) => {
@@ -174,7 +174,7 @@ const WcbFormPanelGeneral: FC<Props> = ({
 
 				{confirmationType === "url-text" && (
 					<InputControl
-						label={__("SUCCESS REDIRECT URL", "boostify-blocks")}
+						label={__("SUCCESS REDIRECT URL", "wcb")}
 						value={successRedirectUrl}
 						onChange={(value) => {
 							setAttr__({

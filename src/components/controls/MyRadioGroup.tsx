@@ -96,7 +96,7 @@ function MyRadioGroup<T>({
 	value,
 	className = "",
 	plans = PLANS_DEMO,
-	label = __("Alignment", "boostify-blocks"),
+	label = __("Alignment", "wcb"),
 	hasResponsive = true,
 	isWrap = false,
 	labelClassName,
@@ -110,7 +110,7 @@ function MyRadioGroup<T>({
 		}
 	}, [value]);
 
-	const handleChangeRadio = (value) => {
+	const handleChangeRadio = (value: any) => {
 		setSelected(value);
 		onChange(value);
 	};

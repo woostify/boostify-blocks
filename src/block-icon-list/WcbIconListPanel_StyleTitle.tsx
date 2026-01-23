@@ -14,14 +14,14 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_ICON_LIST_PANEL_STYLE_TITLE {
+export interface BCB_ICON_LIST_PANEL_STYLE_TITLE {
 	typography: MyTypographyControlData;
 	textColor: string;
 	textColorHover: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_ICON_LIST_PANEL_STYLE_TITLE_DEMO: WCB_ICON_LIST_PANEL_STYLE_TITLE =
+export const BCB_ICON_LIST_PANEL_STYLE_TITLE_DEMO: BCB_ICON_LIST_PANEL_STYLE_TITLE =
 {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	textColor: "#171717",
@@ -31,12 +31,12 @@ export const WCB_ICON_LIST_PANEL_STYLE_TITLE_DEMO: WCB_ICON_LIST_PANEL_STYLE_TIT
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_LIST_PANEL_STYLE_TITLE;
-	setAttr__: (data: WCB_ICON_LIST_PANEL_STYLE_TITLE) => void;
+	panelData: BCB_ICON_LIST_PANEL_STYLE_TITLE;
+	setAttr__: (data: BCB_ICON_LIST_PANEL_STYLE_TITLE) => void;
 }
 
 const WcbIconListPanel_StyleTitle: FC<Props> = ({
-	panelData = WCB_ICON_LIST_PANEL_STYLE_TITLE_DEMO,
+	panelData = BCB_ICON_LIST_PANEL_STYLE_TITLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -89,7 +89,7 @@ const WcbIconListPanel_StyleTitle: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Title", "boostify-blocks")}
+			title={__("Title", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -114,7 +114,7 @@ const WcbIconListPanel_StyleTitle: FC<Props> = ({
 					/>
 
 					<MyColorPicker
-						label={__("Hover color", "boostify-blocks")}
+						label={__("Hover color", "wcb")}
 						onChange={(value) => {
 							setAttr__({ ...panelData, textColorHover: value });
 						}}
@@ -132,7 +132,7 @@ const WcbIconListPanel_StyleTitle: FC<Props> = ({
 							});
 						}}
 						value={MARGIN_BOTTOM || "0rem"}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 					/>
 				</MyDisclosure>

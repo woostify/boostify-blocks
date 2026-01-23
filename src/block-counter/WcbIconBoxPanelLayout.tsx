@@ -10,7 +10,7 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_ICON_BOX_PANEL_LAYOUT {
+export interface BCB_ICON_BOX_PANEL_LAYOUT {
 	textAlignment: HasResponsive<TextAlignment>;
 	headingTag: keyof HTMLElementTagNameMap;
 	enablePrefix: boolean;
@@ -27,7 +27,7 @@ export interface WCB_ICON_BOX_PANEL_LAYOUT {
 	animationDuration: string;
 }
 
-export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
+export const BCB_ICON_BOX_PANEL_LAYOUT_DEMO: BCB_ICON_BOX_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "center" },
 	headingTag: "h4",
 	enableDescription: true,
@@ -46,12 +46,12 @@ export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_BOX_PANEL_LAYOUT;
-	setAttr__: (data: WCB_ICON_BOX_PANEL_LAYOUT) => void;
+	panelData: BCB_ICON_BOX_PANEL_LAYOUT;
+	setAttr__: (data: BCB_ICON_BOX_PANEL_LAYOUT) => void;
 }
 
 const WcbIconBoxPanelLayout: FC<Props> = ({
-	panelData = WCB_ICON_BOX_PANEL_LAYOUT_DEMO,
+	panelData = BCB_ICON_BOX_PANEL_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -98,7 +98,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Layout", "boostify-blocks")}
+			title={__("Layout", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyTextAlignControl
@@ -127,7 +127,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/> */}
 
 				<TextControl
-					label={__("Starting Number", "boostify-blocks")}
+					label={__("Starting Number", "wcb")}
 					type="number"
 					value={startNumber}
 					onChange={(value) => {
@@ -136,7 +136,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 
 				<TextControl
-					label={__("Ending Number", "boostify-blocks")}
+					label={__("Ending Number", "wcb")}
 					type="number"
 					value={endNumber}
 					onChange={(value) => {
@@ -145,7 +145,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 				
 				<TextControl
-					label={__("Decimal Places", "boostify-blocks")}
+					label={__("Decimal Places", "wcb")}
 					type="number"
 					value={decimalNumber}
 					onChange={(value) => {
@@ -154,7 +154,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 
 				<TextControl
-					label={__("Number Prefix", "boostify-blocks")}
+					label={__("Number Prefix", "wcb")}
 					type="text"
 					value={numberPrefix}
 					onChange={(value) => {
@@ -163,7 +163,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 
 				<TextControl
-					label={__("Number Suffix", "boostify-blocks")}
+					label={__("Number Suffix", "wcb")}
 					type="text"
 					value={numberSuffix}
 					onChange={(value) => {
@@ -172,7 +172,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 
 				<TextControl
-					label={__("Animation Duration", "boostify-blocks")}
+					label={__("Animation Duration", "wcb")}
 					type="number"
 					value={animationDuration}
 					onChange={(value) => {
@@ -195,7 +195,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Enable description", "boostify-blocks")}
+					label={__("Enable description", "wcb")}
 					checked={enableDescription}
 					className="mb-0"
 					onChange={(checked) => {

@@ -282,7 +282,7 @@ const MyQueryControls: FC<Props> = ({
 		<>
 			{postTypeOptions && postTypeOptions.length ? (
 				<MySelect
-					label={__("Post type", "boostify-blocks")}
+					label={__("Post type", "wcb")}
 					value={postType}
 					options={postTypeOptions}
 					onChange={handlePostTypeChange}
@@ -291,7 +291,7 @@ const MyQueryControls: FC<Props> = ({
 
 			{taxonomyOptions && taxonomyOptions.length ? (
 				<MySelect
-					label={__("Taxonomy", "boostify-blocks")}
+					label={__("Taxonomy", "wcb")}
 					value={taxonomySlug}
 					options={taxonomyOptions}
 					onChange={handleTaxonomyChange}
@@ -301,7 +301,7 @@ const MyQueryControls: FC<Props> = ({
 			{termSuggestionList && termSuggestionList.length ? (
 				<div>
 					<FormTokenField
-						label={__(taxonomyLabel, "boostify-blocks")}
+						label={__(taxonomyLabel, "wcb")}
 						// @ts-ignore
 						__experimentalExpandOnFocus
 						value={
@@ -311,20 +311,20 @@ const MyQueryControls: FC<Props> = ({
 								value: item.name || item.value,
 							}))
 						}
-						placeholder={__("All", "boostify-blocks")}
+						placeholder={__("All", "wcb")}
 						suggestions={termSuggestionList}
 						onChange={handleSelectTerms}
 						maxSuggestions={MAX_CATEGORIES_SUGGESTIONS}
 						__experimentalShowHowTo={false}
 					/>
-					<HelpText>{__("Multiple values can be selected", "boostify-blocks")}</HelpText>
+					<HelpText>{__("Multiple values can be selected", "wcb")}</HelpText>
 				</div>
 			) : null}
 			{/*  ---------------------------- */}
 
 			{/* ------- */}
 			<SelectControl
-				label={__("Order by", "boostify-blocks")}
+				label={__("Order by", "wcb")}
 				value={`${orderBy}/${order}`}
 				options={MY_ORDER_OPTIONS}
 				onChange={(value) => {
@@ -341,7 +341,7 @@ const MyQueryControls: FC<Props> = ({
 			{/*  */}
 			<AuthorSelect
 				authorList={authorList}
-				label={__("Author", "boostify-blocks")}
+				label={__("Author", "wcb")}
 				noOptionLabel={__("All")}
 				selectedAuthorId={selectedAuthorId}
 				onChange={handleAuthorChange}
@@ -351,12 +351,12 @@ const MyQueryControls: FC<Props> = ({
 			<ToggleControl
 				onChange={handleToogleExcludeCurrentPost}
 				checked={isExcludeCurrentPost}
-				label={__("Exclude Current Post", "boostify-blocks")}
+				label={__("Exclude Current Post", "wcb")}
 			/>
 
 			{/*  */}
 			<ToggleControl
-				label={__("Offset starting post", "boostify-blocks")}
+				label={__("Offset starting post", "wcb")}
 				onChange={handleToogleOffsetStartingPost}
 				checked={isOffsetStartingPost}
 				help={
@@ -377,7 +377,7 @@ const MyQueryControls: FC<Props> = ({
 
 			{isOffsetStartingPost ? (
 				<NumberControl
-					label={__("Offset By", "boostify-blocks")}
+					label={__("Offset By", "wcb")}
 					labelPosition="edeg"
 					min={0}
 					value={offsetPost}
@@ -389,7 +389,7 @@ const MyQueryControls: FC<Props> = ({
 
 			{/*  */}
 			<RangeControl
-				label={__("Number of items", "boostify-blocks")}
+				label={__("Number of items", "wcb")}
 				value={numberOfItems}
 				onChange={handleNumberOfItemsChange}
 				min={minItems}

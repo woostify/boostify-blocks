@@ -13,13 +13,13 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING {
+export interface BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING {
 	queries: MyQueryControlData;
 	emptyMessage: string;
 	numberOfColumn: HasResponsive<number>;
 	isEqualHeight: boolean;
 }
-export const WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO: WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING =
+export const BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO: BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING =
 	{
 		queries: MY_QUERIES_DEMO_DATA,
 		emptyMessage: "No post found!",
@@ -29,12 +29,12 @@ export const WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO: WCB_POSTS_GRID_PANEL
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING;
-	setAttr__: (data: WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING) => void;
+	panelData: BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING;
+	setAttr__: (data: BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING) => void;
 }
 
 const WcbPostsGridPanelSortingAndFiltering: FC<Props> = ({
-	panelData = WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO,
+	panelData = BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -50,7 +50,7 @@ const WcbPostsGridPanelSortingAndFiltering: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Sorting and filtering", "boostify-blocks")}
+			title={__("Sorting and filtering", "wcb")}
 		>
 			<MyQueryControls
 				queriesControl={panelData.queries}
@@ -62,7 +62,7 @@ const WcbPostsGridPanelSortingAndFiltering: FC<Props> = ({
 			{/*  */}
 			<RangeControl
 				label={
-					<MyLabelControl hasResponsive>{__("Columns", "boostify-blocks")}</MyLabelControl>
+					<MyLabelControl hasResponsive>{__("Columns", "wcb")}</MyLabelControl>
 				}
 				value={currentNumberOfColumn || 1}
 				onChange={(number) => {
@@ -80,7 +80,7 @@ const WcbPostsGridPanelSortingAndFiltering: FC<Props> = ({
 			/>
 
 			<ToggleControl
-				label={__("Equal height", "boostify-blocks")}
+				label={__("Equal height", "wcb")}
 				checked={panelData.isEqualHeight}
 				onChange={(checked) => {
 					setAttr__({ ...panelData, isEqualHeight: checked });
@@ -89,7 +89,7 @@ const WcbPostsGridPanelSortingAndFiltering: FC<Props> = ({
 
 			<InputControl
 				value={panelData.emptyMessage}
-				label={__("Message when Posts Not Found", "boostify-blocks")}
+				label={__("Message when Posts Not Found", "wcb")}
 				onChange={(nextValue) =>
 					setAttr__({ ...panelData, emptyMessage: nextValue })
 				}

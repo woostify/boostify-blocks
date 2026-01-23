@@ -4,13 +4,13 @@ import React, { FC, CSSProperties } from "react";
 // @ts-ignore
 import { __experimentalInputControl as InputControl } from "@wordpress/components";
 
-export interface WCB_POST_GRID_PANEL_READMORE_LINK {
+export interface BCB_POST_GRID_PANEL_READMORE_LINK {
 	isShowReadmore: boolean;
 	isOpenInNewTab: boolean;
 	text: string;
 }
 
-export const WCB_POST_GRID_PANEL_READMORE_LINK_DEMO: WCB_POST_GRID_PANEL_READMORE_LINK =
+export const BCB_POST_GRID_PANEL_READMORE_LINK_DEMO: BCB_POST_GRID_PANEL_READMORE_LINK =
 	{
 		isShowReadmore: true,
 		isOpenInNewTab: false,
@@ -19,12 +19,12 @@ export const WCB_POST_GRID_PANEL_READMORE_LINK_DEMO: WCB_POST_GRID_PANEL_READMOR
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_READMORE_LINK;
-	setAttr__: (data: WCB_POST_GRID_PANEL_READMORE_LINK) => void;
+	panelData: BCB_POST_GRID_PANEL_READMORE_LINK;
+	setAttr__: (data: BCB_POST_GRID_PANEL_READMORE_LINK) => void;
 }
 
 const WcbPostGridPanelReadMoreLink: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_READMORE_LINK_DEMO,
+	panelData = BCB_POST_GRID_PANEL_READMORE_LINK_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -37,11 +37,11 @@ const WcbPostGridPanelReadMoreLink: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Read more link", "boostify-blocks")}
+			title={__("Read more link", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Show Read more link", "boostify-blocks")}
+					label={__("Show Read more link", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowReadmore: checked })
 					}
@@ -50,7 +50,7 @@ const WcbPostGridPanelReadMoreLink: FC<Props> = ({
 
 				{isShowReadmore ? (
 					<ToggleControl
-						label={__("Open links in new tab", "boostify-blocks")}
+						label={__("Open links in new tab", "wcb")}
 						onChange={(checked) =>
 							setAttr__({ ...panelData, isOpenInNewTab: checked })
 						}
@@ -61,7 +61,7 @@ const WcbPostGridPanelReadMoreLink: FC<Props> = ({
 				{isShowReadmore ? (
 					<InputControl
 						value={text}
-						label={__("Text", "boostify-blocks")}
+						label={__("Text", "wcb")}
 						onChange={(nextValue) =>
 							setAttr__({ ...panelData, text: nextValue || "" })
 						}

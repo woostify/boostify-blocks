@@ -18,7 +18,7 @@ import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_FAQ_PANEL_STYLE_CONTAINER {
+export interface BCB_FAQ_PANEL_STYLE_CONTAINER {
 	background: BackgroundNoImageControlData;
 	border: MyBorderControlData;
 	rowGap: HasResponsive<string>;
@@ -26,7 +26,7 @@ export interface WCB_FAQ_PANEL_STYLE_CONTAINER {
 	equalHeight: boolean;
 }
 
-export const WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SIMPLE: WCB_FAQ_PANEL_STYLE_CONTAINER =
+export const BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SIMPLE: BCB_FAQ_PANEL_STYLE_CONTAINER =
 	{
 		background: STYLES_BG_NO_IMAGE_DEMO,
 		border: MY_BORDER_CONTROL_DEMO,
@@ -35,7 +35,7 @@ export const WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SIMPLE: WCB_FAQ_PANEL_STYLE_CONT
 		rowGap: { Desktop: "1rem" },
 	};
 
-export const WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID: WCB_FAQ_PANEL_STYLE_CONTAINER =
+export const BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID: BCB_FAQ_PANEL_STYLE_CONTAINER =
 	{
 		background: {
 			...STYLES_BG_NO_IMAGE_DEMO,
@@ -55,16 +55,16 @@ export const WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID: WCB_FAQ_PANEL_STYLE_CONTA
 		colunmGap: { Desktop: "1rem" },
 		rowGap: { Desktop: "1rem" },
 	};
-export const WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO =
-	WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SIMPLE;
+export const BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO =
+	BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SIMPLE;
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FAQ_PANEL_STYLE_CONTAINER;
-	setAttr__: (data: WCB_FAQ_PANEL_STYLE_CONTAINER) => void;
+	panelData: BCB_FAQ_PANEL_STYLE_CONTAINER;
+	setAttr__: (data: BCB_FAQ_PANEL_STYLE_CONTAINER) => void;
 }
 
 const WcbFaqPanel_StyleContainer: FC<Props> = ({
-	panelData = WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
+	panelData = BCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -86,10 +86,10 @@ const WcbFaqPanel_StyleContainer: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Container", "boostify-blocks")}
+			title={__("Container", "wcb")}
 		>
 			<div className={"space-y-3.5"}>
-				<MyDisclosure defaultOpen label={__("Background", "boostify-blocks")}>
+				<MyDisclosure defaultOpen label={__("Background", "wcb")}>
 					<MyBackgroundNoImageControl
 						backgroundControl={background}
 						setAttrs__backgroundControl={(value) => {
@@ -97,7 +97,7 @@ const WcbFaqPanel_StyleContainer: FC<Props> = ({
 						}}
 					/>
 				</MyDisclosure>
-				<MyDisclosure label={__("Border ", "boostify-blocks")}>
+				<MyDisclosure label={__("Border ", "wcb")}>
 					<MyBorderControl
 						borderControl={border}
 						setAttrs__border={(value) => {
@@ -105,7 +105,7 @@ const WcbFaqPanel_StyleContainer: FC<Props> = ({
 						}}
 					/>
 				</MyDisclosure>
-				<MyDisclosure label={__("Dimension", "boostify-blocks")}>
+				<MyDisclosure label={__("Dimension", "wcb")}>
 					<MySpacingSizesControl
 						onChange={(value) => {
 							setAttr__({
@@ -117,7 +117,7 @@ const WcbFaqPanel_StyleContainer: FC<Props> = ({
 							});
 						}}
 						value={currentRowGap || "0"}
-						label={__("Row Gap", "boostify-blocks")}
+						label={__("Row Gap", "wcb")}
 					/>
 					<div>
 						<MySpacingSizesControl
@@ -131,12 +131,12 @@ const WcbFaqPanel_StyleContainer: FC<Props> = ({
 								});
 							}}
 							value={currentColunmGap || "0"}
-							label={__("Column Gap", "boostify-blocks")}
+							label={__("Column Gap", "wcb")}
 						/>
 						<HelpText>
 							{__(
 								"Applicable in case the style of the FAQ is set to Grid",
-								"boostify-blocks"
+								"wcb"
 							)}
 						</HelpText>
 					</div>
@@ -145,7 +145,7 @@ const WcbFaqPanel_StyleContainer: FC<Props> = ({
 						label="Equal height"
 						help={__(
 							"Applicable in case the style of the FAQ is set to Grid",
-							"boostify-blocks"
+							"wcb"
 						)}
 						checked={equalHeight}
 						onChange={(checked) => {

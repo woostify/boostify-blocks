@@ -35,9 +35,9 @@ export default function save({ attributes }: { attributes: WcbAttrsForSave }) {
 	};
 
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-buttons__wrap" });
+	const wrapBlockProps = useBlockProps.save({ className: "bcb-buttons__wrap" });
 	//
-	const blockProps = useBlockProps.save({ className: "wcb-buttons__inner" });
+	const blockProps = useBlockProps.save({ className: "bcb-buttons__inner" });
 	const innerBlocksProps = useInnerBlocksProps.save(blockProps);
 
 	return (
@@ -48,7 +48,7 @@ export default function save({ attributes }: { attributes: WcbAttrsForSave }) {
 		>
 			<div
 				children={innerBlocksProps.children}
-				className="wcb-buttons__inner"
+				className="bcb-buttons__inner"
 			/>
 		</SaveCommon>
 	);

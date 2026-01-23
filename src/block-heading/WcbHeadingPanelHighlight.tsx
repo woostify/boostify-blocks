@@ -23,7 +23,7 @@ import {
 } from "../components/controls/MyTypographyControl/types";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_HEADING_PANEL_HIGHLIGHT {
+export interface BCB_HEADING_PANEL_HIGHLIGHT {
 	typography: MyTypographyControlData;
 	textColor: string;
 	bgColor: string;
@@ -31,7 +31,7 @@ export interface WCB_HEADING_PANEL_HIGHLIGHT {
 	border: MyBorderControlData;
 }
 
-export const WCB_HEADING_PANEL_HIGHLIGHT_DEMO: WCB_HEADING_PANEL_HIGHLIGHT = {
+export const BCB_HEADING_PANEL_HIGHLIGHT_DEMO: BCB_HEADING_PANEL_HIGHLIGHT = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	textColor: "",
 	bgColor: "",
@@ -48,12 +48,12 @@ export const WCB_HEADING_PANEL_HIGHLIGHT_DEMO: WCB_HEADING_PANEL_HIGHLIGHT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_HEADING_PANEL_HIGHLIGHT;
-	setAttr__: (data: WCB_HEADING_PANEL_HIGHLIGHT) => void;
+	panelData: BCB_HEADING_PANEL_HIGHLIGHT;
+	setAttr__: (data: BCB_HEADING_PANEL_HIGHLIGHT) => void;
 }
 
 const WcbHeadingPanelHighlight: FC<Props> = ({
-	panelData = WCB_HEADING_PANEL_HIGHLIGHT_DEMO,
+	panelData = BCB_HEADING_PANEL_HIGHLIGHT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -78,7 +78,7 @@ const WcbHeadingPanelHighlight: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Highlight", "boostify-blocks")}
+			title={__("Highlight", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -101,7 +101,7 @@ const WcbHeadingPanelHighlight: FC<Props> = ({
 					<BoxControl
 						label={
 							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
+								{__("Padding", "wcb")}
 							</MyLabelControl>
 						}
 						values={padding}

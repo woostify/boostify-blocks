@@ -13,16 +13,16 @@ import {
 } from "../components/controls/MyBorderControl/types";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
-import { WCB_PRODUCTS_PANEL_FEATURED_IMAGE } from "./WcbProductsPanelFeaturedImage";
+import { BCB_PRODUCTS_PANEL_FEATURED_IMAGE } from "./WcbProductsPanelFeaturedImage";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE {
+export interface BCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE {
 	marginBottom: HasResponsive<string>;
 	backgroundOverlay: string;
 	border: MyBorderControlData;
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE =
+export const BCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO: BCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE =
 	{
 		marginBottom: { Desktop: "0.75rem" },
 		backgroundOverlay: "#FFFFFFE6",
@@ -31,13 +31,13 @@ export const WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO: WCB_PRODUCTS_PANEL_ST
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE) => void;
-	imagePosition: WCB_PRODUCTS_PANEL_FEATURED_IMAGE["featuredImagePosition"];
+	panelData: BCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE) => void;
+	imagePosition: BCB_PRODUCTS_PANEL_FEATURED_IMAGE["featuredImagePosition"];
 }
 
 const WcbProductsPanel_StyleFeaturedImage: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -57,12 +57,12 @@ const WcbProductsPanel_StyleFeaturedImage: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Product image", "boostify-blocks")}
+			title={__("Product image", "wcb")}
 		>
 			<div className="space-y-5">
 				{/* {imagePosition === "background" && (
 					<MyColorPicker
-						label={__("Background overlay", "boostify-blocks")}
+						label={__("Background overlay", "wcb")}
 						onChange={(color) => {
 							setAttr__({
 								...panelData,
@@ -98,7 +98,7 @@ const WcbProductsPanel_StyleFeaturedImage: FC<Props> = ({
 							}}
 							value={MARGIN_BOTTOM || ""}
 							units={MY_GAP_UNITS}
-							label={__("Margin bottom", "boostify-blocks")}
+							label={__("Margin bottom", "wcb")}
 							hasResponsive
 							className="flex-col space-y-2"
 						/>

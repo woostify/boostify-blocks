@@ -3,7 +3,7 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 
-export interface WCB_TESTIMONIALS_PANEL_CAROUSEL {
+export interface BCB_TESTIMONIALS_PANEL_CAROUSEL {
 	hoverpause: boolean;
 	isAutoPlay: boolean;
 	autoplaySpeed: number;
@@ -13,7 +13,7 @@ export interface WCB_TESTIMONIALS_PANEL_CAROUSEL {
 	showArrowsDots: "Dot" | "Arrow" | "Both";
 }
 
-export const WCB_TESTIMONIALS_PANEL_CAROUSEL_DEMO: WCB_TESTIMONIALS_PANEL_CAROUSEL =
+export const BCB_TESTIMONIALS_PANEL_CAROUSEL_DEMO: BCB_TESTIMONIALS_PANEL_CAROUSEL =
 	{
 		animationDuration: 500,
 		autoplaySpeed: 3000,
@@ -26,12 +26,12 @@ export const WCB_TESTIMONIALS_PANEL_CAROUSEL_DEMO: WCB_TESTIMONIALS_PANEL_CAROUS
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_CAROUSEL;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_CAROUSEL) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_CAROUSEL;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_CAROUSEL) => void;
 }
 
 const WcbTestimonialsPanelCarousel: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_CAROUSEL_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_CAROUSEL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -52,11 +52,11 @@ const WcbTestimonialsPanelCarousel: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Carousel", "boostify-blocks")}
+			title={__("Carousel", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Pause on hover", "boostify-blocks")}
+					label={__("Pause on hover", "wcb")}
 					checked={hoverpause}
 					onChange={(checked) => {
 						setAttr__({
@@ -66,7 +66,7 @@ const WcbTestimonialsPanelCarousel: FC<Props> = ({
 					}}
 				/>
 				<ToggleControl
-					label={__("Autoplay", "boostify-blocks")}
+					label={__("Autoplay", "wcb")}
 					checked={isAutoPlay}
 					onChange={(checked) => {
 						setAttr__({
@@ -77,7 +77,7 @@ const WcbTestimonialsPanelCarousel: FC<Props> = ({
 				/>
 
 				<RangeControl
-					label={__("Autoplay speed (ms)", "boostify-blocks")}
+					label={__("Autoplay speed (ms)", "wcb")}
 					value={autoplaySpeed}
 					onChange={(value) => {
 						setAttr__({ ...panelData, autoplaySpeed: value || 2000 });
@@ -87,7 +87,7 @@ const WcbTestimonialsPanelCarousel: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Infinite loop", "boostify-blocks")}
+					label={__("Infinite loop", "wcb")}
 					checked={rewind}
 					onChange={(checked) => {
 						setAttr__({
@@ -98,10 +98,10 @@ const WcbTestimonialsPanelCarousel: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Adaptive height", "boostify-blocks")}
+					label={__("Adaptive height", "wcb")}
 					help={__(
 						"Enables adaptive height for single slide horizontal carousels.",
-						"boostify-blocks"
+						"wcb"
 					)}
 					checked={adaptiveHeight}
 					onChange={(checked) => {
@@ -113,7 +113,7 @@ const WcbTestimonialsPanelCarousel: FC<Props> = ({
 				/>
 
 				<RangeControl
-					label={__("Transition speed (ms)", "boostify-blocks")}
+					label={__("Transition speed (ms)", "wcb")}
 					value={animationDuration}
 					onChange={(value) => {
 						setAttr__({ ...panelData, animationDuration: value || 1 });
@@ -123,7 +123,7 @@ const WcbTestimonialsPanelCarousel: FC<Props> = ({
 				/>
 
 				<MyRadioGroup
-					label={__("Show arrows & dots", "boostify-blocks")}
+					label={__("Show arrows & dots", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,

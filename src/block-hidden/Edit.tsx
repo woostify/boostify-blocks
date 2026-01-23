@@ -69,7 +69,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// <CacheProvider value={myCache}>
 		<div
 			{...wrapBlockProps}
-			className={`${wrapBlockProps?.className} wcb-hidden__wrap p-3 border-2 border-dashed rounded-lg ${uniqueId}`}
+			className={`${wrapBlockProps?.className} bcb-hidden__wrap p-3 border-2 border-dashed rounded-lg ${uniqueId}`}
 			data-uniqueid={uniqueId}
 		>
 			{/* CONTROL SETTINGS */}
@@ -97,7 +97,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				name={UNIQUE_NAME}
 			/>
 			<HelpText>
-				{__("This field will be hidden in the front end.", "boostify-blocks")}
+				{__("This field will be hidden in the front end.", "wcb")}
 			</HelpText>
 		</div>
 		// </CacheProvider>

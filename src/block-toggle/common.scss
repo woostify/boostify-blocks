@@ -1,5 +1,5 @@
 /* The switch - the box around the slider */
-.wcb-toggle__switch {
+.bcb-toggle__switch {
 	position: relative;
 	display: inline-block;
 	width: 60px;
@@ -13,7 +13,7 @@
 }
 
 /* The slider */
-.wcb-toggle__slider {
+.bcb-toggle__slider {
 	position: absolute;
 	cursor: pointer;
 	top: 0;
@@ -36,22 +36,22 @@
 	}
 }
 
-input:checked + .wcb-toggle__slider {
+input:checked + .bcb-toggle__slider {
 	background-color: #2196f3;
 }
 
-input:focus + .wcb-toggle__slider {
+input:focus + .bcb-toggle__slider {
 	box-shadow: 0 0 1px #2196f3;
 }
 
-input:checked + .wcb-toggle__slider:before {
+input:checked + .bcb-toggle__slider:before {
 	-webkit-transform: translateX(26px);
 	-ms-transform: translateX(26px);
 	transform: translateX(26px);
 }
 
 /* Rounded sliders */
-.wcb-toggle__slider.round {
+.bcb-toggle__slider.round {
 	border-radius: 9999px !important;
 	&:before {
 		border-radius: 9999px !important;

@@ -11,13 +11,13 @@ import MyTypographyControl from "../components/controls/MyTypographyControl/MyTy
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MyDisclosure from "../components/controls/MyDisclosure";
 
-export interface WCB_BUTTON_PANEL_STYLE_TEXT {
+export interface BCB_BUTTON_PANEL_STYLE_TEXT {
 	typography: MyTypographyControlData;
 	color: string;
 	hoverColor: string;
 }
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY: WCB_BUTTON_PANEL_STYLE_TEXT =
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY: BCB_BUTTON_PANEL_STYLE_TEXT =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -26,31 +26,31 @@ export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY: WCB_BUTTON_PANEL_STYLE_TE
 		hoverColor: "#fff",
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY: WCB_BUTTON_PANEL_STYLE_TEXT =
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_SECONDARY: BCB_BUTTON_PANEL_STYLE_TEXT =
 	{
-		...WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
+		...BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
 		color: "#0284c7",
 		hoverColor: "#0284c7",
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE: WCB_BUTTON_PANEL_STYLE_TEXT =
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_WHITE: BCB_BUTTON_PANEL_STYLE_TEXT =
 	{
-		...WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
+		...BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY,
 		color: "#111827",
 		hoverColor: "#111827",
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_TEXT_DEMO =
-	WCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY;
+export const BCB_BUTTON_PANEL_STYLE_TEXT_DEMO =
+	BCB_BUTTON_PANEL_STYLE_TEXT_DEMO_PRIMARY;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_STYLE_TEXT;
-	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_TEXT) => void;
+	panelData: BCB_BUTTON_PANEL_STYLE_TEXT;
+	setAttr__: (data: BCB_BUTTON_PANEL_STYLE_TEXT) => void;
 }
 
 const WcbButtonPanel_StyleText: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_STYLE_TEXT_DEMO,
+	panelData = BCB_BUTTON_PANEL_STYLE_TEXT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -63,7 +63,7 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Text", "boostify-blocks")}
+			title={__("Text", "wcb")}
 		>
 			<div className={"space-y-4"}>
 				<MyTypographyControl
@@ -76,13 +76,13 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 					}}
 				/>
 
-				<MyDisclosure defaultOpen label={__("Colors", "boostify-blocks")}>
+				<MyDisclosure defaultOpen label={__("Colors", "wcb")}>
 					<MyColorPicker
 						onChange={(color) => {
 							setAttr__({ ...panelData, color });
 						}}
 						color={color}
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 					/>
 
 					<MyColorPicker
@@ -90,7 +90,7 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 							setAttr__({ ...panelData, hoverColor: color });
 						}}
 						color={hoverColor}
-						label={__("Hover color", "boostify-blocks")}
+						label={__("Hover color", "wcb")}
 					/>
 				</MyDisclosure>
 			</div>

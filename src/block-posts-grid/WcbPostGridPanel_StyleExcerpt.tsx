@@ -15,13 +15,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_EXCERPT {
+export interface BCB_POST_GRID_PANEL_STYLE_EXCERPT {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_EXCERPT_DEMO: WCB_POST_GRID_PANEL_STYLE_EXCERPT =
+export const BCB_POST_GRID_PANEL_STYLE_EXCERPT_DEMO: BCB_POST_GRID_PANEL_STYLE_EXCERPT =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -32,12 +32,12 @@ export const WCB_POST_GRID_PANEL_STYLE_EXCERPT_DEMO: WCB_POST_GRID_PANEL_STYLE_E
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_EXCERPT;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_EXCERPT) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_EXCERPT;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_EXCERPT) => void;
 }
 
 const WcbPostGridPanel_StyleExcerpt: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_EXCERPT_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_EXCERPT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -56,7 +56,7 @@ const WcbPostGridPanel_StyleExcerpt: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Excerpt", "boostify-blocks")}
+			title={__("Excerpt", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -91,7 +91,7 @@ const WcbPostGridPanel_StyleExcerpt: FC<Props> = ({
 						}}
 						value={MARGIN_BOTTOM || ""}
 						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 						className="flex-col space-y-2"
 					/>

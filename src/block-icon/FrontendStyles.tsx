@@ -11,16 +11,16 @@ const FrontendStyles: FC<Props> = (attrs) => {
 
 //
 const divsToUpdate = document.querySelectorAll(
-	".wcb-icon__wrap.wcb-update-div"
+	".bcb-icon__wrap.bcb-update-div"
 );
 
 divsToUpdate.forEach((div) => {
 	const preEl = div.querySelector(
-		`pre[data-wcb-block-attrs=${div.id}]`
+		`pre[data-bcb-block-attrs=${div.id}]`
 	) as HTMLElement | null;
 	console.log('preEl' + preEl);
 	const divRenderCssEl = div.querySelector(
-		`div[data-wcb-global-styles=${div.id}]`
+		`div[data-bcb-global-styles=${div.id}]`
 	) as HTMLElement | null;
 
 	if (!preEl || !preEl.innerText || !divRenderCssEl) {
@@ -31,6 +31,6 @@ divsToUpdate.forEach((div) => {
 	//
 	ReactDOM.render(<FrontendStyles {...props} />, divRenderCssEl);
 	//
-	div.classList.remove("wcb-update-div");
+	div.classList.remove("bcb-update-div");
 	preEl.remove();
 });

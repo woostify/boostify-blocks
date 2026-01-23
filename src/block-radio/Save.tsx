@@ -13,21 +13,21 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-radio__wrap",
+		className: "bcb-radio__wrap",
 	});
 
 	const renderRadioOptions = () => {
 		return (attributes.options || []).map((item, index) => (
 			<div key={index + "-" + item.value}>
-				<label className="wcb-radio__option">
+				<label className="bcb-radio__option">
 					<input
 						type="radio"
-						className={`wcb-radio__option-input ${general_general.layout}`}
+						className={`bcb-radio__option-input ${general_general.layout}`}
 						value={item.value}
 						required={general_general.isRequired}
 						name={UNIQUE_NAME}
 					/>
-					<span className="wcb-radio__option-label">{item.label}</span>
+					<span className="bcb-radio__option-label">{item.label}</span>
 				</label>
 			</div>
 		));

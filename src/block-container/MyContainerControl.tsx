@@ -13,7 +13,7 @@ import {
 	MY_HORIZOLTAL_UNITS,
 	MY_VERTICAL_UNITS,
 } from "../components/controls/MyDimensionsControl/MyDimensionsControl";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { MY_CUSTOM_UNITS_VALUE_SETTINGS__LARGE } from "../components/controls/MySpacingSizesControl/SpacingInputControl";
 import HelpText from "../components/controls/HelpText";
 // @ts-ignore
@@ -153,7 +153,7 @@ const MyContainerControl: FC<Props> = ({
 	// window.wcbLayoutGlobalSettings la global setting của full-site-editor or cua wootify theme neu co
 	if (!CONTENT_BOX_WIDTH) {
 		CONTENT_BOX_WIDTH =
-			DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth ||
+			DEMO_BCB_GLOBAL_VARIABLES.defaultContentWidth ||
 			window.wcbLayoutGlobalSettings.contentSize;
 	}
 
@@ -171,7 +171,7 @@ const MyContainerControl: FC<Props> = ({
 		return (
 			<MyRadioGroup
 				plans={plans}
-				label={__("Container Width", "boostify-blocks")}
+				label={__("Container Width", "wcb")}
 				onChange={handleChangeContainerWidthType}
 				contentClassName="capitalize mt-3"
 				value={containerWidthType}
@@ -189,7 +189,7 @@ const MyContainerControl: FC<Props> = ({
 		return (
 			<MyRadioGroup
 				plans={plans}
-				label={__("Content Width", "boostify-blocks")}
+				label={__("Content Width", "wcb")}
 				onChange={handleChangeContenWidthType}
 				contentClassName="capitalize mt-3"
 				value={contentWidthType}
@@ -206,10 +206,11 @@ const MyContainerControl: FC<Props> = ({
 		return (
 			<MyRadioGroup
 				plans={plans}
-				label={__("Overflow", "boostify-blocks")}
+				label={__("Overflow", "wcb")}
 				onChange={handleChangeOverflow}
 				contentClassName="capitalize mt-3"
 				value={overflow}
+				hasResponsive={false}
 			/>
 		);
 	};
@@ -220,7 +221,7 @@ const MyContainerControl: FC<Props> = ({
 				<MySpacingSizesControl
 					onChange={handleChangeContentBoxWidth}
 					value={CONTENT_BOX_WIDTH || "0"}
-					label={__("Content Box Width", "boostify-blocks")}
+					label={__("Content Box Width", "wcb")}
 					hasResponsive={true}
 					units={MY_HORIZOLTAL_UNITS}
 					customUnitsValueSettings={MY_CUSTOM_UNITS_VALUE_SETTINGS__LARGE}
@@ -228,7 +229,7 @@ const MyContainerControl: FC<Props> = ({
 				<HelpText>
 					{__(
 						"Default content box width " +
-							DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth
+							DEMO_BCB_GLOBAL_VARIABLES.defaultContentWidth
 					)}
 				</HelpText>
 			</div>
@@ -240,7 +241,7 @@ const MyContainerControl: FC<Props> = ({
 			<MySpacingSizesControl
 				onChange={handleChangeCustomWidth}
 				value={CUSTOM_WIDTH || "0"}
-				label={__("Custom Width", "boostify-blocks")}
+				label={__("Custom Width", "wcb")}
 				hasResponsive={true}
 				units={MY_HORIZOLTAL_UNITS}
 				customUnitsValueSettings={MY_CUSTOM_UNITS_VALUE_SETTINGS__LARGE}
@@ -253,7 +254,7 @@ const MyContainerControl: FC<Props> = ({
 			<MySpacingSizesControl
 				onChange={handleChangeMinHeight}
 				value={MIN_HEIGHT || "0"}
-				label={__("Minimum Height", "boostify-blocks")}
+				label={__("Minimum Height", "wcb")}
 				hasResponsive={true}
 				units={MY_VERTICAL_UNITS}
 				customUnitsValueSettings={MY_CUSTOM_UNITS_VALUE_SETTINGS__LARGE}
@@ -283,7 +284,7 @@ const MyContainerControl: FC<Props> = ({
 			<div className="flow-root">
 				<div className="flex justify-between items-center -mb-3">
 					<MyLabelControl className="mb-4">
-						{__("HTML Tag", "boostify-blocks")}
+						{__("HTML Tag", "wcb")}
 					</MyLabelControl>
 					<SelectControl
 						label={""}

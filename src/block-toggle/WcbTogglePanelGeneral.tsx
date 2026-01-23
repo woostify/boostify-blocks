@@ -10,7 +10,7 @@ import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_TOGGLE_PANEL_GENERAL {
+export interface BCB_TOGGLE_PANEL_GENERAL {
 	trueState: string;
 	falseState: string;
 	layout: "square" | "round";
@@ -18,7 +18,7 @@ export interface WCB_TOGGLE_PANEL_GENERAL {
 	isRequired: boolean;
 }
 
-export const WCB_TOGGLE_PANEL_GENERAL_DEMO: WCB_TOGGLE_PANEL_GENERAL = {
+export const BCB_TOGGLE_PANEL_GENERAL_DEMO: BCB_TOGGLE_PANEL_GENERAL = {
 	isRequired: false,
 	falseState: "off",
 	trueState: "on",
@@ -28,12 +28,12 @@ export const WCB_TOGGLE_PANEL_GENERAL_DEMO: WCB_TOGGLE_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TOGGLE_PANEL_GENERAL;
-	setAttr__: (data: WCB_TOGGLE_PANEL_GENERAL) => void;
+	panelData: BCB_TOGGLE_PANEL_GENERAL;
+	setAttr__: (data: BCB_TOGGLE_PANEL_GENERAL) => void;
 }
 
 const WcbTogglePanelGeneral: FC<Props> = ({
-	panelData = WCB_TOGGLE_PANEL_GENERAL_DEMO,
+	panelData = BCB_TOGGLE_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -46,18 +46,18 @@ const WcbTogglePanelGeneral: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<InputControl
-					label={__("TRUE STATE", "boostify-blocks")}
+					label={__("TRUE STATE", "wcb")}
 					value={trueState}
 					onChange={(nextValue) => {
 						setAttr__({ ...panelData, trueState: nextValue });
 					}}
 				/>
 				<InputControl
-					label={__("False STATE", "boostify-blocks")}
+					label={__("False STATE", "wcb")}
 					value={falseState}
 					onChange={(nextValue) => {
 						setAttr__({ ...panelData, falseState: nextValue });
@@ -65,12 +65,12 @@ const WcbTogglePanelGeneral: FC<Props> = ({
 				/>
 
 				<MyRadioGroup
-					label={__("Layout", "boostify-blocks")}
+					label={__("Layout", "wcb")}
 					value={layout}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							layout: value as WCB_TOGGLE_PANEL_GENERAL["layout"],
+							layout: value as BCB_TOGGLE_PANEL_GENERAL["layout"],
 						});
 					}}
 					plans={[
@@ -81,14 +81,14 @@ const WcbTogglePanelGeneral: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Required", "boostify-blocks")}
+					label={__("Required", "wcb")}
 					checked={isRequired}
 					onChange={(isChecked) => {
 						setAttr__({ ...panelData, isRequired: isChecked });
 					}}
 				/>
 				<ToggleControl
-					label={__("Default state ON", "boostify-blocks")}
+					label={__("Default state ON", "wcb")}
 					checked={isDefaultON}
 					onChange={(isChecked) => {
 						setAttr__({ ...panelData, isDefaultON: isChecked });

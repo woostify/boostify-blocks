@@ -21,7 +21,7 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
 type TabsHere = "Normal" | "Active";
-export interface WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE {
+export interface BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE {
 	colors: {
 		[K in TabsHere]: {
 			// color: string;
@@ -33,7 +33,7 @@ export interface WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE {
 	toggleSize: HasResponsive<number>;
 }
 
-export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
+export const BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
 	{
 		colors: {
 			Normal: { backgroundColor: "" },
@@ -59,7 +59,7 @@ export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE: WCB_FORM_P
 		toggleSize: { Desktop: 1 },
 	};
 
-export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
+export const BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
 	{
 		colors: {
 			Normal: { backgroundColor: "#e5e7eb" },
@@ -85,17 +85,17 @@ export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID: WCB_FORM_PA
 		toggleSize: { Desktop: 1 },
 	};
 
-export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO =
-	WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE;
+export const BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO =
+	BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE) => void;
+	panelData: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE) => void;
 }
 
 const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -113,8 +113,8 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "Normal", title: __("Normal", "boostify-blocks") },
-		{ name: "Active", title: __("Active", "boostify-blocks") },
+		{ name: "Normal", title: __("Normal", "wcb") },
+		{ name: "Active", title: __("Active", "wcb") },
 	];
 	const initialTabName: TabsHere = "Normal";
 
@@ -123,13 +123,13 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Checkbox/Toogle/Radio", "boostify-blocks")}
+			title={__("Checkbox/Toogle/Radio", "wcb")}
 		>
 			<div className={"space-y-4"}>
 				<MyDisclosure label="Sizes" defaultOpen className="space-y-5">
 					<MySpacingSizesControl
 						value={checkboxRadioSizeCurrent || "1rem"}
-						label={__("Checkbox/Radio size", "boostify-blocks")}
+						label={__("Checkbox/Radio size", "wcb")}
 						onChange={(value) => {
 							setAttr__({
 								...panelData,
@@ -141,7 +141,7 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 						}}
 					/>
 					<RangeControl
-						label={__("Toggle size", "boostify-blocks")}
+						label={__("Toggle size", "wcb")}
 						value={toggleSizeCurrent || 1}
 						step={0.1}
 						onChange={(value) =>
@@ -160,7 +160,7 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 
 				<MyDisclosure label="Colors">
 					<TabPanel
-						className={`wcb-bodyControls__panel `}
+						className={`bcb-bodyControls__panel `}
 						activeClass="active-tab"
 						initialTabName={initialTabName}
 						tabs={PanelTab}
@@ -168,7 +168,7 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 						{(tab) => (
 							<div className="space-y-4">
 								<MyColorPicker
-									label={__("Color", "boostify-blocks")}
+									label={__("Color", "wcb")}
 									color={colors[tab.name as TabsHere].backgroundColor}
 									onChange={(value) => {
 										setAttr__({
@@ -184,7 +184,7 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 									}}
 								/>
 								{/* <MyColorPicker
-									label={__("Element color", "boostify-blocks")}
+									label={__("Element color", "wcb")}
 									color={colors[tab.name as TabsHere].color}
 									onChange={(value) => {
 										setAttr__({
@@ -219,7 +219,7 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 					<HelpText>
 						{__(
 							"Border radius will be applied to Radio & Toggle only when the layout for those blocks is set to Square.",
-							"boostify-blocks"
+							"wcb"
 						)}
 					</HelpText>
 				</MyDisclosure>

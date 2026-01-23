@@ -3,7 +3,7 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 
-export interface WCB_PRODUCTS_PANEL_FEATURED_IMAGE {
+export interface BCB_PRODUCTS_PANEL_FEATURED_IMAGE {
 	isShowFeaturedImage: boolean;
 	featuredImageSize: string;
 	featuredImagePosition: "top" | "background";
@@ -11,7 +11,7 @@ export interface WCB_PRODUCTS_PANEL_FEATURED_IMAGE {
 	hoverType?: "swap" | "zoom" | "none";
 }
 
-export const WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO: WCB_PRODUCTS_PANEL_FEATURED_IMAGE =
+export const BCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO: BCB_PRODUCTS_PANEL_FEATURED_IMAGE =
 	{
 		isShowFeaturedImage: true,
 		featuredImageSize: "large",
@@ -22,12 +22,12 @@ export const WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO: WCB_PRODUCTS_PANEL_FEATURED
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_FEATURED_IMAGE;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_FEATURED_IMAGE) => void;
+	panelData: BCB_PRODUCTS_PANEL_FEATURED_IMAGE;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_FEATURED_IMAGE) => void;
 }
 
 const WcbProductsPanelFeaturedImage: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -42,14 +42,14 @@ const WcbProductsPanelFeaturedImage: FC<Props> = ({
 	} = panelData;
 
 	const POSTION_PLANS: MyRadioItem<
-		WCB_PRODUCTS_PANEL_FEATURED_IMAGE["featuredImagePosition"]
+		BCB_PRODUCTS_PANEL_FEATURED_IMAGE["featuredImagePosition"]
 	>[] = [
 		{ name: "top", icon: "Top" },
 		{ name: "background", icon: "Background" },
 	];
 
 	const HOVER_PLANS: MyRadioItem<
-		NonNullable<WCB_PRODUCTS_PANEL_FEATURED_IMAGE["hoverType"]>
+		NonNullable<BCB_PRODUCTS_PANEL_FEATURED_IMAGE["hoverType"]>
 	>[] = [
 		{ name: "none", icon: "None" },
 		{ name: "swap", icon: "Swap" },
@@ -61,11 +61,11 @@ const WcbProductsPanelFeaturedImage: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Product image settings", "boostify-blocks")}
+			title={__("Product image settings", "wcb")}
 		>
 			<div className={"space-y-5 "}>
 				<ToggleControl
-					label={__("Product image", "boostify-blocks")}
+					label={__("Product image", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowFeaturedImage: checked })
 					}
@@ -90,12 +90,12 @@ const WcbProductsPanelFeaturedImage: FC<Props> = ({
 
 				{isShowFeaturedImage ? (
 					<ToggleControl
-						label={__("Link to Product Page", "boostify-blocks")}
+						label={__("Link to Product Page", "wcb")}
 						onChange={(checked) =>
 							setAttr__({ ...panelData, linkCompleteBox: checked })
 						}
 						checked={linkCompleteBox}
-						help={__("Links the image to the single product listing", "boostify-blocks")}
+						help={__("Links the image to the single product listing", "wcb")}
 					/>
 				) : null}
 

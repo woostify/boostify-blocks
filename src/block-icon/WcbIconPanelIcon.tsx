@@ -17,7 +17,7 @@ import SelecIcon, {
 	MyIcon,
 } from "../components/controls/SelectIcon/SelecIcon";
 
-export interface WCB_ICON_PANEL_ICON {
+export interface BCB_ICON_PANEL_ICON {
 	size: HasResponsive<number>;
 	alignment: HasResponsive<TextAlignment>;
 	icon: MyIcon;
@@ -27,7 +27,7 @@ export interface WCB_ICON_PANEL_ICON {
 	addNofollowToLink: boolean;
 }
 
-export const WCB_ICON_PANEL_ICON_DEMO: WCB_ICON_PANEL_ICON = {
+export const BCB_ICON_PANEL_ICON_DEMO: BCB_ICON_PANEL_ICON = {
 	size: { Desktop: 20 },
 	alignment: { Desktop: "center" },
 	icon: {
@@ -42,12 +42,12 @@ export const WCB_ICON_PANEL_ICON_DEMO: WCB_ICON_PANEL_ICON = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_PANEL_ICON;
-	setAttr__: (data: WCB_ICON_PANEL_ICON) => void;
+	panelData: BCB_ICON_PANEL_ICON;
+	setAttr__: (data: BCB_ICON_PANEL_ICON) => void;
 }
 
 const WcbIconBoxPanelIcon: FC<Props> = ({
-	panelData = WCB_ICON_PANEL_ICON_DEMO,
+	panelData = BCB_ICON_PANEL_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -84,7 +84,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Icon", "boostify-blocks")}
+			title={__("Icon", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<SelecIcon
@@ -99,7 +99,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 
 				<RangeControl
 					label={
-						<MyLabelControl hasResponsive>{__("Size", "boostify-blocks")}</MyLabelControl>
+						<MyLabelControl hasResponsive>{__("Size", "wcb")}</MyLabelControl>
 					}
 					value={currentSize || 16}
 					onChange={(value) => {
@@ -121,7 +121,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Link", "boostify-blocks")}
+					label={__("Link", "wcb")}
 					checked={enableLink}
 					className="mb-0"
 					onChange={(checked) => {
@@ -154,7 +154,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 							/>
 
 							<ToggleControl
-								label={__('Add "nofollow" to link', "boostify-blocks")}
+								label={__('Add "nofollow" to link', "wcb")}
 								checked={addNofollowToLink}
 								onChange={(checked) => {
 									setAttr__({ ...panelData, addNofollowToLink: checked });
@@ -162,7 +162,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 							/>
 			
 							<ToggleControl
-								label={__("Open in new windown", "boostify-blocks")}
+								label={__("Open in new windown", "wcb")}
 								checked={openInNewWindow}
 								onChange={(checked) => {
 									setAttr__({ ...panelData, openInNewWindow: checked });

@@ -14,7 +14,7 @@ import MySelect from "../components/controls/MySelect";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import useGetImageSizeOptions from "../hooks/useGetImageSizeOptions";
 
-export interface WCB_TESTIMONIALS_PANEL_IMAGES {
+export interface BCB_TESTIMONIALS_PANEL_IMAGES {
 	images: MediaUploadData[];
 	imageSize: string;
 	isShowImage: boolean;
@@ -23,7 +23,7 @@ export interface WCB_TESTIMONIALS_PANEL_IMAGES {
 
 type TabsHere = "Settings" | "SelectImages";
 
-export const WCB_TESTIMONIALS_PANEL_IMAGES_DEMO: WCB_TESTIMONIALS_PANEL_IMAGES =
+export const BCB_TESTIMONIALS_PANEL_IMAGES_DEMO: BCB_TESTIMONIALS_PANEL_IMAGES =
 	{
 		images: [],
 		imageSize: "thumbnail",
@@ -33,13 +33,13 @@ export const WCB_TESTIMONIALS_PANEL_IMAGES_DEMO: WCB_TESTIMONIALS_PANEL_IMAGES =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_IMAGES;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_IMAGES) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_IMAGES;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_IMAGES) => void;
 	numberOfItems: number;
 }
 
 const WcbTestimonialsPanelImages: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_IMAGES_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_IMAGES_DEMO,
 	setAttr__,
 	numberOfItems = 1,
 	initialOpen,
@@ -61,7 +61,7 @@ const WcbTestimonialsPanelImages: FC<Props> = ({
 				<HelpText>
 					{__(
 						'Please enable the "Show Image" field to select images for testimonials...',
-						"boostify-blocks"
+						"wcb"
 					)}
 				</HelpText>
 			);
@@ -73,7 +73,7 @@ const WcbTestimonialsPanelImages: FC<Props> = ({
 					return (
 						<div key={index + "--" + imageData.mediaId}>
 							<MyLabelControl hasResponsive={false}>
-								{__("Image", "boostify-blocks")} {index + 1}
+								{__("Image", "wcb")} {index + 1}
 							</MyLabelControl>
 							<MyMediaUploadCheck
 								onChange={(data) => {
@@ -98,7 +98,7 @@ const WcbTestimonialsPanelImages: FC<Props> = ({
 
 	const renderSettingsImage = () => {
 		const POSTION_PLANS: MyRadioItem<
-			WCB_TESTIMONIALS_PANEL_IMAGES["imagePosition"]
+			BCB_TESTIMONIALS_PANEL_IMAGES["imagePosition"]
 		>[] = [
 			{ name: "top", icon: "Top" },
 			{ name: "left", icon: "Left" },
@@ -109,7 +109,7 @@ const WcbTestimonialsPanelImages: FC<Props> = ({
 		return (
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Show image", "boostify-blocks")}
+					label={__("Show image", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowImage: checked })
 					}
@@ -120,7 +120,7 @@ const WcbTestimonialsPanelImages: FC<Props> = ({
 					<MySelect
 						value={imageSize}
 						options={imageSizeOptions}
-						label={__("Image size", "boostify-blocks")}
+						label={__("Image size", "wcb")}
 						onChange={(size) => {
 							setAttr__({ ...panelData, imageSize: size });
 						}}
@@ -157,8 +157,8 @@ const WcbTestimonialsPanelImages: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "Settings", title: __("Settings", "boostify-blocks") },
-		{ name: "SelectImages", title: __("Select Images", "boostify-blocks") },
+		{ name: "Settings", title: __("Settings", "wcb") },
+		{ name: "SelectImages", title: __("Select Images", "wcb") },
 	];
 
 	return (
@@ -166,11 +166,11 @@ const WcbTestimonialsPanelImages: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Images", "boostify-blocks")}
+			title={__("Images", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="Settings"
 					tabs={TABS}

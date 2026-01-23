@@ -9,10 +9,10 @@ import {
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_BUTTONS_PANEL_STYLE_DIMENSION
+export interface BCB_BUTTONS_PANEL_STYLE_DIMENSION
 	extends MyDimensionsNoGapControlData {}
 
-export const WCB_BUTTONS_PANEL_STYLE_DIMENSION_DEMO: WCB_BUTTONS_PANEL_STYLE_DIMENSION =
+export const BCB_BUTTONS_PANEL_STYLE_DIMENSION_DEMO: BCB_BUTTONS_PANEL_STYLE_DIMENSION =
 	{
 		...MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 		padding: {
@@ -26,12 +26,12 @@ export const WCB_BUTTONS_PANEL_STYLE_DIMENSION_DEMO: WCB_BUTTONS_PANEL_STYLE_DIM
 	};
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTONS_PANEL_STYLE_DIMENSION;
-	setAttr__: (data: WCB_BUTTONS_PANEL_STYLE_DIMENSION) => void;
+	panelData: BCB_BUTTONS_PANEL_STYLE_DIMENSION;
+	setAttr__: (data: BCB_BUTTONS_PANEL_STYLE_DIMENSION) => void;
 }
 
 const WcbButtonsPanel_StyleDimension: FC<Props> = ({
-	panelData = WCB_BUTTONS_PANEL_STYLE_DIMENSION_DEMO,
+	panelData = BCB_BUTTONS_PANEL_STYLE_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -45,7 +45,7 @@ const WcbButtonsPanel_StyleDimension: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Dimension", "boostify-blocks")}
+			title={__("Dimension", "wcb")}
 		>
 			<div className="space-y-5">
 				<MyDimensionsNoGapControl

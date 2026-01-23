@@ -45,7 +45,7 @@ const MyDisclosure: FC<Props> = ({
 							hasResponsive={hasResponsive}
 							className="MyDisclosure__labelControl"
 						>
-							{__(label, "boostify-blocks")}
+							{__(label, "wcb")}
 						</MyLabelControl>
 						{open ? (
 							<MinusIcon className="w-5 h-5 text-purple-900" />

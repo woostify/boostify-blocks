@@ -9,13 +9,13 @@ import {
 	TYPOGRAPHY_CONTROL_DEMO,
 } from "../components/controls/MyTypographyControl/types";
 
-export interface WCB_FORM_PANEL_STYLE_LABEL {
+export interface BCB_FORM_PANEL_STYLE_LABEL {
 	typography: MyTypographyControlData;
 	textColor: string;
 	textColorHover: string;
 }
 
-export const WCB_FORM_PANEL_STYLE_LABEL_DEMO: WCB_FORM_PANEL_STYLE_LABEL = {
+export const BCB_FORM_PANEL_STYLE_LABEL_DEMO: BCB_FORM_PANEL_STYLE_LABEL = {
 	typography: {
 		...TYPOGRAPHY_CONTROL_DEMO,
 		appearance: {
@@ -32,12 +32,12 @@ export const WCB_FORM_PANEL_STYLE_LABEL_DEMO: WCB_FORM_PANEL_STYLE_LABEL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_LABEL;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_LABEL) => void;
+	panelData: BCB_FORM_PANEL_STYLE_LABEL;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_LABEL) => void;
 }
 
 const WcbFormPanel_StyleLabel: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_LABEL_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_LABEL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -50,7 +50,7 @@ const WcbFormPanel_StyleLabel: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Label", "boostify-blocks")}
+			title={__("Label", "wcb")}
 		>
 			<div className={"space-y-4"}>
 				<MyTypographyControl
@@ -64,7 +64,7 @@ const WcbFormPanel_StyleLabel: FC<Props> = ({
 				/>
 				<MyDisclosure defaultOpen label="Color">
 					<MyColorPicker
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 						onChange={(value) => {
 							setAttr__({
 								...panelData,
@@ -74,7 +74,7 @@ const WcbFormPanel_StyleLabel: FC<Props> = ({
 						color={textColor}
 					/>
 					<MyColorPicker
-						label={__("Hover Color", "boostify-blocks")}
+						label={__("Hover Color", "wcb")}
 						onChange={(value) => {
 							setAttr__({
 								...panelData,

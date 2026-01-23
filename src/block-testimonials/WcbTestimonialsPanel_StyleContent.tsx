@@ -7,10 +7,10 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { WCB_TESTIMONIALS_PANEL_STYLE_NAME } from "./WcbTestimonialsPanel_StyleName";
+import { BCB_TESTIMONIALS_PANEL_STYLE_NAME } from "./WcbTestimonialsPanel_StyleName";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export const WCB_TESTIMONIALS_PANEL_STYLE_CONTENT_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_NAME =
+export const BCB_TESTIMONIALS_PANEL_STYLE_CONTENT_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_NAME =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -22,12 +22,12 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_CONTENT_DEMO: WCB_TESTIMONIALS_PANEL_S
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_NAME;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_NAME) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_NAME;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_NAME) => void;
 }
 
 const WcbTestimonialsPanel_StyleContent: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_CONTENT_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_CONTENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -43,11 +43,11 @@ const WcbTestimonialsPanel_StyleContent: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Content", "boostify-blocks")}
+			title={__("Content", "wcb")}
 		>
 			<div className="space-y-5">
 				<MyColorPicker
-					label={__("Color", "boostify-blocks")}
+					label={__("Color", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -79,7 +79,7 @@ const WcbTestimonialsPanel_StyleContent: FC<Props> = ({
 						});
 					}}
 					value={currentMarginBottom || ""}
-					label={__("Margin bottom", "boostify-blocks")}
+					label={__("Margin bottom", "wcb")}
 				/>
 			</div>
 		</PanelBody>

@@ -7,18 +7,18 @@ import {
 } from "../components/controls/MyBorderControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 
-export interface WCB_HEADING_PANEL_STYLE_BORDER extends MyBorderControlData {}
+export interface BCB_HEADING_PANEL_STYLE_BORDER extends MyBorderControlData {}
 
-export const WCB_HEADING_PANEL_STYLE_BORDER_DEMO = MY_BORDER_CONTROL_DEMO;
+export const BCB_HEADING_PANEL_STYLE_BORDER_DEMO = MY_BORDER_CONTROL_DEMO;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_HEADING_PANEL_STYLE_BORDER;
-	setAttr__: (data: WCB_HEADING_PANEL_STYLE_BORDER) => void;
+	panelData: BCB_HEADING_PANEL_STYLE_BORDER;
+	setAttr__: (data: BCB_HEADING_PANEL_STYLE_BORDER) => void;
 }
 
 const WcbHeadingPanel_StyleBorder: FC<Props> = ({
-	panelData = WCB_HEADING_PANEL_STYLE_BORDER_DEMO,
+	panelData = BCB_HEADING_PANEL_STYLE_BORDER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -29,7 +29,7 @@ const WcbHeadingPanel_StyleBorder: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Border", "boostify-blocks")}
+			title={__("Border", "wcb")}
 		>
 			<MyBorderControl
 				borderControl={panelData}

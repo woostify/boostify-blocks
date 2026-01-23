@@ -11,12 +11,12 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 
-export interface WCB_COUNTDOWN_PANEL_STYLE_TITLE {
+export interface BCB_COUNTDOWN_PANEL_STYLE_TITLE {
 	typography: MyTypographyControlData;
 	textColor: string;
 }
 
-export const WCB_COUNTDOWN_PANEL_STYLE_TITLE_DEMO: WCB_COUNTDOWN_PANEL_STYLE_TITLE = {
+export const BCB_COUNTDOWN_PANEL_STYLE_TITLE_DEMO: BCB_COUNTDOWN_PANEL_STYLE_TITLE = {
 	typography: {
 		...TYPOGRAPHY_CONTROL_DEMO,
 		fontSizes: { 
@@ -37,12 +37,12 @@ export const WCB_COUNTDOWN_PANEL_STYLE_TITLE_DEMO: WCB_COUNTDOWN_PANEL_STYLE_TIT
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_COUNTDOWN_PANEL_STYLE_TITLE;
-	setAttr__: (data: WCB_COUNTDOWN_PANEL_STYLE_TITLE) => void;
+	panelData: BCB_COUNTDOWN_PANEL_STYLE_TITLE;
+	setAttr__: (data: BCB_COUNTDOWN_PANEL_STYLE_TITLE) => void;
 }
 
 const WcbCountdownPanel_StyleTitle: FC<Props> = ({
-	panelData = WCB_COUNTDOWN_PANEL_STYLE_TITLE_DEMO,
+	panelData = BCB_COUNTDOWN_PANEL_STYLE_TITLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -57,7 +57,7 @@ const WcbCountdownPanel_StyleTitle: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Label", "boostify-blocks")}
+			title={__("Label", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl

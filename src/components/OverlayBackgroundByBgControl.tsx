@@ -14,7 +14,7 @@ const OverlayBackgroundByBgControl: FC<Props> = ({ overlayType, bgType }) => {
 		return null;
 	}
 
-	return <div className="wcb-OverlayBackgroundByBgControl"></div>;
+	return <div className="bcb-OverlayBackgroundByBgControl"></div>;
 };
 
 export default OverlayBackgroundByBgControl;

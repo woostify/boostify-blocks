@@ -13,10 +13,10 @@ import { HasResponsive } from "../components/controls/MyBackgroundControl/types"
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
-import { WCB_CTA_PANEL_STYLE_TITLE } from "./WcbCtaPanel_StyleTitle";
+import { BCB_CTA_PANEL_STYLE_TITLE } from "./WcbCtaPanel_StyleTitle";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export const WCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO: WCB_CTA_PANEL_STYLE_TITLE = {
+export const BCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO: BCB_CTA_PANEL_STYLE_TITLE = {
 	typography: {
 		...TYPOGRAPHY_CONTROL_DEMO,
 	},
@@ -26,12 +26,12 @@ export const WCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO: WCB_CTA_PANEL_STYLE_TITLE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_CTA_PANEL_STYLE_TITLE;
-	setAttr__: (data: WCB_CTA_PANEL_STYLE_TITLE) => void;
+	panelData: BCB_CTA_PANEL_STYLE_TITLE;
+	setAttr__: (data: BCB_CTA_PANEL_STYLE_TITLE) => void;
 }
 
 const WcbCtaPanel_StyleDescription: FC<Props> = ({
-	panelData = WCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO,
+	panelData = BCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -50,7 +50,7 @@ const WcbCtaPanel_StyleDescription: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Description", "boostify-blocks")}
+			title={__("Description", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -86,7 +86,7 @@ const WcbCtaPanel_StyleDescription: FC<Props> = ({
 						}}
 						value={MARGIN_BOTTOM || ""}
 						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 						className="flex-col space-y-2"
 					/>

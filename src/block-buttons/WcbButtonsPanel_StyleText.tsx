@@ -9,22 +9,22 @@ import {
 } from "../components/controls/MyTypographyControl/types";
 import MyTypographyControl from "../components/controls/MyTypographyControl/MyTypographyControl";
 
-export interface WCB_BUTTONS_PANEL_STYLE_TEXT {
+export interface BCB_BUTTONS_PANEL_STYLE_TEXT {
 	typography: MyTypographyControlData;
 }
 
-export const WCB_BUTTONS_PANEL_STYLE_TEXT_DEMO: WCB_BUTTONS_PANEL_STYLE_TEXT = {
+export const BCB_BUTTONS_PANEL_STYLE_TEXT_DEMO: BCB_BUTTONS_PANEL_STYLE_TEXT = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTONS_PANEL_STYLE_TEXT;
-	setAttr__: (data: WCB_BUTTONS_PANEL_STYLE_TEXT) => void;
+	panelData: BCB_BUTTONS_PANEL_STYLE_TEXT;
+	setAttr__: (data: BCB_BUTTONS_PANEL_STYLE_TEXT) => void;
 }
 
 const WcbButtonsPanel_StyleText: FC<Props> = ({
-	panelData = WCB_BUTTONS_PANEL_STYLE_TEXT_DEMO,
+	panelData = BCB_BUTTONS_PANEL_STYLE_TEXT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -37,7 +37,7 @@ const WcbButtonsPanel_StyleText: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Text", "boostify-blocks")}
+			title={__("Text", "wcb")}
 		>
 			<div className={"space-y-4"}>
 				<MyTypographyControl

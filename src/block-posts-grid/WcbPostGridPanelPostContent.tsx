@@ -3,13 +3,13 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 
-export interface WCB_POST_GRID_PANEL_POST_CONTENT {
+export interface BCB_POST_GRID_PANEL_POST_CONTENT {
 	isShowPostContent: boolean;
 	contentType: "Full post" | "excerpt";
 	excerptWordsNumber: number;
 }
 
-export const WCB_POST_GRID_PANEL_POST_CONTENT_DEMO: WCB_POST_GRID_PANEL_POST_CONTENT =
+export const BCB_POST_GRID_PANEL_POST_CONTENT_DEMO: BCB_POST_GRID_PANEL_POST_CONTENT =
 	{
 		isShowPostContent: true,
 		contentType: "excerpt",
@@ -18,12 +18,12 @@ export const WCB_POST_GRID_PANEL_POST_CONTENT_DEMO: WCB_POST_GRID_PANEL_POST_CON
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_POST_CONTENT;
-	setAttr__: (data: WCB_POST_GRID_PANEL_POST_CONTENT) => void;
+	panelData: BCB_POST_GRID_PANEL_POST_CONTENT;
+	setAttr__: (data: BCB_POST_GRID_PANEL_POST_CONTENT) => void;
 }
 
 const WcbPostGridPanelPostContent: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_POST_CONTENT_DEMO,
+	panelData = BCB_POST_GRID_PANEL_POST_CONTENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -36,11 +36,11 @@ const WcbPostGridPanelPostContent: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Post content settings", "boostify-blocks")}
+			title={__("Post content settings", "wcb")}
 		>
 			<div className="space-y-5">
 				<ToggleControl
-					label={__("Post content", "boostify-blocks")}
+					label={__("Post content", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowPostContent: checked })
 					}
@@ -67,7 +67,7 @@ const WcbPostGridPanelPostContent: FC<Props> = ({
 
 				{isShowPostContent && contentType === "excerpt" ? (
 					<RangeControl
-						label={__("MAX NUMBER OF WORDS IN EXCERPT", "boostify-blocks")}
+						label={__("MAX NUMBER OF WORDS IN EXCERPT", "wcb")}
 						value={excerptWordsNumber}
 						onChange={(e) => {
 							setAttr__({ ...panelData, excerptWordsNumber: e || 1 });

@@ -3,7 +3,7 @@ import { BlockControls } from "@wordpress/block-editor";
 import { ToolbarGroup, ToolbarButton } from "@wordpress/components";
 import React from "react";
 
-export const WCB_FORMAT_HIGHLIGHT = "my-custom-format/sample-output";
+export const BCB_FORMAT_HIGHLIGHT = "my-custom-format/sample-output";
 
 const MyCustomButton = ({ isActive, onChange, value }) => {
 	return (
@@ -15,7 +15,7 @@ const MyCustomButton = ({ isActive, onChange, value }) => {
 					onClick={() => {
 						onChange(
 							toggleFormat(value, {
-								type: WCB_FORMAT_HIGHLIGHT,
+								type: BCB_FORMAT_HIGHLIGHT,
 							})
 						);
 					}}

@@ -9,24 +9,24 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export const WCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_RATING =
+export const BCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_RATING =
 	{
 		color: "#FF8B00",
 		marginBottom: { Desktop: "0.25rem" },
 	};
-export interface WCB_TESTIMONIALS_PANEL_STYLE_RATING {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_RATING {
 	marginBottom: HasResponsive<string>;
 	color: string;
 }
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_RATING;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_RATING) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_RATING;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_RATING) => void;
 }
 
 const WcbTestimonialsPanel_StyleRating: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -48,12 +48,12 @@ const WcbTestimonialsPanel_StyleRating: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Rating", "boostify-blocks")}
+			title={__("Rating", "wcb")}
 		>
 			<div className="space-y-2.5">
 
 				<MyColorPicker
-					label={__("Color", "boostify-blocks")}
+					label={__("Color", "wcb")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -75,7 +75,7 @@ const WcbTestimonialsPanel_StyleRating: FC<Props> = ({
 					}}
 					value={MARGIN_BOTTOM || ""}
 					units={MY_GAP_UNITS}
-					label={__("Margin bottom", "boostify-blocks")}
+					label={__("Margin bottom", "wcb")}
 					hasResponsive
 				/>
 			</div>

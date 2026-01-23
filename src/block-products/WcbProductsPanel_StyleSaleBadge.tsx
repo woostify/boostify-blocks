@@ -15,14 +15,14 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE {
+export interface BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE {
 	typography: MyTypographyControlData;
 	textColor: string;
 	backgroundColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE =
+export const BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -43,12 +43,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE) => void;
 }
 
 const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -67,7 +67,7 @@ const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Sale badge", "boostify-blocks")}
+			title={__("Sale badge", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -82,7 +82,7 @@ const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
 
 				<MyDisclosure defaultOpen label="More styles">
 					<MyColorPicker
-						label={__("Color", "boostify-blocks")}
+						label={__("Color", "wcb")}
 						onChange={(color) => {
 							setAttr__({
 								...panelData,
@@ -93,7 +93,7 @@ const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
 					/>
 
 					<MyColorPicker
-						label={__("Background", "boostify-blocks")}
+						label={__("Background", "wcb")}
 						onChange={(color) => {
 							setAttr__({
 								...panelData,
@@ -115,7 +115,7 @@ const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
 						}}
 						value={MARGIN_BOTTOM || ""}
 						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 						className="flex-col space-y-2"
 					/>

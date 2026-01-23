@@ -10,7 +10,7 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_ICON_BOX_PANEL_LAYOUT {
+export interface BCB_ICON_BOX_PANEL_LAYOUT {
 	textAlignment: HasResponsive<TextAlignment>;
 	headingTag: keyof HTMLElementTagNameMap;
 	enablePrefix: boolean;
@@ -19,7 +19,7 @@ export interface WCB_ICON_BOX_PANEL_LAYOUT {
 	enableCTAButton: boolean;
 }
 
-export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
+export const BCB_ICON_BOX_PANEL_LAYOUT_DEMO: BCB_ICON_BOX_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "center" },
 	headingTag: "h4",
 	enableDescription: true,
@@ -30,12 +30,12 @@ export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_BOX_PANEL_LAYOUT;
-	setAttr__: (data: WCB_ICON_BOX_PANEL_LAYOUT) => void;
+	panelData: BCB_ICON_BOX_PANEL_LAYOUT;
+	setAttr__: (data: BCB_ICON_BOX_PANEL_LAYOUT) => void;
 }
 
 const WcbIconBoxPanelLayout: FC<Props> = ({
-	panelData = WCB_ICON_BOX_PANEL_LAYOUT_DEMO,
+	panelData = BCB_ICON_BOX_PANEL_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -74,7 +74,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Layout", "boostify-blocks")}
+			title={__("Layout", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyTextAlignControl
@@ -83,7 +83,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Enable prefix", "boostify-blocks")}
+					label={__("Enable prefix", "wcb")}
 					checked={enablePrefix}
 					className="mb-0"
 					onChange={(checked) => {
@@ -91,7 +91,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 					}}
 				/>
 				<ToggleControl
-					label={__("Enable title", "boostify-blocks")}
+					label={__("Enable title", "wcb")}
 					checked={enableTitle}
 					className="mb-0"
 					onChange={(checked) => {
@@ -109,7 +109,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				)}
 
 				<ToggleControl
-					label={__("Enable description", "boostify-blocks")}
+					label={__("Enable description", "wcb")}
 					checked={enableDescription}
 					className="mb-0"
 					onChange={(checked) => {
@@ -118,7 +118,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 				/>
 
 				<ToggleControl
-					label={__("Enable CTA button", "boostify-blocks")}
+					label={__("Enable CTA button", "wcb")}
 					checked={enableCTAButton}
 					className="mb-0"
 					onChange={(checked) => {

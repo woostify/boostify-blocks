@@ -58,7 +58,7 @@ const WcbFontFamilyPicker: FC<Props> = ({
 	];
 	return (
 		<>
-			<MyLabelControl>{__("Font Family", "boostify-blocks")}</MyLabelControl>
+			<MyLabelControl>{__("Font Family", "wcb")}</MyLabelControl>
 
 			<MyCombobox
 				value={fontFamily || ""}

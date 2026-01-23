@@ -11,33 +11,33 @@ import {
 	Z_INDEX_DEMO,
 } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import {
-	WCB_IMAGE_PANEL_SETTINGS,
-	WCB_IMAGE_PANEL_SETTINGS_DEMO,
+	BCB_IMAGE_PANEL_SETTINGS,
+	BCB_IMAGE_PANEL_SETTINGS_DEMO,
 } from "./WcbImagePanelSettings";
 import {
-	WCB_IMAGE_PANEL_STYLE_CAPTION,
-	WCB_IMAGE_PANEL_STYLE_CAPTION_DEMO,
+	BCB_IMAGE_PANEL_STYLE_CAPTION,
+	BCB_IMAGE_PANEL_STYLE_CAPTION_DEMO,
 } from "./WcbImagePanel_StyleCaption";
 import {
-	WCB_IMAGE_PANEL_STYLE_IMAGE,
-	WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
+	BCB_IMAGE_PANEL_STYLE_IMAGE,
+	BCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
 } from "./WcbImagePanel_StyleImage";
 import {
-	WCB_IMAGE_PANEL_STYLE_OVERLAY,
-	WCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO,
+	BCB_IMAGE_PANEL_STYLE_OVERLAY,
+	BCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO,
 } from "./WcbImagePanel_StyleOverlay";
 import {
-	WCB_IMAGE_PANEL_IMAGES,
-	WCB_IMAGE_PANEL_IMAGES_DEMO,
+	BCB_IMAGE_PANEL_IMAGES,
+	BCB_IMAGE_PANEL_IMAGES_DEMO,
 } from "./WcbImagePanelImages";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	//
-	general_settings: WCB_IMAGE_PANEL_SETTINGS;
-	general_image: WCB_IMAGE_PANEL_IMAGES;
-	style_image: WCB_IMAGE_PANEL_STYLE_IMAGE;
-	style_overlay: WCB_IMAGE_PANEL_STYLE_OVERLAY;
-	style_caption: WCB_IMAGE_PANEL_STYLE_CAPTION;
+	general_settings: BCB_IMAGE_PANEL_SETTINGS;
+	general_image: BCB_IMAGE_PANEL_IMAGES;
+	style_image: BCB_IMAGE_PANEL_STYLE_IMAGE;
+	style_overlay: BCB_IMAGE_PANEL_STYLE_OVERLAY;
+	style_caption: BCB_IMAGE_PANEL_STYLE_CAPTION;
 	//
 	//
 	url: string;
@@ -64,23 +64,23 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	//
 	general_settings: {
 		type: "object",
-		default: WCB_IMAGE_PANEL_SETTINGS_DEMO,
+		default: BCB_IMAGE_PANEL_SETTINGS_DEMO,
 	},
 	general_image:{
 		type: "object",
-		default: WCB_IMAGE_PANEL_IMAGES_DEMO,
+		default: BCB_IMAGE_PANEL_IMAGES_DEMO,
 	},
 	style_image: {
 		type: "object",
-		default: WCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
+		default: BCB_IMAGE_PANEL_STYLE_IMAGE_DEMO,
 	},
 	style_overlay: {
 		type: "object",
-		default: WCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO,
+		default: BCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO,
 	},
 	style_caption: {
 		type: "object",
-		default: WCB_IMAGE_PANEL_STYLE_CAPTION_DEMO,
+		default: BCB_IMAGE_PANEL_STYLE_CAPTION_DEMO,
 	},
 	//
 

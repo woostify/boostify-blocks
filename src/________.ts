@@ -1,5 +1,5 @@
 import "jquery";
-import { Wcb_theme_layout_global_settings } from "./types";
+import { Bcb_theme_layout_global_settings } from "./types";
 
 declare global {
 	var wp: any | undefined;
@@ -21,10 +21,10 @@ declare global {
 		ajaxurl: string;
 		homeUrl: string;
 	};
-	var wcbLayoutGlobalSettings: Wcb_theme_layout_global_settings;
+	var wcbLayoutGlobalSettings: Bcb_theme_layout_global_settings;
 }
 
-const INIT_WCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
+const INIT_BCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
 	media_tablet: "768px",
 	media_desktop: "1024px",
 	reCAPTCHA_v3_secret_key: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
@@ -37,12 +37,12 @@ const INIT_WCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
 	enableCopyPasteStyles: "false",
 };
 
-export const DEMO_WCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
-	...INIT_WCB_GLOBAL_VARIABLES,
+export const DEMO_BCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
+	...INIT_BCB_GLOBAL_VARIABLES,
 	...(window.wcbGlobalVariables || {}),
 	defaultContentWidth:
 		window.wcbGlobalVariables?.defaultContentWidth ||
 		window.wcbLayoutGlobalSettings?.contentSize,
 };
 
-export const ___wcb_global = 1;
+export const ___bcb_global = 1;

@@ -13,12 +13,12 @@ import WCBGlobalColors from './colors';
 import { renderGlobalStyle } from '../../utils';
 
 const sidebarName = 'woostify-block-sidebar';
-const sidebarTitle = __('Boostify Block Settings', 'boostify-blocks');
+const sidebarTitle = __('Woostify Block Settings', 'wcb');
 const sidebarIcon = 'smiley';
 
 let saveSettingsTime = null;
 
-const BoostifyBlockSidebarContent = (props) => {
+const WoostifyBlockSidebarContent = (props) => {
 	const [typoSettings, setTypoSettings] = useState([]);
 
 	const TYPO_LIST = [
@@ -34,7 +34,7 @@ const BoostifyBlockSidebarContent = (props) => {
 		loadPromise.then(() => {
 			const settings = new models.Settings();
 			settings.fetch().then((response) => {
-				setTypoSettings(head(response.wcb_global_typography) || {});
+				setTypoSettings(head(response.bcb_global_typography) || {});
 			});
 		});
 	}, []);
@@ -55,7 +55,7 @@ const BoostifyBlockSidebarContent = (props) => {
 		clearTimeout(saveSettingsTime);
 		saveSettingsTime = setTimeout(() => {
 			const model = new models.Settings({
-				wcb_global_typography: [newSettings], // eslint-disable-line
+				bcb_global_typography: [newSettings], // eslint-disable-line
 			});
 			model.save();
 
@@ -66,13 +66,13 @@ const BoostifyBlockSidebarContent = (props) => {
 	return (
 		<Fragment>
 			<PanelBody
-				title={__('Global Color Palette', 'boostify-blocks')}
+				title={__('Global Color Palette', 'wcb')}
 				initialOpen={true}
 			>
 				<WCBGlobalColors />
 			</PanelBody>
 			<PanelBody
-				title={__('Global Typography', 'boostify-blocks')}
+				title={__('Global Typography', 'wcb')}
 				initialOpen={false}
 			>
 				{TYPO_LIST.map(({ label, tag }, index) => {
@@ -93,7 +93,7 @@ const BoostifyBlockSidebarContent = (props) => {
 	);
 };
 
-const BoostifyBlockPluginSidebar = () => {
+const WoostifyBlockPluginSidebar = () => {
 	return (
 		<Fragment>
 			<PluginSidebarMoreMenuItem target={sidebarName} icon={sidebarIcon}>
@@ -105,7 +105,7 @@ const BoostifyBlockPluginSidebar = () => {
 				icon={sidebarIcon}
 			>
 				<div className="woostify-block-sidebar-content">
-					<BoostifyBlockSidebarContent />
+					<WoostifyBlockSidebarContent />
 				</div>
 			</PluginSidebar>
 		</Fragment>
@@ -113,5 +113,5 @@ const BoostifyBlockPluginSidebar = () => {
 };
 
 registerPlugin(sidebarName, {
-	render: BoostifyBlockPluginSidebar,
+	render: WoostifyBlockPluginSidebar,
 });

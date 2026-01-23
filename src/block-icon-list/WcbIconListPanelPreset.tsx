@@ -6,29 +6,29 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import ResetButton from "../components/controls/ResetButton";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import { ICON_LIST_PRESET } from "../block-icon-list/types";
-export interface WCB_ICON_LIST_PANEL_PRESET {
-	preset: "wcb-icon-list-1" | "wcb-icon-list-2" | "wcb-icon-list-3" | "";
+export interface BCB_ICON_LIST_PANEL_PRESET {
+	preset: "bcb-icon-list-1" | "bcb-icon-list-2" | "bcb-icon-list-3" | "";
 }
 
-export const WCB_ICON_LIST_PANEL_PRESET_DEMO: WCB_ICON_LIST_PANEL_PRESET = {
-	preset: "wcb-icon-list-1",
+export const BCB_ICON_LIST_PANEL_PRESET_DEMO: BCB_ICON_LIST_PANEL_PRESET = {
+	preset: "bcb-icon-list-1",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_LIST_PANEL_PRESET;
-	setAttr__: (data: WCB_ICON_LIST_PANEL_PRESET) => void;
+	panelData: BCB_ICON_LIST_PANEL_PRESET;
+	setAttr__: (data: BCB_ICON_LIST_PANEL_PRESET) => void;
 }
 
 const WcbIconListPanelPreset: FC<Props> = ({
-	panelData = WCB_ICON_LIST_PANEL_PRESET_DEMO,
+	panelData = BCB_ICON_LIST_PANEL_PRESET_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
 	opened,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-	const setPreset = (preset: WCB_ICON_LIST_PANEL_PRESET["preset"]) => {
+	const setPreset = (preset: BCB_ICON_LIST_PANEL_PRESET["preset"]) => {
 		setAttr__({ preset: preset });
 	};
 
@@ -36,8 +36,8 @@ const WcbIconListPanelPreset: FC<Props> = ({
 		return (
 			<RadioGroup value={panelData.preset} onChange={setPreset}>
 				<RadioGroup.Label className="relative flex items-center justify-between ">
-					<span>{__("Select Preset", "boostify-blocks")}</span>
-					<ResetButton onClick={() => setPreset(WCB_ICON_LIST_PANEL_PRESET_DEMO.preset)} />
+					<span>{__("Select Preset", "wcb")}</span>
+					<ResetButton onClick={() => setPreset(BCB_ICON_LIST_PANEL_PRESET_DEMO.preset)} />
 				</RadioGroup.Label>
 				<div className={"relative p-3 bg-slate-50 mt-3 rounded-lg"}>
 					<div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))]"></div>
@@ -71,7 +71,7 @@ const WcbIconListPanelPreset: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Preset", "boostify-blocks")}
+			title={__("Preset", "wcb")}
 		>
 			{renderRadioPreset()}
 		</PanelBody>

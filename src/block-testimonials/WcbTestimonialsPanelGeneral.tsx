@@ -11,14 +11,14 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_TESTIMONIALS_PANEL_GENERAL {
+export interface BCB_TESTIMONIALS_PANEL_GENERAL {
 	textAlignment: HasResponsive<TextAlignment>;
 	numberofTestimonials: number;
 	columns: HasResponsive<number>;
 	colGap: HasResponsive<string>;
 }
 
-export const WCB_TESTIMONIALS_PANEL_GENERAL_DEMO: WCB_TESTIMONIALS_PANEL_GENERAL =
+export const BCB_TESTIMONIALS_PANEL_GENERAL_DEMO: BCB_TESTIMONIALS_PANEL_GENERAL =
 	{
 		textAlignment: { Desktop: "center" },
 		numberofTestimonials: 3,
@@ -28,12 +28,12 @@ export const WCB_TESTIMONIALS_PANEL_GENERAL_DEMO: WCB_TESTIMONIALS_PANEL_GENERAL
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_GENERAL;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_GENERAL) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_GENERAL;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_GENERAL) => void;
 }
 
 const WcbTestimonialsPanelGeneral: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_GENERAL_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -69,11 +69,11 @@ const WcbTestimonialsPanelGeneral: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("General", "boostify-blocks")}
+			title={__("General", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<RangeControl
-					label={__("Number of Testimonials", "boostify-blocks")}
+					label={__("Number of Testimonials", "wcb")}
 					value={numberofTestimonials}
 					onChange={(value) => {
 						setAttr__({ ...panelData, numberofTestimonials: value || 1 });
@@ -85,7 +85,7 @@ const WcbTestimonialsPanelGeneral: FC<Props> = ({
 				<RangeControl
 					label={
 						<MyLabelControl hasResponsive>
-							{__("Columns", "boostify-blocks")}
+							{__("Columns", "wcb")}
 						</MyLabelControl>
 					}
 					value={currentColumns || 1}

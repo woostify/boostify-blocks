@@ -18,13 +18,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_HEADING_PANEL_SEPARATOR {
+export interface BCB_HEADING_PANEL_SEPARATOR {
 	border: BorderMainSingleSide;
 	width: HasResponsive<string>;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_HEADING_PANEL_SEPARATOR_DEMO: WCB_HEADING_PANEL_SEPARATOR = {
+export const BCB_HEADING_PANEL_SEPARATOR_DEMO: BCB_HEADING_PANEL_SEPARATOR = {
 	border: DEFAULT_BORDER_MAIN_SINGLE_SIDE,
 	width: { Desktop: "10%" },
 	marginBottom: { Desktop: "1rem" },
@@ -32,12 +32,12 @@ export const WCB_HEADING_PANEL_SEPARATOR_DEMO: WCB_HEADING_PANEL_SEPARATOR = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelSeparator: WCB_HEADING_PANEL_SEPARATOR;
-	setAttr__panelSeparator: (data: WCB_HEADING_PANEL_SEPARATOR) => void;
+	panelSeparator: BCB_HEADING_PANEL_SEPARATOR;
+	setAttr__panelSeparator: (data: BCB_HEADING_PANEL_SEPARATOR) => void;
 }
 
 const WcbHeadingPanelSeparator: FC<Props> = ({
-	panelSeparator = WCB_HEADING_PANEL_SEPARATOR_DEMO,
+	panelSeparator = BCB_HEADING_PANEL_SEPARATOR_DEMO,
 	setAttr__panelSeparator,
 	initialOpen,
 	onToggle,
@@ -65,7 +65,7 @@ const WcbHeadingPanelSeparator: FC<Props> = ({
 		return (
 			<div className="flex items-center justify-between">
 				<MyLabelControl className="flex-shrink-0" hasResponsive>
-					{__("Custom Width", "boostify-blocks")}
+					{__("Custom Width", "wcb")}
 				</MyLabelControl>
 				<UnitControl
 					className="flex-grow ml-3"
@@ -90,7 +90,7 @@ const WcbHeadingPanelSeparator: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Separator", "boostify-blocks")}
+			title={__("Separator", "wcb")}
 		>
 			<div className="space-y-5">
 				{renderCustomWidth()}
@@ -117,7 +117,7 @@ const WcbHeadingPanelSeparator: FC<Props> = ({
 						});
 					}}
 					value={MARGIN_BOTTOM || ""}
-					label={__("Margin bottom", "boostify-blocks")}
+					label={__("Margin bottom", "wcb")}
 					hasResponsive
 				/>
 			</div>

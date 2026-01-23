@@ -4,13 +4,13 @@ import React, { FC, CSSProperties } from "react";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 import HelpText from "../components/controls/HelpText";
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
-export interface WCB_TESTIMONIALS_PANEL_RATING {
+export interface BCB_TESTIMONIALS_PANEL_RATING {
 	ratings: any[];
 	isShowRating: boolean;
 	ratingPosition: "top" | "middle" | "bottom";
 }
 
-export const WCB_TESTIMONIALS_PANEL_RATING_DEMO: WCB_TESTIMONIALS_PANEL_RATING =
+export const BCB_TESTIMONIALS_PANEL_RATING_DEMO: BCB_TESTIMONIALS_PANEL_RATING =
 	{
 		ratings: [5, 3, 4],
 		isShowRating: true,
@@ -21,13 +21,13 @@ type TabsHere = "Settings" | "NumberStars";
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_RATING;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_RATING) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_RATING;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_RATING) => void;
 	numberOfItems: number;
 }
 
 const WcbTestimonialsPanelRating: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_RATING_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_RATING_DEMO,
 	setAttr__,
 	numberOfItems = 1,
 	initialOpen,
@@ -43,7 +43,7 @@ const WcbTestimonialsPanelRating: FC<Props> = ({
 	//
 
 	const POSTION_PLANS: MyRadioItem<
-		WCB_TESTIMONIALS_PANEL_RATING["ratingPosition"]
+		BCB_TESTIMONIALS_PANEL_RATING["ratingPosition"]
 	>[] = [
 		{ name: "top", icon: "Top" },
 		{ name: "middle", icon: "Middle" },
@@ -56,7 +56,7 @@ const WcbTestimonialsPanelRating: FC<Props> = ({
 				<HelpText>
 					{__(
 						'Please enable the "Show Rating" for testimonials...',
-						"boostify-blocks"
+						"wcb"
 					)}
 				</HelpText>
 			);
@@ -68,7 +68,7 @@ const WcbTestimonialsPanelRating: FC<Props> = ({
 					return (
 						<div key={index + "--rating"}>
 							<MyLabelControl hasResponsive={false}>
-								{__("Number star", "boostify-blocks")} {index + 1}
+								{__("Number star", "wcb")} {index + 1}
 							</MyLabelControl>
 							<RangeControl
 								label=''
@@ -96,7 +96,7 @@ const WcbTestimonialsPanelRating: FC<Props> = ({
 
 	const renderSettingsRating = () => {
 		const POSTION_PLANS: MyRadioItem<
-			WCB_TESTIMONIALS_PANEL_RATING["ratingPosition"]
+			BCB_TESTIMONIALS_PANEL_RATING["ratingPosition"]
 		>[] = [
 			{ name: "top", icon: "Top" },
 			{ name: "middle", icon: "Middle" },
@@ -106,7 +106,7 @@ const WcbTestimonialsPanelRating: FC<Props> = ({
 		return (
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Show rating", "boostify-blocks")}
+					label={__("Show rating", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowRating: checked })
 					}
@@ -143,19 +143,19 @@ const WcbTestimonialsPanelRating: FC<Props> = ({
 		name: TabsHere;
 		title: string;
 	}[] = [
-		{ name: "Settings", title: __("Settings", "boostify-blocks") },
-		{ name: "NumberStars", title: __("Number Stars", "boostify-blocks") },
+		{ name: "Settings", title: __("Settings", "wcb") },
+		{ name: "NumberStars", title: __("Number Stars", "wcb") },
 	];
 	return (
 		<PanelBody
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Rating", "boostify-blocks")}
+			title={__("Rating", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="Settings"
 					tabs={TABS}

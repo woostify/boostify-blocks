@@ -120,18 +120,18 @@ const MyDimensionsControl: FC<Props> = ({
 			<MySpacingSizesControl
 				onChange={setRowGrap}
 				value={rowGap || "0"}
-				label={__("Row Gap", "boostify-blocks")}
+				label={__("Row Gap", "wcb")}
 			/>
 			<MySpacingSizesControl
 				onChange={setColumnGap}
 				value={colunmGap || "0"}
-				label={__("Column Gap", "boostify-blocks")}
+				label={__("Column Gap", "wcb")}
 			/>
 
 			<BoxControl
 				label={
 					<MyLabelControl className="" hasResponsive>
-						{__("Padding", "boostify-blocks")}
+						{__("Padding", "wcb")}
 					</MyLabelControl>
 				}
 				values={padding}
@@ -140,7 +140,7 @@ const MyDimensionsControl: FC<Props> = ({
 			<BoxControl
 				label={
 					<MyLabelControl className="" hasResponsive>
-						{__("Margin", "boostify-blocks")}
+						{__("Margin", "wcb")}
 					</MyLabelControl>
 				}
 				values={margin}

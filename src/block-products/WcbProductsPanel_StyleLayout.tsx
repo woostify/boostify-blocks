@@ -26,7 +26,7 @@ import HelpText from "../components/controls/HelpText";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_LAYOUT
+export interface BCB_PRODUCTS_PANEL_STYLE_LAYOUT
 	extends MyDimensionsNoMarginControlData {
 	textAlignment: TextAlignment;
 	backgroundColor: string;
@@ -37,7 +37,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_LAYOUT
 	swithToScrollSnapX: ResponsiveDevices | "None";
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: WCB_PRODUCTS_PANEL_STYLE_LAYOUT =
+export const BCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: BCB_PRODUCTS_PANEL_STYLE_LAYOUT =
 	{
 		...MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO,
 		textAlignment: "center",
@@ -58,12 +58,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: WCB_PRODUCTS_PANEL_STYLE_LAYO
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_LAYOUT;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_LAYOUT) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_LAYOUT;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_LAYOUT) => void;
 }
 
 const WcbProductsPanel_StyleLayout: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -81,7 +81,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 		panelData;
 
 	const SNAPX_POSTION_PLANS: MyRadioItem<
-		WCB_PRODUCTS_PANEL_STYLE_LAYOUT["swithToScrollSnapX"]
+		BCB_PRODUCTS_PANEL_STYLE_LAYOUT["swithToScrollSnapX"]
 	>[] = [
 		{ name: "Desktop", icon: "Desktop" },
 		{ name: "Tablet", icon: "Tablet" },
@@ -109,7 +109,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Layout", "boostify-blocks")}
+			title={__("Layout", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<MyTextAlignControl
@@ -119,7 +119,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 				/>
 
 				<MyColorPicker
-					label={__("Background color", "boostify-blocks")}
+					label={__("Background color", "wcb")}
 					onChange={handleChangeBgColor}
 					color={backgroundColor}
 				/>
@@ -128,7 +128,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 				<RangeControl
 					label={
 						<MyLabelControl hasResponsive>
-							{__("Columns", "boostify-blocks")}
+							{__("Columns", "wcb")}
 						</MyLabelControl>
 					}
 					value={currentNumberOfColumn || 1}
@@ -164,7 +164,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 						<HelpText>
 							{__(
 								"Device selection to start switching from layout GRID to layout is a scroll able row.",
-								"boostify-blocks"
+								"wcb"
 							)}
 						</HelpText>
 					</div>
@@ -184,12 +184,12 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 									});
 								}}
 								value={currentPeekAfter || "0"}
-								label={__("Peek After", "boostify-blocks")}
+								label={__("Peek After", "wcb")}
 							/>
 							<HelpText>
 								{__(
 									"The value of the future viewports which have to be visible in the current view.",
-									"boostify-blocks"
+									"wcb"
 								)}
 							</HelpText>
 						</div>
@@ -204,18 +204,18 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 							...data,
 						});
 					}}
-					paddingLabel={__("Padding content", "boostify-blocks")}
+					paddingLabel={__("Padding content", "wcb")}
 				/>
 
 				<ToggleControl
-					label={__("Equal height", "boostify-blocks")}
+					label={__("Equal height", "wcb")}
 					checked={panelData.isEqualHeight}
 					onChange={(checked) => {
 						setAttr__({ ...panelData, isEqualHeight: checked });
 					}}
 					help={__(
 						"The product cards will have the same height, suitable when you set the border or background",
-						"boostify-blocks"
+						"wcb"
 					)}
 				/>
 			</div>

@@ -15,7 +15,7 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_META {
+export interface BCB_POST_GRID_PANEL_STYLE_META {
 	authorTypography: MyTypographyControlData;
 	dateTypography: MyTypographyControlData;
 	authorTextColor: string;
@@ -23,7 +23,7 @@ export interface WCB_POST_GRID_PANEL_STYLE_META {
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_META_DEMO: WCB_POST_GRID_PANEL_STYLE_META =
+export const BCB_POST_GRID_PANEL_STYLE_META_DEMO: BCB_POST_GRID_PANEL_STYLE_META =
 	{
 		authorTypography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -48,12 +48,12 @@ export const WCB_POST_GRID_PANEL_STYLE_META_DEMO: WCB_POST_GRID_PANEL_STYLE_META
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_META;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_META) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_META;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_META) => void;
 }
 
 const WcbPostGridPanel_StyleMeta: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_META_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_META_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -78,7 +78,7 @@ const WcbPostGridPanel_StyleMeta: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Meta", "boostify-blocks")}
+			title={__("Meta", "wcb")}
 		>
 			<div className="space-y-2.5">
 				<MyTypographyControl
@@ -104,7 +104,7 @@ const WcbPostGridPanel_StyleMeta: FC<Props> = ({
 
 				<MyDisclosure defaultOpen label="More styles">
 					<MyColorPicker
-						label={__("Author color", "boostify-blocks")}
+						label={__("Author color", "wcb")}
 						onChange={(color) => {
 							setAttr__({
 								...panelData,
@@ -114,7 +114,7 @@ const WcbPostGridPanel_StyleMeta: FC<Props> = ({
 						color={authorTextColor}
 					/>
 					<MyColorPicker
-						label={__("Date/comment color", "boostify-blocks")}
+						label={__("Date/comment color", "wcb")}
 						onChange={(color) => {
 							setAttr__({
 								...panelData,
@@ -136,7 +136,7 @@ const WcbPostGridPanel_StyleMeta: FC<Props> = ({
 						}}
 						value={MARGIN_BOTTOM || ""}
 						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
+						label={__("Margin bottom", "wcb")}
 						hasResponsive
 						className="flex-col space-y-2"
 					/>

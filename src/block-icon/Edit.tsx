@@ -20,20 +20,20 @@ import WcbIconPanelPreset from "./WcbIconPanelPreset";
 import MyIconFull from "../components/controls/MyIconFull";
 
 import WcbIconPanel_StyleIcon, {
-	WCB_ICON_PANEL_STYLE_ICON_DEMO,
-	WCB_ICON_PANEL_STYLE_ICON_LIGHT_DEMO,
+	BCB_ICON_PANEL_STYLE_ICON_DEMO,
+	BCB_ICON_PANEL_STYLE_ICON_LIGHT_DEMO,
 } from "./WcbIconPanel_StyleIcon";
 
 import WcbIconPanel_StyleBorder, {
-	WCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND,
-	WCB_ICON_PANEL_STYLE_BORDER_DEMO_WHITE,
-	WCB_ICON_PANEL_STYLE_BORDER_DEMO_SECONDARY,
-	WCB_ICON_PANEL_STYLE_BORDER_DEMO_PRIMARY
+	BCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND,
+	BCB_ICON_PANEL_STYLE_BORDER_DEMO_WHITE,
+	BCB_ICON_PANEL_STYLE_BORDER_DEMO_SECONDARY,
+	BCB_ICON_PANEL_STYLE_BORDER_DEMO_PRIMARY
 } from "./WcbIconPanel_StyleBorder";
 import WcbIconPanel_StyleBackground, {
-	WCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_1,
-	WCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_3,
-	WCB_ICON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
+	BCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_1,
+	BCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_3,
+	BCB_ICON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
 } from "./WcbIconPanel_StyleBackground";
 import WcbIconPanel_StyleBoxshadow from "./WcbIconPanel_StyleBoxshadow";
 import WcbIconPanel_StyleDimension from "./WcbIconPanel_StyleDimension";
@@ -126,7 +126,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							setAttr__={(data) => {
 								return setAttributes({
 									general_icon: data,
-									general_preset: { ...general_preset, preset: "wcb-icon-1" },
+									general_preset: { ...general_preset, preset: "bcb-icon-1" },
 								});
 							}}
 							panelData={general_icon}
@@ -146,25 +146,25 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								});
 								setAttributes({
 									style_border:
-										preset === "wcb-icon-1"
-											? WCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND
-											: preset === "wcb-icon-2"
-											? WCB_ICON_PANEL_STYLE_BORDER_DEMO_WHITE
-											: preset === "wcb-icon-3"
-											? WCB_ICON_PANEL_STYLE_BORDER_DEMO_SECONDARY
-											: preset === "wcb-icon-4"
-											? WCB_ICON_PANEL_STYLE_BORDER_DEMO_PRIMARY
-											: WCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND,
+										preset === "bcb-icon-1"
+											? BCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND
+											: preset === "bcb-icon-2"
+											? BCB_ICON_PANEL_STYLE_BORDER_DEMO_WHITE
+											: preset === "bcb-icon-3"
+											? BCB_ICON_PANEL_STYLE_BORDER_DEMO_SECONDARY
+											: preset === "bcb-icon-4"
+											? BCB_ICON_PANEL_STYLE_BORDER_DEMO_PRIMARY
+											: BCB_ICON_PANEL_STYLE_BORDER_DEMO_ROUND,
 									style_background:
-										preset === "wcb-icon-1"
-										? WCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_1
-										: preset === "wcb-icon-3"
-										? WCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_3
-										: WCB_ICON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
+										preset === "bcb-icon-1"
+										? BCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_1
+										: preset === "bcb-icon-3"
+										? BCB_ICON_PANEL_STYLE_BACKGROUND_PRESET_3
+										: BCB_ICON_PANEL_STYLE_BACKGROUND_DEMO_WHITE,
 									style_icon:
-										preset === "wcb-icon-1" || preset === "wcb-icon-3"
-											? WCB_ICON_PANEL_STYLE_ICON_DEMO
-											: WCB_ICON_PANEL_STYLE_ICON_LIGHT_DEMO,
+										preset === "bcb-icon-1" || preset === "bcb-icon-3"
+											? BCB_ICON_PANEL_STYLE_ICON_DEMO
+											: BCB_ICON_PANEL_STYLE_ICON_LIGHT_DEMO,
 								});
 							}}
 							panelData={general_preset}
@@ -182,7 +182,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							setAttr__={(data) => {
 								setAttributes({ 
 									style_icon: data,
-									general_preset: { ...general_preset, preset: "wcb-icon-1" },
+									general_preset: { ...general_preset, preset: "bcb-icon-1" },
 								});
 							}}
 							panelData={style_icon}
@@ -196,7 +196,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							setAttr__={(data) => {
 								setAttributes({
 									style_background: data,
-									general_preset: { ...general_preset, preset: "wcb-icon-1" },
+									general_preset: { ...general_preset, preset: "bcb-icon-1" },
 								});
 							}}
 							panelData={style_background}
@@ -210,7 +210,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							setAttr__={(data) => {
 								setAttributes({
 									style_border: data,
-									general_preset: { ...general_preset, preset: "wcb-icon-1" },
+									general_preset: { ...general_preset, preset: "bcb-icon-1" },
 								});
 							}}
 							panelData={style_border}
@@ -224,7 +224,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							setAttr__={(data) => {
 								setAttributes({
 									style_boxshadow: data,
-									general_preset: { ...general_preset, preset: "wcb-icon-1" },
+									general_preset: { ...general_preset, preset: "bcb-icon-1" },
 								});
 							}}
 							panelData={style_boxshadow}
@@ -238,7 +238,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							setAttr__={(data) => {
 								setAttributes({ 
 									style_dimension: data,
-									general_preset: { ...general_preset, preset: "wcb-icon-1" },
+									general_preset: { ...general_preset, preset: "bcb-icon-1" },
 								});
 							}}
 							panelData={style_dimension}
@@ -303,7 +303,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-icon__wrap ${uniqueId}`}
+				className={`${wrapBlockProps?.className} bcb-icon__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}
@@ -374,7 +374,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				)}
 
 				{/* ICON CONTENT  */}
-				<HtmlTag className="wcb-icon__content"
+				<HtmlTag className="bcb-icon__content"
 					target={openInNewWindow ? "_blank" : undefined}
 					href={enableLink ? url : undefined}
 					rel={addNofollowToLink ? "noopener noreferrer" : undefined}

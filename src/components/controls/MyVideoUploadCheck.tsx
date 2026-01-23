@@ -19,7 +19,7 @@ export interface VideoMediaUploadData {
 
 const MyVideoUploadCheck: FC<Props> = ({
 	className = "",
-	label = __("Video", "boostify-blocks"),
+	label = __("Video", "wcb"),
 	mediaId,
 	mediaUrl,
 	onChange,
@@ -58,7 +58,7 @@ const MyVideoUploadCheck: FC<Props> = ({
 							{mediaId == 0 && (
 								<div className="text-center flex flex-col items-center justify-center">
 									<Icon icon={plus} className="text-slate-700" />
-									<span className="mt-0.5">{__("Choose an video", "boostify-blocks")}</span>
+									<span className="mt-0.5">{__("Choose an video", "wcb")}</span>
 								</div>
 							)}
 							{!!mediaUrl && <Icon icon={captureVideo} />}
@@ -70,7 +70,7 @@ const MyVideoUploadCheck: FC<Props> = ({
 				<div className="flex justify-between gap-2 mt-2">
 					<MediaUploadCheck>
 						<MediaUpload
-							title={__("Replace Video", "boostify-blocks")}
+							title={__("Replace Video", "wcb")}
 							value={mediaId}
 							onSelect={onSelectMedia}
 							allowedTypes={["video"]}
@@ -80,19 +80,19 @@ const MyVideoUploadCheck: FC<Props> = ({
 									onClick={open}
 									variant="secondary"
 								>
-									{__("Replace", "boostify-blocks")}
+									{__("Replace", "wcb")}
 								</MyButton>
 							)}
 						/>
 					</MediaUploadCheck>
 					<MediaUploadCheck>
 						<MyButton
-							title={__("Remove Video", "boostify-blocks")}
+							title={__("Remove Video", "wcb")}
 							className="flex-1 my-0"
 							onClick={removeMedia}
 							isDestructive
 						>
-							{__("Remove", "boostify-blocks")}
+							{__("Remove", "wcb")}
 						</MyButton>
 					</MediaUploadCheck>
 				</div>

@@ -13,12 +13,12 @@ import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_BUTTON_PANEL_STYLE_DIMENSION
+export interface BCB_BUTTON_PANEL_STYLE_DIMENSION
 	extends MyDimensionsNoGapControlData {
 	colGap: HasResponsive<string>;
 }
 
-export const WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR: WCB_BUTTON_PANEL_STYLE_DIMENSION =
+export const BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR: BCB_BUTTON_PANEL_STYLE_DIMENSION =
 	{
 		...MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 		padding: {
@@ -40,7 +40,7 @@ export const WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR: WCB_BUTTON_PANEL_ST
 		colGap: { Desktop: "" },
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY: WCB_BUTTON_PANEL_STYLE_DIMENSION =
+export const BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY: BCB_BUTTON_PANEL_STYLE_DIMENSION =
 	{
 		...MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 		padding: {
@@ -62,16 +62,16 @@ export const WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY: WCB_BUTTON_PANEL_STY
 		colGap: { Desktop: "8px" },
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO =
-	WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY;
+export const BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO =
+	BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY;
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_STYLE_DIMENSION;
-	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_DIMENSION) => void;
+	panelData: BCB_BUTTON_PANEL_STYLE_DIMENSION;
+	setAttr__: (data: BCB_BUTTON_PANEL_STYLE_DIMENSION) => void;
 }
 
 const WcbButtonPanel_StyleDemension: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO,
+	panelData = BCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -88,7 +88,7 @@ const WcbButtonPanel_StyleDemension: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Dimension", "boostify-blocks")}
+			title={__("Dimension", "wcb")}
 		>
 			<div className="space-y-5">
 				<MyDimensionsNoGapControl
@@ -107,10 +107,10 @@ const WcbButtonPanel_StyleDemension: FC<Props> = ({
 							});
 						}}
 						value={currentColgap || "0"}
-						label={__("Gap between text & icon", "boostify-blocks")}
+						label={__("Gap between text & icon", "wcb")}
 					/>
 					<HelpText>
-						{__("Spacing between text and icon if any.", "boostify-blocks")}
+						{__("Spacing between text and icon if any.", "wcb")}
 					</HelpText>
 				</div>
 			</div>
