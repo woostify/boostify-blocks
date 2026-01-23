@@ -21,7 +21,7 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
 type TabsHere = "Normal" | "Active";
-export interface WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE {
+export interface BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE {
 	colors: {
 		[K in TabsHere]: {
 			// color: string;
@@ -33,7 +33,7 @@ export interface WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE {
 	toggleSize: HasResponsive<number>;
 }
 
-export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
+export const BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
 	{
 		colors: {
 			Normal: { backgroundColor: "" },
@@ -59,7 +59,7 @@ export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE: WCB_FORM_P
 		toggleSize: { Desktop: 1 },
 	};
 
-export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
+export const BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE =
 	{
 		colors: {
 			Normal: { backgroundColor: "#e5e7eb" },
@@ -85,17 +85,17 @@ export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID: WCB_FORM_PA
 		toggleSize: { Desktop: 1 },
 	};
 
-export const WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO =
-	WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE;
+export const BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO =
+	BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE) => void;
+	panelData: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE) => void;
 }
 
 const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -160,7 +160,7 @@ const WcbFormPanel_StyleCheckBoxRadio: FC<Props> = ({
 
 				<MyDisclosure label="Colors">
 					<TabPanel
-						className={`wcb-bodyControls__panel `}
+						className={`bcb-bodyControls__panel `}
 						activeClass="active-tab"
 						initialTabName={initialTabName}
 						tabs={PanelTab}

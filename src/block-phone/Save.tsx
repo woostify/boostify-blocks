@@ -13,7 +13,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-phone__wrap",
+		className: "bcb-phone__wrap",
 	});
 
 	return (
@@ -23,10 +23,10 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				isRequired={general_general.isRequired}
 				uniqueName={UNIQUE_NAME}
 			/>
-			<div className="wcb-phone__inner">
+			<div className="bcb-phone__inner">
 				<SelectCountryCode value={attributes.countryCode} />
 				<input
-					className="wcb-phone__tel-input"
+					className="bcb-phone__tel-input"
 					type="tel"
 					placeholder={general_general.placeholder}
 					required={general_general.isRequired}

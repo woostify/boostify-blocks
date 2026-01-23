@@ -18,7 +18,7 @@ export default function save({
 
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: `wcb-tab-child__wrap`,
+		className: `bcb-tab-child__wrap`,
 	});
 
 	//
@@ -29,7 +29,7 @@ export default function save({
 		<div {...wrapBlockProps}>
 			<div
 				children={innerBlocksProps.children}
-				className="wcb-tab-child__inner"
+				className="bcb-tab-child__inner"
 			/>
 		</div>
 	);

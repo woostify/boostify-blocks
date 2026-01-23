@@ -4,22 +4,22 @@ import React, { FC } from "react";
 import MySelect from "../components/controls/MySelect";
 import { Option } from "../types";
 
-export interface WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT {
+export interface BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT {
 	verticalAlignment: "top" | "middle" | "bottom";
 }
 
-export const WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO: WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT = {
+export const BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO: BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT = {
 	verticalAlignment: "middle",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT;
-	setAttr__: (data: WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT) => void;
+	panelData: BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT;
+	setAttr__: (data: BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT) => void;
 }
 
 const WcbSlidersPanel_StyleVerticalAlignment: FC<Props> = ({
-	panelData = WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO,
+	panelData = BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -28,7 +28,7 @@ const WcbSlidersPanel_StyleVerticalAlignment: FC<Props> = ({
 	const { verticalAlignment } =
 		panelData;
 	
-	const VERTICAL_DEMO: Option<WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT["verticalAlignment"]>[] =
+	const VERTICAL_DEMO: Option<BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT["verticalAlignment"]>[] =
 		[
 			{ value: "top", label: "Top" },
 			{ value: "middle", label: "Middle" },
@@ -52,7 +52,7 @@ const WcbSlidersPanel_StyleVerticalAlignment: FC<Props> = ({
 						setAttr__({
 							...panelData,
 							verticalAlignment:
-								value as WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT["verticalAlignment"],
+								value as BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT["verticalAlignment"],
 						});
 					}}
 				/>

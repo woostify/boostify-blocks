@@ -32,7 +32,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		advance_motionEffect,
 	};
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-cta__wrap" });
+	const wrapBlockProps = useBlockProps.save({ className: "bcb-cta__wrap" });
 
 	return (
 		<SaveCommon
@@ -40,20 +40,20 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			attributes={newAttrForSave}
 			uniqueId={uniqueId}
 		>
-			<div className="wcb-cta__inner">
-				<div className="wcb-cta__content">
+			<div className="bcb-cta__inner">
+				<div className="bcb-cta__content">
 					<RichText.Content
 						tagName={attributes.general_layout.headingTag}
 						value={attributes.title}
-						className="wcb-cta__title"
+						className="bcb-cta__title"
 					/>
 					<RichText.Content
 						tagName="p"
 						value={attributes.description}
-						className="wcb-cta__description"
+						className="bcb-cta__description"
 					/>
 				</div>
-				<div className="wcb-cta__buttons">
+				<div className="bcb-cta__buttons">
 					<InnerBlocks.Content />
 				</div>
 			</div>

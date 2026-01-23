@@ -10,7 +10,7 @@ import MyTextAlignControl, {
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_HEADING_PANEL_CONTENT {
+export interface BCB_HEADING_PANEL_CONTENT {
 	textAlignment: HasResponsive<TextAlignment>;
 	headingTag: keyof HTMLElementTagNameMap;
 	showHeading: boolean;
@@ -19,7 +19,7 @@ export interface WCB_HEADING_PANEL_CONTENT {
 	separatorPosition: "top" | "middle" | "bottom";
 }
 
-export const WCB_HEADING_PANEL_CONTENT_DEMO: WCB_HEADING_PANEL_CONTENT = {
+export const BCB_HEADING_PANEL_CONTENT_DEMO: BCB_HEADING_PANEL_CONTENT = {
 	textAlignment: { Desktop: "left" },
 	headingTag: "h2",
 	showHeading: true,
@@ -29,7 +29,7 @@ export const WCB_HEADING_PANEL_CONTENT_DEMO: WCB_HEADING_PANEL_CONTENT = {
 };
 
 const PLANS_SEPARATOR_POSTION: MyRadioItem<
-	WCB_HEADING_PANEL_CONTENT["separatorPosition"]
+	BCB_HEADING_PANEL_CONTENT["separatorPosition"]
 >[] = [
 	{ name: "top", icon: "Top" },
 	{ name: "middle", icon: "Middle" },
@@ -38,12 +38,12 @@ const PLANS_SEPARATOR_POSTION: MyRadioItem<
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelContentData: WCB_HEADING_PANEL_CONTENT;
-	setAttr__panelContentData: (data: WCB_HEADING_PANEL_CONTENT) => void;
+	panelContentData: BCB_HEADING_PANEL_CONTENT;
+	setAttr__panelContentData: (data: BCB_HEADING_PANEL_CONTENT) => void;
 }
 
 const WcbHeadingPanelContent: FC<Props> = ({
-	panelContentData = WCB_HEADING_PANEL_CONTENT_DEMO,
+	panelContentData = BCB_HEADING_PANEL_CONTENT_DEMO,
 	setAttr__panelContentData,
 	onToggle,
 	opened,
@@ -139,7 +139,7 @@ const WcbHeadingPanelContent: FC<Props> = ({
 						setAttr__panelContentData({
 							...panelContentData,
 							separatorPosition:
-								value as WCB_HEADING_PANEL_CONTENT["separatorPosition"],
+								value as BCB_HEADING_PANEL_CONTENT["separatorPosition"],
 						});
 					}}
 				/>

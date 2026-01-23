@@ -7,9 +7,9 @@ import {
 } from "../components/controls/MyBorderControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 
-export interface WCB_BUTTON_PANEL_STYLE_BORDER extends MyBorderControlData {}
+export interface BCB_BUTTON_PANEL_STYLE_BORDER extends MyBorderControlData {}
 
-export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1: WCB_BUTTON_PANEL_STYLE_BORDER =
+export const BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1: BCB_BUTTON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		radius: {
@@ -34,7 +34,7 @@ export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1: WCB_BUTTON_PANEL_STYLE_BORD
 		},
 		hoverColor: "",
 	};
-export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_2: WCB_BUTTON_PANEL_STYLE_BORDER =
+export const BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_2: BCB_BUTTON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		radius: {
@@ -65,13 +65,13 @@ export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_2: WCB_BUTTON_PANEL_STYLE_BORD
 		},
 		hoverColor: "",
 	};
-export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_3: WCB_BUTTON_PANEL_STYLE_BORDER =
+export const BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_3: BCB_BUTTON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		mainSettings: MY_BORDER_CONTROL_DEMO.mainSettings,
 		hoverColor: "",
 	};
-export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_4: WCB_BUTTON_PANEL_STYLE_BORDER =
+export const BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_4: BCB_BUTTON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		mainSettings: {
@@ -82,24 +82,24 @@ export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_4: WCB_BUTTON_PANEL_STYLE_BORD
 		},
 		hoverColor: "",
 	};
-export const WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_5: WCB_BUTTON_PANEL_STYLE_BORDER =
+export const BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_5: BCB_BUTTON_PANEL_STYLE_BORDER =
 	{
 		...MY_BORDER_CONTROL_DEMO,
 		mainSettings: MY_BORDER_CONTROL_DEMO.mainSettings,
 		hoverColor: "",
 	};
 
-export const WCB_BUTTON_PANEL_STYLE_BORDER_DEMO =
-WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1;
+export const BCB_BUTTON_PANEL_STYLE_BORDER_DEMO =
+BCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1;
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_STYLE_BORDER;
-	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_BORDER) => void;
+	panelData: BCB_BUTTON_PANEL_STYLE_BORDER;
+	setAttr__: (data: BCB_BUTTON_PANEL_STYLE_BORDER) => void;
 }
 
 const WcbButtonPanel_StyleBorder: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_STYLE_BORDER_DEMO,
+	panelData = BCB_BUTTON_PANEL_STYLE_BORDER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

@@ -6,14 +6,14 @@ import { useSelect, useDispatch } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 
-export interface WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE {
+export interface BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE {
 	isShowFeaturedImage: boolean;
 	featuredImageSize: string;
 	featuredImagePosition: "top" | "left" | "right" | "background";
 	linkCompleteBox: boolean;
 }
 
-export const WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE =
+export const BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE =
 	{
 		isShowFeaturedImage: true,
 		featuredImageSize: "large",
@@ -23,12 +23,12 @@ export const WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_P
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE;
-	setAttr__: (data: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE) => void;
+	panelData: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE;
+	setAttr__: (data: BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE) => void;
 }
 
 const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO,
+	panelData = BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -55,7 +55,7 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 		})) || [];
 
 	const POSTION_PLANS: MyRadioItem<
-		WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE["featuredImagePosition"]
+		BCB_POST_GRID_PANEL_POST_FEATURED_IMAGE["featuredImagePosition"]
 	>[] = [
 		{ name: "top", icon: "Top" },
 		// { name: "left", icon: "Left" },

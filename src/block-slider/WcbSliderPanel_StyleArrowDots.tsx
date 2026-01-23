@@ -14,7 +14,7 @@ import {
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 import MyDisclosure from "../components/controls/MyDisclosure";
 
-export interface WCB_SLIDER_PANEL_STYLE_ARROW_DOTS {
+export interface BCB_SLIDER_PANEL_STYLE_ARROW_DOTS {
 	arrowSize: string;
 	border: MyBorderControlData;
 	arrowDistance: HasResponsive<string>;
@@ -22,7 +22,7 @@ export interface WCB_SLIDER_PANEL_STYLE_ARROW_DOTS {
 	color: string;
 	backgroundColor: string;
 }
-export const WCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_SLIDER_PANEL_STYLE_ARROW_DOTS =
+export const BCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO: BCB_SLIDER_PANEL_STYLE_ARROW_DOTS =
 	{
 		arrowSize: "1.25rem",
 		border: {
@@ -44,12 +44,12 @@ export const WCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_SLIDER_PANEL_STYLE_ARRO
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_STYLE_ARROW_DOTS;
-	setAttr__: (data: WCB_SLIDER_PANEL_STYLE_ARROW_DOTS) => void;
+	panelData: BCB_SLIDER_PANEL_STYLE_ARROW_DOTS;
+	setAttr__: (data: BCB_SLIDER_PANEL_STYLE_ARROW_DOTS) => void;
 }
 
 const WcbSlidersPanel_StyleArrowDots: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO,
+	panelData = BCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

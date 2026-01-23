@@ -13,13 +13,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_SLIDER_PANEL_STYLE_NAME {
+export interface BCB_SLIDER_PANEL_STYLE_NAME {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_SLIDER_PANEL_STYLE_NAME_DEMO: WCB_SLIDER_PANEL_STYLE_NAME =
+export const BCB_SLIDER_PANEL_STYLE_NAME_DEMO: BCB_SLIDER_PANEL_STYLE_NAME =
 	{
 		typography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -37,12 +37,12 @@ export const WCB_SLIDER_PANEL_STYLE_NAME_DEMO: WCB_SLIDER_PANEL_STYLE_NAME =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_STYLE_NAME;
-	setAttr__: (data: WCB_SLIDER_PANEL_STYLE_NAME) => void;
+	panelData: BCB_SLIDER_PANEL_STYLE_NAME;
+	setAttr__: (data: BCB_SLIDER_PANEL_STYLE_NAME) => void;
 }
 
 const WcbSlidersPanel_StyleName: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_STYLE_NAME_DEMO,
+	panelData = BCB_SLIDER_PANEL_STYLE_NAME_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

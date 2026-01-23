@@ -15,13 +15,13 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_PRODUCTS_PANEL_STYLE_CATEGORY {
+export interface BCB_PRODUCTS_PANEL_STYLE_CATEGORY {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO: WCB_PRODUCTS_PANEL_STYLE_CATEGORY =
+export const BCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO: BCB_PRODUCTS_PANEL_STYLE_CATEGORY =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "#171717",
@@ -30,12 +30,12 @@ export const WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO: WCB_PRODUCTS_PANEL_STYLE_CA
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_STYLE_CATEGORY;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_CATEGORY) => void;
+	panelData: BCB_PRODUCTS_PANEL_STYLE_CATEGORY;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_STYLE_CATEGORY) => void;
 }
 
 const WcbProductsPanel_StyleCategory: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

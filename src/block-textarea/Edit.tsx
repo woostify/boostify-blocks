@@ -73,7 +73,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// <CacheProvider value={myCache}>
 		<div
 			{...wrapBlockProps}
-			className={`${wrapBlockProps?.className} wcb-textarea__wrap ${uniqueId}`}
+			className={`${wrapBlockProps?.className} bcb-textarea__wrap ${uniqueId}`}
 			data-uniqueid={uniqueId}
 		>
 			{/* CONTROL SETTINGS */}

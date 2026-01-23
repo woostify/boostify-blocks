@@ -52,7 +52,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-countdown__wrap",
+		className: "bcb-countdown__wrap",
 	});
 
 	// Get text alignment values from general_layout
@@ -89,28 +89,28 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	// Generate class names for layout
 	const getLayoutClasses = () => {
-	const classes = [`wcb-countdown__content ${general_preset.preset}`];
+	const classes = [`bcb-countdown__content ${general_preset.preset}`];
 	
 	// Add flex direction classes
 	if (flexDirection_Desktop === "column") {
-		classes.push("wcb-flex-col");
+		classes.push("bcb-flex-col");
 	} else {
-		classes.push("wcb-flex-row");
+		classes.push("bcb-flex-row");
 	}
 	
 	// Add alignment classes
 	if (ALIGN_ITEMS.Desktop === "start") {
-		classes.push("wcb-justify-start");
+		classes.push("bcb-justify-start");
 	} else if (ALIGN_ITEMS.Desktop === "end") {
-		classes.push("wcb-justify-end");
+		classes.push("bcb-justify-end");
 	} else {
-		classes.push("wcb-justify-center");
+		classes.push("bcb-justify-center");
 	}
 	
 	// Add responsive classes
-	classes.push("wcb-layout-desktop-" + textAlignment_Desktop);
-	if (textAlignment_tablet) classes.push("wcb-layout-tablet-" + textAlignment_tablet);
-	if (textAlignment_mobile) classes.push("wcb-layout-mobile-" + textAlignment_mobile);
+	classes.push("bcb-layout-desktop-" + textAlignment_Desktop);
+	if (textAlignment_tablet) classes.push("bcb-layout-tablet-" + textAlignment_tablet);
+	if (textAlignment_mobile) classes.push("bcb-layout-mobile-" + textAlignment_mobile);
 	
 	return classes.join(" ");
 	};
@@ -125,41 +125,41 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 			<div className={getLayoutClasses()}>
 				{general_date.show_day && (
-					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-day"></div>
+					<div className="bcb-countdown__box">
+						<div className="bcb-countdown__number bcb-countdown-day"></div>
 						<RichText.Content
 							tagName='div'
 							value={daylabel}
-							className="wcb-countdown__label wcb-countdown__daylabel"
+							className="bcb-countdown__label bcb-countdown__daylabel"
 						/>
 					</div>
 				)}
 				{general_date.show_hour && (
-					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-hrs"></div>
+					<div className="bcb-countdown__box">
+						<div className="bcb-countdown__number bcb-countdown-hrs"></div>
 						<RichText.Content
 							tagName='div'
 							value={hrslabel}
-							className="wcb-countdown__label wcb-countdown__hrslabel"
+							className="bcb-countdown__label bcb-countdown__hrslabel"
 						/>
 					</div>
 				)}
 				{general_date.show_minute && (
-					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-mins"></div>
+					<div className="bcb-countdown__box">
+						<div className="bcb-countdown__number bcb-countdown-mins"></div>
 						<RichText.Content
 							tagName='div'
 							value={minlabel}
-							className="wcb-countdown__label wcb-countdown__minlabel"
+							className="bcb-countdown__label bcb-countdown__minlabel"
 						/>
 					</div>
 				)}
-				<div className="wcb-countdown__box">
-					<div className="wcb-countdown__number wcb-countdown-secs"></div>
+				<div className="bcb-countdown__box">
+					<div className="bcb-countdown__number bcb-countdown-secs"></div>
 					<RichText.Content
 						tagName='div'
 						value={seclabel}
-						className="wcb-countdown__label wcb-countdown__seclabel"
+						className="bcb-countdown__label bcb-countdown__seclabel"
 					/>
 				</div>
 			</div>

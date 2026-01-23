@@ -55,9 +55,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		general_gg_recaptcha.version === "v3";
 
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-form__wrap" });
+	const wrapBlockProps = useBlockProps.save({ className: "bcb-form__wrap" });
 	//
-	const blockProps = useBlockProps.save({ className: "wcb-form__inner" });
+	const blockProps = useBlockProps.save({ className: "bcb-form__inner" });
 	const innerBlocksProps = useInnerBlocksProps.save(blockProps);
 	//
 
@@ -68,8 +68,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			uniqueId={uniqueId}
 			HtmlTag="form"
 		>
-			<div className="wcb-form__box">
-				<div children={innerBlocksProps.children} className="wcb-form__inner" />
+			<div className="bcb-form__box">
+				<div children={innerBlocksProps.children} className="bcb-form__inner" />
 				{/* V2 */}
 				{reCaptchaV2 && (
 					<div
@@ -78,9 +78,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 					></div>
 				)}
 
-				<div className="wcb-form__btn-submit-wrap">
+				<div className="bcb-form__btn-submit-wrap">
 					<RichText.Content
-						className={`wcb-form__btn-submit ${
+						className={`bcb-form__btn-submit ${
 							reCaptchaV3 ? "g-recaptcha" : ""
 						}`}
 						value={attributes.btnSubmitText}
@@ -89,10 +89,10 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 					/>
 				</div>
 			</div>
-			<div className="wcb-form__successMessageText">
+			<div className="bcb-form__successMessageText">
 				<span>{attributes.general_general.successMessageText}</span>
 			</div>
-			<div className="wcb-form__errorMessageText">
+			<div className="bcb-form__errorMessageText">
 				<span>{attributes.general_general.errorMessageText}</span>
 			</div>
 		</SaveCommon>

@@ -5,7 +5,7 @@ import WCBDateTimePicker, {
 	countdown_date
 } from "../components/controls/WCBDateTimePicker/WCBDateTimePicker";
 
-export interface WCB_COUNTDOWN_PANEL_DATE {
+export interface BCB_COUNTDOWN_PANEL_DATE {
 	enableLabel: boolean;
 	date: countdown_date;
 	show_day: boolean;
@@ -13,7 +13,7 @@ export interface WCB_COUNTDOWN_PANEL_DATE {
 	show_minute: boolean;
 }
 
-export const WCB_COUNTDOWN_PANEL_DATE_DEMO: WCB_COUNTDOWN_PANEL_DATE = {
+export const BCB_COUNTDOWN_PANEL_DATE_DEMO: BCB_COUNTDOWN_PANEL_DATE = {
 	enableLabel: true,
 	date: new Date().toJSON(),
 	show_day: true,
@@ -23,12 +23,12 @@ export const WCB_COUNTDOWN_PANEL_DATE_DEMO: WCB_COUNTDOWN_PANEL_DATE = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_COUNTDOWN_PANEL_DATE;
-	setAttr__: (data: WCB_COUNTDOWN_PANEL_DATE) => void;
+	panelData: BCB_COUNTDOWN_PANEL_DATE;
+	setAttr__: (data: BCB_COUNTDOWN_PANEL_DATE) => void;
 }
 
 const WcbCountdownPanelDate: FC<Props> = ({
-	panelData = WCB_COUNTDOWN_PANEL_DATE_DEMO,
+	panelData = BCB_COUNTDOWN_PANEL_DATE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

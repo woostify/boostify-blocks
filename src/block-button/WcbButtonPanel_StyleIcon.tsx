@@ -8,13 +8,13 @@ import { HasResponsive } from "../components/controls/MyBackgroundControl/types"
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 
-export interface WCB_BUTTON_PANEL_STYLE_ICON {
+export interface BCB_BUTTON_PANEL_STYLE_ICON {
 	size: HasResponsive<number>;
 	color: string;
 	hoverColor: string;
 }
 
-export const WCB_BUTTON_PANEL_STYLE_ICON_DEMO: WCB_BUTTON_PANEL_STYLE_ICON = {
+export const BCB_BUTTON_PANEL_STYLE_ICON_DEMO: BCB_BUTTON_PANEL_STYLE_ICON = {
 	size: { Desktop: 20 },
 	color: "#fff",
 	hoverColor: "#fff",
@@ -22,12 +22,12 @@ export const WCB_BUTTON_PANEL_STYLE_ICON_DEMO: WCB_BUTTON_PANEL_STYLE_ICON = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_STYLE_ICON;
-	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_ICON) => void;
+	panelData: BCB_BUTTON_PANEL_STYLE_ICON;
+	setAttr__: (data: BCB_BUTTON_PANEL_STYLE_ICON) => void;
 }
 
 const WcbButtonPanel_StyleIcon: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_STYLE_ICON_DEMO,
+	panelData = BCB_BUTTON_PANEL_STYLE_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

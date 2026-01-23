@@ -2,10 +2,10 @@ import {
 	AttrsGenericType,
 	WcbAttrsCommonFromWp,
 } from "../block-container/attributes";
-import { WCB_FAQ_PANEL_GENERAL } from "../block-faq/WcbFaqPanelGeneral";
+import { BCB_FAQ_PANEL_GENERAL } from "../block-faq/WcbFaqPanelGeneral";
 import {
-	WCB_FAQ_PANEL_ICON,
-	WCB_FAQ_PANEL_ICON_DEMO,
+	BCB_FAQ_PANEL_ICON,
+	BCB_FAQ_PANEL_ICON_DEMO,
 } from "../block-faq/WcbFaqPanelIcon";
 
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
@@ -15,10 +15,10 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	//
 	defaultExtend: boolean;
 	enableSeparator: boolean;
-	headingTag: WCB_FAQ_PANEL_GENERAL["headingTag"];
-	layout: WCB_FAQ_PANEL_GENERAL["layout"];
+	headingTag: BCB_FAQ_PANEL_GENERAL["headingTag"];
+	layout: BCB_FAQ_PANEL_GENERAL["layout"];
 	//
-	general_icon: WCB_FAQ_PANEL_ICON;
+	general_icon: BCB_FAQ_PANEL_ICON;
 
 	//
 }
@@ -38,7 +38,7 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	},
 	general_icon: {
 		type: "object",
-		default: WCB_FAQ_PANEL_ICON_DEMO,
+		default: BCB_FAQ_PANEL_ICON_DEMO,
 	},
 	defaultExtend: {
 		type: "bool",
@@ -53,13 +53,13 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	question: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-faq-child__question-text",
+		selector: ".bcb-faq-child__question-text",
 		default: "What is FAQ?",
 	},
 	answer: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-faq-child__answer-text",
+		selector: ".bcb-faq-child__answer-text",
 		default:
 			"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
 	},

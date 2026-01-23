@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Plugin Name:       WoostifyBlocks
- * Description:       WoostifyBlocks offers an extensive library of customizable blocks that seamlessly integrate with the Gutenberg editor
+ * Plugin Name:       Boostify Blocks
+ * Description:       Boostify Blocks offers an extensive library of customizable blocks that seamlessly integrate with the Gutenberg editor
  * Requires at least: 5.8
  * Requires PHP:      7.3
  * Version:           1.1.13
@@ -10,7 +10,7 @@
  * Author URI:        https://woostify.com/about/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       woostifyblocks
+ * Text Domain:       boostify-blocks
  *
  * @package           create-block
  */
@@ -19,15 +19,15 @@
 defined('ABSPATH') || exit;
 
 // Define Constants.
-define('WCB_UNIQUE_NAME', 'wcb-woostify-blocks-unique');
+define('BCB_UNIQUE_NAME', 'bcb-woostify-blocks-unique');
 
-define('WCB_VERSION', '1.1.13');
+define('BCB_VERSION', '1.1.13');
 
-define('WCB_FILE', __FILE__);
-define('WCB_PLUGIN_BASE', plugin_basename(WCB_FILE));
-define('WCB_PATH', plugin_dir_path(WCB_FILE));
-define('WCB_URI', plugins_url('/', WCB_FILE));
-define('WCB_BUILD_PATH', __DIR__ . '/build');
+define('BCB_FILE', __FILE__);
+define('BCB_PLUGIN_BASE', plugin_basename(BCB_FILE));
+define('BCB_PATH', plugin_dir_path(BCB_FILE));
+define('BCB_URI', plugins_url('/', BCB_FILE));
+define('BCB_BUILD_PATH', __DIR__ . '/build');
 
 
 

@@ -1,6 +1,6 @@
 export default function converUniqueIdToAnphaKey(
 	text: string,
-	prefix = "wcb-"
+	prefix = "bcb-"
 ) {
 	if (!text) {
 		return (
@@ -12,7 +12,7 @@ export default function converUniqueIdToAnphaKey(
 	}
 	
 	// Convert clientId to a valid CSS class name
-	// Example: "a1b2c3d4-e5f6-7890" -> "wcb-a1b2c3d4e5f67890"
+	// Example: "a1b2c3d4-e5f6-7890" -> "bcb-a1b2c3d4e5f67890"
 	const cleanId = text
 		.replace(/-/g, "") // Remove hyphens
 		.replace(/\s/g, "") // Remove spaces
@@ -22,7 +22,7 @@ export default function converUniqueIdToAnphaKey(
 }
 
 // Alternative function that maintains full uniqueness
-export function converClientIdToUniqueClass(clientId: string, prefix = "wcb-"): string {
+export function converClientIdToUniqueClass(clientId: string, prefix = "bcb-"): string {
 	if (!clientId) {
 		return prefix + "fallback" + Date.now();
 	}

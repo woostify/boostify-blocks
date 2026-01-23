@@ -5,7 +5,7 @@ import React, { FC, CSSProperties } from "react";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import ResetButton from "../components/controls/ResetButton";
 import useGetDeviceType from "../hooks/useGetDeviceType";
-export interface WCB_FAQ_PANEL_PRESET {
+export interface BCB_FAQ_PANEL_PRESET {
     preset:
         | "grid-simple"
         | "grid-solid"
@@ -14,18 +14,18 @@ export interface WCB_FAQ_PANEL_PRESET {
         | "";
 }
 
-export const WCB_FAQ_PANEL_PRESET_DEMO: WCB_FAQ_PANEL_PRESET = {
+export const BCB_FAQ_PANEL_PRESET_DEMO: BCB_FAQ_PANEL_PRESET = {
     preset: "",
 };
 
 interface Props
     extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-    panelData: WCB_FAQ_PANEL_PRESET;
-    setAttr__: (data: WCB_FAQ_PANEL_PRESET) => void;
+    panelData: BCB_FAQ_PANEL_PRESET;
+    setAttr__: (data: BCB_FAQ_PANEL_PRESET) => void;
 }
 
 export const CTA_PRESET: {
-    name: WCB_FAQ_PANEL_PRESET["preset"];
+    name: BCB_FAQ_PANEL_PRESET["preset"];
     twClass: string;
 }[] = [
     { name: "carousel-simple", twClass: "" },
@@ -35,14 +35,14 @@ export const CTA_PRESET: {
 ];
 
 const WcbTabsPanelPreset: FC<Props> = ({
-    panelData = WCB_FAQ_PANEL_PRESET_DEMO,
+    panelData = BCB_FAQ_PANEL_PRESET_DEMO,
     setAttr__,
     initialOpen,
     onToggle,
     opened,
 }) => {
     const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-    const setPreset = (preset: WCB_FAQ_PANEL_PRESET["preset"]) => {
+    const setPreset = (preset: BCB_FAQ_PANEL_PRESET["preset"]) => {
         setAttr__({ preset: preset });
     };
 

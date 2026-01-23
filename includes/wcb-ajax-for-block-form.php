@@ -1,7 +1,7 @@
 <?php
-add_action('wp_ajax_wcbform_action', 'wcb_form_action_init');
-add_action('wp_ajax_nopriv_wcbform_action', 'wcb_form_action_init');
-function wcb_form_action_init()
+add_action('wp_ajax_wcbform_action', 'bcb_form_action_init');
+add_action('wp_ajax_nopriv_wcbform_action', 'bcb_form_action_init');
+function bcb_form_action_init()
 {
 
     $form_data = $_POST['formData'] ?? [];

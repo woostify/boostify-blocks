@@ -6,24 +6,24 @@ import {
 import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 
-export interface WCB_HIDDEN_PANEL_GENERAL {
+export interface BCB_HIDDEN_PANEL_GENERAL {
 	name: string;
 	value: string;
 }
 
-export const WCB_HIDDEN_PANEL_GENERAL_DEMO: WCB_HIDDEN_PANEL_GENERAL = {
+export const BCB_HIDDEN_PANEL_GENERAL_DEMO: BCB_HIDDEN_PANEL_GENERAL = {
 	name: "Input hidden name",
 	value: "Hidden default value",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_HIDDEN_PANEL_GENERAL;
-	setAttr__: (data: WCB_HIDDEN_PANEL_GENERAL) => void;
+	panelData: BCB_HIDDEN_PANEL_GENERAL;
+	setAttr__: (data: BCB_HIDDEN_PANEL_GENERAL) => void;
 }
 
 const WcbHiddenPanelGeneral: FC<Props> = ({
-	panelData = WCB_HIDDEN_PANEL_GENERAL_DEMO,
+	panelData = BCB_HIDDEN_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

@@ -10,20 +10,20 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const { uniqueId, general_general } = attributes;
 	const UNIQUE_NAME = converUniqueId(uniqueId, "checkbox");
 	//
-	const blockProps = useBlockProps.save({ className: "wcb-checkbox__wrap" });
+	const blockProps = useBlockProps.save({ className: "bcb-checkbox__wrap" });
 
 	const renderCheckboxOptions = () => {
 		return (attributes.options || []).map((item, index) => (
 			<div key={index + "-" + item.value}>
-				<label className="wcb-checkbox__option">
+				<label className="bcb-checkbox__option">
 					<input
 						type="checkbox"
-						className="wcb-checkbox__option-input"
+						className="bcb-checkbox__option-input"
 						value={item.value}
 						required={general_general.isRequired}
 						name={UNIQUE_NAME}
 					/>
-					<span className="wcb-checkbox__option-label">{item.label}</span>
+					<span className="bcb-checkbox__option-label">{item.label}</span>
 				</label>
 			</div>
 		));

@@ -18,14 +18,14 @@ import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_FORM_PANEL_STYLE_SPACING {
+export interface BCB_FORM_PANEL_STYLE_SPACING {
 	padding: HasResponsive<DimensionSettings>;
 	border: MyBorderControlData;
 	rowGap: HasResponsive<string>;
 	labelBottomMargin: HasResponsive<string>;
 }
 
-export const WCB_FORM_PANEL_STYLE_SPACING_DEMO: WCB_FORM_PANEL_STYLE_SPACING = {
+export const BCB_FORM_PANEL_STYLE_SPACING_DEMO: BCB_FORM_PANEL_STYLE_SPACING = {
 	padding: {
 		Desktop: {
 			top: "1.75rem",
@@ -48,12 +48,12 @@ export const WCB_FORM_PANEL_STYLE_SPACING_DEMO: WCB_FORM_PANEL_STYLE_SPACING = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_SPACING;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_SPACING) => void;
+	panelData: BCB_FORM_PANEL_STYLE_SPACING;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_SPACING) => void;
 }
 
 const WcbFormPanel_StyleSpacing: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_SPACING_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_SPACING_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

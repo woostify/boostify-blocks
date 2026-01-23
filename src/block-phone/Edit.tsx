@@ -73,7 +73,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// <CacheProvider value={myCache}>
 		<div
 			{...wrapBlockProps}
-			className={`${wrapBlockProps?.className} wcb-phone__wrap ${uniqueId}`}
+			className={`${wrapBlockProps?.className} bcb-phone__wrap ${uniqueId}`}
 			data-uniqueid={uniqueId}
 		>
 			{/* CONTROL SETTINGS */}
@@ -90,7 +90,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					setAttributes({ label: value });
 				}}
 			/>
-			<div className="wcb-phone__inner">
+			<div className="bcb-phone__inner">
 				<SelectCountryCode
 					value={attributes.countryCode}
 					onChange={(value) => {
@@ -98,7 +98,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					}}
 				/>
 				<input
-					className="wcb-phone__tel-input"
+					className="bcb-phone__tel-input"
 					type="tel"
 					placeholder={general_general.placeholder}
 					required={general_general.isRequired}

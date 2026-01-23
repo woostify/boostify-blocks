@@ -9,24 +9,24 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 
-export interface WCB_RADIO_PANEL_GENERAL {
+export interface BCB_RADIO_PANEL_GENERAL {
 	isRequired: boolean;
 	layout: "square" | "round";
 }
 
-export const WCB_RADIO_PANEL_GENERAL_DEMO: WCB_RADIO_PANEL_GENERAL = {
+export const BCB_RADIO_PANEL_GENERAL_DEMO: BCB_RADIO_PANEL_GENERAL = {
 	isRequired: false,
 	layout: "round",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_RADIO_PANEL_GENERAL;
-	setAttr__: (data: WCB_RADIO_PANEL_GENERAL) => void;
+	panelData: BCB_RADIO_PANEL_GENERAL;
+	setAttr__: (data: BCB_RADIO_PANEL_GENERAL) => void;
 }
 
 const WcbRadioPanelGeneral: FC<Props> = ({
-	panelData = WCB_RADIO_PANEL_GENERAL_DEMO,
+	panelData = BCB_RADIO_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -48,7 +48,7 @@ const WcbRadioPanelGeneral: FC<Props> = ({
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							layout: value as WCB_RADIO_PANEL_GENERAL["layout"],
+							layout: value as BCB_RADIO_PANEL_GENERAL["layout"],
 						});
 					}}
 					plans={[

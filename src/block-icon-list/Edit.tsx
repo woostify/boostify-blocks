@@ -22,10 +22,10 @@ import WcbIconBoxPanel_StyleSeparator from "./WcbIconListPanel_StyleSeparator";
 import WcbIconBoxPanel_StyleDimension from "./WcbIconListPanel_StyleDimension";
 import { MY_DIMENSIONS_NO_GAP_DEMO__EMPTY } from "../components/controls/MyDimensionsControl/types";
 import { 
-	WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1, 
-	WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_2, 
-	WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_3,
-	WCB_ICON_LIST_PANEL_STYLE_ICON_DEMO
+	BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1, 
+	BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_2, 
+	BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_3,
+	BCB_ICON_LIST_PANEL_STYLE_ICON_DEMO
 } from "./WcbIconListPanel_StyleIcons";
 import WcbIconBoxPanel_StyleIcons from "./WcbIconListPanel_StyleIcons";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
@@ -115,13 +115,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								setAttributes({
 									general_preset: data,
 								});
-								const newStyleIcon = preset === "wcb-icon-list-1"
-									? WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1
-									: preset === "wcb-icon-list-2"
-									? WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_2
-									: preset === "wcb-icon-list-3"
-									? WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_3
-									: WCB_ICON_LIST_PANEL_STYLE_ICON_DEMO;
+								const newStyleIcon = preset === "bcb-icon-list-1"
+									? BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1
+									: preset === "bcb-icon-list-2"
+									? BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_2
+									: preset === "bcb-icon-list-3"
+									? BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_3
+									: BCB_ICON_LIST_PANEL_STYLE_ICON_DEMO;
 								
 								setAttributes({
 									style_Icon: newStyleIcon,
@@ -252,7 +252,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	];
 
 	const innerBlocksProps = useInnerBlocksProps({
-		className: `wcb-icon-list__icon-wrap`,
+		className: `bcb-icon-list__icon-wrap`,
 	}, {
 		allowedBlocks: ALLOWED_BLOCKS,
 		template: TEMPLATE,

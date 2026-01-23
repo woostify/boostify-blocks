@@ -13,13 +13,13 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING {
+export interface BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING {
 	queries: MyQueryControlData;
 	emptyMessage: string;
 	numberOfColumn: HasResponsive<number>;
 	isEqualHeight: boolean;
 }
-export const WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO: WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING =
+export const BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO: BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING =
 	{
 		queries: MY_QUERIES_DEMO_DATA,
 		emptyMessage: "No post found!",
@@ -29,12 +29,12 @@ export const WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO: WCB_POSTS_GRID_PANEL
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING;
-	setAttr__: (data: WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING) => void;
+	panelData: BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING;
+	setAttr__: (data: BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING) => void;
 }
 
 const WcbPostsGridPanelSortingAndFiltering: FC<Props> = ({
-	panelData = WCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO,
+	panelData = BCB_POSTS_GRID_PANEL_SORTINGANDFILTERING_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

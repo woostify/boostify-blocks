@@ -10,7 +10,7 @@ import { PaintBrushIcon, FunnelIcon } from "@heroicons/react/24/outline";
 
 import { ResponsiveDevices } from "../MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../../../hooks/useGetDeviceType";
-import { BackgroundType, GRADIENT_DEFAULT } from "../MyBackgroundControl/types";
+import { BackgroundType, GRADIENT_DEFAULT } from "./types";
 
 const BG_TYPES_PLANS: {
 	name: BackgroundType;

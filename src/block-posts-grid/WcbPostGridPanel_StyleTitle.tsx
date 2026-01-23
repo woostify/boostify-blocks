@@ -15,14 +15,14 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_TITLE {
+export interface BCB_POST_GRID_PANEL_STYLE_TITLE {
 	typography: MyTypographyControlData;
 	textColor: string;
 	textHoverColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_TITLE_DEMO: WCB_POST_GRID_PANEL_STYLE_TITLE =
+export const BCB_POST_GRID_PANEL_STYLE_TITLE_DEMO: BCB_POST_GRID_PANEL_STYLE_TITLE =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "#171717",
@@ -32,12 +32,12 @@ export const WCB_POST_GRID_PANEL_STYLE_TITLE_DEMO: WCB_POST_GRID_PANEL_STYLE_TIT
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_TITLE;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_TITLE) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_TITLE;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_TITLE) => void;
 }
 
 const WcbPostGridPanel_StyleTitle: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_TITLE_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_TITLE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

@@ -9,7 +9,7 @@ import { __experimentalInputControl as InputControl } from "@wordpress/component
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 import MySelect from "../components/controls/MySelect";
 
-export interface WCB_PRODUCTS_PANEL_COTENT {
+export interface BCB_PRODUCTS_PANEL_COTENT {
 	// isShowAddToCartBtn: boolean;
 	isShowPrice: boolean;
 	isShowRating: boolean;
@@ -25,13 +25,13 @@ export interface WCB_PRODUCTS_PANEL_COTENT {
 }
 
 const SALE_POSITION_OPTIONS: MyRadioItem<
-	WCB_PRODUCTS_PANEL_COTENT["saleBadgePosition"]
+	BCB_PRODUCTS_PANEL_COTENT["saleBadgePosition"]
 >[] = [
 	{ name: "Inside image", icon: "Inside image" },
 	{ name: "bottom", icon: "Bottom" },
 ];
 
-export const WCB_PRODUCTS_PANEL_COTENT_DEMO: WCB_PRODUCTS_PANEL_COTENT = {
+export const BCB_PRODUCTS_PANEL_COTENT_DEMO: BCB_PRODUCTS_PANEL_COTENT = {
 	// isShowAddToCartBtn: true,
 	isShowPrice: true,
 	isShowRating: true,
@@ -48,12 +48,12 @@ export const WCB_PRODUCTS_PANEL_COTENT_DEMO: WCB_PRODUCTS_PANEL_COTENT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_PRODUCTS_PANEL_COTENT;
-	setAttr__: (data: WCB_PRODUCTS_PANEL_COTENT) => void;
+	panelData: BCB_PRODUCTS_PANEL_COTENT;
+	setAttr__: (data: BCB_PRODUCTS_PANEL_COTENT) => void;
 }
 
 const WcbProductsPanelContent: FC<Props> = ({
-	panelData = WCB_PRODUCTS_PANEL_COTENT_DEMO,
+	panelData = BCB_PRODUCTS_PANEL_COTENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

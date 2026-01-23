@@ -6,14 +6,14 @@ import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import { Panel, PanelBody } from "@wordpress/components";
-export interface WCB_COUNTDOWN_PANEL_STYLE_DIMENSION {
+export interface BCB_COUNTDOWN_PANEL_STYLE_DIMENSION {
 	gap_boxes: HasResponsive<string>;
 	width_box: HasResponsive<string>;
 	gap_number: HasResponsive<string>;
 	background: ''
 }
 
-export const WCB_COUNTDOWN_PANEL_STYLE_DIMENSION_DEMO: WCB_COUNTDOWN_PANEL_STYLE_DIMENSION =
+export const BCB_COUNTDOWN_PANEL_STYLE_DIMENSION_DEMO: BCB_COUNTDOWN_PANEL_STYLE_DIMENSION =
 {
 	gap_boxes: {
 		Desktop: "40px",
@@ -35,12 +35,12 @@ export const WCB_COUNTDOWN_PANEL_STYLE_DIMENSION_DEMO: WCB_COUNTDOWN_PANEL_STYLE
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_COUNTDOWN_PANEL_STYLE_DIMENSION;
-	setAttr__: (data: WCB_COUNTDOWN_PANEL_STYLE_DIMENSION) => void;
+	panelData: BCB_COUNTDOWN_PANEL_STYLE_DIMENSION;
+	setAttr__: (data: BCB_COUNTDOWN_PANEL_STYLE_DIMENSION) => void;
 }
 
 const WcbCountdownPanel_StyleDimension: FC<Props> = ({
-	panelData = WCB_COUNTDOWN_PANEL_STYLE_DIMENSION_DEMO,
+	panelData = BCB_COUNTDOWN_PANEL_STYLE_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

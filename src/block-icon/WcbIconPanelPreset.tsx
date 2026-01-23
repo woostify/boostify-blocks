@@ -6,29 +6,29 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import ResetButton from "../components/controls/ResetButton";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import { ICON_PRESET } from "./types";
-export interface WCB_ICON_PANEL_PRESET {
-	preset: "wcb-icon-1" | "wcb-icon-2" | "wcb-icon-3" | "wcb-icon-4";
+export interface BCB_ICON_PANEL_PRESET {
+	preset: "bcb-icon-1" | "bcb-icon-2" | "bcb-icon-3" | "bcb-icon-4";
 }
 
-export const WCB_ICON_PANEL_PRESET_DEMO: WCB_ICON_PANEL_PRESET = {
-	preset: "wcb-icon-1",
+export const BCB_ICON_PANEL_PRESET_DEMO: BCB_ICON_PANEL_PRESET = {
+	preset: "bcb-icon-1",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_PANEL_PRESET;
-	setAttr__: (data: WCB_ICON_PANEL_PRESET) => void;
+	panelData: BCB_ICON_PANEL_PRESET;
+	setAttr__: (data: BCB_ICON_PANEL_PRESET) => void;
 }
 
 const WcbIconPanelPreset: FC<Props> = ({
-	panelData = WCB_ICON_PANEL_PRESET_DEMO,
+	panelData = BCB_ICON_PANEL_PRESET_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
 	opened,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-	const setPreset = (preset: WCB_ICON_PANEL_PRESET["preset"]) => {
+	const setPreset = (preset: BCB_ICON_PANEL_PRESET["preset"]) => {
 		setAttr__({ preset: preset });
 	};
 
@@ -37,7 +37,7 @@ const WcbIconPanelPreset: FC<Props> = ({
 			<RadioGroup value={panelData.preset} onChange={setPreset}>
 				<RadioGroup.Label className="relative flex items-center justify-between ">
 					<span>{__("Select Preset", "wcb")}</span>
-					<ResetButton onClick={() => setPreset(WCB_ICON_PANEL_PRESET_DEMO.preset)} />
+					<ResetButton onClick={() => setPreset(BCB_ICON_PANEL_PRESET_DEMO.preset)} />
 				</RadioGroup.Label>
 				<div className={"relative p-3 bg-slate-50 mt-3 rounded-lg"}>
 					<div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))]"></div>

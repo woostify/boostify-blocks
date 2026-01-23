@@ -9,10 +9,10 @@ function wpdocs_register_my_custom_menu_page() {
     </svg>';
 
 	add_menu_page(
-		__( 'WoostifyBlocks settings', 'wcb' ),
-		__( 'WoostifyBlocks', 'wcb' ),
+		__( 'Boostify Blocks settings', 'wcb' ),
+		__( 'Boostify Blocks', 'wcb' ),
 		'manage_options',
-		WCB_PATH . 'includes/settings-page.php',
+		BCB_PATH . 'includes/settings-page.php',
 		'',
 		'data:image/svg+xml;base64,' . base64_encode( $svg ),
 		6

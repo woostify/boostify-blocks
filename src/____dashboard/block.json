@@ -4,13 +4,13 @@
 	"name": "wcb/dashboard",
 	"version": "0.1.0",
 	"title": "Dashboard",
-	"category": "wcb-blocks",
+	"category": "bcb-blocks",
 	"icon": "heart",
 	"description": "Example static block scaffolded with Create Block tool.",
 	"supports": {
 		"html": false
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "bcb-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./style.css"
 }

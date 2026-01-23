@@ -11,7 +11,7 @@ interface Props {
 	uniqueKey: string;
 }
 
-const useCreateEmotionCache = function (key = "wcb-custom-cache-key") {
+const useCreateEmotionCache = function (key = "bcb-custom-cache-key") {
 	const [cache, setCache] = useState<any>(null);
 	const useRefReact = useRef<HTMLDivElement>(null);
 
@@ -81,8 +81,8 @@ const MyCacheProvider: FC<Props> = ({ children, uniqueKey = "uniqueid" }) => {
 		.replace(/ /g, "")
 		.toLocaleLowerCase();
 
-	const { myCache, ref } = useCreateCacheEmotion("wcb-key-cache");
-	const { cache, useRefReact } = useCreateEmotionCache("wcb-key-cache");
+	const { myCache, ref } = useCreateCacheEmotion("bcb-key-cache");
+	const { cache, useRefReact } = useCreateEmotionCache("bcb-key-cache");
 	
 	if (!cache) {
 		return <>{children}</>;

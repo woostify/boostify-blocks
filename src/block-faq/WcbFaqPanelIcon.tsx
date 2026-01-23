@@ -10,14 +10,14 @@ import SelecIcon, {
 } from "../components/controls/SelectIcon/SelecIcon";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_FAQ_PANEL_ICON {
+export interface BCB_FAQ_PANEL_ICON {
 	enableIcon: boolean;
 	icon: MyIcon;
 	inactiveIcon?: MyIcon;
 	iconPosition: "top" | "left" | "right" | "bottom";
 }
 
-export const WCB_FAQ_PANEL_ICON_DEMO: WCB_FAQ_PANEL_ICON = {
+export const BCB_FAQ_PANEL_ICON_DEMO: BCB_FAQ_PANEL_ICON = {
 	enableIcon: true,
 	inactiveIcon: { ...DEFAULT_MY_ICON, iconName: "lni-plus" },
 	iconPosition: "right",
@@ -26,12 +26,12 @@ export const WCB_FAQ_PANEL_ICON_DEMO: WCB_FAQ_PANEL_ICON = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FAQ_PANEL_ICON;
-	setAttr__: (data: WCB_FAQ_PANEL_ICON) => void;
+	panelData: BCB_FAQ_PANEL_ICON;
+	setAttr__: (data: BCB_FAQ_PANEL_ICON) => void;
 }
 
 const WcbFaqPanelIcon: FC<Props> = ({
-	panelData = WCB_FAQ_PANEL_ICON_DEMO,
+	panelData = BCB_FAQ_PANEL_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -40,7 +40,7 @@ const WcbFaqPanelIcon: FC<Props> = ({
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	const { enableIcon, icon, iconPosition, inactiveIcon } = panelData;
 
-	const PLANS_DEMO: MyRadioItem<WCB_FAQ_PANEL_ICON["iconPosition"]>[] = [
+	const PLANS_DEMO: MyRadioItem<BCB_FAQ_PANEL_ICON["iconPosition"]>[] = [
 		{ name: "left", icon: "Left" },
 		{ name: "right", icon: "Right" },
 	];

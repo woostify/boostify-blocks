@@ -27,11 +27,11 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-map__wrap",
+		className: "bcb-map__wrap",
 	});
 	return (
 		<SaveCommon attributes={newAttrForSave} uniqueId={uniqueId} {...blockProps}>
-			<div className="wcb-map__inner">
+			<div className="bcb-map__inner">
 				<iframe
 					width="100%"
 					height="100%"

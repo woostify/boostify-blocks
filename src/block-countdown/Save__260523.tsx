@@ -41,7 +41,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-countdown__wrap",
+		className: "bcb-countdown__wrap",
 	});
 
 	return (
@@ -52,40 +52,40 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		>
 
 			{/* CHILD CONTENT  */}
-			<div className={`wcb-countdown__content ${general_preset.preset}`}>
-				<div className="wcb-countdown__box">
-					<div className="wcb-countdown__number wcb-countdown-day"></div>
+			<div className={`bcb-countdown__content ${general_preset.preset}`}>
+				<div className="bcb-countdown__box">
+					<div className="bcb-countdown__number bcb-countdown-day"></div>
 					<RichText.Content
 						tagName='div'
 						value={daylabel}
-						className="wcb-countdown__label wcb-countdown__daylabel"
+						className="bcb-countdown__label bcb-countdown__daylabel"
 					/>
 				</div>
-				<div className="wcb-countdown__box">
-					<div className="wcb-countdown__number wcb-countdown-hrs"></div>
+				<div className="bcb-countdown__box">
+					<div className="bcb-countdown__number bcb-countdown-hrs"></div>
 
 					<RichText.Content
 						tagName='div'
 						value={hrslabel}
-						className="wcb-countdown__label wcb-countdown__hrslabel"
+						className="bcb-countdown__label bcb-countdown__hrslabel"
 					/>
 				</div>
-				<div className="wcb-countdown__box">
-					<div className="wcb-countdown__number wcb-countdown-mins"></div>
+				<div className="bcb-countdown__box">
+					<div className="bcb-countdown__number bcb-countdown-mins"></div>
 
 					<RichText.Content
 						tagName='div'
 						value={minlabel}
-						className="wcb-countdown__label wcb-countdown__minlabel"
+						className="bcb-countdown__label bcb-countdown__minlabel"
 					/>
 				</div>
-				<div className="wcb-countdown__box">
-					<div className="wcb-countdown__number wcb-countdown-secs"></div>
+				<div className="bcb-countdown__box">
+					<div className="bcb-countdown__number bcb-countdown-secs"></div>
 
 					<RichText.Content
 						tagName='div'
 						value={seclabel}
-						className="wcb-countdown__label wcb-countdown__seclabel"
+						className="bcb-countdown__label bcb-countdown__seclabel"
 					/>
 				</div>
 			</div>

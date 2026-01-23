@@ -31,9 +31,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 	} = attrs;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-button__main`;
-	const BUTTON_TEXT = `${WRAP_CLASSNAME} .wcb-button__text`;
-	const BUTTON_ICON = `${WRAP_CLASSNAME} .wcb-button__icon`;
+	const BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .bcb-button__main`;
+	const BUTTON_TEXT = `${WRAP_CLASSNAME} .bcb-button__text`;
+	const BUTTON_ICON = `${WRAP_CLASSNAME} .bcb-button__icon`;
 
 	// ------------------- WRAP DIV
 
@@ -119,10 +119,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 						// BUTTON HOVER
 						[BUTTON_CLASSNAME]: {
 							":hover": {
-								".wcb-button__text": {
+								".bcb-button__text": {
 									color: style_text.hoverColor,
 								},
-								".wcb-button__icon": {
+								".bcb-button__icon": {
 									color: style_icon.hoverColor,
 								},
 							},

@@ -4,15 +4,15 @@
 	"name": "wcb/faq",
 	"version": "0.1.0",
 	"title": "FAQ",
-	"category": "wcb-blocks",
-	"icon": "- wcb-block-editor-block-icon lni lni-support",
+	"category": "bcb-blocks",
+	"icon": "- bcb-block-editor-block-icon lni lni-support",
 	"description": "Add accordions/FAQ schema to your page.",
 	"supports": {
 		"html": false,
 		"anchor": true,
 		"align": true
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "bcb-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

@@ -68,12 +68,12 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	// Wrapper block props with className same as Edit component
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-icon-list__wrap",
+		className: "bcb-icon-list__wrap",
 	});
 
 	// Container for list items - không dùng useBlockProps.save nữa để tránh duplicate
 	const innerBlocksProps = useInnerBlocksProps.save({
-		className: "wcb-icon-list__icon-wrap",
+		className: "bcb-icon-list__icon-wrap",
 		style: containerStyles
 	});
 

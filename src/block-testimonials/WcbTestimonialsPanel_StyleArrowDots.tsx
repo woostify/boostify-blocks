@@ -14,13 +14,13 @@ import {
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 import MyDisclosure from "../components/controls/MyDisclosure";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS {
 	arrowSize: string;
 	border: MyBorderControlData;
 	dotsMarginTop: HasResponsive<string>;
 	color: string;
 }
-export const WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS =
+export const BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS =
 	{
 		arrowSize: "1.25rem",
 		border: {
@@ -40,12 +40,12 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_TESTIMONIALS_PANE
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS) => void;
 }
 
 const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

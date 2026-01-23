@@ -14,10 +14,10 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_SLIDER_PANEL_STYLE_DIMENSION {
+export interface BCB_SLIDER_PANEL_STYLE_DIMENSION {
 	padding: HasResponsive<DimensionSettings>;
 }
-export const WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO: WCB_SLIDER_PANEL_STYLE_DIMENSION =
+export const BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO: BCB_SLIDER_PANEL_STYLE_DIMENSION =
 	{
 		padding: {
 			Desktop: {
@@ -31,12 +31,12 @@ export const WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO: WCB_SLIDER_PANEL_STYLE_DIMEN
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_STYLE_DIMENSION;
-	setAttr__: (data: WCB_SLIDER_PANEL_STYLE_DIMENSION) => void;
+	panelData: BCB_SLIDER_PANEL_STYLE_DIMENSION;
+	setAttr__: (data: BCB_SLIDER_PANEL_STYLE_DIMENSION) => void;
 }
 
 const WcbTestimonialsPanel_StyleDimension: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
+	panelData = BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

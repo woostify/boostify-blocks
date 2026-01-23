@@ -28,7 +28,7 @@ const WCBColorOption = (props) => {
 
 	if (props.locked) {
 		return (
-			<div className="components-circular-option-picker__option-wrapper wcb-global-settings__color-picker-disabled-color">
+			<div className="components-circular-option-picker__option-wrapper bcb-global-settings__color-picker-disabled-color">
 				<div
 					className="components-circular-option-picker__option"
 					style={{ backgroundColor: color, color }}
@@ -64,7 +64,7 @@ const WCBAddColorButton = (props) => (
 	<Button
 		{...props}
 		isSecondary
-		className="wcb-global-settings-color-picker__add-icon"
+		className="bcb-global-settings-color-picker__add-icon"
 		label={__('Add New Color', 'wcb')}
 		icon={'plus-alt2'}
 	/>
@@ -88,14 +88,14 @@ const WCBGlobalColors = (props) => {
 	 */
 	const handleUpdateColors = (newColors) => {
 		const updatedColors = newColors.filter((color) =>
-			color.slug.match(/^wcb-global-color/)
+			color.slug.match(/^bcb-global-color/)
 		);
 
 		// Save settings.
 		clearTimeout(saveTimeout);
 		saveTimeout = setTimeout(() => {
 			const settings = new models.Settings({
-				wcb_global_colors: [updatedColors],
+				bcb_global_colors: [updatedColors],
 			});
 			settings.save();
 
@@ -123,7 +123,7 @@ const WCBGlobalColors = (props) => {
 					__('Custom Color %s', 'wcb'),
 					newIndex
 				),
-				slug: `wcb-global-color-${slugId}`,
+				slug: `bcb-global-color-${slugId}`,
 				color,
 				rgb: wcbGetRgb(color),
 			},
@@ -168,7 +168,7 @@ const WCBGlobalColors = (props) => {
 	};
 
 	const classNames = classnames(
-		'wcb-global-settings-color-picker',
+		'bcb-global-settings-color-picker',
 		'components-circular-option-picker',
 		'editor-color-palette-control__color-palette',
 		props.className
@@ -185,7 +185,7 @@ const WCBGlobalColors = (props) => {
 						return null;
 					}
 
-					if ((color.slug || '').startsWith('wcb-')) {
+					if ((color.slug || '').startsWith('bcb-')) {
 						return;
 					}
 
@@ -194,7 +194,7 @@ const WCBGlobalColors = (props) => {
 							key={index}
 							color={color.color}
 							name={color.name}
-							locked={!(color.slug || '').startsWith('wcb-')}
+							locked={!(color.slug || '').startsWith('bcb-')}
 							onClick={() =>
 								setSelectedIndex(
 									selectedIndex !== index ? index : null
@@ -213,7 +213,7 @@ const WCBGlobalColors = (props) => {
 						return null;
 					}
 
-					if (!(color.slug || '').startsWith('wcb-')) {
+					if (!(color.slug || '').startsWith('bcb-')) {
 						return;
 					}
 
@@ -222,7 +222,7 @@ const WCBGlobalColors = (props) => {
 							key={index}
 							color={color.color}
 							name={color.name}
-							locked={!(color.slug || '').startsWith('wcb-')}
+							locked={!(color.slug || '').startsWith('bcb-')}
 							onClick={() =>
 								setSelectedIndex(
 									selectedIndex !== index ? index : null
@@ -242,7 +242,7 @@ const WCBGlobalColors = (props) => {
 										disableAlpha
 									/>
 									<BaseControl
-										id="wcb-color-picker-text-name"
+										id="bcb-color-picker-text-name"
 										className="components-color-picker__input-field"
 										label={__(
 											'Color Name',
@@ -251,7 +251,7 @@ const WCBGlobalColors = (props) => {
 									>
 										<input
 											className="components-text-control__input"
-											id="wcb-color-picker-text-name"
+											id="bcb-color-picker-text-name"
 											onChange={(event) =>
 												handleOnChangeColorName(
 													event.target.value
@@ -261,7 +261,7 @@ const WCBGlobalColors = (props) => {
 										/>
 									</BaseControl>
 									<Button
-										className="wcb-global-settings-color-picker__remove"
+										className="bcb-global-settings-color-picker__remove"
 										onClick={handleOnDeleteColor}
 										icon={'trash'}
 									>

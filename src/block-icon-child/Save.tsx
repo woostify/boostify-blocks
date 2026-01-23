@@ -57,8 +57,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		return (
 			<>
 				{general_icon.enableIcon && (
-					<div className="wcb-icon-list__icon-wrap">
-						<div className="wcb-icon-list__icon">
+					<div className="bcb-icon-list__icon-wrap">
+						<div className="bcb-icon-list__icon">
 							<MyIconFull icon={general_icon.icon} />
 						</div>
 					</div>
@@ -73,8 +73,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			return null;
 		}
 		return (
-			<div className="wcb-icon-list__separator-wrap">
-				<div className="wcb-icon-list__separator"></div>
+			<div className="bcb-icon-list__separator-wrap">
+				<div className="bcb-icon-list__separator"></div>
 			</div>
 		);
 	};
@@ -83,22 +83,22 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: "wcb-icon-list__wrap",
+		className: "bcb-icon-list__wrap",
 		"data-block-type": "icon-item"
 	});
 	//
 
 	const renderContent = () => (
-		<div className="wcb-icon-list__content">
-			<div className="wcb-icon-list__content-title-wrap">
+		<div className="bcb-icon-list__content">
+			<div className="bcb-icon-list__content-title-wrap">
 				{general_icon.iconPosition === "leftOfTitle" && renderIcon()}
-				<div className="wcb-icon-list__content-title">
+				<div className="bcb-icon-list__content-title">
 					{general_layout.enableTitle && (
 						<RichText.Content
 							tagName={HeadingTag}
 							value={heading}
 							placeholder={__("Heading of box")}
-							className="wcb-icon-list__heading"
+							className="bcb-icon-list__heading"
 						/>
 					)}
 				</div>

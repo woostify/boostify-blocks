@@ -4,13 +4,13 @@ import React, { FC, CSSProperties } from "react";
 // @ts-ignore
 import { __experimentalInputControl as InputControl } from "@wordpress/components";
 
-export interface WCB_POST_GRID_PANEL_READMORE_LINK {
+export interface BCB_POST_GRID_PANEL_READMORE_LINK {
 	isShowReadmore: boolean;
 	isOpenInNewTab: boolean;
 	text: string;
 }
 
-export const WCB_POST_GRID_PANEL_READMORE_LINK_DEMO: WCB_POST_GRID_PANEL_READMORE_LINK =
+export const BCB_POST_GRID_PANEL_READMORE_LINK_DEMO: BCB_POST_GRID_PANEL_READMORE_LINK =
 	{
 		isShowReadmore: true,
 		isOpenInNewTab: false,
@@ -19,12 +19,12 @@ export const WCB_POST_GRID_PANEL_READMORE_LINK_DEMO: WCB_POST_GRID_PANEL_READMOR
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_READMORE_LINK;
-	setAttr__: (data: WCB_POST_GRID_PANEL_READMORE_LINK) => void;
+	panelData: BCB_POST_GRID_PANEL_READMORE_LINK;
+	setAttr__: (data: BCB_POST_GRID_PANEL_READMORE_LINK) => void;
 }
 
 const WcbPostGridPanelReadMoreLink: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_READMORE_LINK_DEMO,
+	panelData = BCB_POST_GRID_PANEL_READMORE_LINK_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

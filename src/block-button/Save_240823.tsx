@@ -43,13 +43,13 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_text,
 	};
 	//
-	const blockProps = useBlockProps.save({ className: "wcb-button__main" });
+	const blockProps = useBlockProps.save({ className: "bcb-button__main" });
 	const innerBlocksProps = useInnerBlocksProps.save(blockProps);
 
 	return (
 		<SaveCommon
 			attributes={newAttrForSave}
-			className={"wcb-button__wrap" + ` ${attributes.className || ""}`}
+			className={"bcb-button__wrap" + ` ${attributes.className || ""}`}
 			uniqueId={uniqueId}
 		>
 			<Button attributes={attributes} isEdit={false} {...innerBlocksProps} />

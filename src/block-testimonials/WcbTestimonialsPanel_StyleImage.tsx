@@ -18,13 +18,13 @@ import { BorderRadiusSettings } from "../components/controls/MyBorderControl/typ
 import { Option } from "../types";
 import MySelect from "../components/controls/MySelect";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_IMAGE {
+export interface BCB_TESTIMONIALS_PANEL_STYLE_IMAGE {
 	padding: HasResponsive<DimensionSettings>;
 	imageSize: HasResponsive<string>;
 	radius: HasResponsive<BorderRadiusSettings>;
 	objectFit: CSSProperties["objectFit"];
 }
-export const WCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_IMAGE =
+export const BCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO: BCB_TESTIMONIALS_PANEL_STYLE_IMAGE =
 	{
 		padding: {
 			Desktop: {
@@ -47,12 +47,12 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO: WCB_TESTIMONIALS_PANEL_STY
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TESTIMONIALS_PANEL_STYLE_IMAGE;
-	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_IMAGE) => void;
+	panelData: BCB_TESTIMONIALS_PANEL_STYLE_IMAGE;
+	setAttr__: (data: BCB_TESTIMONIALS_PANEL_STYLE_IMAGE) => void;
 }
 
 const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
-	panelData = WCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO,
+	panelData = BCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -74,7 +74,7 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 	);
 
 	const OBJECT_FIT_DEMO: Option<
-		WCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"]
+		BCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"]
 	>[] = [
 		{ value: "none", label: "None" },
 		{ value: "cover", label: "Cover" },
@@ -114,7 +114,7 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 						setAttr__({
 							...panelData,
 							objectFit:
-								value as WCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"],
+								value as BCB_TESTIMONIALS_PANEL_STYLE_IMAGE["objectFit"],
 						});
 					}}
 				/>

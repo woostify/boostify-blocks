@@ -19,11 +19,11 @@ import WcbPluginSidebar from "./WcbPluginSidebar";
 
 const PluginSidebarTest = () => (
 	<PluginSidebar
-		name="wcb-plugin-sidebar-woostify"
+		name="bcb-plugin-sidebar-woostify"
 		title="Woostify Page Settings"
 		icon={
 			<svg
-				className={"w-6 h-6 wcb-plugin-sidebar-woostify__logosvg"}
+				className={"w-6 h-6 bcb-plugin-sidebar-woostify__logosvg"}
 				width="188"
 				height="188"
 				viewBox="0 0 188 188"
@@ -63,4 +63,4 @@ const PluginSidebarTest = () => (
 	</PluginSidebar>
 );
 
-registerPlugin("wcb-plugin-sidebar-woostify", { render: PluginSidebarTest });
+registerPlugin("bcb-plugin-sidebar-woostify", { render: PluginSidebarTest });

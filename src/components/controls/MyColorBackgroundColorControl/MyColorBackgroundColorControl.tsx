@@ -99,7 +99,7 @@ const MyColorBackgroundColorControl: FC<Props> = ({
 
 	return (
 		<TabPanel
-			className={`wcb-bodyControls__panel ${className}`}
+			className={`bcb-bodyControls__panel ${className}`}
 			activeClass="active-tab"
 			initialTabName="Normal"
 			tabs={PANEL_COLOR_TABS}

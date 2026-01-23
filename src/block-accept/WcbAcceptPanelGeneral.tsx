@@ -10,7 +10,7 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_ACCEPT_PANEL_GENERAL {
+export interface BCB_ACCEPT_PANEL_GENERAL {
 	acceptanceText: string;
 	isRequired: boolean;
 	enablePrivacyLink: boolean;
@@ -19,7 +19,7 @@ export interface WCB_ACCEPT_PANEL_GENERAL {
 	openInNewTab: boolean;
 }
 
-export const WCB_ACCEPT_PANEL_GENERAL_DEMO: WCB_ACCEPT_PANEL_GENERAL = {
+export const BCB_ACCEPT_PANEL_GENERAL_DEMO: BCB_ACCEPT_PANEL_GENERAL = {
 	isRequired: false,
 	acceptanceText: "I have read and agree to the Privacy Policy.",
 	enablePrivacyLink: true,
@@ -30,12 +30,12 @@ export const WCB_ACCEPT_PANEL_GENERAL_DEMO: WCB_ACCEPT_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ACCEPT_PANEL_GENERAL;
-	setAttr__: (data: WCB_ACCEPT_PANEL_GENERAL) => void;
+	panelData: BCB_ACCEPT_PANEL_GENERAL;
+	setAttr__: (data: BCB_ACCEPT_PANEL_GENERAL) => void;
 }
 
 const WcbAcceptPanelGeneral: FC<Props> = ({
-	panelData = WCB_ACCEPT_PANEL_GENERAL_DEMO,
+	panelData = BCB_ACCEPT_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

@@ -16,12 +16,12 @@ import MyDisclosure from "../components/controls/MyDisclosure";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_IMAGE_PANEL_STYLE_OVERLAY {
+export interface BCB_IMAGE_PANEL_STYLE_OVERLAY {
 	backgroundColor: string;
 	backgroundColorHover: string;
 }
 
-export const WCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO: WCB_IMAGE_PANEL_STYLE_OVERLAY =
+export const BCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO: BCB_IMAGE_PANEL_STYLE_OVERLAY =
 	{
 		backgroundColor: "",
 		backgroundColorHover: "",
@@ -29,12 +29,12 @@ export const WCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO: WCB_IMAGE_PANEL_STYLE_OVERLAY =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_IMAGE_PANEL_STYLE_OVERLAY;
-	setAttr__: (data: WCB_IMAGE_PANEL_STYLE_OVERLAY) => void;
+	panelData: BCB_IMAGE_PANEL_STYLE_OVERLAY;
+	setAttr__: (data: BCB_IMAGE_PANEL_STYLE_OVERLAY) => void;
 }
 
 const WcbImagePanel_StyleOverlay: FC<Props> = ({
-	panelData = WCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO,
+	panelData = BCB_IMAGE_PANEL_STYLE_OVERLAY_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

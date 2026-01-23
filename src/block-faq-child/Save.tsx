@@ -33,13 +33,13 @@ export default function save({
 			<>
 				{general_icon.icon && (
 					<MyIconFull
-						className="wcb-faq-child__icon wcb-faq-child__icon--active"
+						className="bcb-faq-child__icon bcb-faq-child__icon--active"
 						icon={general_icon.icon}
 					/>
 				)}
 				{general_icon.inactiveIcon && (
 					<MyIconFull
-						className="wcb-faq-child__icon wcb-faq-child__icon--inactive"
+						className="bcb-faq-child__icon bcb-faq-child__icon--inactive"
 						icon={general_icon.inactiveIcon}
 					/>
 				)}
@@ -50,7 +50,7 @@ export default function save({
 	const ariaControls = uniqueId + "controls";
 	//
 	const wrapBlockProps = useBlockProps.save({
-		className: `ac wcb-faq-child__wrap wcb-faq-child__wrap--${layout}`,
+		className: `ac bcb-faq-child__wrap bcb-faq-child__wrap--${layout}`,
 	});
 	//
 
@@ -58,7 +58,7 @@ export default function save({
 		<div {...wrapBlockProps}>
 			<div className="ac-header">
 				<div
-					className={`ac-trigger wcb-faq-child__question wcb-faq-child__question--icon-${general_icon.iconPosition}`}
+					className={`ac-trigger bcb-faq-child__question bcb-faq-child__question--icon-${general_icon.iconPosition}`}
 					type="button"
 					aria-expanded="true"
 					aria-controls={ariaControls}
@@ -67,19 +67,19 @@ export default function save({
 					<RichText.Content
 						tagName={headingTag || "h4"}
 						value={question}
-						className="wcb-faq-child__question-text"
+						className="bcb-faq-child__question-text"
 					/>
 
 					{general_icon.iconPosition === "right" && renderIcon()}
 				</div>
 			</div>
 			<div className="ac-panel">
-				{enableSeparator && <div className="wcb-faq-child__separator"></div>}
-				<div className="wcb-faq-child__answer" id={ariaControls}>
+				{enableSeparator && <div className="bcb-faq-child__separator"></div>}
+				<div className="bcb-faq-child__answer" id={ariaControls}>
 					<RichText.Content
 						tagName="p"
 						value={answer}
-						className="wcb-faq-child__answer-text ac-text"
+						className="bcb-faq-child__answer-text ac-text"
 					/>
 				</div>
 			</div>

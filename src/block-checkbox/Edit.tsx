@@ -91,15 +91,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const renderCheckboxOptions = () => {
 		return (attributes.options || []).map((item, index) => (
 			<div key={index + "-" + item.value}>
-				<label className="wcb-checkbox__option">
+				<label className="bcb-checkbox__option">
 					<input
 						type="checkbox"
-						className="wcb-checkbox__option-input"
+						className="bcb-checkbox__option-input"
 						value={item.value}
 						required={general_general.isRequired}
 						name={CHECKBOX_NAME}
 					/>
-					<span className="wcb-checkbox__option-label">{item.label}</span>
+					<span className="bcb-checkbox__option-label">{item.label}</span>
 				</label>
 			</div>
 		));
@@ -134,10 +134,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				key={index + "-"}
 				className="flex items-center justify-between space-x-2"
 			>
-				<label className="wcb-checkbox__option flex-shrink-0">
+				<label className="bcb-checkbox__option flex-shrink-0">
 					<input
 						type="checkbox"
-						className="wcb-checkbox__option-input"
+						className="bcb-checkbox__option-input"
 						name={CHECKBOX_NAME}
 					/>
 				</label>
@@ -203,7 +203,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			<div className="w-full flex flex-col space-y-2 p-4 my-2.5 rounded-lg border border-slate-300">
 				{/* LABEL */}
 				<div className="flex items-center justify-between space-x-2">
-					<label className="wcb-checkbox__option ">
+					<label className="bcb-checkbox__option ">
 						<input type="checkbox" className="opacity-0" />
 					</label>
 					<div className="flex-1 flex space-x-2 text-base font-medium">
@@ -226,7 +226,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// <CacheProvider value={myCache}>
 		<div
 			{...wrapBlockProps}
-			className={`${wrapBlockProps?.className} wcb-checkbox__wrap ${uniqueId}`}
+			className={`${wrapBlockProps?.className} bcb-checkbox__wrap ${uniqueId}`}
 			data-uniqueid={uniqueId}
 		>
 			{/* CONTROL SETTINGS */}

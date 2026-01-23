@@ -12,7 +12,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const UNIQUE_NAME = converUniqueId(uniqueId, "text");
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-input__wrap",
+		className: "bcb-input__wrap",
 	});
 
 	return (

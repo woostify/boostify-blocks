@@ -96,7 +96,7 @@ const MyBorderControl: FC<Props> = ({
 				__experimentalHasMultipleOrigins={true}
 				__experimentalIsRenderedInSidebar={true}
 				size={"__unstable-large"}
-				className="wcb-BorderBoxControl"
+				className="bcb-BorderBoxControl"
 			/>
 
 			<MyColorPicker

@@ -20,14 +20,14 @@ import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyR
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 
-export interface WCB_HEADING_PANEL_HEADING {
+export interface BCB_HEADING_PANEL_HEADING {
 	typography: MyTypographyControlData;
 	textColor: TextColorControlData;
 	textShadow: MyTextShadowControlData;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_HEADING_PANEL_HEADING_DEMO: WCB_HEADING_PANEL_HEADING = {
+export const BCB_HEADING_PANEL_HEADING_DEMO: BCB_HEADING_PANEL_HEADING = {
 	typography: TYPOGRAPHY_CONTROL_DEMO,
 	textColor: TEXT_COLOR_CONTROL_DEMO,
 	textShadow: MY_TEXT_SHADOW_CONTROL_DEMO,
@@ -36,12 +36,12 @@ export const WCB_HEADING_PANEL_HEADING_DEMO: WCB_HEADING_PANEL_HEADING = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelHeading: WCB_HEADING_PANEL_HEADING;
-	setAttr__panelHeading: (data: WCB_HEADING_PANEL_HEADING) => void;
+	panelHeading: BCB_HEADING_PANEL_HEADING;
+	setAttr__panelHeading: (data: BCB_HEADING_PANEL_HEADING) => void;
 }
 
 const WcbHeadingPanelHeading: FC<Props> = ({
-	panelHeading = WCB_HEADING_PANEL_HEADING_DEMO,
+	panelHeading = BCB_HEADING_PANEL_HEADING_DEMO,
 	setAttr__panelHeading,
 	initialOpen,
 	onToggle,

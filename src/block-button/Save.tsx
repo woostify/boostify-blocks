@@ -41,7 +41,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_text,
 	};
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-button__wrap" });
+	const wrapBlockProps = useBlockProps.save({ className: "bcb-button__wrap" });
 
 	return (
 		<SaveCommon

@@ -3,13 +3,13 @@ import {
 	WcbAttrsCommonFromWp,
 } from "../block-container/attributes";
 import {
-	WCB_HIDDEN_PANEL_GENERAL,
-	WCB_HIDDEN_PANEL_GENERAL_DEMO,
+	BCB_HIDDEN_PANEL_GENERAL,
+	BCB_HIDDEN_PANEL_GENERAL_DEMO,
 } from "./WcbHiddenPanelGeneral";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	//
-	general_general: WCB_HIDDEN_PANEL_GENERAL;
+	general_general: BCB_HIDDEN_PANEL_GENERAL;
 	//
 }
 
@@ -21,7 +21,7 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	//
 	general_general: {
 		type: "object",
-		default: WCB_HIDDEN_PANEL_GENERAL_DEMO,
+		default: BCB_HIDDEN_PANEL_GENERAL_DEMO,
 	},
 };
 

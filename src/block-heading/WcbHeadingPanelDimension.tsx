@@ -7,11 +7,11 @@ import {
 	MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 } from "../components/controls/MyDimensionsControl/types";
 
-export interface WCB_HEADING_PANEL_DIMENSION {
+export interface BCB_HEADING_PANEL_DIMENSION {
 	dimension: MyDimensionsNoGapControlData;
 }
 
-export const WCB_HEADING_PANEL_DIMENSION_DEMO: WCB_HEADING_PANEL_DIMENSION = {
+export const BCB_HEADING_PANEL_DIMENSION_DEMO: BCB_HEADING_PANEL_DIMENSION = {
 	dimension: {
 		...MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 		padding: {
@@ -27,12 +27,12 @@ export const WCB_HEADING_PANEL_DIMENSION_DEMO: WCB_HEADING_PANEL_DIMENSION = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_HEADING_PANEL_DIMENSION;
-	setAttr__: (data: WCB_HEADING_PANEL_DIMENSION) => void;
+	panelData: BCB_HEADING_PANEL_DIMENSION;
+	setAttr__: (data: BCB_HEADING_PANEL_DIMENSION) => void;
 }
 
 const WcbHeadingPanelDimension: FC<Props> = ({
-	panelData = WCB_HEADING_PANEL_DIMENSION_DEMO,
+	panelData = BCB_HEADING_PANEL_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

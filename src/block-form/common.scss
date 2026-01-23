@@ -1,4 +1,4 @@
-.editor-styles-wrapper .wcb-form__wrap {
+.editor-styles-wrapper .bcb-form__wrap {
 	.wp-block {
 		margin-left: 0;
 		margin-right: 0;
@@ -6,7 +6,7 @@
 		margin-bottom: 0;
 	}
 }
-.wcb-form__wrap {
+.bcb-form__wrap {
 	.wp-block {
 		margin-left: 0;
 		margin-right: 0;
@@ -15,7 +15,7 @@
 	}
 }
 
-.wcb-form__wrap {
+.bcb-form__wrap {
 	@apply text-base flex flex-col;
 
 	[type="text"],
@@ -75,7 +75,7 @@
 	}
 }
 
-.wcb-form__label {
+.bcb-form__label {
 	display: block;
 	color: #374151;
 	&.required {
@@ -87,7 +87,7 @@
 	}
 }
 
-.wcb-checkbox__option-label {
+.bcb-checkbox__option-label {
 	color: #374151;
 	&.required {
 		color: #374151;
@@ -99,25 +99,25 @@
 }
 
 /*  */
-.wcb-form__box {
+.bcb-form__box {
 	@apply flex flex-col gap-y-4;
 }
 
-.wcb-form__inner {
+.bcb-form__inner {
 	@apply flex-1;
 	display: grid;
 	grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
-.wcb-form__btn-submit-wrap {
+.bcb-form__btn-submit-wrap {
 	display: flex;
 }
 
-.wcb-form__btn-submit {
+.bcb-form__btn-submit {
 	@apply font-medium inline-flex items-center justify-center px-4 py-2;
 }
 
-.wcb-form__successMessageText,
-.wcb-form__errorMessageText {
+.bcb-form__successMessageText,
+.bcb-form__errorMessageText {
 	@apply p-5 flex-1;
 }

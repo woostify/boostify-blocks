@@ -31,7 +31,7 @@ import {
 } from "@wordpress/blocks";
 import WcbButtonsPanel_StyleText from "./WcbButtonsPanel_StyleText";
 import WcbButtonsPanel_StyleDimension, {
-	WCB_BUTTONS_PANEL_STYLE_DIMENSION,
+	BCB_BUTTONS_PANEL_STYLE_DIMENSION,
 } from "./WcbButtonsPanel_StyleDimension";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
@@ -128,7 +128,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const getButtonSizeDimension = (
 		size: HasResponsive<BtnGroupSizes>
-	): WCB_BUTTONS_PANEL_STYLE_DIMENSION => {
+	): BCB_BUTTONS_PANEL_STYLE_DIMENSION => {
 		const {
 			value_Desktop: size_desktop,
 			value_Tablet: size_tablet,
@@ -228,7 +228,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const ALLOWED_BLOCKS = ["wcb/button"];
 
 	const blockProps = useBlockProps({
-		className: `wcb-buttons__inner`,
+		className: `bcb-buttons__inner`,
 	});
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
@@ -261,7 +261,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`wcb-buttons__wrap ${uniqueId} ${wrapBlockProps.className}`}
+				className={`bcb-buttons__wrap ${uniqueId} ${wrapBlockProps.className}`}
 				data-uniqueid={uniqueId}
 			>
 				{/*  */}

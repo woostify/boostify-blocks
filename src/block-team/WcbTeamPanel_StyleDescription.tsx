@@ -14,13 +14,13 @@ import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_TEAM_PANEL_STYLE_DESCRIPTION {
+export interface BCB_TEAM_PANEL_STYLE_DESCRIPTION {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_TEAM_PANEL_STYLE_DESCRIPTION_DEMO: WCB_TEAM_PANEL_STYLE_DESCRIPTION =
+export const BCB_TEAM_PANEL_STYLE_DESCRIPTION_DEMO: BCB_TEAM_PANEL_STYLE_DESCRIPTION =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "#171717",
@@ -29,12 +29,12 @@ export const WCB_TEAM_PANEL_STYLE_DESCRIPTION_DEMO: WCB_TEAM_PANEL_STYLE_DESCRIP
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_STYLE_DESCRIPTION;
-	setAttr__: (data: WCB_TEAM_PANEL_STYLE_DESCRIPTION) => void;
+	panelData: BCB_TEAM_PANEL_STYLE_DESCRIPTION;
+	setAttr__: (data: BCB_TEAM_PANEL_STYLE_DESCRIPTION) => void;
 }
 
 const WcbTeamPanel_StyleDescription: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_STYLE_DESCRIPTION_DEMO,
+	panelData = BCB_TEAM_PANEL_STYLE_DESCRIPTION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

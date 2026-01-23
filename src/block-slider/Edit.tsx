@@ -38,34 +38,34 @@ import {
 	WcbSliderButtonPanelPreset as ChildStyleButtonPreset,
 	WcbSliderLayoutPanelPreset as ChildStyleLayoutPreset,
 	// WcbSlidersPanel_StyleSeparator as ChildStyleSparator,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO
 } from "../block-slider-child/Edit";
 
 // Import CallToAction presets
 import {
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7,
+	BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8,
 } from "../block-slider-child/WcbSliderPanel_StyleCallToActionButton";
 
 // Import separator demo constant
-import { WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "../block-slider-child/WcbSliderPanel_StyleSeparator";
-import { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "../block-slider-child/WcbSliderPanel_LayoutPreset";
+import { BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "../block-slider-child/WcbSliderPanel_StyleSeparator";
+import { BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "../block-slider-child/WcbSliderPanel_LayoutPreset";
 
 // Import demo constants from shared types
 import {
-	WCB_SLIDER_PANEL_STYLE_NAME_DEMO,
-	WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
-	WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
-	WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
+	BCB_SLIDER_PANEL_STYLE_NAME_DEMO,
+	BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
+	BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
+	BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
 } from "./types";
-import { WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO } from "../block-slider-child/WcbSliderPanel_StyleImage";
+import { BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO } from "../block-slider-child/WcbSliderPanel_StyleImage";
 import {
-	WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO
+	BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO
 } from "../block-slider-child/WcbSliderPanel_ButtonPreset";
 
 export const SLIDER_ITEM_DEMO: string[] = ["wcb/slider-child"];
@@ -171,7 +171,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	// Persist selectedChildId across device type changes and UI reloads using localStorage
 	const getStoredSelectedChildId = (): string | null => {
 		try {
-			return localStorage.getItem(`wcb-slider-selected-child-${clientId}`);
+			return localStorage.getItem(`bcb-slider-selected-child-${clientId}`);
 		} catch {
 			return null;
 		}
@@ -180,9 +180,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const setStoredSelectedChildId = (childId: string | null) => {
 		try {
 			if (childId) {
-				localStorage.setItem(`wcb-slider-selected-child-${clientId}`, childId);
+				localStorage.setItem(`bcb-slider-selected-child-${clientId}`, childId);
 			} else {
-				localStorage.removeItem(`wcb-slider-selected-child-${clientId}`);
+				localStorage.removeItem(`bcb-slider-selected-child-${clientId}`);
 			}
 		} catch {
 			// Ignore localStorage errors
@@ -350,11 +350,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									if (data && (data.enableIcon === false || data.enableIcon === true)) {
 										wp.data.dispatch("core/block-editor").updateBlockAttributes(
 											selectedChildBlock.clientId,
-											{ style_layoutPreset: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO }
+											{ style_layoutPreset: BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO }
 										);
 									}
 								}}
-								panelData={childAttrs.style_image || WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO}
+								panelData={childAttrs.style_image || BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO}
 							/>
 							
 							<ChildStyleContent
@@ -371,11 +371,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									if (data && (data.textAlignment)) {
 										wp.data.dispatch("core/block-editor").updateBlockAttributes(
 											selectedChildBlock.clientId,
-											{ style_layoutPreset: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO }
+											{ style_layoutPreset: BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO }
 										);
 									}
 								}}
-								panelData={childAttrs.style_content || WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
+								panelData={childAttrs.style_content || BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
 							/>
 
 							<ChildStyleButtonPreset
@@ -394,24 +394,24 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									// Auto-update style_callToActionButton based on preset
 									const getCallToActionStyleFromPreset = (preset: string) => {
 										switch (preset) {
-											case "wcb-button-1":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
-											case "wcb-button-2":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2;
-											case "wcb-button-3":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3;
-											case "wcb-button-4":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4;
-											case "wcb-button-5":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5;
-											case "wcb-button-6":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6;
-											case "wcb-button-7":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7;
-											case "wcb-button-8":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8;
+											case "bcb-button-1":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
+											case "bcb-button-2":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2;
+											case "bcb-button-3":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3;
+											case "bcb-button-4":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4;
+											case "bcb-button-5":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5;
+											case "bcb-button-6":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6;
+											case "bcb-button-7":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7;
+											case "bcb-button-8":
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8;
 											default:
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
+												return BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
 										}
 									};
 									
@@ -422,7 +422,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										}
 									);
 								}}
-								panelData={childAttrs.style_buttonPreset || WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO}
+								panelData={childAttrs.style_buttonPreset || BCB_SLIDER_BUTTON_PANEL_PRESET_DEMO}
 							/>
 
 							<ChildStyleLayoutPreset
@@ -431,7 +431,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleLayoutPreset" || undefined}
 								setAttr__={(data) => {
 									switch (data.preset) {
-										case "wcb-layout-1":
+										case "bcb-layout-1":
 											wp.data.dispatch("core/block-editor").updateBlockAttributes(
 												selectedChildBlock.clientId,
 												{ 
@@ -448,7 +448,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 												}
 											);
 											break;
-										case "wcb-layout-2":
+										case "bcb-layout-2":
 											wp.data.dispatch("core/block-editor").updateBlockAttributes(
 												selectedChildBlock.clientId,
 												{ 
@@ -465,7 +465,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 												}
 											);
 											break;
-										case "wcb-layout-3":
+										case "bcb-layout-3":
 											wp.data.dispatch("core/block-editor").updateBlockAttributes(
 												selectedChildBlock.clientId,
 												{
@@ -482,7 +482,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 												}
 											);
 											break;
-										case "wcb-layout-4":
+										case "bcb-layout-4":
 											wp.data.dispatch("core/block-editor").updateBlockAttributes(
 												selectedChildBlock.clientId,
 												{
@@ -499,7 +499,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 												}
 											);
 											break;
-										case "wcb-layout-5":
+										case "bcb-layout-5":
 											wp.data.dispatch("core/block-editor").updateBlockAttributes(
 												selectedChildBlock.clientId,
 												{
@@ -536,7 +536,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										{ style_layoutPreset: data }
 									);
 								}}
-								panelData={childAttrs.style_layoutPreset || WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO}
+								panelData={childAttrs.style_layoutPreset || BCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO}
 							/>
 						</>
 					);
@@ -556,7 +556,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										{ style_name: data }
 									);
 								}}
-								panelData={childAttrs.style_name || WCB_SLIDER_PANEL_STYLE_NAME_DEMO}
+								panelData={childAttrs.style_name || BCB_SLIDER_PANEL_STYLE_NAME_DEMO}
 							/>
 							
 							<ChildStyleContent
@@ -569,7 +569,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										{ style_content: data }
 									);
 								}}
-								panelData={childAttrs.style_content || WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
+								panelData={childAttrs.style_content || BCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
 							/>
 
 							<ChildStyleCallToActionButton 
@@ -583,7 +583,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										{ style_callToActionButton: data }
 									);
 								}}
-								panelData={childAttrs.style_callToActionButton || WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO}
+								panelData={childAttrs.style_callToActionButton || BCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO}
 							/>
 							
 							<ChildStyleBackground
@@ -596,7 +596,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										{ style_backgroundAndBorder: data }
 									);
 								}}
-								panelData={childAttrs.style_backgroundAndBorder || WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO}
+								panelData={childAttrs.style_backgroundAndBorder || BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO}
 							/>
 							
 							<ChildStyleDimension
@@ -609,7 +609,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										{ style_dimension: data }
 									);
 								}}
-								panelData={childAttrs.style_dimension || WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO}
+								panelData={childAttrs.style_dimension || BCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO}
 							/>
 						</>
 					);
@@ -681,7 +681,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									style_verticalAlignment: data,
 								});
 							}}
-							panelData={style_verticalAlignment || WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO} // Provide a default object if undefined
+							panelData={style_verticalAlignment || BCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO} // Provide a default object if undefined
 						/> */}
 						<WcbSlidersPanel_StyleBackground
 							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}
@@ -769,17 +769,17 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 				return (
 				<div 
-					// className="wcb-slider__item" 
+					// className="bcb-slider__item" 
 					key={index + "-"} 
 						onClick={(e) => {
 							e.stopPropagation();
 							onSelect(block.clientId);
 						}}
 					>
-						{/* <div className="wcb-slider__item-background">
-							<div className="wcb-slider__item-wrap-inner">
-								<div className="wcb-slider__item-inner"> */}
-								{/* <div className={`wcb-slider-child__wrap ${block.attributes?.uniqueId || ''}`}> */}
+						{/* <div className="bcb-slider__item-background">
+							<div className="bcb-slider__item-wrap-inner">
+								<div className="bcb-slider__item-inner"> */}
+								{/* <div className={`bcb-slider-child__wrap ${block.attributes?.uniqueId || ''}`}> */}
 										<BlockEdit
 									        className={`${block.attributes?.uniqueId || ''}`}
 											attributes={block.attributes}
@@ -823,12 +823,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	useEffect(() => {
 		// Get all DOM slider wrapper
-		const sliders = document.querySelectorAll(".wcb-slider__wrap");
-		const sliderItemInner = document.querySelectorAll(".wcb-slider__item-inner");
+		const sliders = document.querySelectorAll(".bcb-slider__wrap");
+		const sliderItemInner = document.querySelectorAll(".bcb-slider__item-inner");
 
 		sliders.forEach((slider) => {
 			const items = slider.querySelectorAll<HTMLElement>(
-				".wcb-slider-child__item-inner"
+				".bcb-slider-child__item-inner"
 			);
 
 			if (items.length > 0) {
@@ -1007,7 +1007,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// If no inner blocks, show template  
 		if (innerBlocks.length === 0) {
 			return (
-				<div className="wcb-slider__wrap-items">
+				<div className="bcb-slider__wrap-items">
 					<Slider 
 						ref={ sliderRef } 
 						{...settings} 
@@ -1025,7 +1025,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 		// Show slider with individual child blocks
 		return (
-			<div className="wcb-slider__wrap-items">
+			<div className="bcb-slider__wrap-items">
 				<Slider 
 					ref={ sliderRef } 
 					{...settings}
@@ -1095,7 +1095,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-slider__wrap ${uniqueId} ${parentCssClass}`}
+				className={`${wrapBlockProps?.className} bcb-slider__wrap ${uniqueId} ${parentCssClass}`}
 				data-uniqueid={uniqueId}
 				onClick={handleParentClick}
 			>

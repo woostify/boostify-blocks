@@ -15,7 +15,7 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_POST_GRID_PANEL_STYLE_META {
+export interface BCB_POST_GRID_PANEL_STYLE_META {
 	authorTypography: MyTypographyControlData;
 	dateTypography: MyTypographyControlData;
 	authorTextColor: string;
@@ -23,7 +23,7 @@ export interface WCB_POST_GRID_PANEL_STYLE_META {
 	marginBottom: HasResponsive<string>;
 }
 
-export const WCB_POST_GRID_PANEL_STYLE_META_DEMO: WCB_POST_GRID_PANEL_STYLE_META =
+export const BCB_POST_GRID_PANEL_STYLE_META_DEMO: BCB_POST_GRID_PANEL_STYLE_META =
 	{
 		authorTypography: {
 			...TYPOGRAPHY_CONTROL_DEMO,
@@ -48,12 +48,12 @@ export const WCB_POST_GRID_PANEL_STYLE_META_DEMO: WCB_POST_GRID_PANEL_STYLE_META
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_STYLE_META;
-	setAttr__: (data: WCB_POST_GRID_PANEL_STYLE_META) => void;
+	panelData: BCB_POST_GRID_PANEL_STYLE_META;
+	setAttr__: (data: BCB_POST_GRID_PANEL_STYLE_META) => void;
 }
 
 const WcbPostGridPanel_StyleMeta: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_STYLE_META_DEMO,
+	panelData = BCB_POST_GRID_PANEL_STYLE_META_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

@@ -11,24 +11,24 @@ import { MyPosition } from "../types";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_FORM_PANEL_SUBMIT_BUTTON {
+export interface BCB_FORM_PANEL_SUBMIT_BUTTON {
 	textAlignment: HasResponsive<"start" | "center" | "end">;
 	position: HasResponsive<MyPosition>;
 }
 
-export const WCB_FORM_PANEL_SUBMIT_BUTTON_DEMO: WCB_FORM_PANEL_SUBMIT_BUTTON = {
+export const BCB_FORM_PANEL_SUBMIT_BUTTON_DEMO: BCB_FORM_PANEL_SUBMIT_BUTTON = {
 	textAlignment: { Desktop: "start" },
 	position: { Desktop: "bottom" },
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_SUBMIT_BUTTON;
-	setAttr__: (data: WCB_FORM_PANEL_SUBMIT_BUTTON) => void;
+	panelData: BCB_FORM_PANEL_SUBMIT_BUTTON;
+	setAttr__: (data: BCB_FORM_PANEL_SUBMIT_BUTTON) => void;
 }
 
 const WcbFormPanelSubmitButton: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_SUBMIT_BUTTON_DEMO,
+	panelData = BCB_FORM_PANEL_SUBMIT_BUTTON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

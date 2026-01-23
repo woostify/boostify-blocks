@@ -21,7 +21,7 @@ import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import WcbFormPanelGeneral, {
-	WCB_FORM_PANEL_GENERAL,
+	BCB_FORM_PANEL_GENERAL,
 } from "./WcbFormPanelGeneral";
 import { useSelect, useDispatch } from "@wordpress/data";
 import {
@@ -35,13 +35,13 @@ import WcbFormPanelAction from "./WcbFormPanelAction";
 import WcbFormPanelGoogleRecaptcha from "./WcbFormPanelGoogleRecaptcha";
 import WcbFormPanel_StyleLabel from "./WcbFormPanel_StyleLabel";
 import WcbFormPanel_StyleInput, {
-	WCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE,
-	WCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID,
-	WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE,
+	BCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE,
+	BCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID,
+	BCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE,
 } from "./WcbFormPanel_StyleInput";
 import WcbFormPanel_StyleCheckBoxRadio, {
-	WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE,
-	WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID,
+	BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE,
+	BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID,
 } from "./WcbFormPanel_StyleCheckBoxRadio";
 import WcbPostGridPanel_StyleSubmitButton from "./WcbPostGridPanel_StyleSubmitButton";
 import WcbPostGridPanel_StyleMessages from "./WcbPostGridPanel_StyleMessages";
@@ -100,7 +100,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	}, [UNIQUE_ID]);
 	//
 
-	const handleChangeFormPanelGeneral = (data: WCB_FORM_PANEL_GENERAL) => {
+	const handleChangeFormPanelGeneral = (data: BCB_FORM_PANEL_GENERAL) => {
 		let NEW_DATA: Partial<WcbAttrs> = { general_general: data };
 
 		// when change FORM STYLE
@@ -108,23 +108,23 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			if (data.formStyle === "simple") {
 				NEW_DATA = {
 					general_general: data,
-					style_input: WCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE,
+					style_input: BCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE,
 					style_checkbox_radio_toggle:
-						WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE,
+						BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE,
 				};
 			} else if (data.formStyle === "solid") {
 				NEW_DATA = {
 					general_general: data,
-					style_input: WCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID,
+					style_input: BCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID,
 					style_checkbox_radio_toggle:
-						WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID,
+						BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SOLID,
 				};
 			} else if (data.formStyle === "underline") {
 				NEW_DATA = {
 					general_general: data,
-					style_input: WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE,
+					style_input: BCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE,
 					style_checkbox_radio_toggle:
-						WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE,
+						BCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE,
 				};
 			}
 		}
@@ -304,7 +304,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	];
 
 	const blockProps = useBlockProps({
-		className: `wcb-form__inner`,
+		className: `bcb-form__inner`,
 	});
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
 		allowedBlocks: ALLOWED_BLOCKS,
@@ -316,18 +316,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<form
 				{...wrapBlockProps}
-				className={`wcb-form__wrap ${uniqueId} ${wrapBlockProps.className} `}
+				className={`bcb-form__wrap ${uniqueId} ${wrapBlockProps.className} `}
 				data-uniqueid={uniqueId}
 			>
 				{/*  */}
 				<GlobalCss {...attributes} />
 				{/*  */}
 
-				<div className="wcb-form__box">
+				<div className="bcb-form__box">
 					<div {...innerBlocksProps} name={useInstanceId(Edit)} />
-					<div className="wcb-form__btn-submit-wrap">
+					<div className="bcb-form__btn-submit-wrap">
 						<RichText
-							className="wcb-form__btn-submit"
+							className="bcb-form__btn-submit"
 							tagName="div" // The tag here is the element output and editable in the admin
 							value={attributes.btnSubmitText} // Any existing content, either from the database or an attribute default
 							allowedFormats={["core/bold", "core/italic"]} // Allow the content to be made bold or italic, but do not allow other formatting options
@@ -340,7 +340,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				{/* Error mess */}
 				<div className="w-full flex-1 flex-shrink-0">
 					<div>
-						<div className="wcb-form__successMessageText">
+						<div className="bcb-form__successMessageText">
 							<span>{attributes.general_general.successMessageText}</span>
 						</div>
 						<HelpText>
@@ -351,7 +351,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						</HelpText>
 					</div>
 					<div>
-						<div className="wcb-form__errorMessageText">
+						<div className="bcb-form__errorMessageText">
 							<span>{attributes.general_general.errorMessageText}</span>
 						</div>
 						<HelpText>

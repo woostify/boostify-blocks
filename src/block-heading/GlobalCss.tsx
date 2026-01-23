@@ -9,7 +9,7 @@ import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
 
@@ -31,12 +31,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 		styles_border,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const HEADING_CLASSNAME = `${WRAP_CLASSNAME} .wcb-heading__heading`;
-	const SUB_HEADING_CLASSNAME = `${WRAP_CLASSNAME} .wcb-heading__subHeading`;
-	const SEPARATOR_CLASSNAME = `${WRAP_CLASSNAME} .wcb-heading__separator`;
+	const HEADING_CLASSNAME = `${WRAP_CLASSNAME} .bcb-heading__heading`;
+	const SUB_HEADING_CLASSNAME = `${WRAP_CLASSNAME} .bcb-heading__subHeading`;
+	const SEPARATOR_CLASSNAME = `${WRAP_CLASSNAME} .bcb-heading__separator`;
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject => {
@@ -255,7 +255,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global styles={getDivWrapStyles__Separator()} />
 			<Global
 				styles={getStyleObjectFromResponsiveAttr({
-					className: `${WRAP_CLASSNAME} .wcb-heading__separator-wrap`,
+					className: `${WRAP_CLASSNAME} .bcb-heading__separator-wrap`,
 					value: styles_separator.marginBottom,
 					prefix: "marginBottom",
 				})}

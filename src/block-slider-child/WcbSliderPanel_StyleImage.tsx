@@ -41,7 +41,7 @@ export const DEFAULT_MY_TOP_ICON: MyIcon = {
   </svg>`,
 };
 
-export interface WCB_SLIDER_PANEL_IMAGE_OR_ICON {
+export interface BCB_SLIDER_PANEL_IMAGE_OR_ICON {
 	enableIcon: boolean;
 	icon: MyIcon;
 	iconPosition:
@@ -67,7 +67,7 @@ export interface WCB_SLIDER_PANEL_IMAGE_OR_ICON {
 
 type TabsHere = "Setting" | "SelectImage";
 
-export const WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO: WCB_SLIDER_PANEL_IMAGE_OR_ICON = {
+export const BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO: BCB_SLIDER_PANEL_IMAGE_OR_ICON = {
 	enableIcon: false,
 	icon: {
 		...DEFAULT_MY_TOP_ICON,
@@ -110,19 +110,19 @@ export const WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO: WCB_SLIDER_PANEL_IMAGE_OR_ICON
 	iconBorder: MY_BORDER_CONTROL_DEMO,
 };
 
-export const WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO_PRESET_1: WCB_SLIDER_PANEL_IMAGE_OR_ICON = {
-	...WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
+export const BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO_PRESET_1: BCB_SLIDER_PANEL_IMAGE_OR_ICON = {
+	...BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
 	enableIcon: true,
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_IMAGE_OR_ICON;
-	setAttr__: (data: WCB_SLIDER_PANEL_IMAGE_OR_ICON) => void;
+	panelData: BCB_SLIDER_PANEL_IMAGE_OR_ICON;
+	setAttr__: (data: BCB_SLIDER_PANEL_IMAGE_OR_ICON) => void;
 }
 
 const WcbSliderPanelImage: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
+	panelData = BCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -144,7 +144,7 @@ const WcbSliderPanelImage: FC<Props> = ({
 	const currentIconSize = iconSize[deviceType];
 	//
 	//
-	const PLANS_DEMO: Option<WCB_SLIDER_PANEL_IMAGE_OR_ICON["iconPosition"]>[] = [
+	const PLANS_DEMO: Option<BCB_SLIDER_PANEL_IMAGE_OR_ICON["iconPosition"]>[] = [
 		{ value: "top", label: "Top" },
 		{ value: "left", label: "Left" },
 		{ value: "right", label: "Right" },
@@ -200,7 +200,7 @@ const WcbSliderPanelImage: FC<Props> = ({
 		];
 
 		const ALIGNSELF_PLANS: MyRadioItem<
-			WCB_SLIDER_PANEL_IMAGE_OR_ICON["imageAlignSelf"]
+			BCB_SLIDER_PANEL_IMAGE_OR_ICON["imageAlignSelf"]
 		>[] = [
 			{ name: "flex-start", icon: "Flex start" },
 			{ name: "center", icon: "Center" },
@@ -311,16 +311,16 @@ const WcbSliderPanelImage: FC<Props> = ({
 							options={PLANS_DEMO}
 							value={iconPosition}
 							onChange={(value) => {
-								let newData: WCB_SLIDER_PANEL_IMAGE_OR_ICON = {
+								let newData: BCB_SLIDER_PANEL_IMAGE_OR_ICON = {
 									...panelData,
 									iconPosition:
-										value as WCB_SLIDER_PANEL_IMAGE_OR_ICON["iconPosition"],
+										value as BCB_SLIDER_PANEL_IMAGE_OR_ICON["iconPosition"],
 								};
 								if (iconPosition !== "left" && iconPosition !== "right") {
 									newData = {
 										...panelData,
 										iconPosition:
-											value as WCB_SLIDER_PANEL_IMAGE_OR_ICON["iconPosition"],
+											value as BCB_SLIDER_PANEL_IMAGE_OR_ICON["iconPosition"],
 										stackOn: "none",
 									};
 								}
@@ -386,7 +386,7 @@ const WcbSliderPanelImage: FC<Props> = ({
 					</>
 				) : (
 					<TabPanel
-						className={`wcb-bodyControls__panel`}
+						className={`bcb-bodyControls__panel`}
 						activeClass="active-tab"
 						initialTabName="Setting"
 						tabs={TABS}

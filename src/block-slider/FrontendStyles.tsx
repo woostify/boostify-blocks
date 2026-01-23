@@ -1,5 +1,5 @@
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
 interface Props extends WcbAttrsForSave {}
@@ -60,13 +60,13 @@ export function initCarouselForWcbSliders(div: Element, props: Props) {
 		pauseOnHover: hoverpause,
 		responsive: [
 			{
-				breakpoint: parseInt(DEMO_WCB_GLOBAL_VARIABLES.media_desktop),
+				breakpoint: parseInt(DEMO_BCB_GLOBAL_VARIABLES.media_desktop),
 				settings: {
 					slidesToShow: col_tablet,
 				},
 			},
 			{
-				breakpoint: parseInt(DEMO_WCB_GLOBAL_VARIABLES.media_tablet),
+				breakpoint: parseInt(DEMO_BCB_GLOBAL_VARIABLES.media_tablet),
 				settings: {
 					slidesToShow: col_mobile,
 				},
@@ -74,7 +74,7 @@ export function initCarouselForWcbSliders(div: Element, props: Props) {
 		],
 	};
 
-	const targetSelector = `.${dataUniqueid} .wcb-slider__wrap-items`;
+	const targetSelector = `.${dataUniqueid} .bcb-slider__wrap-items`;
 	const targetElement = $(targetSelector);
 	
 	if (targetElement.length === 0) {

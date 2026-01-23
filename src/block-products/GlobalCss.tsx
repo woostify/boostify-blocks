@@ -5,7 +5,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getCssProperyHasResponsive from "../utils/getCssProperyHasResponsive";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
@@ -35,12 +35,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const LIST_CLASS = `${WRAP_CLASSNAME} .wcb-products__list`;
-	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .wcb-products__product`;
-	const ADD_TO_CART_BTN = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart a`;
+	const LIST_CLASS = `${WRAP_CLASSNAME} .bcb-products__list`;
+	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .bcb-products__product`;
+	const ADD_TO_CART_BTN = `${WRAP_CLASSNAME} .bcb-products__product-add-to-cart a`;
 
 	// ------------------- WRAP DIV
 
@@ -183,7 +183,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			desktop_v: marginTop_desktop,
 		});
 		return {
-			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
+			[`${WRAP_CLASSNAME} .bcb-products__pagination`]: {
 				marginTop: marginTop_mobile_new,
 				justifyContent: style_pagination.justifyContent,
 				[`.page-numbers`]: {
@@ -226,7 +226,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			desktop_v: marginTop_desktop,
 		});
 		return {
-			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
+			[`${WRAP_CLASSNAME} .bcb-products__pagination`]: {
 				marginTop: marginTop_mobile_new,
 				justifyContent: style_pagination.justifyContent,
 				[`.page-numbers`]: {
@@ -361,8 +361,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 					textAlign: style_layout.textAlignment,
 					backgroundColor: style_layout.backgroundColor,
 
-					// ".wcb-products__product-image":
-					".wcb-products__product-image-link":
+					// ".bcb-products__product-image":
+					".bcb-products__product-image-link":
 						featuredImageMarginBottom_mobile_new ||
 						featuredImageMarginBottom_tablet_new ||
 						featuredImageMarginBottom_desktop_new
@@ -383,29 +383,29 @@ const GlobalCss: FC<Props> = (attrs) => {
 							  }
 							: undefined,
 
-					".wcb-products__product-title": {
+					".bcb-products__product-title": {
 						marginBottom: titleMarginBottom_mobile_new,
 						color: style_title.textColor,
 					},
-					".wcb-products__product-categories": {
+					".bcb-products__product-categories": {
 						marginBottom: categoryMarginBottom_mobile_new,
 						color: style_category.textColor,
 						a: {
 							color: style_category.textColor,
 						},
 					},
-					".wcb-products__product-salebadge": {
+					".bcb-products__product-salebadge": {
 						marginBottom: saleBadgeMarginBottom_mobile_new,
-						".wcb-products__product-onsale": {
+						".bcb-products__product-onsale": {
 							color: style_saleBadge.textColor,
 							backgroundColor: style_saleBadge.backgroundColor,
 						},
 					},
-					".wcb-products__product-price": {
+					".bcb-products__product-price": {
 						marginBottom: priceMarginBottom_mobile_new,
 						color: style_price.textColor,
 					},
-					".wcb-products__product-rating": {
+					".bcb-products__product-rating": {
 						marginBottom: ratingMarginBottom_mobile_new,
 						color: style_rating.color,
 					},
@@ -415,29 +415,29 @@ const GlobalCss: FC<Props> = (attrs) => {
 						priceMarginBottom_tablet_new ||
 						ratingMarginBottom_tablet_new
 							? {
-									".wcb-products__product-title": titleMarginBottom_tablet_new
+									".bcb-products__product-title": titleMarginBottom_tablet_new
 										? {
 												marginBottom: titleMarginBottom_tablet_new,
 										  }
 										: undefined,
-									".wcb-products__product-categories":
+									".bcb-products__product-categories":
 										categoryMarginBottom_tablet_new
 											? {
 													marginBottom: categoryMarginBottom_tablet_new,
 											  }
 											: undefined,
-									".wcb-products__product-salebadge":
+									".bcb-products__product-salebadge":
 										saleBadgeMarginBottom_tablet_new
 											? {
 													marginBottom: saleBadgeMarginBottom_tablet_new,
 											  }
 											: undefined,
-									".wcb-products__product-price": priceMarginBottom_tablet_new
+									".bcb-products__product-price": priceMarginBottom_tablet_new
 										? {
 												marginBottom: priceMarginBottom_tablet_new,
 										  }
 										: undefined,
-									".wcb-products__product-rating": ratingMarginBottom_tablet_new
+									".bcb-products__product-rating": ratingMarginBottom_tablet_new
 										? {
 												marginBottom: ratingMarginBottom_tablet_new,
 										  }
@@ -450,29 +450,29 @@ const GlobalCss: FC<Props> = (attrs) => {
 						priceMarginBottom_desktop_new ||
 						ratingMarginBottom_desktop_new
 							? {
-									".wcb-products__product-title": titleMarginBottom_desktop_new
+									".bcb-products__product-title": titleMarginBottom_desktop_new
 										? {
 												marginBottom: titleMarginBottom_desktop_new,
 										  }
 										: undefined,
-									".wcb-products__product-categories":
+									".bcb-products__product-categories":
 										categoryMarginBottom_desktop_new
 											? {
 													marginBottom: categoryMarginBottom_desktop_new,
 											  }
 											: undefined,
-									".wcb-products__product-salebadge":
+									".bcb-products__product-salebadge":
 										saleBadgeMarginBottom_desktop_new
 											? {
 													marginBottom: saleBadgeMarginBottom_desktop_new,
 											  }
 											: undefined,
-									".wcb-products__product-price": priceMarginBottom_desktop_new
+									".bcb-products__product-price": priceMarginBottom_desktop_new
 										? {
 												marginBottom: priceMarginBottom_desktop_new,
 										  }
 										: undefined,
-									".wcb-products__product-rating":
+									".bcb-products__product-rating":
 										ratingMarginBottom_desktop_new
 											? {
 													marginBottom: ratingMarginBottom_desktop_new,
@@ -483,8 +483,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 				},
 			},
 			getBorderStyles({
-				// className: `${POST_CARD_CLASS} .wcb-products__product-image`,
-				className: `${WRAP_CLASSNAME} .wcb-products__product-image-link`,
+				// className: `${POST_CARD_CLASS} .bcb-products__product-image`,
+				className: `${WRAP_CLASSNAME} .bcb-products__product-image-link`,
 				border: style_featuredImage.border,
 				isWithRadius: true,
 			}),
@@ -553,7 +553,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content.isShowTitle && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-title",
+						className: WRAP_CLASSNAME + " .bcb-products__product-title",
 						typography: style_title.typography,
 					})}
 				/>
@@ -563,7 +563,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content.isShowCategory && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-categories",
+						className: WRAP_CLASSNAME + " .bcb-products__product-categories",
 						typography: style_category.typography,
 					})}
 				/>
@@ -578,7 +578,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content.isShowPrice && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-price",
+						className: WRAP_CLASSNAME + " .bcb-products__product-price",
 						typography: style_price.typography,
 					})}
 				/>
@@ -588,7 +588,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content.isShowSaleBadge && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-onsale",
+						className: WRAP_CLASSNAME + " .bcb-products__product-onsale",
 						typography: style_saleBadge.typography,
 					})}
 				/>
@@ -600,14 +600,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global styles={getDivWrapStyles_Pagination()} />
 					<Global
 						styles={getBorderStyles({
-							className: `${WRAP_CLASSNAME} .wcb-products__pagination .page-numbers`,
+							className: `${WRAP_CLASSNAME} .bcb-products__pagination .page-numbers`,
 							border: style_pagination.mainStyle.Normal.border,
 							isWithRadius: true,
 						})}
 					/>
 					<Global
 						styles={getBorderStyles({
-							className: `${WRAP_CLASSNAME} .wcb-products__pagination .page-numbers.current`,
+							className: `${WRAP_CLASSNAME} .bcb-products__pagination .page-numbers.current`,
 							border: style_pagination.mainStyle.Active.border,
 							isWithRadius: true,
 						})}

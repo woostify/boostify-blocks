@@ -12,7 +12,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	//
 	const blockProps = useBlockProps.save({
-		className: "wcb-url__wrap",
+		className: "bcb-url__wrap",
 	});
 
 	return (

@@ -11,22 +11,22 @@ import MyTextAlignControl, {
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
-export interface WCB_BUTTON_PANEL_PRESET {
+export interface BCB_BUTTON_PANEL_PRESET {
 	preset: ButtonPreset;
 }
 
-export const WCB_BUTTON_PANEL_PRESET_DEMO: WCB_BUTTON_PANEL_PRESET = {
+export const BCB_BUTTON_PANEL_PRESET_DEMO: BCB_BUTTON_PANEL_PRESET = {
 	preset: "primary",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_BUTTON_PANEL_PRESET;
-	setAttr__: (data: WCB_BUTTON_PANEL_PRESET) => void;
+	panelData: BCB_BUTTON_PANEL_PRESET;
+	setAttr__: (data: BCB_BUTTON_PANEL_PRESET) => void;
 }
 
 const WcbButtonPanelPreset: FC<Props> = ({
-	panelData = WCB_BUTTON_PANEL_PRESET_DEMO,
+	panelData = BCB_BUTTON_PANEL_PRESET_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

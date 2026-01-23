@@ -1,13 +1,13 @@
 <?php
 //============================================= block 1 ===============================================================
-function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
+function bcb_block_posts_grid__renderCallback($attributes, $content, $block)
 {
 
     wp_enqueue_script__block_commoncss_frontend_styles();
     // 
 
     $DEFAULT_ATTRS = [
-        'uniqueId' => 'xxblock-wcb_posts',
+        'uniqueId' => 'xxblock-bcb_posts',
         'general_sortingAndFiltering' =>  [
             'queries' =>  [
                 'postType'              => 'post',
@@ -320,8 +320,8 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
         'paged'                 => $paged
     ]);
 
-    if (!function_exists("wcb_block_posts_grid__render_taxonomy")) {
-        function wcb_block_posts_grid__render_taxonomy($queries, $attributes, $modifiedClass = "")
+    if (!function_exists("bcb_block_posts_grid__render_taxonomy")) {
+        function bcb_block_posts_grid__render_taxonomy($queries, $attributes, $modifiedClass = "")
         {
             $isShow = boolval($attributes['general_postMeta']['isShowTaxonomy'] ?? false);
             if (!$isShow) {
@@ -352,8 +352,8 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
     <?php echo $content; ?>
 
     <!-- RENDER FOLLOW BY EDIT.TSX -->
-    <div class="wcb-posts-grid__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
-        <div class="wcb-posts-grid__list-posts">
+    <div class="bcb-posts-grid__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
+        <div class="bcb-posts-grid__list-posts">
             <?php if ($the_query->have_posts()) : ?>
                 <!-- the loop -->
                 <?php while ($the_query->have_posts()) : $the_query->the_post(); ?>
@@ -379,7 +379,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                     ($attributes['general_postMeta']["taxonomyPosition"] ?? "Inside featured image") === "Inside featured image" &&
                                     $featuredImagePosition !== "background"
                                 ) {
-                                    wcb_block_posts_grid__render_taxonomy($queries, $attributes, "Insidefeaturedimage");
+                                    bcb_block_posts_grid__render_taxonomy($queries, $attributes, "Insidefeaturedimage");
                                 }; ?>
 
                             </div>
@@ -394,7 +394,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                             <?php
 
                             if (($attributes['general_postMeta']['taxonomyPosition'] ?? "Below featured image") === "Below featured image" || !$hasFeaturedImage ||  $featuredImagePosition === 'background') {
-                                wcb_block_posts_grid__render_taxonomy($queries, $attributes,);
+                                bcb_block_posts_grid__render_taxonomy($queries, $attributes,);
                             }; ?>
 
                             <!-- TITLE -->
@@ -509,9 +509,9 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
         </div>
 
         <!-- pagination here -->
-        <?php if (wcb__is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
-            <div class="wcb-posts-grid__pagination">
-                <?php wcb_pagination_bar($the_query, $attributes['general_pagination']); ?>
+        <?php if (bcb__is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
+            <div class="bcb-posts-grid__pagination">
+                <?php bcb_pagination_bar($the_query, $attributes['general_pagination']); ?>
             </div>
         <?php endif; ?>
 
@@ -519,7 +519,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
         <?php wp_reset_postdata(); ?>
 
     <?php else : ?>
-        <p class="wcb-posts-grid__emptyMessage"><?php echo esc_html($sortingAndFiltering['emptyMessage'] ?? "No post found!"); ?></p>
+        <p class="bcb-posts-grid__emptyMessage"><?php echo esc_html($sortingAndFiltering['emptyMessage'] ?? "No post found!"); ?></p>
     <?php endif; ?>
     </div>
 <?php

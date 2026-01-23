@@ -15,32 +15,32 @@ import {
 	Z_INDEX_DEMO,
 } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import {
-	WCB_CTA_PANEL_LAYOUT,
-	WCB_CTA_PANEL_LAYOUT_DEMO,
+	BCB_CTA_PANEL_LAYOUT,
+	BCB_CTA_PANEL_LAYOUT_DEMO,
 } from "./WcbCtaPanelLayout";
 import {
-	WCB_CTA_PANEL_PRESET,
-	WCB_CTA_PANEL_PRESET_DEMO,
+	BCB_CTA_PANEL_PRESET,
+	BCB_CTA_PANEL_PRESET_DEMO,
 } from "./WcbCtaPanelPreset";
-import { WCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO } from "./WcbCtaPanel_StyleDescription";
+import { BCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO } from "./WcbCtaPanel_StyleDescription";
 import {
-	WCB_CTA_PANEL_STYLE_DIMENSION,
-	WCB_CTA_PANEL_STYLE_DIMENSION_DEMO,
+	BCB_CTA_PANEL_STYLE_DIMENSION,
+	BCB_CTA_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbCtaPanel_StyleDimension";
 import {
-	WCB_CTA_PANEL_STYLE_TITLE,
-	WCB_CTA_PANEL_STYLE_TITLE_DEMO,
+	BCB_CTA_PANEL_STYLE_TITLE,
+	BCB_CTA_PANEL_STYLE_TITLE_DEMO,
 } from "./WcbCtaPanel_StyleTitle";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	title: string;
 	description: string;
 	//
-	general_layout: WCB_CTA_PANEL_LAYOUT;
-	general_preset: WCB_CTA_PANEL_PRESET;
-	style_title: WCB_CTA_PANEL_STYLE_TITLE;
-	style_description: WCB_CTA_PANEL_STYLE_TITLE;
-	style_dimension: WCB_CTA_PANEL_STYLE_DIMENSION;
+	general_layout: BCB_CTA_PANEL_LAYOUT;
+	general_preset: BCB_CTA_PANEL_PRESET;
+	style_title: BCB_CTA_PANEL_STYLE_TITLE;
+	style_description: BCB_CTA_PANEL_STYLE_TITLE;
+	style_dimension: BCB_CTA_PANEL_STYLE_DIMENSION;
 	//
 	advance_responsiveCondition: MyResponsiveConditionControlData;
 	advance_zIndex: MyZIndexControlData;
@@ -57,36 +57,36 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	title: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-cta__title",
+		selector: ".bcb-cta__title",
 		default: "",
 	},
 	description: {
 		type: "string",
 		source: "html",
-		selector: ".wcb-cta__description",
+		selector: ".bcb-cta__description",
 		default: "",
 	},
 
 	// ATTRS
 	general_layout: {
 		type: "object",
-		default: WCB_CTA_PANEL_LAYOUT_DEMO,
+		default: BCB_CTA_PANEL_LAYOUT_DEMO,
 	},
 	general_preset: {
 		type: "object",
-		default: WCB_CTA_PANEL_PRESET_DEMO,
+		default: BCB_CTA_PANEL_PRESET_DEMO,
 	},
 	style_title: {
 		type: "object",
-		default: WCB_CTA_PANEL_STYLE_TITLE_DEMO,
+		default: BCB_CTA_PANEL_STYLE_TITLE_DEMO,
 	},
 	style_description: {
 		type: "object",
-		default: WCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO,
+		default: BCB_CTA_PANEL_STYLE_DESCRIPTION_DEMO,
 	},
 	style_dimension: {
 		type: "object",
-		default: WCB_CTA_PANEL_STYLE_DIMENSION_DEMO,
+		default: BCB_CTA_PANEL_STYLE_DIMENSION_DEMO,
 	},
 	//
 	advance_responsiveCondition: {

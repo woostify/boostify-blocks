@@ -7,9 +7,9 @@ import WelcomePage from "./components/WelcomePage";
 import "./types";
 import toast, { Toaster } from "react-hot-toast";
 import SettingsPage from "./components/SettingsPage";
-import { Wcb_theme_layout_global_settings } from "../types";
+import { Bcb_theme_layout_global_settings } from "../types";
 
-export interface Wcb_block_Type {
+export interface Bcb_block_Type {
 	name: string;
 	title: string;
 	category: string;
@@ -17,14 +17,14 @@ export interface Wcb_block_Type {
 	description: string;
 	parent: unknown;
 }
-export interface Wcb_blocks_enable_disable_options_Type
+export interface Bcb_blocks_enable_disable_options_Type
 	extends Record<string, "enabled" | "disabled"> {}
 
 interface Props {
-	wcb_blocks_enable_disable_options: Wcb_blocks_enable_disable_options_Type;
-	wcb_blocks_settings_options: typeof window.wcbGlobalVariables;
-	wcb_blocks_list: Wcb_block_Type[];
-	wcb_layout_global_settings?: Wcb_theme_layout_global_settings;
+	bcb_blocks_enable_disable_options: Bcb_blocks_enable_disable_options_Type;
+	bcb_blocks_settings_options: typeof window.wcbGlobalVariables;
+	bcb_blocks_list: Bcb_block_Type[];
+	bcb_layout_global_settings?: Bcb_theme_layout_global_settings;
 }
 
 export type Path = "welcome" | "blocks" | "settings";
@@ -40,10 +40,10 @@ export const PAGES: Page[] = [
 ];
 
 const App: FC<Props> = ({
-	wcb_blocks_enable_disable_options,
-	wcb_blocks_settings_options,
-	wcb_blocks_list,
-	wcb_layout_global_settings,
+	bcb_blocks_enable_disable_options,
+	bcb_blocks_settings_options,
+	bcb_blocks_list,
+	bcb_layout_global_settings,
 }) => {
 	//
 	const [currentPath, setcurrentPath] = useState<Path>(PAGES[0].path);
@@ -89,17 +89,17 @@ const App: FC<Props> = ({
 					/>
 				)}
 				{/* {currentPath === "settings" && (
-					<SettingsPage initData={wcb_blocks_settings_options} />
+					<SettingsPage initData={bcb_blocks_settings_options} />
 				)} */}
 				{currentPath === "blocks" ? (
 					<BlocksPage
-						initWcbBlocksList={wcb_blocks_list}
-						initWcbBlocksEnableDisable={wcb_blocks_enable_disable_options}
+						initWcbBlocksList={bcb_blocks_list}
+						initWcbBlocksEnableDisable={bcb_blocks_enable_disable_options}
 					/>
 				) : (
 					<SettingsPage
-						initData={wcb_blocks_settings_options}
-						themeLayoutGlobal={wcb_layout_global_settings}
+						initData={bcb_blocks_settings_options}
+						themeLayoutGlobal={bcb_layout_global_settings}
 					/>
 				)}
 				{/* {currentPath === "welcome" && <WelcomePage />} */}
@@ -118,7 +118,7 @@ const App: FC<Props> = ({
 
 // -------------------------------------------------------------------------------------------
 const preEl = document.querySelector(
-	`#wcb-dasboard-root`
+	`#bcb-dasboard-root`
 ) as HTMLElement | null;
 
 if (preEl) {

@@ -19,7 +19,7 @@ import {
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 
-export interface WCB_ICON_LIST_PANEL_STYLE_ICON {
+export interface BCB_ICON_LIST_PANEL_STYLE_ICON {
 	color: string;
 	hoverColor: string;
 	iconSize: HasResponsive<string>;
@@ -27,7 +27,7 @@ export interface WCB_ICON_LIST_PANEL_STYLE_ICON {
 	border: MyBorderControlData;
 }
 
-export const WCB_ICON_LIST_PANEL_STYLE_ICON_DEMO: WCB_ICON_LIST_PANEL_STYLE_ICON =
+export const BCB_ICON_LIST_PANEL_STYLE_ICON_DEMO: BCB_ICON_LIST_PANEL_STYLE_ICON =
 	{
 		color: "#334155",
 		hoverColor: "",
@@ -58,7 +58,7 @@ export const WCB_ICON_LIST_PANEL_STYLE_ICON_DEMO: WCB_ICON_LIST_PANEL_STYLE_ICON
 		border: MY_BORDER_CONTROL_DEMO,
 	};
 
-export const WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1: WCB_ICON_LIST_PANEL_STYLE_ICON =
+export const BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1: BCB_ICON_LIST_PANEL_STYLE_ICON =
 	{
 		color: "#0170B9",
 		hoverColor: "",
@@ -89,7 +89,7 @@ export const WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1: WCB_ICON_LIST_PANEL_STYLE_
 		border: MY_BORDER_CONTROL_DEMO,
 	};
 
-export const WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_2: WCB_ICON_LIST_PANEL_STYLE_ICON =
+export const BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_2: BCB_ICON_LIST_PANEL_STYLE_ICON =
 	{
 		color: "#0170B9",
 		hoverColor: "",
@@ -159,7 +159,7 @@ export const WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_2: WCB_ICON_LIST_PANEL_STYLE_
 		},
 	};
 
-export const WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_3: WCB_ICON_LIST_PANEL_STYLE_ICON =
+export const BCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_3: BCB_ICON_LIST_PANEL_STYLE_ICON =
 	{
 		color: "#0170B9",
 		hoverColor: "",
@@ -231,12 +231,12 @@ export const WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_3: WCB_ICON_LIST_PANEL_STYLE_
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_LIST_PANEL_STYLE_ICON;
-	setAttr__: (data: WCB_ICON_LIST_PANEL_STYLE_ICON) => void;
+	panelData: BCB_ICON_LIST_PANEL_STYLE_ICON;
+	setAttr__: (data: BCB_ICON_LIST_PANEL_STYLE_ICON) => void;
 }
 
 const WcbIconListPanel_StyleIcons: FC<Props> = ({
-	panelData = WCB_ICON_LIST_PANEL_STYLE_ICON_DEMO,
+	panelData = BCB_ICON_LIST_PANEL_STYLE_ICON_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

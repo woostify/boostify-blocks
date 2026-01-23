@@ -1,5 +1,5 @@
 import { WcbAttrs } from "./attributes";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 
 interface Props extends WcbAttrs {}
 
@@ -23,7 +23,7 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 	if (reCaptchaV2) {
 		$(`.${dataUniqueid} .g-recaptcha`).attr(
 			"data-sitekey",
-			DEMO_WCB_GLOBAL_VARIABLES.reCAPTCHA_v2_site_key || ""
+			DEMO_BCB_GLOBAL_VARIABLES.reCAPTCHA_v2_site_key || ""
 		);
 	}
 
@@ -61,11 +61,11 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 				success: function (response) {
 					// This is OK code
 					console.log(99, "-----------OK", { props, response, formData });
-					$(`.${dataUniqueid}` + " .wcb-form__successMessageText").css(
+					$(`.${dataUniqueid}` + " .bcb-form__successMessageText").css(
 						"display",
 						"block"
 					);
-					$(`.${dataUniqueid}` + " .wcb-form__errorMessageText").css(
+					$(`.${dataUniqueid}` + " .bcb-form__errorMessageText").css(
 						"display",
 						"none"
 					);
@@ -81,11 +81,11 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 						"The following error occured: " + textStatus,
 						errorThrown
 					);
-					$(`.${dataUniqueid}` + " .wcb-form__successMessageText").css(
+					$(`.${dataUniqueid}` + " .bcb-form__successMessageText").css(
 						"display",
 						"none"
 					);
-					$(`.${dataUniqueid}` + " .wcb-form__errorMessageText").css(
+					$(`.${dataUniqueid}` + " .bcb-form__errorMessageText").css(
 						"display",
 						"block"
 					);
@@ -97,13 +97,13 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 		if (typeof grecaptcha === "object" && reCaptchaV3) {
 			grecaptcha.ready(function () {
 				grecaptcha
-					.execute(DEMO_WCB_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key, {
+					.execute(DEMO_BCB_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key, {
 						action: "submit",
 					})
 					.then(function (token) {
 						console.log(123, {
 							token,
-							key: DEMO_WCB_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key,
+							key: DEMO_BCB_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key,
 						});
 						handleAjaxAction();
 					});

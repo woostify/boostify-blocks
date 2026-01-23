@@ -4,7 +4,7 @@ import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import getBorderStyles from "../utils/getBorderStyles";
 import getBackgroundColorGradientStyles from "../utils/getBackgroundColorGradientStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BCB_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
@@ -39,22 +39,22 @@ const GlobalCss: FC<Props> = (attrs) => {
         advance_motionEffect,
         general_general,
     } = attrs;
-    const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+    const { media_desktop, media_tablet } = DEMO_BCB_GLOBAL_VARIABLES;
 
     if (!uniqueId) return null;
 
     const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-    const TITLE_WRAP_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__titles`;
-    const TITLE_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner`;
-    const TITLE_CHILD_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__title_inner-selected`;
-    const TITLE_CHILD_BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner_btn`;
-    const TITLE_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title`;
-    const TITLE_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__title-selected`;
-    const BODY_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tab-child__wrap`;
-    const BODY_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tab-child__inner`;
-    const ICON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__icon`;
-    const ICON_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__icon-selected`;
-    const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__contents`;
+    const TITLE_WRAP_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tabs__titles`;
+    const TITLE_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tabs__title_inner`;
+    const TITLE_CHILD_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .bcb-tabs__title_inner-selected`;
+    const TITLE_CHILD_BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tabs__title_inner_btn`;
+    const TITLE_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tabs__title`;
+    const TITLE_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .bcb-tabs__title-selected`;
+    const BODY_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tab-child__wrap`;
+    const BODY_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tab-child__inner`;
+    const ICON_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tabs__icon`;
+    const ICON_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .bcb-tabs__icon-selected`;
+    const INNER_CLASSNAME = `${WRAP_CLASSNAME} .bcb-tabs__contents`;
 
     const IconSizeConverted: HasResponsive<string> = {
         Desktop: `${getValueFromAttrsResponsives(style_icon.size).value_Desktop}px`,

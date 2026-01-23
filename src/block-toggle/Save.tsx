@@ -11,7 +11,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	//
 	const UNIQUE_NAME = converUniqueId(uniqueId, "toggle");
 	const blockProps = useBlockProps.save({
-		className: "wcb-toggle__wrap",
+		className: "bcb-toggle__wrap",
 	});
 
 	return (
@@ -22,10 +22,10 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				uniqueName={UNIQUE_NAME}
 			/>
 
-			<label className="wcb-toggle__switch">
+			<label className="bcb-toggle__switch">
 				<input
 					type="hidden"
-					className="wcb-toggle__switch-input-hidden"
+					className="bcb-toggle__switch-input-hidden"
 					data-truestate={attributes.general_general?.trueState}
 					data-falsestate={attributes.general_general?.falseState}
 					name={UNIQUE_NAME}
@@ -39,7 +39,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 					required={attributes.general_general?.isRequired}
 				/>
 				<span
-					className={`wcb-toggle__slider ${
+					className={`bcb-toggle__slider ${
 						attributes.general_general?.layout === "round" ? "round" : ""
 					}`}
 				></span>

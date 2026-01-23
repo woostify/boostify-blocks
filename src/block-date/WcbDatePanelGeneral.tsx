@@ -9,26 +9,26 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_DATE_PANEL_GENERAL {
+export interface BCB_DATE_PANEL_GENERAL {
 	additionalValidation: boolean;
 	isRequired: boolean;
 	max?: string;
 	min?: string;
 }
 
-export const WCB_DATE_PANEL_GENERAL_DEMO: WCB_DATE_PANEL_GENERAL = {
+export const BCB_DATE_PANEL_GENERAL_DEMO: BCB_DATE_PANEL_GENERAL = {
 	isRequired: false,
 	additionalValidation: true,
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_DATE_PANEL_GENERAL;
-	setAttr__: (data: WCB_DATE_PANEL_GENERAL) => void;
+	panelData: BCB_DATE_PANEL_GENERAL;
+	setAttr__: (data: BCB_DATE_PANEL_GENERAL) => void;
 }
 
 const WcbDatePanelGenera: FC<Props> = ({
-	panelData = WCB_DATE_PANEL_GENERAL_DEMO,
+	panelData = BCB_DATE_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

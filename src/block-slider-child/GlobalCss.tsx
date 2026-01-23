@@ -46,8 +46,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const uniqueCssClass = clientID ? converClientIdToUniqueClass(clientID) : uniqueId;
 
 	// Create robust CSS selectors that work in all scenarios
-	const WRAP_CLASSNAME_UNIVERSAL = `.wcb-slider-child__wrap.${uniqueCssClass}`;
-	const WRAP_CLASSNAME_SCOPED = `.wcb-slider__wrap .wcb-slider-child__wrap.${uniqueCssClass}`;
+	const WRAP_CLASSNAME_UNIVERSAL = `.bcb-slider-child__wrap.${uniqueCssClass}`;
+	const WRAP_CLASSNAME_SCOPED = `.bcb-slider__wrap .bcb-slider-child__wrap.${uniqueCssClass}`;
 	
 	// Create comprehensive dual selectors that handle various wrapper scenarios
 	const createRobustSelector = (childSelector: string) => [
@@ -56,24 +56,24 @@ const GlobalCss: FC<Props> = (attrs) => {
 		// Scoped targeting (for edit mode context)
 		`${WRAP_CLASSNAME_SCOPED} ${childSelector}`,
 		// Additional targeting for potential slider wrapper scenarios
-		`${WRAP_CLASSNAME_UNIVERSAL} .wcb-slider__item ${childSelector}`,
-		`${WRAP_CLASSNAME_SCOPED} .wcb-slider__item ${childSelector}`,
+		`${WRAP_CLASSNAME_UNIVERSAL} .bcb-slider__item ${childSelector}`,
+		`${WRAP_CLASSNAME_SCOPED} .bcb-slider__item ${childSelector}`,
 		// Even more specific for deeply nested scenarios
-		`${WRAP_CLASSNAME_UNIVERSAL} .wcb-slider__item .wcb-slider__item-inner ${childSelector}`,
-		`${WRAP_CLASSNAME_SCOPED} .wcb-slider__item .wcb-slider__item-inner ${childSelector}`
+		`${WRAP_CLASSNAME_UNIVERSAL} .bcb-slider__item .bcb-slider__item-inner ${childSelector}`,
+		`${WRAP_CLASSNAME_SCOPED} .bcb-slider__item .bcb-slider__item-inner ${childSelector}`
 	].join(', ');
 
 	// Create CSS selectors using robust approach
-	const ITEM_CLASSNAME = createRobustSelector('.wcb-slider-child__item');
-	const ITEM_CLASSNAME_INNER = createRobustSelector('.wcb-slider-child__item-inner');
-	const ITEM_NAME = createRobustSelector('.wcb-slider-child__name');
-	const ITEM_CONTENT = createRobustSelector('.wcb-slider-child__content');
-	const ITEM_IMAGE = createRobustSelector('.wcb-slider-child__image');
-	const CALL_TO_ACTION_INNER = createRobustSelector('.wcb-slider-child__btn-inner');
-	const CALL_TO_ACTION_TEXT = createRobustSelector('.wcb-slider-child__btn-text');
-	const CALL_TO_ACTION_TEXT_SPACING = createRobustSelector('.wcb-slider-child__btn_spacing');
-	const ITEM_TOP_ICON_WRAP = createRobustSelector('.wcb-top__icon-wrap');
-	const ITEM_TOP_ICON = createRobustSelector('.wcb-top__icon');
+	const ITEM_CLASSNAME = createRobustSelector('.bcb-slider-child__item');
+	const ITEM_CLASSNAME_INNER = createRobustSelector('.bcb-slider-child__item-inner');
+	const ITEM_NAME = createRobustSelector('.bcb-slider-child__name');
+	const ITEM_CONTENT = createRobustSelector('.bcb-slider-child__content');
+	const ITEM_IMAGE = createRobustSelector('.bcb-slider-child__image');
+	const CALL_TO_ACTION_INNER = createRobustSelector('.bcb-slider-child__btn-inner');
+	const CALL_TO_ACTION_TEXT = createRobustSelector('.bcb-slider-child__btn-text');
+	const CALL_TO_ACTION_TEXT_SPACING = createRobustSelector('.bcb-slider-child__btn_spacing');
+	const ITEM_TOP_ICON_WRAP = createRobustSelector('.bcb-top__icon-wrap');
+	const ITEM_TOP_ICON = createRobustSelector('.bcb-top__icon');
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject[] => {
@@ -120,7 +120,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							prefix_2: "fontSize",
 						}),
 						{
-							[`${ITEM_TOP_ICON} .wcb-icon-full`]: {
+							[`${ITEM_TOP_ICON} .bcb-icon-full`]: {
 								color: style_image?.iconColor,
 								":hover": {
 									color: style_image?.iconHoverColor,
@@ -217,9 +217,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						[ITEM_CLASSNAME_INNER]: {
 							justifyItems: (() => {
 							if (
-								style_layoutPreset?.preset === "wcb-layout-2" ||
-								style_layoutPreset?.preset === "wcb-layout-3" ||
-								style_layoutPreset?.preset === "wcb-layout-5" ||
+								style_layoutPreset?.preset === "bcb-layout-2" ||
+								style_layoutPreset?.preset === "bcb-layout-3" ||
+								style_layoutPreset?.preset === "bcb-layout-5" ||
 								style_image?.iconPosition === "left"
 							) {
 								return "start";
@@ -306,7 +306,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						// BUTTON HOVER
 						[CALL_TO_ACTION_INNER]: {
 							":hover": {
-								".wcb-slider-child__btn-text": {
+								".bcb-slider-child__btn-text": {
 									color: style_callToActionButton?.hoverColorText,
 								},
 							},
@@ -371,7 +371,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				<Global
 					styles={[
 						getPaddingMarginStyles({
-							className: createRobustSelector('.wcb-slider-child__item-inner'),
+							className: createRobustSelector('.bcb-slider-child__item-inner'),
 							padding: style_dimension.padding,
 						}),
 					]}
@@ -386,13 +386,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global
 						styles={[
 							{
-								[createRobustSelector('.wcb-slider-child__content-image')]:
+								[createRobustSelector('.bcb-slider-child__content-image')]:
 									{
 										display: "flex",
 										flexDirection: "column",
 										alignItems: "center",
 								},
-								[createRobustSelector('.wcb-slider-child__image')]:
+								[createRobustSelector('.bcb-slider-child__image')]:
 									{
 										alignSelf: style_image.imageAlignSelf,
 										width: style_image.imageSize === "thumbnail" ? "100px" : "100%",
@@ -411,14 +411,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global
 						styles={[
 							{
-								[createRobustSelector('.wcb-slider-child__item-wrap-inner')]:
+								[createRobustSelector('.bcb-slider-child__item-wrap-inner')]:
 									{
 										display: "flex",
 										flexDirection: "row",
 										gap: "10px",
 									},
 
-								[createRobustSelector('.wcb-slider-child__image')]:
+								[createRobustSelector('.bcb-slider-child__image')]:
 									{
 										display: "block",
 										width: style_image.imageSize === "thumbnail" ? "100px" : "100%",

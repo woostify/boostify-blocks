@@ -26,7 +26,7 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
 type TabsHere = "Normal" | "Hover" | "Active";
-export interface WCB_FORM_PANEL_STYLE_INPUT {
+export interface BCB_FORM_PANEL_STYLE_INPUT {
 	typography: MyTypographyControlData;
 	textColor: string;
 	bgAndPlaceholder: {
@@ -39,7 +39,7 @@ export interface WCB_FORM_PANEL_STYLE_INPUT {
 	padding: HasResponsive<DimensionSettings>;
 }
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE: WCB_FORM_PANEL_STYLE_INPUT =
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE: BCB_FORM_PANEL_STYLE_INPUT =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "",
@@ -66,7 +66,7 @@ export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE: WCB_FORM_PANEL_STYLE_INPUT
 		},
 	};
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID: WCB_FORM_PANEL_STYLE_INPUT =
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID: BCB_FORM_PANEL_STYLE_INPUT =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "",
@@ -93,7 +93,7 @@ export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__SOLID: WCB_FORM_PANEL_STYLE_INPUT 
 		},
 	};
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE: WCB_FORM_PANEL_STYLE_INPUT =
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE: BCB_FORM_PANEL_STYLE_INPUT =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
 		textColor: "",
@@ -145,16 +145,16 @@ export const WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE: WCB_FORM_PANEL_STYLE_IN
 		},
 	};
 
-export const WCB_FORM_PANEL_STYLE_INPUT_DEMO =
-	WCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE;
+export const BCB_FORM_PANEL_STYLE_INPUT_DEMO =
+	BCB_FORM_PANEL_STYLE_INPUT_DEMO__UNDERLINE;
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_FORM_PANEL_STYLE_INPUT;
-	setAttr__: (data: WCB_FORM_PANEL_STYLE_INPUT) => void;
+	panelData: BCB_FORM_PANEL_STYLE_INPUT;
+	setAttr__: (data: BCB_FORM_PANEL_STYLE_INPUT) => void;
 }
 
 const WcbFormPanel_StyleInput: FC<Props> = ({
-	panelData = WCB_FORM_PANEL_STYLE_INPUT_DEMO,
+	panelData = BCB_FORM_PANEL_STYLE_INPUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -193,7 +193,7 @@ const WcbFormPanel_StyleInput: FC<Props> = ({
 		>
 			<div className={"space-y-4"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel `}
+					className={`bcb-bodyControls__panel `}
 					activeClass="active-tab"
 					initialTabName={initialTabName}
 					tabs={PanelTab}

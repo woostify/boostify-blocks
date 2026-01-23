@@ -10,7 +10,7 @@ import MyTextAlignControl, {
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_ICON_BOX_PANEL_LAYOUT {
+export interface BCB_ICON_BOX_PANEL_LAYOUT {
 	textAlignment: HasResponsive<TextAlignment>;
 	headingTag: keyof HTMLElementTagNameMap;
 	enablePrefix: boolean;
@@ -27,7 +27,7 @@ export interface WCB_ICON_BOX_PANEL_LAYOUT {
 	animationDuration: string;
 }
 
-export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
+export const BCB_ICON_BOX_PANEL_LAYOUT_DEMO: BCB_ICON_BOX_PANEL_LAYOUT = {
 	textAlignment: { Desktop: "center" },
 	headingTag: "h4",
 	enableDescription: true,
@@ -46,12 +46,12 @@ export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_ICON_BOX_PANEL_LAYOUT;
-	setAttr__: (data: WCB_ICON_BOX_PANEL_LAYOUT) => void;
+	panelData: BCB_ICON_BOX_PANEL_LAYOUT;
+	setAttr__: (data: BCB_ICON_BOX_PANEL_LAYOUT) => void;
 }
 
 const WcbIconBoxPanelLayout: FC<Props> = ({
-	panelData = WCB_ICON_BOX_PANEL_LAYOUT_DEMO,
+	panelData = BCB_ICON_BOX_PANEL_LAYOUT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

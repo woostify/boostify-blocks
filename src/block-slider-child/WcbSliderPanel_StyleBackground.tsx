@@ -19,33 +19,33 @@ import MyBackgroundNoImageControl, {
 } from "../components/controls/MyBackgroundControl/MyBackgroundNoImageControl";
 
 
-export interface WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER {
+export interface BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER {
 	background: BackgroundControlData;
 	border: MyBorderControlData;
 }
 
-export interface WCB_BUTTON_PANEL_STYLE_BACKGROUND {
+export interface BCB_BUTTON_PANEL_STYLE_BACKGROUND {
 	normal: BackgroundNoImageControlData;
 	hover: BackgroundNoImageControlData;
 }
 
-export const WCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_1: WCB_BUTTON_PANEL_STYLE_BACKGROUND =
+export const BCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_1: BCB_BUTTON_PANEL_STYLE_BACKGROUND =
 	{
 		normal: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#f0f0f1" },
 		hover: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#f0f0f1" },
 	};
-export const WCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_3: WCB_BUTTON_PANEL_STYLE_BACKGROUND =
+export const BCB_BUTTON_PANEL_STYLE_BACKGROUND_PRESET_3: BCB_BUTTON_PANEL_STYLE_BACKGROUND =
 	{
 		normal: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#2B2B2B" },
 		hover: { ...STYLES_BG_NO_IMAGE_DEMO, color: "#2B2B2B" },
 	};
-export const WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE: WCB_BUTTON_PANEL_STYLE_BACKGROUND =
+export const BCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO_WHITE: BCB_BUTTON_PANEL_STYLE_BACKGROUND =
 	{
 		normal: STYLES_BG_NO_IMAGE_DEMO,
 		hover: STYLES_BG_NO_IMAGE_DEMO,
 	};
 
-export const WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO: WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER =
+export const BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO: BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER =
 	{
 		background: STYLES_BG_DEMO,
 		border: MY_BORDER_CONTROL_DEMO,
@@ -53,12 +53,12 @@ export const WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO: WCB_SLIDER_PANEL_STY
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER;
-	setAttr__: (data: WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER) => void;
+	panelData: BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER;
+	setAttr__: (data: BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER) => void;
 }
 
 const WcbTestimonialsPanel_StyleBackground: FC<Props> = ({
-	panelData = WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
+	panelData = BCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

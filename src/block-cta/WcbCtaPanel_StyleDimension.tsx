@@ -13,12 +13,12 @@ import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
-export interface WCB_CTA_PANEL_STYLE_DIMENSION
+export interface BCB_CTA_PANEL_STYLE_DIMENSION
 	extends MyDimensionsNoGapControlData {
 	gap: HasResponsive<string>;
 }
 
-export const WCB_CTA_PANEL_STYLE_DIMENSION_DEMO: WCB_CTA_PANEL_STYLE_DIMENSION =
+export const BCB_CTA_PANEL_STYLE_DIMENSION_DEMO: BCB_CTA_PANEL_STYLE_DIMENSION =
 	{
 		...MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 		padding: {
@@ -42,12 +42,12 @@ export const WCB_CTA_PANEL_STYLE_DIMENSION_DEMO: WCB_CTA_PANEL_STYLE_DIMENSION =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_CTA_PANEL_STYLE_DIMENSION;
-	setAttr__: (data: WCB_CTA_PANEL_STYLE_DIMENSION) => void;
+	panelData: BCB_CTA_PANEL_STYLE_DIMENSION;
+	setAttr__: (data: BCB_CTA_PANEL_STYLE_DIMENSION) => void;
 }
 
 const WcbCtaPanel_StyleDimension: FC<Props> = ({
-	panelData = WCB_CTA_PANEL_STYLE_DIMENSION_DEMO,
+	panelData = BCB_CTA_PANEL_STYLE_DIMENSION_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

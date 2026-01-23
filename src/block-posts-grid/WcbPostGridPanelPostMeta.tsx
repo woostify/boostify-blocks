@@ -9,7 +9,7 @@ import { __experimentalInputControl as InputControl } from "@wordpress/component
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 import MySelect from "../components/controls/MySelect";
 
-export interface WCB_POST_GRID_PANEL_POST_META {
+export interface BCB_POST_GRID_PANEL_POST_META {
 	isShowTitle: boolean;
 	titleHtmlTag: HtmlTagsType;
 	isShowAuthor: boolean;
@@ -24,14 +24,14 @@ export interface WCB_POST_GRID_PANEL_POST_META {
 }
 
 const TAXONOMY_POSITION_OPTIONS: {
-	value: WCB_POST_GRID_PANEL_POST_META["taxonomyPosition"];
+	value: BCB_POST_GRID_PANEL_POST_META["taxonomyPosition"];
 	label: string;
 }[] = [
 	{ value: "Inside featured image", label: "Inside featured image" },
 	{ value: "Below featured image", label: "Below featured image" },
 ];
 
-export const WCB_POST_GRID_PANEL_POST_META_DEMO: WCB_POST_GRID_PANEL_POST_META =
+export const BCB_POST_GRID_PANEL_POST_META_DEMO: BCB_POST_GRID_PANEL_POST_META =
 	{
 		isShowTitle: true,
 		titleHtmlTag: "h4",
@@ -48,12 +48,12 @@ export const WCB_POST_GRID_PANEL_POST_META_DEMO: WCB_POST_GRID_PANEL_POST_META =
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_POST_META;
-	setAttr__: (data: WCB_POST_GRID_PANEL_POST_META) => void;
+	panelData: BCB_POST_GRID_PANEL_POST_META;
+	setAttr__: (data: BCB_POST_GRID_PANEL_POST_META) => void;
 }
 
 const WcbPostGridPanelPostMeta: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_POST_META_DEMO,
+	panelData = BCB_POST_GRID_PANEL_POST_META_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -109,7 +109,7 @@ const WcbPostGridPanelPostMeta: FC<Props> = ({
 						setAttr__({
 							...panelData,
 							taxonomyPosition:
-								value as WCB_POST_GRID_PANEL_POST_META["taxonomyPosition"],
+								value as BCB_POST_GRID_PANEL_POST_META["taxonomyPosition"],
 						});
 					}}
 					value={taxonomyPosition}

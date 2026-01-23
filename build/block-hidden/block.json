@@ -7,13 +7,13 @@
   "parent": [
     "wcb/form"
   ],
-  "category": "wcb-blocks",
-  "icon": "hidden - wcb-block-editor-block-icon  text-xl",
+  "category": "bcb-blocks",
+  "icon": "hidden - bcb-block-editor-block-icon  text-xl",
   "description": "Example static block scaffolded with Create Block tool.",
   "supports": {
     "__experimentalSelector": "span,label"
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "bcb-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

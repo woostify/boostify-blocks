@@ -3,13 +3,13 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 
-export interface WCB_POST_GRID_PANEL_POST_CONTENT {
+export interface BCB_POST_GRID_PANEL_POST_CONTENT {
 	isShowPostContent: boolean;
 	contentType: "Full post" | "excerpt";
 	excerptWordsNumber: number;
 }
 
-export const WCB_POST_GRID_PANEL_POST_CONTENT_DEMO: WCB_POST_GRID_PANEL_POST_CONTENT =
+export const BCB_POST_GRID_PANEL_POST_CONTENT_DEMO: BCB_POST_GRID_PANEL_POST_CONTENT =
 	{
 		isShowPostContent: true,
 		contentType: "excerpt",
@@ -18,12 +18,12 @@ export const WCB_POST_GRID_PANEL_POST_CONTENT_DEMO: WCB_POST_GRID_PANEL_POST_CON
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_POST_GRID_PANEL_POST_CONTENT;
-	setAttr__: (data: WCB_POST_GRID_PANEL_POST_CONTENT) => void;
+	panelData: BCB_POST_GRID_PANEL_POST_CONTENT;
+	setAttr__: (data: BCB_POST_GRID_PANEL_POST_CONTENT) => void;
 }
 
 const WcbPostGridPanelPostContent: FC<Props> = ({
-	panelData = WCB_POST_GRID_PANEL_POST_CONTENT_DEMO,
+	panelData = BCB_POST_GRID_PANEL_POST_CONTENT_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,

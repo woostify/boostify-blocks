@@ -4,29 +4,29 @@ import React, { FC } from "react";
 import MySelect from "../components/controls/MySelect";
 import { Option } from "../types";
 
-export interface WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE {
+export interface BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE {
 	style: "none" | "solid" | "double" | "dashed" | "dotted";
 }
 
-export interface WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION {
+export interface BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION {
 	position: "after-title" | "after-prefix" | "after-icon-image" | "after-description" | "";
 }
 
-export type WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR = WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE & WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION;
+export type BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR = BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE & BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION;
 
-export const WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO: WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR = {
+export const BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO: BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR = {
 	style: "none",
 	position: "",
 };
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR;
-	setAttr__: (data: WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR) => void;
+	panelData: BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR;
+	setAttr__: (data: BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR) => void;
 }
 
 const WcbSlidersPanel_StyleSeparator: FC<Props> = ({
-	panelData = WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO,
+	panelData = BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -35,7 +35,7 @@ const WcbSlidersPanel_StyleSeparator: FC<Props> = ({
 	const { style, position } =
 		panelData;
 	
-	const STYLE_DEMO: Option<WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE["style"]>[] =
+	const STYLE_DEMO: Option<BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE["style"]>[] =
 		[
 			{ value: "none", label: "None" },
 			{ value: "solid", label: "Solid" },
@@ -44,7 +44,7 @@ const WcbSlidersPanel_StyleSeparator: FC<Props> = ({
 			{ value: "dotted", label: "Dotted" },
 		];
 
-	const POSITION_DEMO: Option<WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION["position"]>[] =[
+	const POSITION_DEMO: Option<BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION["position"]>[] =[
 			{ value: "after-title", label: "After Title" },
 			{ value: "after-prefix", label: "After Prefix" },
 			{ value: "after-icon-image", label: "After Icon/Image" },
@@ -68,7 +68,7 @@ const WcbSlidersPanel_StyleSeparator: FC<Props> = ({
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							style: value as WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE["style"],
+							style: value as BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_STYLE["style"],
 						});
 					}}
 				/>
@@ -80,7 +80,7 @@ const WcbSlidersPanel_StyleSeparator: FC<Props> = ({
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							position: value as WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION["position"],
+							position: value as BCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_POSITION["position"],
 						});
 					}}
 				/>

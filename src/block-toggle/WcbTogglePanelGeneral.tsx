@@ -10,7 +10,7 @@ import React, { FC, CSSProperties } from "react";
 import MyRadioGroup from "../components/controls/MyRadioGroup";
 import { MyInputAutocomplete } from "./types";
 
-export interface WCB_TOGGLE_PANEL_GENERAL {
+export interface BCB_TOGGLE_PANEL_GENERAL {
 	trueState: string;
 	falseState: string;
 	layout: "square" | "round";
@@ -18,7 +18,7 @@ export interface WCB_TOGGLE_PANEL_GENERAL {
 	isRequired: boolean;
 }
 
-export const WCB_TOGGLE_PANEL_GENERAL_DEMO: WCB_TOGGLE_PANEL_GENERAL = {
+export const BCB_TOGGLE_PANEL_GENERAL_DEMO: BCB_TOGGLE_PANEL_GENERAL = {
 	isRequired: false,
 	falseState: "off",
 	trueState: "on",
@@ -28,12 +28,12 @@ export const WCB_TOGGLE_PANEL_GENERAL_DEMO: WCB_TOGGLE_PANEL_GENERAL = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TOGGLE_PANEL_GENERAL;
-	setAttr__: (data: WCB_TOGGLE_PANEL_GENERAL) => void;
+	panelData: BCB_TOGGLE_PANEL_GENERAL;
+	setAttr__: (data: BCB_TOGGLE_PANEL_GENERAL) => void;
 }
 
 const WcbTogglePanelGeneral: FC<Props> = ({
-	panelData = WCB_TOGGLE_PANEL_GENERAL_DEMO,
+	panelData = BCB_TOGGLE_PANEL_GENERAL_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -70,7 +70,7 @@ const WcbTogglePanelGeneral: FC<Props> = ({
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
-							layout: value as WCB_TOGGLE_PANEL_GENERAL["layout"],
+							layout: value as BCB_TOGGLE_PANEL_GENERAL["layout"],
 						});
 					}}
 					plans={[

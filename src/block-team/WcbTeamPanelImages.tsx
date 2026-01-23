@@ -13,7 +13,7 @@ import MySelect from "../components/controls/MySelect";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import useGetImageSizeOptions from "../hooks/useGetImageSizeOptions";
 
-export interface WCB_TEAM_PANEL_IMAGES {
+export interface BCB_TEAM_PANEL_IMAGES {
 	image: MediaUploadData;
 	imageSize: string;
 	isShowImage: boolean;
@@ -24,7 +24,7 @@ export interface WCB_TEAM_PANEL_IMAGES {
 
 type TabsHere = "Settings" | "SelectImages";
 
-export const WCB_TEAM_PANEL_IMAGES_DEMO: WCB_TEAM_PANEL_IMAGES = {
+export const BCB_TEAM_PANEL_IMAGES_DEMO: BCB_TEAM_PANEL_IMAGES = {
 	image: INIT_IMAGE_DATA_UPLOAD_DEMO,
 	imageSize: "thumbnail",
 	isShowImage: true,
@@ -35,12 +35,12 @@ export const WCB_TEAM_PANEL_IMAGES_DEMO: WCB_TEAM_PANEL_IMAGES = {
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_TEAM_PANEL_IMAGES;
-	setAttr__: (data: WCB_TEAM_PANEL_IMAGES) => void;
+	panelData: BCB_TEAM_PANEL_IMAGES;
+	setAttr__: (data: BCB_TEAM_PANEL_IMAGES) => void;
 }
 
 const WcbTeamPanelImages: FC<Props> = ({
-	panelData = WCB_TEAM_PANEL_IMAGES_DEMO,
+	panelData = BCB_TEAM_PANEL_IMAGES_DEMO,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -91,20 +91,20 @@ const WcbTeamPanelImages: FC<Props> = ({
 	};
 
 	const renderSettingsImage = () => {
-		const POSTION_PLANS: MyRadioItem<WCB_TEAM_PANEL_IMAGES["imagePosition"]>[] =
+		const POSTION_PLANS: MyRadioItem<BCB_TEAM_PANEL_IMAGES["imagePosition"]>[] =
 			[
 				{ name: "top", icon: "Top" },
 				{ name: "left", icon: "Left" },
 				{ name: "right", icon: "Right" },
 				{ name: "bottom", icon: "Bottom" },
 			];
-		const STACKON_PLANS: MyRadioItem<WCB_TEAM_PANEL_IMAGES["stackOn"]>[] = [
+		const STACKON_PLANS: MyRadioItem<BCB_TEAM_PANEL_IMAGES["stackOn"]>[] = [
 			{ name: "none", icon: "None" },
 			{ name: "tablet", icon: "Tablet" },
 			{ name: "mobile", icon: "Mobile" },
 		];
 		const ALIGNSELF_PLANS: MyRadioItem<
-			WCB_TEAM_PANEL_IMAGES["imageAlignSelf"]
+			BCB_TEAM_PANEL_IMAGES["imageAlignSelf"]
 		>[] = [
 			{ name: "flex-start", icon: "Flex start" },
 			{ name: "center", icon: "Center" },
@@ -202,7 +202,7 @@ const WcbTeamPanelImages: FC<Props> = ({
 		>
 			<div className={"space-y-5"}>
 				<TabPanel
-					className={`wcb-bodyControls__panel`}
+					className={`bcb-bodyControls__panel`}
 					activeClass="active-tab"
 					initialTabName="Settings"
 					tabs={TABS}

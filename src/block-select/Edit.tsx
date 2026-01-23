@@ -87,7 +87,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const renderSelect = () => {
 		return (
-			<select className="wcb-select__select" name={UNIQUE_NAME} id="">
+			<select className="bcb-select__select" name={UNIQUE_NAME} id="">
 				{(attributes.options || []).map((item, index) => (
 					<option key={index + "-" + item.value} value={item.value}>
 						{item.label}
@@ -208,7 +208,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		// <CacheProvider value={myCache}>
 		<div
 			{...wrapBlockProps}
-			className={`${wrapBlockProps?.className} wcb-select__wrap ${uniqueId}`}
+			className={`${wrapBlockProps?.className} bcb-select__wrap ${uniqueId}`}
 			data-uniqueid={uniqueId}
 		>
 			{/* CONTROL SETTINGS */}

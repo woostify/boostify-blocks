@@ -39,7 +39,7 @@ const Button: FC<Props> = forwardRef((props, ref) => {
 		if (!icon || !enableIcon) {
 			return null;
 		}
-		return <MyIconFull icon={icon} className="wcb-button__icon" />;
+		return <MyIconFull icon={icon} className="bcb-button__icon" />;
 	};
 
 	const renderButton = () => {
@@ -50,11 +50,11 @@ const Button: FC<Props> = forwardRef((props, ref) => {
 				{...otherProps}
 				// @ts-ignore
 				ref={ref}
-				className={`wcb-button__main ${
-					enableIcon ? `wcb-button__main-icon-${iconPosition}` : ""
+				className={`bcb-button__main ${
+					enableIcon ? `bcb-button__main-icon-${iconPosition}` : ""
 				} ${
 					general_preset.preset
-						? `wcb-button__main--${general_preset.preset}`
+						? `bcb-button__main--${general_preset.preset}`
 						: ""
 				}`}
 				//
@@ -68,7 +68,7 @@ const Button: FC<Props> = forwardRef((props, ref) => {
 				{isEdit ? (
 					<RichText
 						tagName="div"
-						className={`wcb-button__text ${isHiddenText ? "sr-only" : ""}`}
+						className={`bcb-button__text ${isHiddenText ? "sr-only" : ""}`}
 						value={content}
 						allowedFormats={["core/bold", "core/italic"]}
 						onChange={onChangeText}
@@ -77,7 +77,7 @@ const Button: FC<Props> = forwardRef((props, ref) => {
 				) : (
 					<RichText.Content
 						tagName="div"
-						className={`wcb-button__text ${isHiddenText ? "sr-only" : ""}`}
+						className={`bcb-button__text ${isHiddenText ? "sr-only" : ""}`}
 						value={content}
 						placeholder={__("Button", "wcb")}
 					/>
