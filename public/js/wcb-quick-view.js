@@ -562,9 +562,9 @@ jQuery(document).ready(function () {
     if ( 'function' === typeof( woostifyCountdownPreorder ) ) {
         woostifyCountdownPreorder( true );
     }
-    // Re-init sale notification
-    if ( 'function' === typeof( woostifySaleNotification ) ) {
-        woostifySaleNotification( true );
+    // Re-init countdown urgency
+    if ( 'function' === typeof( woostifyCountdownUrgency ) ) {
+        woostifyCountdownUrgency( true );
     }
 });
 
@@ -589,9 +589,9 @@ jQuery(document).on('click', '.product-quick-view-btn', function () {
             woostifyCountdownPreorder();
         }
 
-        // Re-init sale notification
-        if ( 'function' === typeof( woostifySaleNotification ) ) {
-            woostifySaleNotification( true );
+        // Re-init countdown urgency
+        if ( 'function' === typeof( woostifyCountdownUrgency ) ) {
+            woostifyCountdownUrgency( true );
         }
 
     }, 500);
@@ -624,9 +624,9 @@ const quickViewObserver = new MutationObserver(function (mutations) {
                     woostifyCountdownPreorder();
                 }
 
-                // Re-init sale notification
-                if ( 'function' === typeof( woostifySaleNotification ) ) {
-                    woostifySaleNotification( true );
+                // Re-init countdown urgency
+                if ( 'function' === typeof( woostifyCountdownUrgency ) ) {
+                    woostifyCountdownUrgency( true );
                 }
             }, 300);
         }
