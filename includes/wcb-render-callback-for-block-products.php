@@ -532,10 +532,10 @@ function wcb_block_products__render_product($product, $attributes, $index)
                     {$btnQuickViewBottomImageHtml}
                     {$saleBadge1}
                     {$saleOutOfStock}
-                    {$preorderBadge}
                 </div>
                 {$data->categories}
                 {$data->title}
+                {$preorderBadge}
 				{$saleBadge2}
 				{$data->rating}
 				" . ($data->price_button_group ?? ($data->price . $btn2)) . "
@@ -754,9 +754,21 @@ function wcb_block_products__get_preorder_html( $product ) {
 
     error_log('Passed' . var_export($preorder_date, true));
 
-    return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
-			<span aria-hidden="true">Pre-Order</span>
-		</div></div>';
+    // Format the date to display (e.g., "January 29, 2026")
+    $formatted_date = wp_date( 'F d, Y', strtotime( $preorder_date ) );
+
+    $html = '<div class="wcb-products__product-preorder-badge">';
+    $html .= '<div class="wcb-products__product-salebadge">';
+    $html .= '<div class="wcb-products__product-onsale wc-block-grid__product-onsale">';
+    $html .= '<span aria-hidden="true">Pre-Order</span>';
+    $html .= '</div>';
+    $html .= '</div>';
+    $html .= '<div class="wcb-products__product-preorder-info">';
+    $html .= '<span class="preorder-text">Available for Pre-Order - This item will be available on ' . esc_html( $formatted_date ) . '</span>';
+    $html .= '</div>';
+    $html .= '</div>';
+
+    return $html;
 }
 
 
