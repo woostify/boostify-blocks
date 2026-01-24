@@ -757,14 +757,21 @@ function wcb_block_products__get_preorder_html( $product ) {
     // Format the date to display (e.g., "January 29, 2026")
     $formatted_date = wp_date( 'F d, Y', strtotime( $preorder_date ) );
 
-    $html = '<div class="wcb-products__product-preorder-badge">';
+    $html = '<style>
+        .wcb-products__product-preorder-message {
+            color: #000000;
+            font-size: 15px;
+            font-weight: 400;
+        }
+    </style>';
+    $html .= '<div class="wcb-products__product-preorder-badge">';
     $html .= '<div class="wcb-products__product-salebadge">';
     $html .= '<div class="wcb-products__product-onsale wc-block-grid__product-onsale">';
     $html .= '<span aria-hidden="true">Pre-Order</span>';
     $html .= '</div>';
     $html .= '</div>';
     $html .= '<div class="wcb-products__product-preorder-info">';
-    $html .= '<span class="preorder-text">Available for Pre-Order - This item will be available on ' . esc_html( $formatted_date ) . '</span>';
+    $html .= '<span class="wcb-products__product-preorder-message">Available for Pre-Order - This item will be available on ' . esc_html( $formatted_date ) . '</span>';
     $html .= '</div>';
     $html .= '</div>';
 
