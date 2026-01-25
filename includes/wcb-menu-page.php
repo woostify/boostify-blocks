@@ -14,8 +14,8 @@ function boostify_blocks_register_custom_menu_page() {
 		__( 'Boostify Blocks Settings', 'boostify-blocks' ),
 		__( 'Boostify Blocks', 'boostify-blocks' ),
 		'manage_options',
-		'boostify-blocks-settings',
-		'boostify_blocks_render_settings_page',
+		BOOSTIFY_BLOCKS_PATH . 'includes/settings-page.php',
+		'',
 		'data:image/svg+xml;base64,' . base64_encode( $svg ),
 		6
 	);
