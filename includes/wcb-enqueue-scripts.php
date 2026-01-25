@@ -13,7 +13,6 @@ if (!function_exists("boostify_blocks_my_scripts_method")) {
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),
-                'nonce'   => wp_create_nonce('wcb_form_action_nonce'),
             )
         );
         wp_localize_script(
