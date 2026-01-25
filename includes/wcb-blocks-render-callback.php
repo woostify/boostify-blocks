@@ -130,8 +130,6 @@ function boostify_blocks_block_testimonials_render_callback($attributes, $conten
     return $content;
 }
 
-
-
 //============================================= block 1 ===============================================================
 function boostify_blocks_block_form_render_callback($attributes, $content)
 // LƯU Ý - PHẦN NÀY CHƯA CÓ DỮ LIỆU CHO RECAPTCHA KEY, CẦN CẬP NHẬT SAU KHI CÓ DỮ LIỆU
@@ -144,7 +142,7 @@ function boostify_blocks_block_form_render_callback($attributes, $content)
 
     $wcb_blocks_settings_options = get_option('boostify_blocks_settings_options');
     ob_start();
-    echo $content;
+    echo wp_kses_stripslashes($content);
 ?>
     <!-- general_gg_recaptcha.enableReCaptcha -->
     <?php if (boolval($attributes['general_gg_recaptcha']['enableReCaptcha'] ?? true)) : ?>
