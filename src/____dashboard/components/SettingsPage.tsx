@@ -81,7 +81,6 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 		setAllSettings(newSettings);
 		const data = {
 			action: "wcb_dashboard_blocks_update_settings",
-			nonce: (window as any)?.boostifyBlocksFrontendAjaxObject?.nonce,
 			settings: newSettings,
 		};
 

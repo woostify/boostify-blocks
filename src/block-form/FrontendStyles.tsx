@@ -50,7 +50,7 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 			$.ajax({
 				type: "post", //Phương thức truyền post hoặc get
 				dataType: "json", //Dạng dữ liệu trả về xml, json, script, or html
-				url: wcbFrontendAjaxObject.ajaxurl, //Đường dẫn chứa hàm xử lý dữ liệu. Mặc định của WP như vậy
+				url: boostifyBlocksFrontendAjaxObject.ajaxurl, //Đường dẫn chứa hàm xử lý dữ liệu. Mặc định của WP như vậy
 				data: {
 					action: "wcbform_action", //Tên action
 					formData,

@@ -6,8 +6,8 @@ if (!function_exists('boostify_blocks_get_block_type_list') || !function_exists(
     return;
 }
 // 
-$boostify_blocks_enable_disable_options = get_option('wcb_blocks_enable_disable_options');
-$boostify_blocks_settings_options = get_option('wcb_blocks_settings_options');
+$boostify_blocks_enable_disable_options = get_option('boostify_blocks_enable_disable_options');
+$boostify_blocks_settings_options = get_option('boostify_blocks_settings_options');
 $boostify_blocks_all_block_list = boostify_blocks_get_block_type_list();
 
 // 

@@ -57,7 +57,7 @@ if (!function_exists("boostify_blocks_my_enqueue_scripts_for_admin_editor")) {
         );
         wp_localize_script(
             'jquery',
-            'wcbFrontendAjaxObject',
+            'boostifyBlocksFrontendAjaxObject',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),

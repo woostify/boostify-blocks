@@ -17,7 +17,7 @@ declare global {
 		// containerElementsGap?: string;
 		customColorPallete?: { name: string; color: string }[];
 	};
-	var wcbFrontendAjaxObject: {
+	var boostifyBlocksFrontendAjaxObject: {
 		ajaxurl: string;
 		homeUrl: string;
 		nonce: string;
