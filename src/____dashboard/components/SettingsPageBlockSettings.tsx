@@ -1,12 +1,20 @@
 import React, { FC } from "react";
-import _ from "lodash";
 interface Props {
 	allSettings: typeof window.wcbGlobalVariables;
 	onChange: (data: typeof window.wcbGlobalVariables) => void;
 }
 
+// Simple debounce utility
+const debounce = (func: Function, delay: number) => {
+	let timeoutId: any;
+	return (...args: any[]) => {
+		clearTimeout(timeoutId);
+		timeoutId = setTimeout(() => func(...args), delay);
+	};
+};
+
 const SettingsPageBlockSettings: FC<Props> = ({ allSettings, onChange }) => {
-	const debounce_fun = _.debounce(function (data: Props["allSettings"]) {
+	const debounce_fun = debounce(function (data: Props["allSettings"]) {
 		console.log("Function debounced after 300ms!", { data });
 		onChange(data);
 	}, 300);

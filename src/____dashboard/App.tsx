@@ -70,6 +70,30 @@ const App: FC<Props> = ({
 		history.replaceState(null, "", `?${queryParams.toString()}`);
 	};
 
+	const renderPage = () => {
+		switch (currentPath) {
+			case "blocks":
+				return (
+					<BlocksPage
+						initWcbBlocksList={wcb_blocks_list}
+						initWcbBlocksEnableDisable={wcb_blocks_enable_disable_options}
+					/>
+				);
+			case "settings":
+				return (
+					<SettingsPage
+						initData={wcb_blocks_settings_options}
+						themeLayoutGlobal={wcb_layout_global_settings}
+					/>
+				);
+			case "welcome":
+				return <WelcomePage />;
+			default:
+				return null;
+		}
+	};
+
+
 	return (
 		<div className="">
 			<Nav
@@ -88,21 +112,7 @@ const App: FC<Props> = ({
 						}
 					/>
 				)}
-				{/* {currentPath === "settings" && (
-					<SettingsPage initData={wcb_blocks_settings_options} />
-				)} */}
-				{currentPath === "blocks" ? (
-					<BlocksPage
-						initWcbBlocksList={wcb_blocks_list}
-						initWcbBlocksEnableDisable={wcb_blocks_enable_disable_options}
-					/>
-				) : (
-					<SettingsPage
-						initData={wcb_blocks_settings_options}
-						themeLayoutGlobal={wcb_layout_global_settings}
-					/>
-				)}
-				{/* {currentPath === "welcome" && <WelcomePage />} */}
+				{renderPage()}
 			</div>
 			<Toaster
 				position="top-right"
