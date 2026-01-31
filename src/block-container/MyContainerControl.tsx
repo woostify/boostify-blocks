@@ -13,7 +13,7 @@ import {
 	MY_HORIZOLTAL_UNITS,
 	MY_VERTICAL_UNITS,
 } from "../components/controls/MyDimensionsControl/MyDimensionsControl";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { MY_CUSTOM_UNITS_VALUE_SETTINGS__LARGE } from "../components/controls/MySpacingSizesControl/SpacingInputControl";
 import HelpText from "../components/controls/HelpText";
 // @ts-ignore
@@ -150,11 +150,11 @@ const MyContainerControl: FC<Props> = ({
 	);
 
 	// defaultContentWidth là setting trong trang woosify setting
-	// window.wcbLayoutGlobalSettings la global setting của full-site-editor or cua wootify theme neu co
+	// window.boostifyblocksLayoutGlobalSettings la global setting của full-site-editor or cua wootify theme neu co
 	if (!CONTENT_BOX_WIDTH) {
 		CONTENT_BOX_WIDTH =
-			DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth ||
-			window.wcbLayoutGlobalSettings.contentSize;
+			DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth ||
+			window.boostifyblocksLayoutGlobalSettings.contentSize;
 	}
 
 	const { currentDeviceValue: MIN_HEIGHT } = getValueFromAttrsResponsives(
@@ -228,7 +228,7 @@ const MyContainerControl: FC<Props> = ({
 				<HelpText>
 					{__(
 						"Default content box width " +
-							DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth
+							DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth
 					)}
 				</HelpText>
 			</div>

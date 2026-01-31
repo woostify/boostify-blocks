@@ -47,7 +47,7 @@ const BlocksPage: FC<Props> = ({
 		};
 		setBlocksStatus(newBlocksStatus);
 		const data = {
-			action: "wcb_dashboard_blocks_disable_enable",
+			action: "boostifyblocks_dashboard_blocks_disable_enable",
 			blocksStatus: newBlocksStatus,
 		};
 		toast.promise(

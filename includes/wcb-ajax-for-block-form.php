@@ -2,8 +2,8 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-add_action('wp_ajax_wcbform_action', 'boostify_blocks_form_action_init');
-add_action('wp_ajax_nopriv_wcbform_action', 'boostify_blocks_form_action_init');
+add_action('wp_ajax_boostifyblocks_form_action', 'boostify_blocks_form_action_init');
+add_action('wp_ajax_nopriv_boostifyblocks_form_action', 'boostify_blocks_form_action_init');
 function boostify_blocks_form_action_init()
 {
 

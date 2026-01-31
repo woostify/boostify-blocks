@@ -41,7 +41,7 @@ const TABS: Tab[] = [
 ];
 
 interface Props {
-	initData: typeof window.wcbGlobalVariables;
+	initData: typeof window.boostifyblocksGlobalVariables;
 	themeLayoutGlobal?: Wcb_theme_layout_global_settings;
 }
 
@@ -69,7 +69,7 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 		history.replaceState(null, "", `?${queryParams.toString()}`);
 	};
 
-	const handleUpdateSettings = (newData: typeof window.wcbGlobalVariables) => {
+	const handleUpdateSettings = (newData: typeof window.boostifyblocksGlobalVariables) => {
 		if (typeof jQuery !== "function") {
 			return;
 		}
@@ -80,7 +80,7 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 		};
 		setAllSettings(newSettings);
 		const data = {
-			action: "wcb_dashboard_blocks_update_settings",
+			action: "boostifyblocks_dashboard_blocks_update_settings",
 			settings: newSettings,
 		};
 

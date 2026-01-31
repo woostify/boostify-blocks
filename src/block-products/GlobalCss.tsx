@@ -5,7 +5,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getCssProperyHasResponsive from "../utils/getCssProperyHasResponsive";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
@@ -35,7 +35,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const LIST_CLASS = `${WRAP_CLASSNAME} .wcb-products__list`;

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 interface Props {
-	allSettings: typeof window.wcbGlobalVariables;
-	onChange: (data: typeof window.wcbGlobalVariables) => void;
+	allSettings: typeof window.boostifyblocksGlobalVariables;
+	onChange: (data: typeof window.boostifyblocksGlobalVariables) => void;
 }
 
 // Simple debounce utility

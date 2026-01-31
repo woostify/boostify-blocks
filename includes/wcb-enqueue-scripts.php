@@ -9,7 +9,7 @@ if (!function_exists("boostify_blocks_my_scripts_method")) {
         wp_enqueue_style('wcb-frontend-css', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/style-index.css');
         wp_localize_script(
             'jquery',
-            'wcbFrontendAjaxObject',
+            'boostifyblocksFrontendAjaxObject',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),
@@ -17,13 +17,13 @@ if (!function_exists("boostify_blocks_my_scripts_method")) {
         );
         wp_localize_script(
             'jquery',
-            'wcbLayoutGlobalSettings',
+            'boostifyblocksLayoutGlobalSettings',
             boostify_blocks_get_layout_global_settings()
         );
-        // 1 - JS Global -> Follow by typeof window.boostifyBlocksGlobalVariables
+        // 1 - JS Global -> Follow by typeof window.boostifyblocksGlobalVariables
         wp_localize_script(
             'jquery',
-            'wcbGlobalVariables',
+            'boostifyblocksGlobalVariables',
             get_option('boostify_blocks_settings_options')
         );
 
@@ -46,22 +46,22 @@ if (!function_exists("boostify_blocks_my_enqueue_scripts_for_admin_editor")) {
     {
         wp_localize_script(
             'jquery',
-            'wcbLayoutGlobalSettings',
+            'boostifyblocksLayoutGlobalSettings',
             boostify_blocks_get_layout_global_settings()
         );
-        // 1 - JS Global -> Follow by typeof window.boostifyBlocksGlobalVariables
+        // 1 - JS Global -> Follow by typeof window.boostifyblocksGlobalVariables
         wp_localize_script(
             'jquery',
-            'wcbBlocksGlobalVariables',
+            'boostifyblocksGlobalVariables',
             get_option('boostify_blocks_settings_options')
         );
         wp_localize_script(
             'jquery',
-            'boostifyBlocksFrontendAjaxObject',
+            'boostifyblocksFrontendAjaxObject',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),
-                'nonce'   => wp_create_nonce('wcb_dashboard_settings_nonce'),
+                'nonce'   => wp_create_nonce('boostifyblocks_dashboard_settings_nonce'),
             )
         );
     }

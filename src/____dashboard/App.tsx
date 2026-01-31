@@ -22,7 +22,7 @@ export interface Wcb_blocks_enable_disable_options_Type
 
 interface Props {
 	wcb_blocks_enable_disable_options: Wcb_blocks_enable_disable_options_Type;
-	wcb_blocks_settings_options: typeof window.wcbGlobalVariables;
+	wcb_blocks_settings_options: typeof window.boostifyblocksGlobalVariables;
 	wcb_blocks_list: Wcb_block_Type[];
 	wcb_layout_global_settings?: Wcb_theme_layout_global_settings;
 }

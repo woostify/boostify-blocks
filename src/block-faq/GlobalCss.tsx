@@ -4,7 +4,7 @@ import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import getBackgroundColorGradientStyles from "../utils/getBackgroundColorGradientStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import getBorderStyles from "../utils/getBorderStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
@@ -28,7 +28,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-faq__inner`;

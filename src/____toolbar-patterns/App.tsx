@@ -10,7 +10,7 @@ const client = new ApolloClient({
 });
 
 const App = () => {
-	if (wcbGlobalVariables?.enableTemplatesButton === "false") {
+	if (boostifyblocksGlobalVariables?.enableTemplatesButton === "false") {
 		return null;
 	}
 

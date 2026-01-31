@@ -4,7 +4,7 @@ import { Wcb_theme_layout_global_settings } from "./types";
 declare global {
 	var wp: any | undefined;
 	var grecaptcha: any | undefined;
-	var wcbGlobalVariables: {
+	var boostifyblocksGlobalVariables: {
 		media_tablet: string;
 		media_desktop: string;
 		reCAPTCHA_v3_site_key?: string;
@@ -17,15 +17,15 @@ declare global {
 		// containerElementsGap?: string;
 		customColorPallete?: { name: string; color: string }[];
 	};
-	var boostifyBlocksFrontendAjaxObject: {
+	var boostifyblocksFrontendAjaxObject: {
 		ajaxurl: string;
 		homeUrl: string;
 		nonce: string;
 	};
-	var wcbLayoutGlobalSettings: Wcb_theme_layout_global_settings;
+	var boostifyblocksLayoutGlobalSettings: Wcb_theme_layout_global_settings;
 }
 
-const INIT_WCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
+const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostifyblocksGlobalVariables = {
 	media_tablet: "768px",
 	media_desktop: "1024px",
 	reCAPTCHA_v3_secret_key: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
@@ -33,17 +33,17 @@ const INIT_WCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
 	reCAPTCHA_v2_site_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
 	reCAPTCHA_v2_secret_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
 	// se sd khi pick container lan dau tien / or khi truong contentWidth cua container khong duoc nhap
-	defaultContentWidth: window?.wcbLayoutGlobalSettings?.contentSize || "",
+	defaultContentWidth: window?.boostifyblocksLayoutGlobalSettings?.contentSize || "",
 	enableTemplatesButton: "true",
 	enableCopyPasteStyles: "false",
 };
 
-export const DEMO_WCB_GLOBAL_VARIABLES: typeof window.wcbGlobalVariables = {
-	...INIT_WCB_GLOBAL_VARIABLES,
-	...(window.wcbGlobalVariables || {}),
+export const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostifyblocksGlobalVariables = {
+	...INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES,
+	...(window.boostifyblocksGlobalVariables || {}),
 	defaultContentWidth:
-		window.wcbGlobalVariables?.defaultContentWidth ||
-		window.wcbLayoutGlobalSettings?.contentSize,
+		window.boostifyblocksGlobalVariables?.defaultContentWidth ||
+		window.boostifyblocksLayoutGlobalSettings?.contentSize,
 };
 
 export const ___wcb_global = 1;

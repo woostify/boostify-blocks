@@ -1,6 +1,6 @@
 <?php
 
-add_action('wp_ajax_wcb_dashboard_blocks_disable_enable', 'boostify_blocks_ajax_dashboard_blocks_disable_enable');
+add_action('wp_ajax_boostifyblocks_dashboard_blocks_disable_enable', 'boostify_blocks_ajax_dashboard_blocks_disable_enable');
 function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 {
     $blocksStatus = $_POST['blocksStatus'] ?? [];
@@ -22,7 +22,7 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 }
 
 // 
-add_action('wp_ajax_wcb_dashboard_blocks_update_settings', 'boostify_blocks_ajax_dashboard_update_settings');
+add_action('wp_ajax_boostifyblocks_dashboard_blocks_update_settings', 'boostify_blocks_ajax_dashboard_update_settings');
 function boostify_blocks_ajax_dashboard_update_settings()
 {
     $settings = $_POST['settings'] ?? [];
