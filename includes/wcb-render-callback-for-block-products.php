@@ -736,12 +736,22 @@ function wcb_block_products__get_preorder_html( $product ) {
         return '';
     }
 
+    // Check if Woostify Pro is active
+    $woostify_pro_active = in_array('woostify-pro/woostify-pro.php', get_option('active_plugins', []));
+    if ( ! $woostify_pro_active ) {
+        return '';
+    }
+
+    // Check if Pre-Order add-on is enabled
+    $preorder_addon_active = ( 'activated' === get_option( 'woostify_wc_pre_order' ) || defined( 'WOOSTIFY_PRO_PRE_ORDER' ) );
+    if ( ! $preorder_addon_active ) {
+        return '';
+    }
+
     $product_id = $product->get_id();
 
     // Woostify Pre-Order detection
     $preorder_date = get_post_meta( $product_id, '_onpreorder_date_to', true );
-
-    error_log('preorder date: ' . var_export($preorder_date, true));
 
     if ( empty( $preorder_date ) ) {
         return '';
@@ -751,8 +761,6 @@ function wcb_block_products__get_preorder_html( $product ) {
     if ( strtotime( $preorder_date ) < current_time( 'timestamp' ) ) {
         return '';
     }
-
-    error_log('Passed' . var_export($preorder_date, true));
 
     // Format the date to display (e.g., "January 29, 2026")
     $formatted_date = wp_date( 'F d, Y', strtotime( $preorder_date ) );
