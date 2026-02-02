@@ -120,8 +120,8 @@ function boostify_blocks_block_testimonials_render_callback($attributes, $conten
 {
     if (!is_admin()) {
         // Can js de run Slick slider
-        wp_enqueue_style('wcb-slick-main', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/slick/slick.css');
-        wp_enqueue_style('wcb-slick-theme', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/slick/slick-theme.css');
+        wp_enqueue_style( 'wcb-slick-main', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/slick/slick.css', array(), '1.8.0' );
+        wp_enqueue_style( 'wcb-slick-theme', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/slick/slick-theme.css', array(), '1.8.0' );
 
         // tam thoi dong lai, di goi o day dan den no bi day xuong footeresss..., hien tai dang tam thoi goi o enqueue file
         // wp_enqueue_script('wcb-slicklib', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/slick/slick.min.js', ['jquery'], "1.8.0", false);
@@ -141,26 +141,40 @@ function boostify_blocks_block_form_render_callback($attributes, $content)
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
 
     $wcb_blocks_settings_options = get_option('boostify_blocks_settings_options');
-    ob_start();
-    echo wp_kses_stripslashes($content);
-?>
-    <!-- general_gg_recaptcha.enableReCaptcha -->
-    <?php if (boolval($attributes['general_gg_recaptcha']['enableReCaptcha'] ?? true)) : ?>
 
-        <!-- V2 -->
-        <?php if (($attributes['general_gg_recaptcha']['version'] ?? 'v2') === 'v2') : ?>
-            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-        <?php endif; ?>
+    // Enqueue reCAPTCHA scripts properly
+    if (boolval($attributes['general_gg_recaptcha']['enableReCaptcha'] ?? true)) {
+        $recaptcha_version = $attributes['general_gg_recaptcha']['version'] ?? 'v2';
 
-        <!-- V3 -->
-        <?php if (($attributes['general_gg_recaptcha']['version'] ?? 'v2') === 'v3') : ?>
-            <script src="https://www.google.com/recaptcha/api.js?render=<?php echo esc_attr($wcb_blocks_settings_options['reCAPTCHA_v3_site_key'] ?? ""); ?>" async defer></script>
-        <?php endif; ?>
+        if ($recaptcha_version === 'v2') {
+            wp_enqueue_script(
+                'google-recaptcha-v2',
+                'https://www.google.com/recaptcha/api.js',
+                array(),
+                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- External Google reCAPTCHA script, version managed by Google.
+                null,
+                array(
+                    'strategy' => 'defer',
+                    'in_footer' => true,
+                )
+            );
+        } elseif ($recaptcha_version === 'v3') {
+            $site_key = $wcb_blocks_settings_options['reCAPTCHA_v3_site_key'] ?? '';
+            wp_enqueue_script(
+                'google-recaptcha-v3',
+                'https://www.google.com/recaptcha/api.js?render=' . esc_attr($site_key),
+                array(),
+                // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- External Google reCAPTCHA script, version managed by Google.
+                null,
+                array(
+                    'strategy' => 'defer',
+                    'in_footer' => true,
+                )
+            );
+        }
+    }
 
-    <?php endif; ?>
-
-<?php
-    return ob_get_clean();
+    return wp_kses_stripslashes($content);
 }
 
 //============================================= block 1 ===============================================================

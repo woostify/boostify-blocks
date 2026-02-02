@@ -81,6 +81,7 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 		setAllSettings(newSettings);
 		const data = {
 			action: "boostifyblocks_dashboard_blocks_update_settings",
+			nonce: (window as any)?.boostifyblocksFrontendAjaxObject?.nonce,
 			settings: newSettings,
 		};
 

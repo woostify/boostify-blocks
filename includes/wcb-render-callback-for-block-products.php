@@ -439,21 +439,24 @@ if (!function_exists("boostify_blocks_block_products_set_ordering_query_args")) 
                 break;
     
             case 'popularity':
-                $query_args['meta_key'] = 'total_sales'; 
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for sorting by sales count.
+                $query_args['meta_key'] = 'total_sales';
                 $query_args['orderby'] = 'meta_value_num';
                 $query_args['order'] = $order;
                 $is_handled = true;
                 break;
-    
+
             case 'price':
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for sorting by price.
                 $query_args['meta_key'] = '_price';
                 $query_args['orderby'] = 'meta_value_num';
                 $query_args['order'] = $order;
                 $is_handled = true;
                 break;
-    
+
             case 'rating':
-                $query_args['meta_key'] = '_wc_average_rating'; 
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for sorting by rating.
+                $query_args['meta_key'] = '_wc_average_rating';
                 $query_args['orderby'] = 'meta_value_num';
                 $query_args['order'] = $order;
                 $is_handled = true;

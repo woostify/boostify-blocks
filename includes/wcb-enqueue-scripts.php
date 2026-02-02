@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if (!function_exists("boostify_blocks_my_scripts_method")) {
     function boostify_blocks_my_scripts_method()
     {
-        wp_enqueue_style('wcb-frontend-css', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/style-index.css');
+        wp_enqueue_style( 'wcb-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), BOOSTIFY_BLOCKS_VERSION );
         wp_localize_script(
             'jquery',
             'boostifyblocksFrontendAjaxObject',
@@ -32,8 +32,9 @@ if (!function_exists("boostify_blocks_my_scripts_method")) {
 
         wp_enqueue_script(
             'wcb-countdown-lib',
-            plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/js/countdown/wcb-countdown.js',
-            array('jquery'),
+            plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/wcb-countdown.js',
+            array( 'jquery' ),
+            BOOSTIFY_BLOCKS_VERSION,
             true
         );
     }
@@ -99,13 +100,9 @@ if (!function_exists("boostify_blocks_enqueue_script_to_setting_page")) {
         if (
             !empty($currentScrren->id) && $currentScrren->id == "boostify-blocks/includes/settings-page"
         ) {
-            wp_register_style('wcb-settings-page', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/style-index.css');
+            wp_register_style( 'wcb-settings-page', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/____dashboard/style-index.css', array(), BOOSTIFY_BLOCKS_VERSION );
             wp_enqueue_style('wcb-settings-page');
-            // 
-            wp_enqueue_script('wcb-dashboard-app-tailwind', "https://cdn.tailwindcss.com?plugins=forms", [], '3.2.6', false);
-            wp_add_inline_script('wcb-dashboard-app-tailwind', 'tailwind.config = {
-                theme: {  important: true  } }', 'after');
-            // 
+            //
             wp_enqueue_script('wcb-dashboard-app', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js', ['wp-blocks', 'wp-element', 'jquery'], BOOSTIFY_BLOCKS_VERSION, true);
         }
     }

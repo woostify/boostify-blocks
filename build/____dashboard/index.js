@@ -1284,6 +1284,7 @@ const BlocksPage = ({
     setBlocksStatus(newBlocksStatus);
     const data = {
       action: "boostifyblocks_dashboard_blocks_disable_enable",
+      nonce: window?.boostifyblocksFrontendAjaxObject?.nonce,
       blocksStatus: newBlocksStatus
     };
     react_hot_toast__WEBPACK_IMPORTED_MODULE_2__["default"].promise(
@@ -1794,6 +1795,7 @@ const SettingsPage = ({
     setAllSettings(newSettings);
     const data = {
       action: "boostifyblocks_dashboard_blocks_update_settings",
+      nonce: window?.boostifyblocksFrontendAjaxObject?.nonce,
       settings: newSettings
     };
     react_hot_toast__WEBPACK_IMPORTED_MODULE_2__["default"].promise(

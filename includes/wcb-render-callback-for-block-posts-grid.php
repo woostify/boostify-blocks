@@ -307,6 +307,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
     $the_query = new WP_Query([
         'post_type'         => $queries['postType'],
         'author'            => $queries['selectedAuthorId'],
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Required for filtering posts by taxonomy terms.
         'tax_query'         => [
             !empty($aTermsId) ? [
                 'taxonomy'      => $queries["taxonomySlug"],
@@ -314,6 +315,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                 'terms'         =>  $aTermsId,
             ] : null
         ],
+        // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in -- Required to exclude current post from related posts.
         'post__not_in'          => boolval($queries["isExcludeCurrentPost"]) ? [get_the_ID()] : [],
         'posts_per_page'        => $queries["numberOfItems"],
         'ignore_sticky_posts'   => true,
