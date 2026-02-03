@@ -52,6 +52,16 @@ if (!function_exists("wcb__my_scripts_method")) {
             true
         );
 
+        if (class_exists('WC_AJAX')) {
+            wp_localize_script(
+                'wcb-buynow-js',
+                'wcb_buynow_data',
+                array(
+                    'ajax_url' => \WC_AJAX::get_endpoint('%%endpoint%%'),
+                )
+            );
+        }
+
         wp_enqueue_script(
             'wcb-tiny-slider',
             'https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js',
