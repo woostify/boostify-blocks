@@ -12,12 +12,12 @@ $boostify_blocks_all_block_list = boostify_blocks_get_block_type_list();
 
 // 
 $boostify_blocks_props = [
-    'wcb_blocks_list'                   => $boostify_blocks_all_block_list,
-    'wcb_blocks_enable_disable_options' => $boostify_blocks_enable_disable_options,
-    'wcb_blocks_settings_options'       => $boostify_blocks_settings_options,
-    'wcb_layout_global_settings'        => boostify_blocks_get_layout_global_settings(),
+    'boostify_blocks_list'                   => $boostify_blocks_all_block_list,
+    'boostify_blocks_enable_disable_options' => $boostify_blocks_enable_disable_options,
+    'boostify_blocks_settings_options'       => $boostify_blocks_settings_options,
+    'boostify_blocks_layout_global_settings' => boostify_blocks_get_layout_global_settings(),
 ];
 
 ?>
-<div id="wcb-dasboard-root" class="" data-props="<?php echo esc_attr(json_encode($boostify_blocks_props)); ?>">
+<div id="boostify-blocks-dashboard-root" class="" data-props="<?php echo esc_attr(wp_json_encode($boostify_blocks_props)); ?>">
 </div>

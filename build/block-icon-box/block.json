@@ -4,7 +4,7 @@
   "name": "wcb/icon-box",
   "version": "0.1.0",
   "title": "Icon box",
-  "category": "wcb-blocks",
+  "category": "boostify-blocks",
   "icon": "- wcb-block-editor-block-icon lni lni-clipboard",
   "description": "Create a box containing an icon or image and, optionally, a title, description, and learn more text.",
   "supports": {
@@ -12,7 +12,7 @@
     "anchor": true,
     "align": true
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "boostify-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

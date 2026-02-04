@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-// wcb_blocks_settings_options
+// boostify_blocks_settings_options
 function boostify_blocks_dashboard_settings_options_init()
 {
     if (!function_exists('boostify_blocks_get_block_name_enable_init') || !function_exists('boostify_blocks_get_block_type_list')) {
@@ -11,8 +11,8 @@ function boostify_blocks_dashboard_settings_options_init()
 
     // add a new option -- boostify_blocks_enable_disable_options
     if (FALSE === get_option('boostify_blocks_enable_disable_options') && FALSE === update_option('boostify_blocks_enable_disable_options', FALSE)) {
-        $wcbBlockStatus = boostify_blocks_get_block_name_enable_init();
-        add_option('boostify_blocks_enable_disable_options', $wcbBlockStatus);
+        $boostify_block_status = boostify_blocks_get_block_name_enable_init();
+        add_option('boostify_blocks_enable_disable_options', $boostify_block_status);
     }
 
     // add a new option -- boostify_blocks_settings_options

@@ -46,4 +46,4 @@ export const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostifyblocksG
 		window.boostifyblocksLayoutGlobalSettings?.contentSize,
 };
 
-export const ___wcb_global = 1;
+export const ___boostify_blocks_global = 1;

@@ -164,11 +164,16 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
 
 
+    $escaped_classes = esc_attr($classes);
+    $escaped_index = intval($index);
+    $escaped_permalink = esc_url($data->permalink);
+    $escaped_feat_classes = esc_attr($featuredClasses);
+
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-        "<div class=\"scroll-snap-slide {$classes}\" data-index=\"{$index}\">
+        "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\">
 				<div class=\"wcb-products__product-featured \">
-                    <a href=\"{$data->permalink}\" class=\"{$featuredClasses}\">
+                    <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
                         {$isSwapHover}
                     </a>
@@ -214,7 +219,7 @@ function boostify_blocks_block_products_get_image_html($product)
         );
     }
 
-    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $product->get_image('woocommerce_thumbnail', $attr) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . wp_kses_post($product->get_image('woocommerce_thumbnail', $attr)) . '</div>';
 }
 
 
@@ -223,7 +228,7 @@ function boostify_blocks_block_products_get_title_html($product, $headingTag, $l
     if (empty($headingTag)) {
         $headingTag = 'div';
     };
-    return '<' . $headingTag . ' class="wcb-products__product-title wc-block-grid__product-title"> <a href=" ' . $link . ' ">' . wp_kses_post($product->get_title()) . '</a></' . $headingTag . '>';
+    return '<' . tag_escape($headingTag) . ' class="wcb-products__product-title wc-block-grid__product-title"> <a href="' . esc_url($link) . '">' . wp_kses_post($product->get_title()) . '</a></' . tag_escape($headingTag) . '>';
 }
 
 function boostify_blocks_block_products_get_category_html($product)
@@ -243,7 +248,7 @@ function boostify_blocks_block_products_get_rating_html($product)
     if ($rating_count > 0) {
         /* translators: %s: Average rating score */
         $label = sprintf(__('Rated %s out of 5', 'boostify-blocks'), $average);
-        $html  = '<div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . '</div>';
+        $html  = '<div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wp_kses_post(wc_get_star_rating_html($average, $rating_count)) . '</div>';
         return $html;
     }
     return '';
@@ -282,7 +287,7 @@ function boostify_blocks_block_products_add_percentage_to_sale_badge($product)
 
         $percentage    = round(100 - ($sale_price / $regular_price * 100)) . '%';
     }
-    return '<span class="onsale">' . esc_html__('SALE', 'boostify-blocks') . ' ' . $percentage . '</span>';
+    return '<span class="onsale">' . esc_html__('SALE', 'boostify-blocks') . ' ' . esc_html($percentage) . '</span>';
 }
 
 

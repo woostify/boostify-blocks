@@ -8,11 +8,11 @@ if (!function_exists('boostify_blocks_get_block_type_list')) :
     function boostify_blocks_get_block_type_list()
     {
         $blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
-        $wcbBlockList = [];
+        $boostify_block_list = [];
         foreach ($blocks as $key => $value) {
             $pos = strpos($key, 'wcb/');
             if ($pos === 0) {
-                $wcbBlockList[] = [
+                $boostify_block_list[] = [
                     'name' => $value->name,
                     'title' => $value->title,
                     'category' => $value->category,
@@ -22,7 +22,7 @@ if (!function_exists('boostify_blocks_get_block_type_list')) :
                 ];
             }
         }
-        return $wcbBlockList;
+        return $boostify_block_list;
     };
 endif;
 
@@ -31,12 +31,12 @@ if (!function_exists('boostify_blocks_get_block_name_enable_init')) :
     function boostify_blocks_get_block_name_enable_init()
     {
         $blocks = boostify_blocks_get_block_type_list();
-        $wcbBlockName = [];
+        $boostify_block_name = [];
         foreach ($blocks as $key => $value) {
-            $wcbBlockName[$value['name']] = 'enabled';
+            $boostify_block_name[$value['name']] = 'enabled';
         }
 
-        return $wcbBlockName;
+        return $boostify_block_name;
     };
 endif;
 
@@ -121,18 +121,18 @@ endif;
 if (!function_exists("boostify_blocks_get_layout_global_settings")) :
     function boostify_blocks_get_layout_global_settings()
     {
-        $wcb_layout_global_settings = wp_get_global_settings(['layout']);
+        $boostify_layout_global_settings = wp_get_global_settings(['layout']);
         // IF USING WOOSTIFYBLOCKS THEME
         if (class_exists('Woostify_Customizer')) {
             $customizer = new Woostify_Customizer();
             $options = $customizer->woostify_get_woostify_options();
             // container_width
             if (!empty($options['container_width'] ?? '')) {
-                $wcb_layout_global_settings['contentSize'] =  $options['container_width'] . "px";
-                $wcb_layout_global_settings['contentSizeOfWoostify'] =  true;
+                $boostify_layout_global_settings['contentSize'] =  $options['container_width'] . "px";
+                $boostify_layout_global_settings['contentSizeOfWoostify'] =  true;
             }
         }
 
-        return $wcb_layout_global_settings;
+        return $boostify_layout_global_settings;
     }
 endif;

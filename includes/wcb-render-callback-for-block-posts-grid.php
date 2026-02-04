@@ -377,7 +377,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                         <!-- Post Thumbnail -->
                         <?php if ($hasFeaturedImage) : ?>
                             <div class="wcbPostCard__featuredImage">
-                                <?php echo get_the_post_thumbnail(null, $attributes['general_postFeaturedImage']['featuredImageSize'] ?? "post-thumbnail"); ?>
+                                <?php echo wp_kses_post(get_the_post_thumbnail(null, $attributes['general_postFeaturedImage']['featuredImageSize'] ?? "post-thumbnail")); ?>
 
                                 <!-- TAXONOMIES  -->
                                 <?php if (($attributes['general_postMeta']["isShowTaxonomy"] ?? true) &&
@@ -408,8 +408,8 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                                 $titleHtmlTag = $attributes['general_postMeta']['titleHtmlTag'] ?? "h4";
                                 echo sprintf('<%1$s class="wcbPostCard__title">', tag_escape($titleHtmlTag));
                             ?>
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_title(); ?>
+                                <a href="<?php echo esc_url(get_permalink()); ?>">
+                                    <?php echo esc_html(get_the_title()); ?>
                                 </a>
                                 <?php echo sprintf('</%1$s>', tag_escape($titleHtmlTag)); ?>
                             <?php endif; ?>
@@ -460,7 +460,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
 
                                             </span>
                                         <?php endif; ?>
-                                        <a class="wcbPostCard__meta-author" href="<?php echo esc_url(get_author_posts_url(get_the_author_meta('ID'))); ?>" title="<?php echo esc_attr(get_the_author()); ?>"><?php the_author(); ?></a>
+                                        <a class="wcbPostCard__meta-author" href="<?php echo esc_url(get_author_posts_url(get_the_author_meta('ID'))); ?>" title="<?php echo esc_attr(get_the_author()); ?>"><?php echo esc_html(get_the_author()); ?></a>
                                     </div>
                                 <?php endif; ?>
 
@@ -478,7 +478,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                                                     </svg>
                                                 </span>
                                             <?php endif; ?>
-                                            <time datetime="<?php echo get_the_date('c'); ?>" itemprop="datePublished"><?php echo get_the_date(); ?></time>
+                                            <time datetime="<?php echo esc_attr(get_the_date('c')); ?>" itemprop="datePublished"><?php echo esc_html(get_the_date()); ?></time>
                                         </span>
                                     <?php endif; ?>
 
@@ -506,7 +506,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
 
                             <!-- READMORE BUTTON -->
                             <?php if (boolval($attributes['general_readmoreLink']['isShowReadmore'] ?? true)) : ?>
-                                <a class="wcbPostCard__readmoreLink" href="<?php echo esc_url(the_permalink()); ?>" rel="noopener noreferrer" target="<?php echo esc_attr(($attributes['general_readmoreLink']['isOpenInNewTab'] ?? false) ? "_blank" : "_self") ?>">
+                                <a class="wcbPostCard__readmoreLink" href="<?php echo esc_url(get_permalink()); ?>" rel="noopener noreferrer" target="<?php echo esc_attr(($attributes['general_readmoreLink']['isOpenInNewTab'] ?? false) ? "_blank" : "_self") ?>">
                                     <?php echo esc_html($attributes['general_readmoreLink']['text'] ?? "Read more"); ?>
                                 </a>
                             <?php endif; ?>

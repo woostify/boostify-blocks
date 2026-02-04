@@ -52,7 +52,8 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 				dataType: "json", //Dạng dữ liệu trả về xml, json, script, or html
 				url: boostifyblocksFrontendAjaxObject.ajaxurl, //Đường dẫn chứa hàm xử lý dữ liệu. Mặc định của WP như vậy
 				data: {
-					action: "boostifyblocks_form_action", //Tên action
+					action: "boostifyblocks_form_action",
+					nonce: boostifyblocksFrontendAjaxObject.nonce,
 					formData,
 					mailInfo,
 				},

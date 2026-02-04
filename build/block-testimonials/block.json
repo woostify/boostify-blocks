@@ -4,7 +4,7 @@
   "name": "wcb/testimonials",
   "version": "0.1.0",
   "title": "Testimonials",
-  "category": "wcb-blocks",
+  "category": "boostify-blocks",
   "icon": "- wcb-block-editor-block-icon lni lni-quotation",
   "description": "Create confidence in your brand or product by showing off beautiful unique testimonials.",
   "supports": {
@@ -15,7 +15,7 @@
       "wide"
     ]
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "boostify-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

@@ -4,14 +4,14 @@
 	"name": "wcb/default",
 	"version": "0.1.0",
 	"title": "Heading",
-	"category": "wcb-blocks",
+	"category": "boostify-blocks",
 	"icon": "heart",
 	"description": "Example static block scaffolded with Create Block tool.",
 	"supports": {
 		"html": false,
 		"align": ["wide", "full"]
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",

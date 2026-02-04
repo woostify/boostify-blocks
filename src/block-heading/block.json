@@ -4,7 +4,7 @@
 	"name": "wcb/heading",
 	"version": "0.1.0",
 	"title": "Heading",
-	"category": "wcb-blocks",
+	"category": "boostify-blocks",
 	"icon": "heading - wcb-block-editor-block-icon",
 	"description": "A Heading with a simple line separator between the heading and the description.",
 	"supports": {
@@ -14,7 +14,7 @@
 		"__experimentalSlashInserter": true,
 		"align": true
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

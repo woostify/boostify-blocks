@@ -14,7 +14,7 @@ add_action('init', 'boostify_blocks_create_blocks_gutenberg_init');
 if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
     function boostify_blocks_create_blocks_gutenberg_init()
     {
-        $wcb_blocks_enable_disable = get_option('boostify_blocks_enable_disable_options') ?? [];
+        $boostify_blocks_enable_disable = get_option('boostify_blocks_enable_disable_options') ?? [];
 
         // common - not deactive
         register_block_type(
@@ -29,7 +29,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-container',
             [
                 "render_callback"     => "boostify_blocks_block_container_render_callback",
-                "ancestor"     => (($wcb_blocks_enable_disable['wcb/container'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"     => (($boostify_blocks_enable_disable['wcb/container'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -101,7 +101,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
 
                     ),
                     "render_callback"     => "boostify_blocks_block_products_render_callback",
-                    "ancestor"            => (($wcb_blocks_enable_disable['wcb/products'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                    "ancestor"            => (($boostify_blocks_enable_disable['wcb/products'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                     "view_script_handles" => []
                 ]
             );
@@ -111,7 +111,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-heading',
             [
                 "render_callback"     => "boostify_blocks_block_heading_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/heading'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/heading'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -184,7 +184,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
 
                 ),
                 "render_callback"     => "boostify_blocks_block_posts_grid_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/posts-grid'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/posts-grid'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
 
             ]
@@ -195,7 +195,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-form',
             [
                 "render_callback"     => "boostify_blocks_block_form_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/form'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/form'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -256,7 +256,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-testimonials',
             [
                 "render_callback"     => "boostify_blocks_block_testimonials_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/testimonials'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/testimonials'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -265,7 +265,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-buttons',
             [
                 "render_callback"     => "boostify_blocks_block_buttons_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/buttons'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/buttons'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -282,7 +282,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-cta',
             [
                 "render_callback"     => "boostify_blocks_block_cta_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/cta'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/cta'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -291,7 +291,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-faq',
             [
                 "render_callback"     => "boostify_blocks_block_faq_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/faq'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/faq'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -307,7 +307,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-team',
             [
                 "render_callback"     => "boostify_blocks_block_team_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/team'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/team'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -316,7 +316,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-icon-box',
             [
                 "render_callback"     => "boostify_blocks_block_icon_box_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon-box'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/icon-box'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -325,7 +325,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-image',
             [
                 "render_callback"     => "boostify_blocks_block_image_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/image'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/image'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -334,7 +334,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-map',
             [
                 "render_callback"     => "boostify_blocks_block_map_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/map'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/map'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -344,7 +344,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-tabs',
             [
                 "render_callback"     => "boostify_blocks_block_tabs_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/tabs'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/tabs'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -359,7 +359,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-countdown',
             [
                 "render_callback"     => "boostify_blocks_block_countdown_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/countdown'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/countdown'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -368,7 +368,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-counter',
             [
                 "render_callback"     => "boostify_blocks_block_counter_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/counter'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/counter'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -377,7 +377,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-icon-list',
             [
                 "render_callback"     => "boostify_blocks_block_icon_list_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon-list'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/icon-list'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -387,7 +387,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-icon-child',
             [
                 "render_callback"     => "boostify_blocks_block_icon_child_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
@@ -397,7 +397,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-icon',
             [
                 "render_callback"     => "boostify_blocks_block_icon_render_callback",
-                "ancestor"              => (($wcb_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['wcb/icon'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );

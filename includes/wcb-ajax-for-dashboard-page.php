@@ -45,12 +45,12 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
     // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized below with boostify_blocks_sanitize_array
     $blocksStatus = isset($_POST['blocksStatus']) ? boostify_blocks_sanitize_array(wp_unslash($_POST['blocksStatus'])) : array();
 
-    $wcbBlockStatusInit = [];
+    $boostify_block_status_init = [];
     if (function_exists('boostify_blocks_get_block_name_enable_init')) {
-        $wcbBlockStatusInit = boostify_blocks_get_block_name_enable_init();
+        $boostify_block_status_init = boostify_blocks_get_block_name_enable_init();
     }
 
-    $newBlocksStatus = array_merge($wcbBlockStatusInit, $blocksStatus);
+    $newBlocksStatus = array_merge($boostify_block_status_init, $blocksStatus);
 
     update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
     $array_result = array(

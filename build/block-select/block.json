@@ -7,13 +7,13 @@
   "parent": [
     "wcb/form"
   ],
-  "category": "wcb-blocks",
+  "category": "boostify-blocks",
   "icon": "- wcb-block-editor-block-icon lni lni-select text-xl",
   "description": "Example static block scaffolded with Create Block tool.",
   "supports": {
     "__experimentalSelector": "span,label"
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "boostify-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

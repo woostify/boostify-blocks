@@ -5,14 +5,14 @@
 	"version": "0.1.0",
 	"title": "Accept",
 	"parent": ["wcb/form"],
-	"category": "wcb-blocks",
+	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-checkmark-circle text-xl",
 	"description": "Example static block scaffolded with Create Block tool.",
 	"supports": {
 		"__experimentalSelector": "span,label",
 		"anchor": true
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

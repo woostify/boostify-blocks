@@ -4,14 +4,14 @@
 	"name": "wcb/image",
 	"version": "0.1.0",
 	"title": "Image",
-	"category": "wcb-blocks",
+	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-image",
 	"description": "Insert an image to make a visual statement.",
 	"supports": {
 		"html": false,
 		"anchor": true
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

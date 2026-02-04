@@ -8,7 +8,7 @@ function boostify_blocks_add_new_block_category($block_categories, $editor_conte
         array_unshift(
             $block_categories,
             array(
-                'slug'  => 'wcb-blocks',
+                'slug'  => 'boostify-blocks',
                 'title' => __('Boostify', 'boostify-blocks'),
                 'icon'  => null,
             ),

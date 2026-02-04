@@ -21,10 +21,10 @@ export interface Wcb_blocks_enable_disable_options_Type
 	extends Record<string, "enabled" | "disabled"> {}
 
 interface Props {
-	wcb_blocks_enable_disable_options: Wcb_blocks_enable_disable_options_Type;
-	wcb_blocks_settings_options: typeof window.boostifyblocksGlobalVariables;
-	wcb_blocks_list: Wcb_block_Type[];
-	wcb_layout_global_settings?: Wcb_theme_layout_global_settings;
+	boostify_blocks_enable_disable_options: Wcb_blocks_enable_disable_options_Type;
+	boostify_blocks_settings_options: typeof window.boostifyblocksGlobalVariables;
+	boostify_blocks_list: Wcb_block_Type[];
+	boostify_blocks_layout_global_settings?: Wcb_theme_layout_global_settings;
 }
 
 export type Path = "welcome" | "blocks" | "settings";
@@ -40,10 +40,10 @@ export const PAGES: Page[] = [
 ];
 
 const App: FC<Props> = ({
-	wcb_blocks_enable_disable_options,
-	wcb_blocks_settings_options,
-	wcb_blocks_list,
-	wcb_layout_global_settings,
+	boostify_blocks_enable_disable_options,
+	boostify_blocks_settings_options,
+	boostify_blocks_list,
+	boostify_blocks_layout_global_settings,
 }) => {
 	//
 	const [currentPath, setcurrentPath] = useState<Path>(PAGES[0].path);
@@ -75,15 +75,15 @@ const App: FC<Props> = ({
 			case "blocks":
 				return (
 					<BlocksPage
-						initWcbBlocksList={wcb_blocks_list}
-						initWcbBlocksEnableDisable={wcb_blocks_enable_disable_options}
+						initWcbBlocksList={boostify_blocks_list}
+						initWcbBlocksEnableDisable={boostify_blocks_enable_disable_options}
 					/>
 				);
 			case "settings":
 				return (
 					<SettingsPage
-						initData={wcb_blocks_settings_options}
-						themeLayoutGlobal={wcb_layout_global_settings}
+						initData={boostify_blocks_settings_options}
+						themeLayoutGlobal={boostify_blocks_layout_global_settings}
 					/>
 				);
 			case "welcome":
@@ -128,7 +128,7 @@ const App: FC<Props> = ({
 
 // -------------------------------------------------------------------------------------------
 const preEl = document.querySelector(
-	`#wcb-dasboard-root`
+	`#boostify-blocks-dashboard-root`
 ) as HTMLElement | null;
 
 if (preEl) {
