@@ -28,12 +28,12 @@ if (!function_exists("boostify_blocks_my_scripts_method")) {
             get_option('boostify_blocks_settings_options')
         );
 
-        // can xem xet lai, vi no se enqueue khi ma testimonial co duoc goi hay khong di nua....
+        // TODO: Consider conditionally enqueuing only when the testimonials block is used.
         wp_enqueue_script('boostify-blocks-slicklib', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/slick/slick.min.js', ['jquery'], "1.8.0", false);
 
         wp_enqueue_script(
             'boostify-blocks-countdown-lib',
-            plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/wcb-countdown.js',
+            plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/boostify-blocks-countdown.js',
             array( 'jquery' ),
             BOOSTIFY_BLOCKS_VERSION,
             true
@@ -93,7 +93,7 @@ if (!function_exists("boostify_blocks_enqueue_lineicons")) {
 
 
 if (!function_exists("boostify_blocks_enqueue_script_to_setting_page")) {
-    // su dung trong trang wcb settings page
+    // Enqueue scripts for settings page.
     function boostify_blocks_enqueue_script_to_setting_page()
     {
         $currentScrren = get_current_screen();

@@ -19,8 +19,8 @@ function boostify_blocks_dashboard_settings_options_init()
     if (FALSE === get_option('boostify_blocks_settings_options') && FALSE === update_option('boostify_blocks_settings_options', FALSE)) {
         add_option('boostify_blocks_settings_options', boostify_blocks_get_default_blocks_settings());
     } else {
-        // vui long thuc hien dieu nay khi co them cac field moi'..........
-        // check co new option thi merge laij.......... 
+        // When new fields are added, merge them with existing options.
+        // Check if new options exist and merge accordingly. 
         // 01-03-2023
         $hasNewOption = !array_key_exists('customColorPallete', get_option('boostify_blocks_settings_options') ?? []);
         // 

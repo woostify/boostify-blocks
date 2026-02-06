@@ -31,7 +31,7 @@ export type MyContainerControlData = {
 export const CONTAINER_CONTROL_DEMO: MyContainerControlData = {
 	containerWidthType: "Full Width",
 	contentWidthType: "Boxed",
-	// tai sao ko co Tablet? - vi muon th Tablet follow theo Desktop,
+	// No Tablet value here — Tablet follows Desktop by default.
 	customWidth: { Desktop: "100%", Mobile: "100%" },
 	contentBoxWidth: { Desktop: "", Mobile: "" },
 	minHeight: { Desktop: undefined },

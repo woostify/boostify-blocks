@@ -35,7 +35,7 @@ body .wcb-container__wrap {
 		flex: 0 1 auto;
 	}
 
-	/* can xem lai cho nay, vi no dang ngan phan margin của container child */
+	/* TODO: Review this — it currently blocks part of the container child margin */
 	.wcb-container__inner {
 		.wcb-container__wrap.is_wcb_container_child {
 			margin-block-start: 0;

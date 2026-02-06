@@ -12,7 +12,7 @@ interface Params {
 	prefix_3?: keyof CSSProperties;
 	prefix_4?: keyof CSSProperties;
 	className: string;
-	// da co san unit trong value roi thi khong can them unit nua
+	// If the value already includes a unit, no need to append one.
 	hasUnit?: boolean;
 	unit?: string;
 }

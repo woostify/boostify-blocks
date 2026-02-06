@@ -112,7 +112,7 @@ const Edit = (props) => {
 
 	const Component = useMemo(() => {
 		const C =
-			// tai sao can attributes.uniqueId: Khi thay doi attrs "align" thi block bi render lai toan bo -> selectedVariant se thanh false
+			// Why check attributes.uniqueId: Changing the "align" attr causes a full re-render, resetting selectedVariant to false.
 			hasParent || hasInnerBlocks || selectedVariant || !!attributes.uniqueId
 				? ContainerEdit
 				: Placeholder;

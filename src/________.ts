@@ -32,7 +32,7 @@ const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostifyblocksGlobalVa
 	reCAPTCHA_v3_site_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
 	reCAPTCHA_v2_site_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
 	reCAPTCHA_v2_secret_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
-	// se sd khi pick container lan dau tien / or khi truong contentWidth cua container khong duoc nhap
+	// Used when picking a container for the first time, or when the container's contentWidth is not set.
 	defaultContentWidth: window?.boostifyblocksLayoutGlobalSettings?.contentSize || "",
 	enableTemplatesButton: "true",
 	enableCopyPasteStyles: "false",

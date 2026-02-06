@@ -10,7 +10,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
     // 
 
     $DEFAULT_ATTRS = [
-        'uniqueId' => 'xxblock-wcb_posts',
+        'uniqueId' => 'xxblock-boostify_posts',
         'general_sortingAndFiltering' =>  [
             'queries' =>  [
                 'postType'              => 'post',

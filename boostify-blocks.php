@@ -15,7 +15,6 @@
  * @package           create-block
  */
 
-// WCB as Woostify-Conversion-Blocks ...
 defined('ABSPATH') || exit;
 
 // Define Constants.
