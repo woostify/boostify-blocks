@@ -149,8 +149,8 @@ const MyContainerControl: FC<Props> = ({
 		deviceType
 	);
 
-	// defaultContentWidth là setting trong trang woosify setting
-	// window.boostifyblocksLayoutGlobalSettings la global setting của full-site-editor or cua wootify theme neu co
+	// defaultContentWidth is a setting from the plugin settings page.
+	// window.boostifyblocksLayoutGlobalSettings is the global setting from full-site-editor or Woostify theme if available.
 	if (!CONTENT_BOX_WIDTH) {
 		CONTENT_BOX_WIDTH =
 			DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth ||

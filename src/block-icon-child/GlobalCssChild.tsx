@@ -35,7 +35,7 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}][data-block-type="icon-item"]`;
 	const ICON_CLASS = `${WRAP_CLASSNAME} .wcb-icon-list__icon`;
 
-	// ------------------- WRAP DIV với higher specificity
+	// ------------------- WRAP DIV with higher specificity
 	const getDivWrapStyles = (): CSSObject[] => {
 		return [
 			{

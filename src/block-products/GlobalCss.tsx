@@ -142,7 +142,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 								? {
 										scrollSnapAlign: "start",
 										flexShrink: 0,
-										// tinh toan the nay de tao phan thut-tho cho slider
+										// Calculate flex-basis to create the peek/overflow effect for the slider.
 										flexBasis: `calc((100% - (${
 											Number(numberOfColumn_desktop) - 1
 										} * ${colunmGap_desktop})) / ${Number(

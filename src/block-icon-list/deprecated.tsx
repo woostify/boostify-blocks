@@ -42,11 +42,11 @@ const v4 = {
 	save: Save__100623,
 };
 
-// Migration version - từ single block sang container block
+// Migration version - from single block to container block.
 const v5 = {
 	attributes: {
 		...blokc1Attrs,
-		// Thêm lại heading attributes để tương thích với data cũ
+		// Re-add heading attributes for backward compatibility with old data.
 		heading_1: {
 			type: "string",
 			source: "html",
@@ -77,7 +77,7 @@ const v5 = {
 		);
 	},
 	migrate: (attributes) => {
-		// Loại bỏ heading attributes khi migrate
+		// Remove heading attributes during migration.
 		const { heading_1, heading_2, heading_3, ...newAttributes } = attributes;
 		// Migrate to new container block structure
 		return [

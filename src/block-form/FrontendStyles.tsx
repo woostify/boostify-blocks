@@ -48,9 +48,9 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 				bcc: props.general_action.main.BCC.email || "",
 			};
 			$.ajax({
-				type: "post", //Phương thức truyền post hoặc get
-				dataType: "json", //Dạng dữ liệu trả về xml, json, script, or html
-				url: boostifyblocksFrontendAjaxObject.ajaxurl, //Đường dẫn chứa hàm xử lý dữ liệu. Mặc định của WP như vậy
+				type: "post", // HTTP method: post or get.
+				dataType: "json", // Response data type: xml, json, script, or html.
+				url: boostifyblocksFrontendAjaxObject.ajaxurl, // WP default AJAX handler URL.
 				data: {
 					action: "boostifyblocks_form_action",
 					nonce: boostifyblocksFrontendAjaxObject.nonce,

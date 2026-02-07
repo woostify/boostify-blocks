@@ -64,7 +64,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
     );
     const { insertBlock, removeBlock } = useDispatch(blockEditorStore);
 
-    // Tạo uniqueId
+    // Generate uniqueId.
     const UNIQUE_ID = wrapBlockProps.id;
     useEffect(() => {
         setAttributes({ uniqueId: converUniqueIdToAnphaKey(UNIQUE_ID) });
