@@ -501,7 +501,14 @@ if (!function_exists("boostify_blocks_block_products_set_ordering_query_args")) 
     }
 endif;
 
-if (!function_exists("boostify_blocks_block_products_set_block_query_args")) :
+    function boostify_blocks_block_products_set_block_query_args(&$query_args, $filtersAttrs)
+    {
+        if (boostify_blocks_is_enabled($filtersAttrs['isOnSale'] ?? "")) {
+            $query_args['post__in'] = array_merge(array(0), boostify_blocks_wc_get_product_ids_on_sale());
+        }
+    }
+
+
     /**
      * Get product IDs that are on sale.
      *
@@ -548,16 +555,8 @@ if (!function_exists("boostify_blocks_block_products_set_block_query_args")) :
         }
 
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-        return apply_filters('woocommerce_product_ids_on_sale', $product_ids_on_sale);
+        return apply_filters('boostify_blocks_product_ids_on_sale', $product_ids_on_sale);
     }
-
-    function boostify_blocks_block_products_set_block_query_args(&$query_args, $filtersAttrs)
-    {
-        if (boostify_blocks_is_enabled($filtersAttrs['isOnSale'] ?? "")) {
-            $query_args['post__in'] = array_merge(array(0), boostify_blocks_wc_get_product_ids_on_sale());
-        }
-    }
-endif;
 
 
 if (!function_exists("boostify_blocks_block_products_set_categories_query_args")) :

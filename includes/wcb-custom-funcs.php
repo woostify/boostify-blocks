@@ -3,8 +3,29 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 // Debug helpers removed for production safety.
+    /**
+     * Recursively sanitize an array of data.
+     *
+     * @param array $data The data to sanitize.
+     * @return array The sanitized data.
+     */
+    function boostify_blocks_sanitize_array( $data ) {
+        if ( ! is_array( $data ) ) {
+            return sanitize_text_field( $data );
+        }
+        $sanitized = array();
+        foreach ( $data as $key => $value ) {
+            $sanitized_key = sanitize_text_field( $key );
+            if ( is_array( $value ) ) {
+                $sanitized[ $sanitized_key ] = boostify_blocks_sanitize_array( $value );
+            } else {
+                $sanitized[ $sanitized_key ] = sanitize_text_field( $value );
+            }
+        }
+        return $sanitized;
+    }
+
 // 
-if (!function_exists('boostify_blocks_get_block_type_list')) :
     function boostify_blocks_get_block_type_list()
     {
         $blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
@@ -24,10 +45,8 @@ if (!function_exists('boostify_blocks_get_block_type_list')) :
         }
         return $boostify_block_list;
     };
-endif;
 
 // 
-if (!function_exists('boostify_blocks_get_block_name_enable_init')) :
     function boostify_blocks_get_block_name_enable_init()
     {
         $blocks = boostify_blocks_get_block_type_list();
@@ -38,10 +57,8 @@ if (!function_exists('boostify_blocks_get_block_name_enable_init')) :
 
         return $boostify_block_name;
     };
-endif;
 
 //
-if (!function_exists('boostify_blocks_get_default_blocks_settings')) :
     function boostify_blocks_get_default_blocks_settings()
     {
         return [
@@ -63,10 +80,8 @@ if (!function_exists('boostify_blocks_get_default_blocks_settings')) :
             ],
         ];
     }
-endif;
 
 // 
-if (!function_exists("boostify_blocks_pagination_bar")) {
     function boostify_blocks_pagination_bar($the_query, $attrPagination)
     {
         $nextPreIcons =  [
@@ -88,8 +103,8 @@ if (!function_exists("boostify_blocks_pagination_bar")) {
         $nextText =  $attrPagination['nextText'] ?? "";
         $previousText =  $attrPagination['previousText'] ?? "";
 
-        $nextHtml = !empty($nextText) ? '<span>' . $nextText . '</span>' . $icon : $icon;
-        $prevHtml = !empty($previousText) ?  $icon . ' <span>' . $previousText . '</span>'  : $icon;
+        $nextHtml = !empty($nextText) ? '<span>' . esc_html($nextText) . '</span>' . $icon : $icon;
+        $prevHtml = !empty($previousText) ?  $icon . ' <span>' . esc_html($previousText) . '</span>'  : $icon;
 
         $max_page = $attrPagination['pageLimit'] ?? 0;
         $total         = !$max_page || $max_page > $the_query->max_num_pages ? $the_query->max_num_pages : $max_page;
@@ -105,20 +120,16 @@ if (!function_exists("boostify_blocks_pagination_bar")) {
             'prev_text' => $prevHtml
         )));
     }
-}
 
 // 
-if (!function_exists("boostify_blocks_is_enabled")) :
     function boostify_blocks_is_enabled($variable)
     {
         if (!isset($variable)) return null;
         return filter_var($variable, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
-endif;
 
 
 // 
-if (!function_exists("boostify_blocks_get_layout_global_settings")) :
     function boostify_blocks_get_layout_global_settings()
     {
         $boostify_layout_global_settings = wp_get_global_settings(['layout']);
@@ -135,4 +146,3 @@ if (!function_exists("boostify_blocks_get_layout_global_settings")) :
 
         return $boostify_layout_global_settings;
     }
-endif;

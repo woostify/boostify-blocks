@@ -1,7 +1,7 @@
 import { WcbAttrs } from "./attributes";
 import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 
-interface Props extends WcbAttrs {}
+interface Props extends WcbAttrs { }
 
 // --------------------------- FORM AJAX
 export function handleSubmitFormForWcbForm(div: Element, props: Props) {
@@ -50,15 +50,15 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 			$.ajax({
 				type: "post", // HTTP method: post or get.
 				dataType: "json", // Response data type: xml, json, script, or html.
-				url: boostifyblocksFrontendAjaxObject.ajaxurl, // WP default AJAX handler URL.
+				url: boostifyBlocksFrontendAjaxObject.ajaxurl, // WP default AJAX handler URL.
 				data: {
-					action: "boostifyblocks_form_action",
-					nonce: boostifyblocksFrontendAjaxObject.nonce,
+					action: "boostify_blocks_form_action",
+					nonce: boostifyBlocksFrontendAjaxObject.nonce,
 					formData,
 					mailInfo,
 				},
 				context: this,
-				beforeSend: function () {},
+				beforeSend: function () { },
 				success: function (response) {
 					// This is OK code
 					console.log(99, "-----------OK", { props, response, formData });

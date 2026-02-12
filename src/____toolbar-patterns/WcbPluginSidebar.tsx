@@ -24,7 +24,7 @@ import HelpText from "../components/controls/HelpText";
 
 const WcbPluginSidebar = (props) => {
 	const [mycolors, setMyColor] = useState(
-		window.boostifyblocksGlobalVariables.customColorPallete || []
+		window.boostifyBlocksGlobalVariables.customColorPallete || []
 	);
 
 	const [updateStatus, setUpdateStatus] = useState<
@@ -42,7 +42,7 @@ const WcbPluginSidebar = (props) => {
 		defaultPalette,
 		colorGradientSettings,
 		mycolors,
-		nweww: window.boostifyblocksGlobalVariables.customColorPallete,
+		nweww: window.boostifyBlocksGlobalVariables.customColorPallete,
 	});
 
 	// update save setting to database options via ajax
@@ -51,14 +51,14 @@ const WcbPluginSidebar = (props) => {
 			return;
 		}
 
-		const newSettings: typeof window.boostifyblocksGlobalVariables = {
-			...window.boostifyblocksGlobalVariables,
+		const newSettings: typeof window.boostifyBlocksGlobalVariables = {
+			...window.boostifyBlocksGlobalVariables,
 			customColorPallete: newColors,
 		};
 
 		const data = {
-			action: "boostifyblocks_dashboard_blocks_update_settings",
-			nonce: (window as any)?.boostifyblocksFrontendAjaxObject?.nonce,
+			action: "boostify_blocks_dashboard_update_settings",
+			nonce: (window as any)?.boostifyBlocksFrontendAjaxObject?.nonce,
 			settings: newSettings,
 		};
 		setUpdateStatus("loading");

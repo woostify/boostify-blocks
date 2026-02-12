@@ -36,7 +36,7 @@ const MyColorPicker: FC<Props> = ({
 	const colorGradientSettings = useMultipleOriginColorsAndGradients();
 
 	const defaultColorPallete = useMemo(() => {
-		const customColors = window.boostifyblocksGlobalVariables?.customColorPallete;
+		const customColors = window.boostifyBlocksGlobalVariables?.customColorPallete;
 
 		if (
 			!customColors ||
@@ -50,7 +50,7 @@ const MyColorPicker: FC<Props> = ({
 			...(colorGradientSettings?.colors || []),
 			{
 				name: "Customs",
-				colors: window.boostifyblocksGlobalVariables.customColorPallete || [],
+				colors: window.boostifyBlocksGlobalVariables.customColorPallete || [],
 			},
 		];
 
@@ -71,9 +71,8 @@ const MyColorPicker: FC<Props> = ({
 					>
 						<div className="flex items-center gap-0.5">
 							<div
-								className={`w-7 h-7 rounded-full shadow-md ring-1 ring-black/5 cursor-pointer ${
-									colorState ? "" : "bg-transparent"
-								}`}
+								className={`w-7 h-7 rounded-full shadow-md ring-1 ring-black/5 cursor-pointer ${colorState ? "" : "bg-transparent"
+									}`}
 								style={{
 									backgroundColor: colorState,
 									backgroundImage: !colorState

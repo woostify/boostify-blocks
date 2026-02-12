@@ -1,7 +1,7 @@
 import { SelectControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import React, { FC, useEffect } from "react";
-import {} from "@wordpress/components";
+import { } from "@wordpress/components";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
@@ -154,7 +154,7 @@ const MyContainerControl: FC<Props> = ({
 	if (!CONTENT_BOX_WIDTH) {
 		CONTENT_BOX_WIDTH =
 			DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth ||
-			window.boostifyblocksLayoutGlobalSettings.contentSize;
+			window.boostifyBlocksLayoutGlobalSettings.contentSize;
 	}
 
 	const { currentDeviceValue: MIN_HEIGHT } = getValueFromAttrsResponsives(
@@ -228,7 +228,7 @@ const MyContainerControl: FC<Props> = ({
 				<HelpText>
 					{__(
 						"Default content box width " +
-							DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth
+						DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth
 					)}
 				</HelpText>
 			</div>
@@ -266,18 +266,18 @@ const MyContainerControl: FC<Props> = ({
 			label: React.ElementType<any>;
 			value: React.ElementType<any>;
 		}[] = [
-			{ label: "div", value: "div" },
-			{ label: "header", value: "header" },
-			{ label: "footer", value: "footer" },
-			{ label: "main", value: "main" },
-			{ label: "article", value: "article" },
-			{ label: "section", value: "section" },
-			{ label: "aside", value: "aside" },
-			{ label: "summary", value: "summary" },
-			{ label: "figure", value: "figure" },
-			{ label: "link", value: "link" },
-			{ label: "nav", value: "nav" },
-		];
+				{ label: "div", value: "div" },
+				{ label: "header", value: "header" },
+				{ label: "footer", value: "footer" },
+				{ label: "main", value: "main" },
+				{ label: "article", value: "article" },
+				{ label: "section", value: "section" },
+				{ label: "aside", value: "aside" },
+				{ label: "summary", value: "summary" },
+				{ label: "figure", value: "figure" },
+				{ label: "link", value: "link" },
+				{ label: "nav", value: "nav" },
+			];
 
 		return (
 			<div className="flow-root">

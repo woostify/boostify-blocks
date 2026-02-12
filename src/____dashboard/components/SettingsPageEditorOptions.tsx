@@ -4,8 +4,8 @@ import MyToggle from "./MyToggle";
 import { Wcb_theme_layout_global_settings } from "../../types";
 
 interface Props {
-	allSettings: typeof window.boostifyblocksGlobalVariables;
-	onChange: (data: typeof window.boostifyblocksGlobalVariables) => void;
+	allSettings: typeof window.boostifyBlocksGlobalVariables;
+	onChange: (data: typeof window.boostifyBlocksGlobalVariables) => void;
 	themeLayoutGlobal?: Wcb_theme_layout_global_settings;
 }
 

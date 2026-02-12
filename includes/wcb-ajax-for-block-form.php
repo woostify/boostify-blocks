@@ -10,34 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'wp_ajax_boostifyblocks_form_action', 'boostify_blocks_form_action_init' );
-add_action( 'wp_ajax_nopriv_boostifyblocks_form_action', 'boostify_blocks_form_action_init' );
+add_action( 'wp_ajax_boostify_blocks_form_action', 'boostify_blocks_form_action_init' );
+add_action( 'wp_ajax_nopriv_boostify_blocks_form_action', 'boostify_blocks_form_action_init' );
 
-if ( ! function_exists( 'boostify_blocks_sanitize_array' ) ) {
-	/**
-	 * Recursively sanitize an array of data.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $array The array to sanitize.
-	 * @return array The sanitized array.
-	 */
-	function boostify_blocks_sanitize_array( $array ) {
-		if ( ! is_array( $array ) ) {
-			return sanitize_text_field( $array );
-		}
-		$sanitized = array();
-		foreach ( $array as $key => $value ) {
-			$key = sanitize_text_field( $key );
-			if ( is_array( $value ) ) {
-				$sanitized[ $key ] = boostify_blocks_sanitize_array( $value );
-			} else {
-				$sanitized[ $key ] = sanitize_text_field( $value );
-			}
-		}
-		return $sanitized;
-	}
-}
+
 
 /**
  * Handle form submission AJAX request.

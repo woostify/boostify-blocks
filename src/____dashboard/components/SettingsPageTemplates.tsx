@@ -2,8 +2,8 @@ import React, { FC } from "react";
 import MyToggle from "./MyToggle";
 
 interface Props {
-	allSettings: typeof window.boostifyblocksGlobalVariables;
-	onChange: (data: typeof window.boostifyblocksGlobalVariables) => void;
+	allSettings: typeof window.boostifyBlocksGlobalVariables;
+	onChange: (data: typeof window.boostifyBlocksGlobalVariables) => void;
 }
 
 // Simple debounce utility

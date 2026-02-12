@@ -10,8 +10,8 @@ function boostify_blocks_register_custom_menu_page() {
 		__( 'Boostify Blocks Settings', 'boostify-blocks' ),
 		__( 'Boostify Blocks', 'boostify-blocks' ),
 		'manage_options',
-		BOOSTIFY_BLOCKS_PATH . 'includes/settings-page.php',
-		'',
+		'boostify-blocks-settings',
+		'boostify_blocks_render_settings_page',
 		'dashicons-screenoptions',
 		61
 	);

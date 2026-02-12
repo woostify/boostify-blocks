@@ -3,31 +3,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( ! function_exists( 'boostify_blocks_sanitize_array' ) ) {
-    /**
-     * Recursively sanitize an array of data.
-     *
-     * @param array $data The data to sanitize.
-     * @return array The sanitized data.
-     */
-    function boostify_blocks_sanitize_array( $data ) {
-        if ( ! is_array( $data ) ) {
-            return sanitize_text_field( $data );
-        }
-        $sanitized = array();
-        foreach ( $data as $key => $value ) {
-            $sanitized_key = sanitize_text_field( $key );
-            if ( is_array( $value ) ) {
-                $sanitized[ $sanitized_key ] = boostify_blocks_sanitize_array( $value );
-            } else {
-                $sanitized[ $sanitized_key ] = sanitize_text_field( $value );
-            }
-        }
-        return $sanitized;
-    }
-}
 
-add_action('wp_ajax_boostifyblocks_dashboard_blocks_disable_enable', 'boostify_blocks_ajax_dashboard_blocks_disable_enable');
+
+add_action('wp_ajax_boostify_blocks_dashboard_blocks_disable_enable', 'boostify_blocks_ajax_dashboard_blocks_disable_enable');
 function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 {
     // Verify nonce for security
@@ -63,7 +41,7 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 }
 
 //
-add_action('wp_ajax_boostifyblocks_dashboard_blocks_update_settings', 'boostify_blocks_ajax_dashboard_update_settings');
+add_action('wp_ajax_boostify_blocks_dashboard_update_settings', 'boostify_blocks_ajax_dashboard_update_settings');
 function boostify_blocks_ajax_dashboard_update_settings()
 {
     // Verify nonce for security

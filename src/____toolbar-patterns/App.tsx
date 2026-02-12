@@ -10,7 +10,7 @@ const client = new ApolloClient({
 });
 
 const App = () => {
-	if (boostifyblocksGlobalVariables?.enableTemplatesButton === "false") {
+	if (window.boostifyBlocksGlobalVariables?.enableTemplatesButton === "false") {
 		return null;
 	}
 
