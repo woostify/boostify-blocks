@@ -63,7 +63,13 @@ function boostify_blocks_form_action_init() {
 	$to      = isset( $mail_info['to'] ) ? sanitize_email( $mail_info['to'] ) : '';
 	$subject = isset( $mail_info['subject'] ) ? $mail_info['subject'] : '';
 	$cc      = isset( $mail_info['cc'] ) ? sanitize_email( $mail_info['cc'] ) : '';
+	if ( ! is_email( $cc ) ) {
+		$cc = '';
+	}
 	$bcc     = isset( $mail_info['bcc'] ) ? sanitize_email( $mail_info['bcc'] ) : '';
+	if ( ! is_email( $bcc ) ) {
+		$bcc = '';
+	}
 
 	$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 	if ( ! empty( $cc ) ) {
@@ -80,7 +86,7 @@ function boostify_blocks_form_action_init() {
 	<body>
 		<?php foreach ( $form_data as $field ) : ?>
 			<p>
-				<strong><?php echo esc_html( $field['name'] ); ?></strong> - <span><?php echo esc_html( $field['value'] ); ?></span>
+				<strong><?php echo esc_html( sanitize_text_field( $field['name'] ) ); ?></strong> - <span><?php echo esc_html( sanitize_text_field( $field['value'] ) ); ?></span>
 			</p>
 		<?php endforeach; ?>
 	</body>

@@ -79,8 +79,22 @@ function boostify_blocks_ajax_dashboard_update_settings()
     }
 
     // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized below with boostify_blocks_sanitize_array
-    $settings = isset($_POST['settings']) ? boostify_blocks_sanitize_array(wp_unslash($_POST['settings'])) : array();
-    $settings = array_merge(boostify_blocks_get_default_blocks_settings(), $settings);
+    $postedSettings = isset($_POST['settings']) ? boostify_blocks_sanitize_array(wp_unslash($_POST['settings'])) : array();
+    
+    $defaultSettings = array();
+    if (function_exists('boostify_blocks_get_default_blocks_settings')) {
+        $defaultSettings = boostify_blocks_get_default_blocks_settings();
+    }
+
+    // VALIDATE: Only allow keys that exist in default settings
+    $validSettings = array();
+    foreach ($postedSettings as $key => $value) {
+        if (array_key_exists($key, $defaultSettings)) {
+            $validSettings[$key] = $value;
+        }
+    }
+
+    $settings = array_merge($defaultSettings, $validSettings);
 
     update_option('boostify_blocks_settings_options', $settings);
     $array_result = array(
