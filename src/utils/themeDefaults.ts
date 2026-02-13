@@ -55,6 +55,7 @@ export type ThemeDefaults = {
     shop_archive_wishlist_btn?: {
         position?: 'top-right' | 'bottom-right' | 'none';
         style?:  'yith' | 'ti';
+        wishlist_plugin_active?: boolean;
     };
     shop_quick_view_btn?: {
         enabled?: boolean;

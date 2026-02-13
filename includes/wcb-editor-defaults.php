@@ -17,9 +17,10 @@ if (!function_exists('wcb_get_theme_defaults_data')) {
 		}
 
 		// Wishlist defaults (Woostify supports multiple plugins).
+		$wishlist_plugin_active = defined('TINVWL_FVERSION') || class_exists('TInvWL_Public_Add_To_Wishlist') || class_exists('TInvWL_Plugin');
 		$wishlist_support_plugin = $woostify['shop_page_wishlist_support_plugin'] ?? null;
 		if (!$wishlist_support_plugin) {
-			if (defined('TINVWL_FVERSION') || class_exists('TInvWL_Public_Add_To_Wishlist') || class_exists('TInvWL_Plugin')) {
+			if ($wishlist_plugin_active) {
 				$wishlist_support_plugin = 'ti';
 			} elseif (defined('YITH_WCWL') || class_exists('YITH_WCWL')) {
 				$wishlist_support_plugin = 'yith';
@@ -96,6 +97,7 @@ if (!function_exists('wcb_get_theme_defaults_data')) {
 			'shop_archive_wishlist_btn' => [
 				'position' => $woostify['shop_page_wishlist_position'] ?? 'none',
 				'style'    => $wishlist_support_plugin,
+				'wishlist_plugin_active' => $wishlist_plugin_active,
 			],
 			'shop_quick_view_btn' => [
 				'enabled'          => $quick_view_enabled,

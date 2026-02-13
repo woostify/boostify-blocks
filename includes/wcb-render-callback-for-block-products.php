@@ -199,6 +199,7 @@ function wcb_block_products_apply_theme_defaults($attributes)
         [
             'position' => $wishlist['position'] ?? ($attributes['style_wishlistBtn']['position'] ?? null),
             'style' => $wishlist['style'] ?? ($attributes['style_wishlistBtn']['style'] ?? null),
+            'wishlist_plugin_active' => $wishlist['wishlist_plugin_active'] ?? ($attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
         ]
     );
 
@@ -407,12 +408,13 @@ function wcb_block_products__render_product($product, $attributes, $index)
 
     $btnWishListTopRight = false;
     $btnWishListBottomRight = false;
-    if ($attributes['style_wishlistBtn']['position'] === "top-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+    $wishlistPluginActive = !empty($attributes['style_wishlistBtn']['wishlist_plugin_active']);
+    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "top-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
         $btnWishListTopRight = true;
     }
 
-    if ($attributes['style_wishlistBtn']['position'] === "bottom-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
-        $btnWishListBottomRight = true;     
+    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "bottom-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+        $btnWishListBottomRight = true;
     }   
 
     $classes = "wcb-products__product ";

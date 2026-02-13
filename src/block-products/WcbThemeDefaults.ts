@@ -416,14 +416,18 @@ export function buildStyleWishlistButtonDefault(attr?: Partial<typeof WCB_PRODUC
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO,
         ...(attr || {}),
-        position: 
-            wishlistBtn?.position ?? 
-            attr?.position ?? 
+        position:
+            wishlistBtn?.position ??
+            attr?.position ??
             WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.position,
         style:
             wishlistBtn?.style ??
             attr?.style ??
             WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.style,
+        wishlist_plugin_active:
+            wishlistBtn?.wishlist_plugin_active ??
+            attr?.wishlist_plugin_active ??
+            WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.wishlist_plugin_active,
     };
 }
 

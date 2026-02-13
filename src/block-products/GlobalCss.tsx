@@ -448,7 +448,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						zIndex: 3,
 					},
 					".wcb-products__product--quickViewBottomImage--item": {
-						...(style_quickViewBtn?.position === "bottom-image") ? {
+						...(style_quickViewBtn?.position === "bottom-image" && style_quickViewBtn?.woostify_pro_active && style_quickViewBtn?.enabled) ? {
 							position: "absolute",
 							left: 0,
 							bottom: "10px",
@@ -473,7 +473,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					},
 					":hover": {
 						".wcb-products__product--quickViewBottomImage--item": {
-							...(style_quickViewBtn?.position === "bottom-image") ? {
+							...(style_quickViewBtn?.position === "bottom-image" && style_quickViewBtn?.woostify_pro_active && style_quickViewBtn?.enabled) ? {
 								opacity: 1,
 								visibility: "visible",
 								height: "40px",
