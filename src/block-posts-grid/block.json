@@ -1,5 +1,4 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "wcb/posts-grid",
 	"version": "0.1.0",
@@ -9,7 +8,10 @@
 	"description": "Display a clean grid of posts anywhere on your site.",
 	"supports": {
 		"html": false,
-		"align": ["full", "wide"]
+		"align": [
+			"full",
+			"wide"
+		]
 	},
 	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",

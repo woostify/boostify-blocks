@@ -1,5 +1,4 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "wcb/team",
 	"version": "0.1.0",
@@ -9,7 +8,10 @@
 	"description": "A beautifully display the details about your team members.",
 	"supports": {
 		"html": false,
-		"align": ["wide", "full"],
+		"align": [
+			"wide",
+			"full"
+		],
 		"anchor": true
 	},
 	"textdomain": "boostify-blocks",

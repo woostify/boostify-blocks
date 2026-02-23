@@ -43,15 +43,29 @@ We understand the need for a quality product backed by dedicated support that ca
 
 == External services ==
 
-This plugin can connect to the **Google reCAPTCHA** service provided by Google LLC. It is used to protect form submissions made through Boostify Blocks form blocks from spam and automated abuse.
+= Google reCAPTCHA =
 
-- When you enable reCAPTCHA for a form block, the plugin enqueues the official Google reCAPTCHA script from `https://www.google.com/recaptcha/api.js` on pages where that form is displayed.
-- When those pages are loaded (and when users interact with the reCAPTCHA widget), information is sent directly from the visitor's browser to Google. This typically includes the visitor's IP address, browser and device information, referrer URL, and other data used by Google to provide and improve the reCAPTCHA service. This data is handled by Google according to their own policies, and is not stored or processed by this plugin beyond triggering the script load.
-- Site owners must configure their own reCAPTCHA site and secret keys in order to use this feature. If reCAPTCHA is not enabled for a form block, the plugin does not load or communicate with the Google reCAPTCHA service.
+This plugin can optionally connect to the Google reCAPTCHA service provided by Google LLC, used to protect form submissions from spam.
 
-For more information about Google reCAPTCHA, please review Google's terms and policies:
-- Terms of Service: https://policies.google.com/terms
-- Privacy Policy: https://policies.google.com/privacy
+- Only activated when the site owner explicitly enables reCAPTCHA and configures their own site/secret keys.
+- When enabled, the plugin loads the official reCAPTCHA script from https://www.google.com/recaptcha/api.js on pages containing a form block.
+- When those pages load, the visitor's IP address, browser/device info, and referrer URL are sent to Google. This data is handled solely by Google and not stored by this plugin.
+- If reCAPTCHA is not enabled, no connection to Google is made.
+
+Terms of Service: https://policies.google.com/terms
+Privacy Policy: https://policies.google.com/privacy
+
+= Woostify Blocks Templates Service =
+
+This plugin includes an optional block templates feature that connects to https://woostifyblocks.com/graphql (provided by Woostify).
+
+- Used to display a library of pre-built block templates in the Gutenberg editor toolbar.
+- The connection is made only from the Gutenberg editor in the WordPress admin area, never on the frontend.
+- When the Templates feature is enabled, the plugin sends a GraphQL query to https://woostifyblocks.com/graphql to retrieve available templates. No personal user data or site content is sent.
+- This feature can be disabled via the "Enable Templates Button" option in the plugin settings.
+
+Terms of Service: https://woostify.com/terms/
+Privacy Policy: https://woostify.com/privacy-policy/
 
 
 == Frequently Asked Questions ==

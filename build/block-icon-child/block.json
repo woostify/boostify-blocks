@@ -1,5 +1,4 @@
 {
-  "$schema": "https://schemas.raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json",
   "apiVersion": 3,
   "name": "wcb/icon",
   "version": "0.1.0",

@@ -1,9 +1,10 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "wcb/email",
 	"version": "0.1.0",
-	"parent": ["wcb/form"],
+	"parent": [
+		"wcb/form"
+	],
 	"title": "Email",
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-envelope text-xl",

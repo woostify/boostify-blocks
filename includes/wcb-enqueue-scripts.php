@@ -75,8 +75,8 @@ if (!function_exists("boostify_blocks_my_enqueue_scripts_for_admin_editor")) {
 if (!function_exists("boostify_blocks_enqueue_lineicons")) {
     function boostify_blocks_enqueue_lineicons()
     {
-        wp_register_style('lineicons-free-basic-3.0', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/lineicons-free-basic/icon-font/lineicons.css', false, '3.0.0');
-        wp_enqueue_style('lineicons-free-basic-3.0');
+        wp_register_style('boostify-blocks-lineicons-3.0', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/lineicons-free-basic/icon-font/lineicons.css', false, '3.0.0');
+        wp_enqueue_style('boostify-blocks-lineicons-3.0');
     }
     add_action('wp_enqueue_scripts', 'boostify_blocks_enqueue_lineicons');
     add_action('admin_enqueue_scripts', 'boostify_blocks_enqueue_lineicons');
@@ -104,9 +104,8 @@ if (!function_exists("boostify_blocks_enqueue_script_to_setting_page")) {
             wp_register_style('boostify-blocks-settings-page', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/style-index.css');
             wp_enqueue_style('boostify-blocks-settings-page');
             //
-            wp_enqueue_script('boostify-blocks-dashboard-app-tailwind', "https://cdn.tailwindcss.com?plugins=forms", [], '3.2.6', false);
-            wp_add_inline_script('boostify-blocks-dashboard-app-tailwind', 'tailwind.config = {
-                theme: {  important: true  } }', 'after');
+            wp_enqueue_style('boostify-blocks-dashboard-tailwind',plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/dashboard-tailwind.css', [], BOOSTIFY_BLOCKS_VERSION);
+            wp_add_inline_script('boostify-blocks-dashboard-app-tailwind', 'tailwind.config = { important: true }', 'after');
             //
             wp_enqueue_script('boostify-blocks-dashboard-app', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js', ['wp-blocks', 'wp-element', 'jquery'], BOOSTIFY_BLOCKS_VERSION, true);
         }

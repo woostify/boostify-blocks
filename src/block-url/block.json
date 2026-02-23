@@ -1,10 +1,11 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "wcb/url",
 	"version": "0.1.0",
 	"title": "Url",
-	"parent": ["wcb/form"],
+	"parent": [
+		"wcb/form"
+	],
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-link text-xl",
 	"description": "Example static block scaffolded with Create Block tool.",

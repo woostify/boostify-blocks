@@ -111,7 +111,7 @@ function boostify_blocks_block_form_render_callback($attributes, $content)
         if ($recaptcha_version === 'v2') {
             // phpcs:ignore PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent -- Google reCAPTCHA API must be loaded from Google's servers.
             wp_enqueue_script(
-                'google-recaptcha-v2',
+                'boostify-blocks-recaptcha-v2',
                 'https://www.google.com/recaptcha/api.js',
                 array(),
                 // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- External Google reCAPTCHA script, version managed by Google.
@@ -125,7 +125,7 @@ function boostify_blocks_block_form_render_callback($attributes, $content)
             $site_key = $boostify_blocks_settings_options['reCAPTCHA_v3_site_key'] ?? '';
             // phpcs:ignore PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent -- Google reCAPTCHA API must be loaded from Google's servers.
             wp_enqueue_script(
-                'google-recaptcha-v3',
+                'boostify-blocks-recaptcha-v3',
                 'https://www.google.com/recaptcha/api.js?render=' . esc_attr($site_key),
                 array(),
                 // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- External Google reCAPTCHA script, version managed by Google.

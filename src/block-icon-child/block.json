@@ -1,5 +1,4 @@
 {
-	"$schema": "https://schemas.raw.githubusercontent.com/WordPress/gutenberg/trunk/schemas/json/block.json",
 	"apiVersion": 3,
 	"name": "wcb/icon",
 	"version": "0.1.0",
@@ -12,7 +11,9 @@
 		"anchor": true
 	},
 	"textdomain": "boostify-blocks",
-	"parent": ["wcb/icon-list"],
+	"parent": [
+		"wcb/icon-list"
+	],
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

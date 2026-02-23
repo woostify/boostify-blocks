@@ -13,7 +13,7 @@ function boostify_blocks_register_custom_menu_page() {
 		BOOSTIFY_BLOCKS_PATH . 'includes/settings-page.php',
 		'',
 		'dashicons-screenoptions',
-		6
+		61
 	);
 }
 add_action( 'admin_menu', 'boostify_blocks_register_custom_menu_page' );

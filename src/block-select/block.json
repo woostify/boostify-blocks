@@ -1,10 +1,11 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "wcb/select",
 	"version": "0.1.0",
 	"title": "Select",
-	"parent": ["wcb/form"],
+	"parent": [
+		"wcb/form"
+	],
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-select text-xl",
 	"description": "Example static block scaffolded with Create Block tool.",

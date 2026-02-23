@@ -1,8 +1,9 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "wcb/date",
-	"parent": ["wcb/form"],
+	"parent": [
+		"wcb/form"
+	],
 	"version": "0.1.0",
 	"title": "Date",
 	"category": "boostify-blocks",

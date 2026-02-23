@@ -1,5 +1,4 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "wcb/testimonials",
 	"version": "0.1.0",
@@ -10,7 +9,10 @@
 	"supports": {
 		"html": false,
 		"anchor": true,
-		"align": ["full", "wide"]
+		"align": [
+			"full",
+			"wide"
+		]
 	},
 	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
