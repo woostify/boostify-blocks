@@ -68,6 +68,24 @@ export type ThemeDefaults = {
         border_radius?: number;
         woostify_pro_active?: boolean;
     };
+    countdown_urgency?: {
+        active?: boolean;
+        style?: 'default' | 'style-1';
+        apply_for?: 'all' | 'categories' | 'products';
+        categories_selected?: string | false;
+        products_selected?: string | false;
+        categories_exclude?: string | false;
+        products_exclude?: string | false;
+        time_duration?: string;
+        time_type?: 'days' | 'hours' | 'minutes';
+        message?: string;
+        days_label?: string;
+        hours_label?: string;
+        minutes_label?: string;
+        seconds_label?: string;
+        display_on_thumbnail?: '0' | '1';
+        hide_after_time_up?: '0' | '1';
+    };
 };
   
 export function getThemeDefaults(): ThemeDefaults {

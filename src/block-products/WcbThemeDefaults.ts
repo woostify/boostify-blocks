@@ -15,6 +15,7 @@ import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK } from "./WcbProductsPanel_StyleO
 import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE } from "./WcbProductsPanel_StyleSaleBadge"; 
 import { WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO } from "./WcbProductsPanel_StyleWishListButton";
 import { WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO } from "./WcbProductsPanel_StyleQuickViewButton";
+import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO } from "./WcbProductsPanel_StyleCountdownUrgency";
 
 /**
  * Builds style_layout with theme numberOfColumn and textAlignment.
@@ -482,3 +483,82 @@ export function buildStyleQuickViewButtonDefault(attr?: Partial<typeof WCB_PRODU
     };
 }
 
+
+/**
+ * Builds style_countdownUrgency with theme styles.
+ * 
+ * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO>} [attr] - Attributes to override.
+ * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO} Attributes with theme defaults applied.
+ */
+export function buildStyleCountdownUrgencyDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO>) {
+    const theme = getThemeDefaults();
+    const cu = theme.countdown_urgency;
+    return {
+        ...WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO,
+        ...(attr || {}),
+        countdownUrgencyActive:
+            cu?.active ??
+            attr?.countdownUrgencyActive ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.countdownUrgencyActive,
+        style:
+            cu?.style ??
+            attr?.style ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.style,
+        applyFor:
+            cu?.apply_for ??
+            attr?.applyFor ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.applyFor,
+        categoriesSelected:
+            cu?.categories_selected ??
+            attr?.categoriesSelected ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.categoriesSelected,
+        productsSelected:
+            cu?.products_selected ??
+            attr?.productsSelected ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.productsSelected,
+        categoriesExclude:
+            cu?.categories_exclude ??
+            attr?.categoriesExclude ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.categoriesExclude,
+        productsExclude:
+            cu?.products_exclude ??
+            attr?.productsExclude ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.productsExclude,
+        timeDuration:
+            cu?.time_duration ??
+            attr?.timeDuration ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.timeDuration,
+        timeType:
+            cu?.time_type ??
+            attr?.timeType ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.timeType,
+        message:
+            cu?.message ??
+            attr?.message ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.message,
+        daysLabel:
+            cu?.days_label ??
+            attr?.daysLabel ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.daysLabel,
+        hoursLabel:
+            cu?.hours_label ??
+            attr?.hoursLabel ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.hoursLabel,
+        minutesLabel:
+            cu?.minutes_label ??
+            attr?.minutesLabel ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.minutesLabel,
+        secondsLabel:
+            cu?.seconds_label ??
+            attr?.secondsLabel ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.secondsLabel,
+        displayOnThumbnail:
+            cu?.display_on_thumbnail ??
+            attr?.displayOnThumbnail ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.displayOnThumbnail,
+        hideAfterTimeUp:
+            cu?.hide_after_time_up ??
+            attr?.hideAfterTimeUp ??
+            WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.hideAfterTimeUp,
+    };
+}

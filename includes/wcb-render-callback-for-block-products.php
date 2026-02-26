@@ -220,6 +220,30 @@ function wcb_block_products_apply_theme_defaults($attributes)
         ]
     );
 
+    // Countdown urgency
+    $cu = $theme['countdown_urgency'] ?? [];
+    $attributes['style_countdownUrgency'] = array_merge(
+        $attributes['style_countdownUrgency'] ?? [],
+        [
+            'countdownUrgencyActive' => $cu['active'] ?? ($attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
+            'style'                  => $cu['style'] ?? ($attributes['style_countdownUrgency']['style'] ?? null),
+            'applyFor'               => $cu['apply_for'] ?? ($attributes['style_countdownUrgency']['applyFor'] ?? null),
+            'categoriesSelected'     => $cu['categories_selected'] ?? ($attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
+            'productsSelected'       => $cu['products_selected'] ?? ($attributes['style_countdownUrgency']['productsSelected'] ?? null),
+            'categoriesExclude'      => $cu['categories_exclude'] ?? ($attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
+            'productsExclude'        => $cu['products_exclude'] ?? ($attributes['style_countdownUrgency']['productsExclude'] ?? null),
+            'timeDuration'           => $cu['time_duration'] ?? ($attributes['style_countdownUrgency']['timeDuration'] ?? null),
+            'timeType'               => $cu['time_type'] ?? ($attributes['style_countdownUrgency']['timeType'] ?? null),
+            'message'                => $cu['message'] ?? ($attributes['style_countdownUrgency']['message'] ?? null),
+            'daysLabel'              => $cu['days_label'] ?? ($attributes['style_countdownUrgency']['daysLabel'] ?? null),
+            'hoursLabel'             => $cu['hours_label'] ?? ($attributes['style_countdownUrgency']['hoursLabel'] ?? null),
+            'minutesLabel'           => $cu['minutes_label'] ?? ($attributes['style_countdownUrgency']['minutesLabel'] ?? null),
+            'secondsLabel'           => $cu['seconds_label'] ?? ($attributes['style_countdownUrgency']['secondsLabel'] ?? null),
+            'displayOnThumbnail'     => $cu['display_on_thumbnail'] ?? ($attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
+            'hideAfterTimeUp'        => $cu['hide_after_time_up'] ?? ($attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
+        ]
+    );
+
     return $attributes;
 }
 
@@ -518,8 +542,11 @@ function wcb_block_products__render_product($product, $attributes, $index)
         ></button>' : '';
     
     // Quick view button at bottom of image
-    $btnQuickViewBottomImageHtml = $btnQuickViewBottomImage ? 
+    $btnQuickViewBottomImageHtml = $btnQuickViewBottomImage ?
         wcb_block_products__build_quick_view_html($product_id_attr, $attributes['style_quickViewBtn']['position']) : '';
+
+    // Countdown urgency
+    $countdownHtml = wcb_block_products__get_countdown_html( $attributes['style_countdownUrgency'] ?? [] );
 
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html',
@@ -527,11 +554,12 @@ function wcb_block_products__render_product($product, $attributes, $index)
 				<div class=\"wcb-products__product-featured \">
                     <a href=\"{$data->permalink}\" class=\"{$featuredClasses}\">
                         {$data->image}
-                        {$isSwapHover}   
+                        {$isSwapHover}
                     </a>
                     {$topRightIconsHtml}
                     {$bottomRightIconHtml}
                     {$btnQuickViewBottomImageHtml}
+                    {$countdownHtml}
                     {$saleBadge1}
                     {$saleOutOfStock}
                 </div>
@@ -545,6 +573,65 @@ function wcb_block_products__render_product($product, $attributes, $index)
         $data,
         $product
     );
+}
+
+function wcb_block_products__get_countdown_html( $countdown_attrs ) {
+    if ( empty( $countdown_attrs ) ) {
+        return '';
+    }
+
+    $active   = $countdown_attrs['countdownUrgencyActive'] ?? false;
+    $position = $countdown_attrs['position'] ?? 'none';
+    $style    = $countdown_attrs['style'] ?? 'default';
+
+    if ( ! $active || $position === 'none' ) {
+        return '';
+    }
+
+    $time_duration = intval( $countdown_attrs['timeDuration'] ?? 1 );
+    $time_type     = $countdown_attrs['timeType'] ?? 'days';
+    $multipliers   = [
+        'days'    => 86400000,
+        'hours'   => 3600000,
+        'minutes' => 60000,
+    ];
+    $duration_ms  = $time_duration * ( $multipliers[ $time_type ] ?? 86400000 );
+    $hide_time_up = ( $countdown_attrs['hideAfterTimeUp'] ?? '1' ) === '1' ? '1' : '0';
+
+    $days_label    = esc_html( $countdown_attrs['daysLabel']    ?? 'Days' );
+    $hours_label   = esc_html( $countdown_attrs['hoursLabel']   ?? 'Hours' );
+    $minutes_label = esc_html( $countdown_attrs['minutesLabel'] ?? 'Mins' );
+    $seconds_label = esc_html( $countdown_attrs['secondsLabel'] ?? 'Secs' );
+
+    // TODO: handle message and position in the future if needed
+    // $message    = $countdown_attrs['message'] ?? '';
+    // $message_html = '';
+    // if ( $message ) {
+    //     $message_html = '<div class="wcb-countdown-urgency__message">' . esc_html( $message ) . '</div>';
+    // }
+    $position_class = $position !== 'none' ? 'wcb-countdown-urgency-wrap--' . esc_attr( $position ) : '';
+
+    return "
+            <div class=\"woostify-countdown-urgency {$position_class}\" data-duration=\"{$duration_ms}\" data-time-up=\"{$hide_time_up}\">
+                <div class=\"woostify-countdown-urgency-timer {$style}\">
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"days\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$days_label}</div>
+                    </div>
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"hours\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$hours_label}</div>
+                    </div>
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"minutes\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$minutes_label}</div>
+                    </div>
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"seconds\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$seconds_label}</div>
+                    </div>
+                </div>
+            </div>";
 }
 
 function wcb_block_products__build_quick_view_html( $product_id_attr, $position ) {

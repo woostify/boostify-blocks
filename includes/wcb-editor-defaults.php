@@ -34,7 +34,28 @@ if (!function_exists('wcb_get_theme_defaults_data')) {
 		$quick_view_position = $woostify_pro['shop_page_quick_view_position'] ?? 'top-right';
 		$quick_view_radius = (int)($woostify_pro['shop_product_quick_view_radius'] ?? 0);
 
+		// Countdown Urgency settings (Woostify Pro).
+		$countdown_urgency_active = class_exists('Woostify_Countdown_Urgency');
+
 		return [
+			'countdown_urgency' => [
+				'active'               => $countdown_urgency_active,
+				'style'                => get_option('woostify_countdown_urgency_style', 'default'),
+				'apply_for'            => get_option('woostify_countdown_urgency_apply_for', 'all'),
+				'categories_selected'  => get_option('woostify_countdown_urgency_categories_selected', false),
+				'products_selected'    => get_option('woostify_countdown_urgency_products_selected', false),
+				'categories_exclude'   => get_option('woostify_countdown_urgency_categories_exclude', false),
+				'products_exclude'     => get_option('woostify_countdown_urgency_products_exclude', false),
+				'time_duration'        => get_option('woostify_countdown_urgency_time_duration', '1'),
+				'time_type'            => get_option('woostify_countdown_urgency_time_type', 'days'),
+				'message'              => get_option('woostify_countdown_urgency_message', 'Hurry up! Flash Sale Ends Soon!'),
+				'days_label'           => get_option('woostify_countdown_urgency_days_label', 'DAYS'),
+				'hours_label'          => get_option('woostify_countdown_urgency_hours_label', 'HOURS'),
+				'minutes_label'        => get_option('woostify_countdown_urgency_minutes_label', 'MINS'),
+				'seconds_label'        => get_option('woostify_countdown_urgency_seconds_label', 'SECS'),
+				'display_on_thumbnail' => get_option('woostify_countdown_urgency_display_on_thumbnail', '0'),
+				'hide_after_time_up'   => get_option('woostify_countdown_urgency_hide_after_time_up', '1'),
+			],
 			'product_per_row' => [
 				'desktop' => (int)($woostify['products_per_row'] ?? 3),
 				'tablet'  => (int)($woostify['tablet_products_per_row'] ?? 2),

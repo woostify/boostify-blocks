@@ -31,6 +31,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_wishlistBtn,
 		advance_motionEffect,
 		style_category,
+		style_countdownUrgency,
 	} = attributes;
 	//
 
@@ -111,6 +112,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			typography: ensureTypographyConsistency(style_category.typography)
 		} : undefined,
 		style_wishlistBtn: ensureObjectStructure(style_wishlistBtn),
+		style_countdownUrgency: ensureObjectStructure(style_countdownUrgency),
 	};
 	//
 	const blockProps = useBlockProps.save({

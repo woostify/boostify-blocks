@@ -87,7 +87,9 @@ import {
 	buildGeneralAddToCartBtnDefault,
 	buildStyleWishlistButtonDefault,
 	buildStyleQuickViewButtonDefault,
+	buildStyleCountdownUrgencyDefault,
 } from "./WcbThemeDefaults";
+import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO } from "./WcbProductsPanel_StyleCountdownUrgency";
 
 interface Props extends EditProps<WcbAttrs> {}
 
@@ -116,6 +118,7 @@ const Edit: FC<Props> = (props) => {
 		style_rating,
 		style_wishlistBtn,
 		style_quickViewBtn,
+		style_countdownUrgency,
 		advance_motionEffect,
 		style_category,
 	} = attributes;
@@ -137,7 +140,7 @@ const Edit: FC<Props> = (props) => {
 			uniqueId: converUniqueIdToAnphaKey(UNIQUE_ID),
 		});
 	}, [UNIQUE_ID]);
-
+	
 	useEffect(() => {
 		// If already initialized, do nothing
 		if (attributes.style_layout) return;
@@ -156,6 +159,7 @@ const Edit: FC<Props> = (props) => {
 			style_title: buildStyleTitleDefault(WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO as any),
 			style_wishlistBtn: buildStyleWishlistButtonDefault(attributes.style_wishlistBtn as any),
 			style_quickViewBtn: buildStyleQuickViewButtonDefault(attributes.style_quickViewBtn as any),
+			style_countdownUrgency: buildStyleCountdownUrgencyDefault(attributes.style_countdownUrgency as any),
 			general_sortingAndFiltering: buildSortingAndFilteringDefault(general_sortingAndFiltering as any),
 			general_content: buildGeneralContractDefault(general_content as any),
 			general_layout: WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO,
@@ -195,6 +199,17 @@ const Edit: FC<Props> = (props) => {
 	}, [style_wishlistBtn]);
 	//
 
+	useEffect(() => {
+		const hasCountdownUrgencyConfig =
+			style_countdownUrgency && Object.keys(style_countdownUrgency).length > 0;
+		if (!hasCountdownUrgencyConfig) {
+			setAttributes({
+				style_countdownUrgency: buildStyleCountdownUrgencyDefault(
+					attributes.style_countdownUrgency as any
+				),
+			});
+		}
+	}, [style_countdownUrgency]);
 	//
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
