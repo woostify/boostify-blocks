@@ -1,10 +1,10 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/select",
+	"name": "boostify-blocks/select",
 	"version": "0.1.0",
 	"title": "Select",
 	"parent": [
-		"wcb/form"
+		"boostify-blocks/form"
 	],
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-select text-xl",

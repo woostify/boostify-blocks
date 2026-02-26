@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "wcb/posts-grid",
+  "name": "boostify-blocks/posts-grid",
   "version": "0.1.0",
   "title": "Posts grid",
   "category": "boostify-blocks",

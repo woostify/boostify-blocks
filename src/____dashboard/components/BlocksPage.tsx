@@ -48,7 +48,7 @@ const BlocksPage: FC<Props> = ({
 		setBlocksStatus(newBlocksStatus);
 		const data = {
 			action: "boostify_blocks_dashboard_blocks_disable_enable",
-			nonce: (window as any)?.boostifyBlocksFrontendAjaxObject?.nonce,
+			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
 			blocksStatus: newBlocksStatus,
 		};
 		toast.promise(

@@ -1,8 +1,8 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/date",
+	"name": "boostify-blocks/date",
 	"parent": [
-		"wcb/form"
+		"boostify-blocks/form"
 	],
 	"version": "0.1.0",
 	"title": "Date",

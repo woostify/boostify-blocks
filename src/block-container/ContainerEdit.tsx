@@ -263,7 +263,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 	};
 
 	const ALLOWED_BLOCKS = null;
-	// const ALLOWED_BLOCKS = ["wcb/container-box"];
+	// const ALLOWED_BLOCKS = ["boostify-blocks/container-box"];
 
 	// ====== END WRAP CLASSES
 

@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/image",
+	"name": "boostify-blocks/image",
 	"version": "0.1.0",
 	"title": "Image",
 	"category": "boostify-blocks",

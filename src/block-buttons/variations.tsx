@@ -24,7 +24,7 @@ export const variations: {
 	title: string;
 	description: string;
 	icon: any;
-	innerBlocks: ["wcb/button", {} | undefined][];
+	innerBlocks: ["boostify-blocks/button", {} | undefined][];
 	scope: string[];
 	isDefault?: boolean;
 	attributes?: any;
@@ -39,7 +39,7 @@ export const variations: {
 			</RenderIcon>
 		),
 		innerBlocks: [
-			["wcb/button", undefined],
+			["boostify-blocks/button", undefined],
 		],
 		scope: ["block"],
 		isDefault: true,
@@ -55,8 +55,8 @@ export const variations: {
 			</RenderIcon>
 		),
 		innerBlocks: [
-			["wcb/button", undefined],
-			["wcb/button", undefined],
+			["boostify-blocks/button", undefined],
+			["boostify-blocks/button", undefined],
 		],
 		scope: ["block"],
 		isDefault: true,
@@ -73,9 +73,9 @@ export const variations: {
 			</RenderIcon>
 		),
 		innerBlocks: [
-			["wcb/button", undefined],
-			["wcb/button", undefined],
-			["wcb/button", undefined],
+			["boostify-blocks/button", undefined],
+			["boostify-blocks/button", undefined],
+			["boostify-blocks/button", undefined],
 		],
 		scope: ["block"],
 	},

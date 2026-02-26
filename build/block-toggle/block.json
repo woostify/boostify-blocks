@@ -1,9 +1,9 @@
 {
   "apiVersion": 3,
-  "name": "wcb/toggle",
+  "name": "boostify-blocks/toggle",
   "version": "0.1.0",
   "parent": [
-    "wcb/form"
+    "boostify-blocks/form"
   ],
   "title": "Toggle",
   "category": "boostify-blocks",

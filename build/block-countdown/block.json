@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "wcb/countdown",
+  "name": "boostify-blocks/countdown",
   "version": "0.1.0",
   "title": "Countdown",
   "category": "boostify-blocks",

@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "wcb/container",
+  "name": "boostify-blocks/container",
   "version": "0.1.0",
   "title": "Container",
   "category": "boostify-blocks",

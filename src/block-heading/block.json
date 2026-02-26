@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/heading",
+	"name": "boostify-blocks/heading",
 	"version": "0.1.0",
 	"title": "Heading",
 	"category": "boostify-blocks",

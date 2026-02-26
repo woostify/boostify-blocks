@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/counter",
+	"name": "boostify-blocks/counter",
 	"version": "0.1.0",
 	"title": "Counter",
 	"category": "boostify-blocks",

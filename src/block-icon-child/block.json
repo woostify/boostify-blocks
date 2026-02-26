@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/icon",
+	"name": "boostify-blocks/icon",
 	"version": "0.1.0",
 	"title": "List Item",
 	"category": "boostify-blocks",
@@ -12,7 +12,7 @@
 	},
 	"textdomain": "boostify-blocks",
 	"parent": [
-		"wcb/icon-list"
+		"boostify-blocks/icon-list"
 	],
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

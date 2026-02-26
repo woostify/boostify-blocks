@@ -84,9 +84,9 @@ const v5 = {
 			newAttributes,
 			[
 				// Create default child blocks
-				["wcb/icon", {}],
-				["wcb/icon", {}],
-				["wcb/icon", {}],
+				["boostify-blocks/icon", {}],
+				["boostify-blocks/icon", {}],
+				["boostify-blocks/icon", {}],
 			]
 		];
 	}

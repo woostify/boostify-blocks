@@ -11,7 +11,7 @@ const ProductsQueries = () => {
 		setLoading(true);
 		const data = {
 			action: "boostify_blocks_get_product_filters",
-			nonce: (window as any)?.boostifyBlocksFrontendAjaxObject?.nonce,
+			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
 			data: "ProductsQueries",
 		};
 		jQuery.post(ajaxurl, data, function (response) {

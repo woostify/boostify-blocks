@@ -1,13 +1,13 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/tab-child",
+	"name": "boostify-blocks/tab-child",
 	"version": "0.1.0",
 	"title": "Tab child",
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-support text-xl",
 	"description": "Example static block scaffolded with Create Block tool.",
 	"parent": [
-		"wcb/tabs"
+		"boostify-blocks/tabs"
 	],
 	"supports": {
 		"html": false,

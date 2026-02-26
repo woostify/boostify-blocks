@@ -1,9 +1,9 @@
 {
   "apiVersion": 3,
   "parent": [
-    "wcb/form"
+    "boostify-blocks/form"
   ],
-  "name": "wcb/checkbox",
+  "name": "boostify-blocks/checkbox",
   "version": "0.1.0",
   "title": "Checkbox",
   "category": "boostify-blocks",

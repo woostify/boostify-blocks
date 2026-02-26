@@ -103,7 +103,7 @@ const WCBGlobalColors = (props) => {
 		}, 300);
 
 		// Update our store.
-		dispatch('wcb/global-colors').updateSettings({
+		dispatch('boostify-blocks/global-colors').updateSettings({
 			wcbColors: updatedColors,
 		});
 	};

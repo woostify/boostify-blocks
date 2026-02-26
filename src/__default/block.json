@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/default",
+	"name": "boostify-blocks/default",
 	"version": "0.1.0",
 	"title": "Heading",
 	"category": "boostify-blocks",

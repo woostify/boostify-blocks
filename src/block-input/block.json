@@ -1,12 +1,12 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/input",
+	"name": "boostify-blocks/input",
 	"version": "0.1.0",
 	"title": "Input",
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-pencil-alt text-xl",
 	"parent": [
-		"wcb/form"
+		"boostify-blocks/form"
 	],
 	"description": "Example static block scaffolded with Create Block tool.",
 	"supports": {

@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         $blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
         $boostify_block_list = [];
         foreach ($blocks as $key => $value) {
-            $pos = strpos($key, 'wcb/');
+            $pos = strpos($key, 'boostify-blocks/');
             if ($pos === 0) {
                 $boostify_block_list[] = [
                     'name' => $value->name,

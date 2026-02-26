@@ -36,7 +36,7 @@ const MyColorPicker: FC<Props> = ({
 	const colorGradientSettings = useMultipleOriginColorsAndGradients();
 
 	const defaultColorPallete = useMemo(() => {
-		const customColors = window.boostifyBlocksGlobalVariables?.customColorPallete;
+		const customColors = window.boostify_blocks_global_variables?.customColorPallete;
 
 		if (
 			!customColors ||
@@ -50,7 +50,7 @@ const MyColorPicker: FC<Props> = ({
 			...(colorGradientSettings?.colors || []),
 			{
 				name: "Customs",
-				colors: window.boostifyBlocksGlobalVariables.customColorPallete || [],
+				colors: window.boostify_blocks_global_variables.customColorPallete || [],
 			},
 		];
 

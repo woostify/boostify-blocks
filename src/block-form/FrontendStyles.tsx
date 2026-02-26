@@ -50,10 +50,10 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 			$.ajax({
 				type: "post", // HTTP method: post or get.
 				dataType: "json", // Response data type: xml, json, script, or html.
-				url: boostifyBlocksFrontendAjaxObject.ajaxurl, // WP default AJAX handler URL.
+				url: boostify_blocks_frontend_ajax_object.ajaxurl, // WP default AJAX handler URL.
 				data: {
 					action: "boostify_blocks_form_action",
-					nonce: boostifyBlocksFrontendAjaxObject.nonce,
+					nonce: boostify_blocks_frontend_ajax_object.nonce,
 					formData,
 					mailInfo,
 				},

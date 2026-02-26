@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/products",
+	"name": "boostify-blocks/products",
 	"version": "0.1.0",
 	"title": "Products",
 	"category": "boostify-blocks",

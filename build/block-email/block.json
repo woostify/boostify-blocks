@@ -1,9 +1,9 @@
 {
   "apiVersion": 3,
-  "name": "wcb/email",
+  "name": "boostify-blocks/email",
   "version": "0.1.0",
   "parent": [
-    "wcb/form"
+    "boostify-blocks/form"
   ],
   "title": "Email",
   "category": "boostify-blocks",

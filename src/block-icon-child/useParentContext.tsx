@@ -19,7 +19,7 @@ export const useParentContext = (clientId: string) => {
 		[parentClientId]
 	);
 
-	const isChildOfIconList = parentBlock?.name === "wcb/icon-list";
+	const isChildOfIconList = parentBlock?.name === "boostify-blocks/icon-list";
 	
 	return {
 		parentClientId,

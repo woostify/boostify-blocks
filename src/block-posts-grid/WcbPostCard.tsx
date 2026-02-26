@@ -74,7 +74,7 @@ const WcbPostCard: FC<Props> = ({
 	// If a user clicks to a link prevent redirection and show a warning.
 	const { showRedirectionPreventedNotice } = useRedirectionPreventedNotice({
 		ComponentName: WcbPostCard,
-		uniqueNoticeId: "wcb/posts-grid/PostCard/redirection-prevented",
+		uniqueNoticeId: "boostify-blocks/posts-grid/PostCard/redirection-prevented",
 	});
 	//
 

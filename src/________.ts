@@ -4,7 +4,7 @@ import { Wcb_theme_layout_global_settings } from "./types";
 declare global {
 	var wp: any | undefined;
 	var grecaptcha: any | undefined;
-	var boostifyBlocksGlobalVariables: {
+	var boostify_blocks_global_variables: {
 		media_tablet: string;
 		media_desktop: string;
 		reCAPTCHA_v3_site_key?: string;
@@ -17,15 +17,15 @@ declare global {
 		// containerElementsGap?: string;
 		customColorPallete?: { name: string; color: string }[];
 	};
-	var boostifyBlocksFrontendAjaxObject: {
+	var boostify_blocks_frontend_ajax_object: {
 		ajaxurl: string;
 		homeUrl: string;
 		nonce: string;
 	};
-	var boostifyBlocksLayoutGlobalSettings: Wcb_theme_layout_global_settings;
+	var boostify_blocks_layout_global_settings: Wcb_theme_layout_global_settings;
 }
 
-const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostifyBlocksGlobalVariables = {
+const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks_global_variables = {
 	media_tablet: "768px",
 	media_desktop: "1024px",
 	reCAPTCHA_v3_secret_key: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
@@ -33,17 +33,17 @@ const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostifyBlocksGlobalVa
 	reCAPTCHA_v2_site_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
 	reCAPTCHA_v2_secret_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
 	// Used when picking a container for the first time, or when the container's contentWidth is not set.
-	defaultContentWidth: window?.boostifyBlocksLayoutGlobalSettings?.contentSize || "",
+	defaultContentWidth: window?.boostify_blocks_layout_global_settings?.contentSize || "",
 	enableTemplatesButton: "true",
 	enableCopyPasteStyles: "false",
 };
 
-export const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostifyBlocksGlobalVariables = {
+export const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks_global_variables = {
 	...INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES,
-	...(window.boostifyBlocksGlobalVariables || {}),
+	...(window.boostify_blocks_global_variables || {}),
 	defaultContentWidth:
-		window.boostifyBlocksGlobalVariables?.defaultContentWidth ||
-		window.boostifyBlocksLayoutGlobalSettings?.contentSize,
+		window.boostify_blocks_global_variables?.defaultContentWidth ||
+		window.boostify_blocks_layout_global_settings?.contentSize,
 };
 
 export const ___boostify_blocks_global = 1;

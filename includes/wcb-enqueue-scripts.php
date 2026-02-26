@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         wp_enqueue_style( 'boostify-blocks-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), BOOSTIFY_BLOCKS_VERSION );
         wp_localize_script(
             'jquery',
-            'boostifyBlocksFrontendAjaxObject',
+            'boostify_blocks_frontend_ajax_object',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),
@@ -17,13 +17,13 @@ if ( ! defined( 'ABSPATH' ) ) {
         );
         wp_localize_script(
             'jquery',
-            'boostifyBlocksLayoutGlobalSettings',
+            'boostify_blocks_layout_global_settings',
             boostify_blocks_get_layout_global_settings()
         );
-        // 1 - JS Global -> Follow by typeof window.boostifyBlocksGlobalVariables
+        // 1 - JS Global -> Follow by typeof window.boostify_blocks_global_variables
         wp_localize_script(
             'jquery',
-            'boostifyBlocksGlobalVariables',
+            'boostify_blocks_global_variables',
             get_option('boostify_blocks_settings_options')
         );
 
@@ -45,18 +45,18 @@ if ( ! defined( 'ABSPATH' ) ) {
     {
         wp_localize_script(
             'jquery',
-            'boostifyBlocksLayoutGlobalSettings',
+            'boostify_blocks_layout_global_settings',
             boostify_blocks_get_layout_global_settings()
         );
-        // 1 - JS Global -> Follow by typeof window.boostifyBlocksGlobalVariables
+        // 1 - JS Global -> Follow by typeof window.boostify_blocks_global_variables
         wp_localize_script(
             'jquery',
-            'boostifyBlocksGlobalVariables',
+            'boostify_blocks_global_variables',
             get_option('boostify_blocks_settings_options')
         );
         wp_localize_script(
             'jquery',
-            'boostifyBlocksFrontendAjaxObject',
+            'boostify_blocks_frontend_ajax_object',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),
@@ -96,30 +96,26 @@ if ( ! defined( 'ABSPATH' ) ) {
         ) {
             wp_register_style('boostify-blocks-settings-page', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/style-index.css');
             wp_enqueue_style('boostify-blocks-settings-page');
-<<<<<<< HEAD
             //
             wp_enqueue_style('boostify-blocks-dashboard-tailwind',plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/dashboard-tailwind.css', [], BOOSTIFY_BLOCKS_VERSION);
             wp_add_inline_script('boostify-blocks-dashboard-app-tailwind', 'tailwind.config = { important: true }', 'after');
             //
-=======
-
->>>>>>> 13b03621 (commit build folder)
             wp_enqueue_script('boostify-blocks-dashboard-app', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js', ['wp-blocks', 'wp-element', 'jquery'], BOOSTIFY_BLOCKS_VERSION, true);
 
             wp_localize_script(
                 'boostify-blocks-dashboard-app',
-                'boostifyBlocksLayoutGlobalSettings',
+                'boostify_blocks_layout_global_settings',
                 boostify_blocks_get_layout_global_settings()
             );
-            // 1 - JS Global -> Follow by typeof window.boostifyBlocksGlobalVariables
+            // 1 - JS Global -> Follow by typeof window.boostify_blocks_global_variables
             wp_localize_script(
                 'boostify-blocks-dashboard-app',
-                'boostifyBlocksGlobalVariables',
+                'boostify_blocks_global_variables',
                 get_option('boostify_blocks_settings_options')
             );
             wp_localize_script(
                 'boostify-blocks-dashboard-app',
-                'boostifyBlocksFrontendAjaxObject',
+                'boostify_blocks_frontend_ajax_object',
                 array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
                     'homeUrl' => home_url(),

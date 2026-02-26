@@ -1,15 +1,15 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/faq-child",
+	"name": "boostify-blocks/faq-child",
 	"version": "0.1.0",
 	"title": "FAQ child",
 	"category": "boostify-blocks",
 	"usesContext": [
-		"wcb/faq_icon",
-		"wcb/faq_general"
+		"boostify-blocks/faq_icon",
+		"boostify-blocks/faq_general"
 	],
 	"parent": [
-		"wcb/faq"
+		"boostify-blocks/faq"
 	],
 	"icon": "- wcb-block-editor-block-icon lni lni-support text-xl",
 	"description": "Example static block scaffolded with Create Block tool.",

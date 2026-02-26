@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "wcb/faq",
+  "name": "boostify-blocks/faq",
   "version": "0.1.0",
   "title": "FAQ",
   "category": "boostify-blocks",

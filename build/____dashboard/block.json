@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "wcb/dashboard",
+  "name": "boostify-blocks/dashboard",
   "version": "0.1.0",
   "title": "Dashboard",
   "category": "boostify-blocks",

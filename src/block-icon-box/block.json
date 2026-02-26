@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/icon-box",
+	"name": "boostify-blocks/icon-box",
 	"version": "0.1.0",
 	"title": "Icon box",
 	"category": "boostify-blocks",

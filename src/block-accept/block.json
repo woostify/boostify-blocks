@@ -1,10 +1,10 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/accept",
+	"name": "boostify-blocks/accept",
 	"version": "0.1.0",
 	"title": "Accept",
 	"parent": [
-		"wcb/form"
+		"boostify-blocks/form"
 	],
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-checkmark-circle text-xl",

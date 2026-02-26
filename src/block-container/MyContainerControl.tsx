@@ -154,7 +154,7 @@ const MyContainerControl: FC<Props> = ({
 	if (!CONTENT_BOX_WIDTH) {
 		CONTENT_BOX_WIDTH =
 			DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth ||
-			window.boostifyBlocksLayoutGlobalSettings.contentSize;
+			window.boostify_blocks_layout_global_settings.contentSize;
 	}
 
 	const { currentDeviceValue: MIN_HEIGHT } = getValueFromAttrsResponsives(

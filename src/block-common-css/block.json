@@ -5,7 +5,7 @@
 	"title": "Block Common CSS",
 	"category": "boostify-blocks",
 	"parent": [
-		"wcb/create-block-wcbxxyyyzz"
+		"boostify-blocks/create-block-wcbxxyyyzz"
 	],
 	"icon": "heart",
 	"description": "Example static block scaffolded with Create Block tool.",

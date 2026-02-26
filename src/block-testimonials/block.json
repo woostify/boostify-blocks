@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/testimonials",
+	"name": "boostify-blocks/testimonials",
 	"version": "0.1.0",
 	"title": "Testimonials",
 	"category": "boostify-blocks",

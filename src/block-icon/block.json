@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/boostify-icon",
+	"name": "boostify-blocks/boostify-icon",
 	"version": "0.1.0",
 	"title": "Icon",
 	"category": "boostify-blocks",

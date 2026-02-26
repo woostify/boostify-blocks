@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "wcb/map",
+	"name": "boostify-blocks/map",
 	"version": "0.1.0",
 	"title": "Google maps",
 	"category": "boostify-blocks",

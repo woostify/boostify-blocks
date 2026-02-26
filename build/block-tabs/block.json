@@ -1,6 +1,6 @@
 {
   "apiVersion": 3,
-  "name": "wcb/tabs",
+  "name": "boostify-blocks/tabs",
   "version": "0.1.0",
   "title": "Tabs",
   "category": "boostify-blocks",
