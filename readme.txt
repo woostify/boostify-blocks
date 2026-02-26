@@ -67,6 +67,15 @@ This plugin includes an optional block templates feature that connects to https:
 Terms of Service: https://woostify.com/terms/
 Privacy Policy: https://woostify.com/privacy-policy/
 
+= Google Fonts =
+
+This plugin allows users to select and use custom fonts from the Google Fonts library.
+
+- When a user selects a Google Font for their blocks, the plugin dynamically loads the necessary font stylesheet from https://fonts.googleapis.com.
+- This connection is required to display the selected typography correctly on the frontend and within the editor.
+
+Terms of Service: https://policies.google.com/terms
+Privacy Policy: https://policies.google.com/privacy
 
 == Frequently Asked Questions ==
 
