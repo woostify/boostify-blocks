@@ -12,8 +12,7 @@ function boostify_blocks_register_custom_menu_page() {
 		'manage_options',
 		'boostify-blocks-settings',
 		'boostify_blocks_render_settings_page',
-		'dashicons-screenoptions',
-		61
+		'dashicons-screenoptions'
 	);
 }
 add_action( 'admin_menu', 'boostify_blocks_register_custom_menu_page' );
