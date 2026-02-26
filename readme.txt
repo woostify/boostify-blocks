@@ -45,37 +45,24 @@ We understand the need for a quality product backed by dedicated support that ca
 
 = Google reCAPTCHA =
 
-This plugin can optionally connect to the Google reCAPTCHA service provided by Google LLC, used to protect form submissions from spam.
+This plugin can optionally connect to the Google reCAPTCHA API, it's needed to protect form submissions from spam in the included form block.
 
-- Only activated when the site owner explicitly enables reCAPTCHA and configures their own site/secret keys.
-- When enabled, the plugin loads the official reCAPTCHA script from https://www.google.com/recaptcha/api.js on pages containing a form block.
-- When those pages load, the visitor's IP address, browser/device info, and referrer URL are sent to Google. This data is handled solely by Google and not stored by this plugin.
-- If reCAPTCHA is not enabled, no connection to Google is made.
+It sends the visitor's IP address, browser/device info, and referrer URL to https://www.google.com/recaptcha/api.js every time a page containing a form block is loaded (If reCAPTCHA is explicitly enabled and configured by the site owner in the plugin settings). This data is handled solely by Google and not stored by this plugin.
+This service is provided by "Google LLC": [Terms of Service](https://policies.google.com/terms), [Privacy Policy](https://policies.google.com/privacy).
 
-Terms of Service: https://policies.google.com/terms
-Privacy Policy: https://policies.google.com/privacy
+= Woostify Templates =
 
-= Woostify Blocks Templates Service =
+This plugin connects to the Woostify GraphQL API to obtain pre-built block templates, it's needed to show a library of ready-to-use layouts in the included Gutenberg editor toolbar.
 
-This plugin includes an optional block templates feature that connects to https://woostifyblocks.com/graphql (provided by Woostify).
-
-- Used to display a library of pre-built block templates in the Gutenberg editor toolbar.
-- The connection is made only from the Gutenberg editor in the WordPress admin area, never on the frontend.
-- When the Templates feature is enabled, the plugin sends a GraphQL query to https://woostifyblocks.com/graphql to retrieve available templates. No personal user data or site content is sent.
-- This feature can be disabled via the "Enable Templates Button" option in the plugin settings.
-
-Terms of Service: https://woostify.com/terms/
-Privacy Policy: https://woostify.com/privacy-policy/
+It sends a GraphQL query to https://woostifyblocks.com/graphql every time the templates modal is loaded in the WordPress admin to retrieve available blocks. No personal user data or site content is sent. This feature can be disabled via the "Enable Templates Button" option in the plugin settings.
+This service is provided by "Woostify": [Terms of Service](https://woostify.com/terms/), [Privacy Policy](https://woostify.com/privacy-policy/).
 
 = Google Fonts =
 
-This plugin allows users to select and use custom fonts from the Google Fonts library.
+This plugin connects to the Google Fonts API, it's needed to show and use customized web typography inside the included blocks.
 
-- When a user selects a Google Font for their blocks, the plugin dynamically loads the necessary font stylesheet from https://fonts.googleapis.com.
-- This connection is required to display the selected typography correctly on the frontend and within the editor.
-
-Terms of Service: https://policies.google.com/terms
-Privacy Policy: https://policies.google.com/privacy
+It sends requests to https://fonts.googleapis.com to download font stylesheets every time a page containing a block with custom typography is loaded. (If no custom Google Fonts are selected, no requests are made).
+This service is provided by "Google LLC": [Terms of Service](https://policies.google.com/terms), [Privacy Policy](https://policies.google.com/privacy).
 
 == Frequently Asked Questions ==
 
