@@ -583,8 +583,9 @@ function wcb_block_products__get_countdown_html( $countdown_attrs ) {
     $active   = $countdown_attrs['countdownUrgencyActive'] ?? false;
     $position = $countdown_attrs['position'] ?? 'none';
     $style    = $countdown_attrs['style'] ?? 'default';
+    $displayOnThumbnail = $countdown_attrs['displayOnThumbnail'] ?? '1';
 
-    if ( ! $active || $position === 'none' ) {
+    if ( ! $active || $position === 'none' || $displayOnThumbnail === '0') {
         return '';
     }
 
