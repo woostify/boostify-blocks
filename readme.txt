@@ -71,6 +71,20 @@ This service is provided by "Google LLC": [Terms of Service](https://policies.go
 Boostify Blocks is a comprehensive collection of unique and creative blocks designed to help you build stunning websites. It is an essential toolkit for anyone looking to enhance the Gutenberg editor.
 
 
+== Source Code ==
+
+The uncompiled, human-readable source code for this plugin is publicly available on GitHub:
+https://github.com/woostify/boostify-blocks
+
+= Build Instructions =
+
+If you wish to review, modify, or build the assets yourself, you can follow these steps:
+1. Ensure you have Node.js and npm installed.
+2. Clone the GitHub repository: `git clone https://github.com/woostify/boostify-blocks.git`
+3. Navigate to the plugin directory: `cd boostify-blocks`
+4. Install the required dependencies: `npm install`
+5. Compile and minify the assets: `npm run build`
+
 == Changelog ==
 
 = 1.1.13 =
