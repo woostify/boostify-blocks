@@ -64,7 +64,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
     );
     const { insertBlock, removeBlock } = useDispatch(blockEditorStore);
 
-    // Tạo uniqueId
+    // Generate uniqueId.
     const UNIQUE_ID = wrapBlockProps.id;
     useEffect(() => {
         setAttributes({ uniqueId: converUniqueIdToAnphaKey(UNIQUE_ID) });
@@ -85,7 +85,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
             if (childInnerBlocks.length < titles.length) {
                 for (let i = childInnerBlocks.length; i < titles.length; i++) {
-                    const newChild = createBlock("wcb/tab-child", {});
+                    const newChild = createBlock("boostify-blocks/tab-child", {});
                     insertBlock(newChild, i, clientId);
                 }
 			}
@@ -273,7 +273,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
             type="button"
             className="relative wcb-tabs__title_inner_btn flex flex-shrink-0 items-center justify-center rounded-lg px-3 bg-sky-100/80 hover:bg-sky-100 text-sky-900 text-sm font-medium"
             onClick={() => {
-                const newChild = createBlock("wcb/tab-child");
+                const newChild = createBlock("boostify-blocks/tab-child");
                 insertBlock(newChild, undefined, clientId);
                 const newTabContents = [...tabContents, ""];
                 setAttributes({
@@ -338,12 +338,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
                         {renderAddnewButton()}
                     </div>
                     <InnerBlocks 
-						allowedBlocks={["wcb/tab-child"]} 
+						allowedBlocks={["boostify-blocks/tab-child"]} 
 						template={
 							[
-								["wcb/tab-child", {}], 
-								["wcb/tab-child", {}], 
-								["wcb/tab-child", {}]
+								["boostify-blocks/tab-child", {}], 
+								["boostify-blocks/tab-child", {}], 
+								["boostify-blocks/tab-child", {}]
 							]}
 					/>
                 </div>

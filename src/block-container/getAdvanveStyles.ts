@@ -1,7 +1,7 @@
 import { MyResponsiveConditionControlData } from "../components/controls/MyResponsiveConditionControl/MyResponsiveConditionControl";
 import { MyZIndexControlData } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import { css } from "@emotion/react";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
 import { MyMotionEffectData } from "../components/controls/MyMotionEffectControl/MyMotionEffectControl";
 
@@ -51,7 +51,7 @@ export const getAdvanveDivWrapStyles = ({
 	className,
 	defaultDisplay,
 }: Params) => {
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 	//
 	//
 	// Trigger animation only when in viewport

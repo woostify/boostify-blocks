@@ -2,40 +2,84 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-add_action('wp_ajax_wcb_dashboard_blocks_disable_enable', 'wcb_ajax_dashboard_blocks_disable_enable');
-function wcb_ajax_dashboard_blocks_disable_enable()
+
+
+
+add_action('wp_ajax_boostify_blocks_dashboard_blocks_disable_enable', 'boostify_blocks_ajax_dashboard_blocks_disable_enable');
+function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 {
-    $blocksStatus = $_POST['blocksStatus'] ?? [];
-    $wcbBlockStatusInit = [];
-    if (function_exists('wcb_get_wcb_block_name_enable_init')) {
-        $wcbBlockStatusInit = wcb_get_wcb_block_name_enable_init();
+    // Verify nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'boostifyblocks_dashboard_settings_nonce')) {
+        wp_send_json_error(array('message' => 'Invalid nonce'), 403);
+        wp_die();
     }
 
-    $newBlocksStatus = array_merge($wcbBlockStatusInit, $blocksStatus);
+    // Check user capability
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Permission denied'), 403);
+        wp_die();
+    }
+
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized below with boostify_blocks_sanitize_array
+    $blocksStatus = isset($_POST['blocksStatus']) ? boostify_blocks_sanitize_array(wp_unslash($_POST['blocksStatus'])) : array();
+
+    $boostify_block_status_init = [];
+    if (function_exists('boostify_blocks_get_block_name_enable_init')) {
+        $boostify_block_status_init = boostify_blocks_get_block_name_enable_init();
+    }
+
+    $newBlocksStatus = array_merge($boostify_block_status_init, $blocksStatus);
 
     update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
     $array_result = array(
         'data' => $newBlocksStatus,
         'message' => 'your message'
     );
-    // 
+    //
     wp_send_json($array_result);
     wp_die();
 }
 
-// 
-add_action('wp_ajax_wcb_dashboard_blocks_update_settings', 'wcb_ajax_dashboard_update_settings');
-function wcb_ajax_dashboard_update_settings()
+//
+add_action('wp_ajax_boostify_blocks_dashboard_update_settings', 'boostify_blocks_ajax_dashboard_update_settings');
+function boostify_blocks_ajax_dashboard_update_settings()
 {
-    $settings = $_POST['settings'] ?? [];
-    $settings = array_merge(wcb_get_default_blocks_settings(), $settings);
+    // Verify nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'boostifyblocks_dashboard_settings_nonce')) {
+        wp_send_json_error(array('message' => 'Invalid nonce'), 403);
+        wp_die();
+    }
+
+    // Check user capability
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => 'Permission denied'), 403);
+        wp_die();
+    }
+
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized below with boostify_blocks_sanitize_array
+    $postedSettings = isset($_POST['settings']) ? boostify_blocks_sanitize_array(wp_unslash($_POST['settings'])) : array();
+    
+    $defaultSettings = array();
+    if (function_exists('boostify_blocks_get_default_blocks_settings')) {
+        $defaultSettings = boostify_blocks_get_default_blocks_settings();
+    }
+
+    // VALIDATE: Only allow keys that exist in default settings
+    $validSettings = array();
+    foreach ($postedSettings as $key => $value) {
+        if (array_key_exists($key, $defaultSettings)) {
+            $validSettings[$key] = $value;
+        }
+    }
+
+    $settings = array_merge($defaultSettings, $validSettings);
 
     update_option('boostify_blocks_settings_options', $settings);
     $array_result = array(
         'data' => $settings,
         'message' => 'your message'
     );
-    // 
+    //
     wp_send_json($array_result);
     wp_die();
 }

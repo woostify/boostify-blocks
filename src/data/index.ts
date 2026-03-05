@@ -18,7 +18,7 @@ const INIT_BLOCK: BlockInPanelStore = {
 export interface WcbPanelStoreState extends Record<string, BlockInPanelStore> {}
 const DEFAULT_STATE: WcbPanelStoreState = {};
 
-const WCB_STORE_PANELS = "wcb/panels";
+const WCB_STORE_PANELS = "boostify-blocks/panels";
 
 const actions = {
 	setBlockPanelInfo(blockId: string, block: BlockInPanelStore) {

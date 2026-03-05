@@ -1,7 +1,7 @@
 import { SelectControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import React, { FC, useEffect } from "react";
-import {} from "@wordpress/components";
+import { } from "@wordpress/components";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
@@ -13,7 +13,7 @@ import {
 	MY_HORIZOLTAL_UNITS,
 	MY_VERTICAL_UNITS,
 } from "../components/controls/MyDimensionsControl/MyDimensionsControl";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { MY_CUSTOM_UNITS_VALUE_SETTINGS__LARGE } from "../components/controls/MySpacingSizesControl/SpacingInputControl";
 import HelpText from "../components/controls/HelpText";
 // @ts-ignore
@@ -31,7 +31,7 @@ export type MyContainerControlData = {
 export const CONTAINER_CONTROL_DEMO: MyContainerControlData = {
 	containerWidthType: "Full Width",
 	contentWidthType: "Boxed",
-	// tai sao ko co Tablet? - vi muon th Tablet follow theo Desktop,
+	// No Tablet value here — Tablet follows Desktop by default.
 	customWidth: { Desktop: "100%", Mobile: "100%" },
 	contentBoxWidth: { Desktop: "", Mobile: "" },
 	minHeight: { Desktop: undefined },
@@ -149,12 +149,12 @@ const MyContainerControl: FC<Props> = ({
 		deviceType
 	);
 
-	// defaultContentWidth là setting trong trang woosify setting
-	// window.wcbLayoutGlobalSettings la global setting của full-site-editor or cua wootify theme neu co
+	// defaultContentWidth is a setting from the plugin settings page.
+	// window.boostifyblocksLayoutGlobalSettings is the global setting from full-site-editor or Woostify theme if available.
 	if (!CONTENT_BOX_WIDTH) {
 		CONTENT_BOX_WIDTH =
-			DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth ||
-			window.wcbLayoutGlobalSettings.contentSize;
+			DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth ||
+			window.boostify_blocks_layout_global_settings.contentSize;
 	}
 
 	const { currentDeviceValue: MIN_HEIGHT } = getValueFromAttrsResponsives(
@@ -228,7 +228,7 @@ const MyContainerControl: FC<Props> = ({
 				<HelpText>
 					{__(
 						"Default content box width " +
-							DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth
+						DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth
 					)}
 				</HelpText>
 			</div>
@@ -266,18 +266,18 @@ const MyContainerControl: FC<Props> = ({
 			label: React.ElementType<any>;
 			value: React.ElementType<any>;
 		}[] = [
-			{ label: "div", value: "div" },
-			{ label: "header", value: "header" },
-			{ label: "footer", value: "footer" },
-			{ label: "main", value: "main" },
-			{ label: "article", value: "article" },
-			{ label: "section", value: "section" },
-			{ label: "aside", value: "aside" },
-			{ label: "summary", value: "summary" },
-			{ label: "figure", value: "figure" },
-			{ label: "link", value: "link" },
-			{ label: "nav", value: "nav" },
-		];
+				{ label: "div", value: "div" },
+				{ label: "header", value: "header" },
+				{ label: "footer", value: "footer" },
+				{ label: "main", value: "main" },
+				{ label: "article", value: "article" },
+				{ label: "section", value: "section" },
+				{ label: "aside", value: "aside" },
+				{ label: "summary", value: "summary" },
+				{ label: "figure", value: "figure" },
+				{ label: "link", value: "link" },
+				{ label: "nav", value: "nav" },
+			];
 
 		return (
 			<div className="flow-root">

@@ -5,17 +5,16 @@
  * Description:       Boostify Blocks offers an extensive library of customizable blocks that seamlessly integrate with the Gutenberg editor
  * Requires at least: 5.8
  * Requires PHP:      7.3
- * Version:           1.0.0
+ * Version:           1.1.13
  * Author:            Woostify
  * Author URI:        https://woostify.com/about/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       boostify-blocks
  *
- * @package           create-block
+ * @package           Boostify-Blocks
  */
 
-// WCB as Woostify-Conversion-Blocks ...
 defined('ABSPATH') || exit;
 
 // Define Constants.

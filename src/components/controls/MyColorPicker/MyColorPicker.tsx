@@ -16,7 +16,7 @@ interface Props {
 const MyColorPicker: FC<Props> = ({
 	className = "",
 	label = __("Color", "boostify-blocks"),
-	// default value color - co the la cac gia tri hex string
+	// Default color value — can be a hex string.
 	color = "#000",
 	onChange,
 	showDefaultPalette = true,
@@ -36,7 +36,7 @@ const MyColorPicker: FC<Props> = ({
 	const colorGradientSettings = useMultipleOriginColorsAndGradients();
 
 	const defaultColorPallete = useMemo(() => {
-		const customColors = window.wcbGlobalVariables?.customColorPallete;
+		const customColors = window.boostify_blocks_global_variables?.customColorPallete;
 
 		if (
 			!customColors ||
@@ -50,7 +50,7 @@ const MyColorPicker: FC<Props> = ({
 			...(colorGradientSettings?.colors || []),
 			{
 				name: "Customs",
-				colors: window.wcbGlobalVariables.customColorPallete || [],
+				colors: window.boostify_blocks_global_variables.customColorPallete || [],
 			},
 		];
 
@@ -71,9 +71,8 @@ const MyColorPicker: FC<Props> = ({
 					>
 						<div className="flex items-center gap-0.5">
 							<div
-								className={`w-7 h-7 rounded-full shadow-md ring-1 ring-black/5 cursor-pointer ${
-									colorState ? "" : "bg-transparent"
-								}`}
+								className={`w-7 h-7 rounded-full shadow-md ring-1 ring-black/5 cursor-pointer ${colorState ? "" : "bg-transparent"
+									}`}
 								style={{
 									backgroundColor: colorState,
 									backgroundImage: !colorState

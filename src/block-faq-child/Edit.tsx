@@ -20,8 +20,8 @@ const Edit: FC<
 	EditProps<
 		WcbAttrs,
 		{
-			"wcb/faq_icon"?: WCB_FAQ_PANEL_ICON;
-			"wcb/faq_general"?: WCB_FAQ_PANEL_GENERAL;
+			"boostify-blocks/faq_icon"?: WCB_FAQ_PANEL_ICON;
+			"boostify-blocks/faq_general"?: WCB_FAQ_PANEL_GENERAL;
 		}
 	>
 > = (props) => {
@@ -62,17 +62,17 @@ const Edit: FC<
 		console.log(12, "------ FAQ CHILD setAttributes ON useEffect --------");
 
 		setAttributes({
-			layout: context["wcb/faq_general"]?.layout,
-			headingTag: context["wcb/faq_general"]?.headingTag,
-			general_icon: context["wcb/faq_icon"],
-			enableSeparator: context["wcb/faq_general"]?.enableSeparator,
+			layout: context["boostify-blocks/faq_general"]?.layout,
+			headingTag: context["boostify-blocks/faq_general"]?.headingTag,
+			general_icon: context["boostify-blocks/faq_icon"],
+			enableSeparator: context["boostify-blocks/faq_general"]?.enableSeparator,
 			defaultExtend:
-				!context["wcb/faq_general"]?.collapseOtherItems ||
-				(context["wcb/faq_general"]?.collapseOtherItems &&
+				!context["boostify-blocks/faq_general"]?.collapseOtherItems ||
+				(context["boostify-blocks/faq_general"]?.collapseOtherItems &&
 					!blockIndex &&
-					context["wcb/faq_general"]?.expandFirstItem),
+					context["boostify-blocks/faq_general"]?.expandFirstItem),
 		});
-	}, [context["wcb/faq_general"], context["wcb/faq_icon"], blockIndex]);
+	}, [context["boostify-blocks/faq_general"], context["boostify-blocks/faq_icon"], blockIndex]);
 
 	const renderIcon = () => {
 		if (!general_icon.enableIcon || layout !== "accordion") {

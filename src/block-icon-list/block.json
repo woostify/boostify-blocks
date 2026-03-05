@@ -1,10 +1,9 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "wcb/icon-list",
+	"name": "boostify-blocks/icon-list",
 	"version": "0.1.2",
 	"title": "Icon List",
-	"category": "wcb-blocks",
+	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-clipboard",
 	"description": "Create a list highlighted with icons/images.",
 	"supports": {
@@ -12,7 +11,7 @@
 		"anchor": true,
 		"align": true
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

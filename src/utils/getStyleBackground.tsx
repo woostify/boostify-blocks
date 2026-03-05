@@ -1,6 +1,6 @@
 import { css, CSSObject, Global } from "@emotion/react";
 import { BackgroundControlData } from "../components/controls/MyBackgroundControl/MyBackgroundControl";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import getBackgroundColorGradientStyles from "./getBackgroundColorGradientStyles";
 import getValueFromAttrsResponsives from "./getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
@@ -15,7 +15,7 @@ export default function getStyleBackground({
 	className,
 }: Params): CSSObject[] {
 	const WRAP_CLASSNAME = className;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const getDivWrapStyles__BgColor_Gradient = (): CSSObject => {
 		const {} = styles_background;

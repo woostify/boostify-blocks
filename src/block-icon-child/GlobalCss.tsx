@@ -5,7 +5,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import { WcbAttrs } from "./attributes";
 

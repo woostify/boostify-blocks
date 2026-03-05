@@ -232,7 +232,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					<div className="wcb-cta__buttons">
 						<InnerBlocks
 							allowedBlocks={[]}
-							template={[["wcb/buttons", {}, [["wcb/button", {}]]]]}
+							template={[["boostify-blocks/buttons", {}, [["boostify-blocks/button", {}]]]]}
 						/>
 					</div>
 				</div>

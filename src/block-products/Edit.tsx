@@ -642,7 +642,7 @@ const Edit: FC<Props> = (props) => {
 				{/* CHILD CONTENT  */}
 				{uniqueId && !!style_layout && !!style_price && (
 					<ServerSideRender
-						block="wcb/products"
+						block="boostify-blocks/products"
 						attributes={WcbAttrsForServerSide}
 						EmptyResponsePlaceholder={EmptyPlaceholder}
 						LoadLoadingResponsePlaceholder={LoadingPlaceholder}

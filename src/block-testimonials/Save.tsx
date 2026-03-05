@@ -5,7 +5,7 @@ import { TestimonialItem, WcbAttrs } from "./attributes";
 import SaveCommon from "../components/SaveCommon";
 import "./style.scss";
 import { TESTIMONIAL_ITEM_DEMO } from "./Edit";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import getImageUrlBySize from "../utils/getImageUrlBySize";
 import VideoBackgroundByBgControl from "../components/VideoBackgroundByBgControl";
@@ -101,7 +101,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const renderTestimonialItemImage = (item: TestimonialItem, index: number) => {
 		const { images, isShowImage, imageSize } = general_images;
 		const { imageSize: imageSizeAttr } = style_image;
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+		const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 		const { mediaId, mediaSrcSet } = images[index] || {};
 		if (!isShowImage || !mediaId) {
 			return null;
@@ -123,7 +123,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	const renderTestimonialItemRating = (item: TestimonialItem, index: number) => {
 		const { ratings, isShowRating } = general_rating;
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+		const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 		if (!isShowRating) {
 			return null;
 		}

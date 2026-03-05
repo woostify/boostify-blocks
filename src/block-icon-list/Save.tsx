@@ -71,7 +71,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		className: "wcb-icon-list__wrap",
 	});
 
-	// Container for list items - không dùng useBlockProps.save nữa để tránh duplicate
+	// Container for list items - avoid useBlockProps.save to prevent duplicate wrapper.
 	const innerBlocksProps = useInnerBlocksProps.save({
 		className: "wcb-icon-list__icon-wrap",
 		style: containerStyles

@@ -9,7 +9,7 @@ import {
 import { InspectorControlsTabTitle } from "../components/HOCInspectorControls";
 
 const useSetBlockPanelInfo = (uniqueId: string) => {
-	// DIEU NAY GIUP EMOTION GLOBAL CSS DUOC IMPORT TRONG MOBILE IFRAME!!!
+	// This ensures Emotion global CSS is imported inside the mobile iframe.
 	const {
 		setBlockPanelInfo,
 	}: {

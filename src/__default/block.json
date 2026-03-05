@@ -1,17 +1,19 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "wcb/default",
+	"name": "boostify-blocks/default",
 	"version": "0.1.0",
 	"title": "Heading",
-	"category": "wcb-blocks",
+	"category": "boostify-blocks",
 	"icon": "heart",
 	"description": "Example static block scaffolded with Create Block tool.",
 	"supports": {
 		"html": false,
-		"align": ["wide", "full"]
+		"align": [
+			"wide",
+			"full"
+		]
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",

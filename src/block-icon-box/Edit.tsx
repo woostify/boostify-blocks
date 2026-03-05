@@ -421,7 +421,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						renderSeparator()}
 
 					{general_layout.enableCTAButton && (
-						<InnerBlocks allowedBlocks={[]} template={[["wcb/button", {}]]} />
+						<InnerBlocks allowedBlocks={[]} template={[["boostify-blocks/button", {}]]} />
 					)}
 				</div>
 

@@ -266,10 +266,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	});
 
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
-		allowedBlocks: ["wcb/faq-child"],
+		allowedBlocks: ["boostify-blocks/faq-child"],
 		template: [
-			["wcb/faq-child", {}],
-			["wcb/faq-child", {}],
+			["boostify-blocks/faq-child", {}],
+			["boostify-blocks/faq-child", {}],
 		],
 		renderAppender: () => {
 			return isSelected ? <InnerBlocks.DefaultBlockAppender /> : false;

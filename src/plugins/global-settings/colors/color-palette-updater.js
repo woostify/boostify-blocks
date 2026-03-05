@@ -7,11 +7,11 @@ import { registerPlugin } from '@wordpress/plugins';
 const WCBGlobalColorPaletteUpdater = () => {
 	const { wcbColors, defaultColors, isInitializing, colors } = useSelect(
 		(select) => ({
-			wcbColors: select('wcb/global-colors').getSettings().wcbColors,
+			wcbColors: select('boostify-blocks/global-colors').getSettings().wcbColors,
 			defaultColors:
-				select('wcb/global-colors').getSettings().defaultColors,
+				select('boostify-blocks/global-colors').getSettings().defaultColors,
 			isInitializing:
-				select('wcb/global-colors').getSettings().isInitializing,
+				select('boostify-blocks/global-colors').getSettings().isInitializing,
 			colors: select('core/block-editor').getSettings().colors,
 		}),
 		[]

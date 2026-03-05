@@ -1,10 +1,9 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "wcb/products",
+  "name": "boostify-blocks/products",
   "version": "0.1.0",
   "title": "Products",
-  "category": "wcb-blocks",
+  "category": "boostify-blocks",
   "icon": "- wcb-block-editor-block-icon lni lni-restaurant",
   "description": "Display products from your store in a grid layout.",
   "supports": {
@@ -14,7 +13,7 @@
       "wide"
     ]
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "boostify-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

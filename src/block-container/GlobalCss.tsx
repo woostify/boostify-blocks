@@ -6,7 +6,7 @@ import getFlexPropertiesStyles from "../utils/getFlexPropertiesStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleBackground from "../utils/getStyleBackground";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { getAdvanveDivWrapStyles } from "./getAdvanveStyles";
 import { WcbAttrsForSave } from "./Save";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
@@ -27,7 +27,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 	const WRAP_CLASSNAME = `.wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-container__inner`;
 
@@ -186,7 +186,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 		if (!contentBoxWidth.Desktop) {
 			contentBoxWidth = {
-				Desktop: DEMO_WCB_GLOBAL_VARIABLES.defaultContentWidth || "",
+				Desktop: DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.defaultContentWidth || "",
 			};
 		}
 

@@ -14,7 +14,7 @@ import WcbTestimonialsPanelGeneral from "./WcbTestimonialsPanelGeneral";
 import WcbTestimonialsPanelImages from "./WcbTestimonialsPanelImages";
 import WcbTestimonialsPanelRating from "./WcbTestimonialsPanelRating";
 import WcbTestimonialsPanelCarousel from "./WcbTestimonialsPanelCarousel";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import WcbTestimonialsPanel_StyleName from "./WcbTestimonialsPanel_StyleName";
 import WcbTestimonialsPanel_StyleContent from "./WcbTestimonialsPanel_StyleContent";
 import WcbTestimonialsPanel_StyleCompany from "./WcbTestimonialsPanel_StyleCompany";
@@ -409,7 +409,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const renderTestimonialItemImage = (item: TestimonialItem, index: number) => {
 		const { images, isShowImage, imageSize } = general_images;
 		const { imageSize: imageSizeAttr } = style_image;
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+		const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 		const { mediaId, mediaSrcSet } = images[index] || {};
 		if (!isShowImage || !mediaId) {
 			return null;
@@ -431,7 +431,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const renderTestimonialItemRating = (item: TestimonialItem, index: number) => {
 		const { ratings, isShowRating, ratingPosition } = general_rating;
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+		const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 		if (!isShowRating) {
 			return null;
 		}

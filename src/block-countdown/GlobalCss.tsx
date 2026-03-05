@@ -9,7 +9,7 @@ import getFlexPropertiesStyles from "../utils/getFlexPropertiesStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
 interface Props extends WcbAttrsForSave { }
@@ -32,7 +32,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const CONTENT_CLASSNAME = `${WRAP_CLASSNAME} .wcb-countdown__content`;

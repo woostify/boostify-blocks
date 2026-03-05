@@ -7,7 +7,7 @@ import getBoxShadowStyles from "../utils/getBoxShadowStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
 interface Props extends WcbAttrsForSave {}
@@ -22,7 +22,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_image,
 		style_overlay,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const IMAGE_FIGURE = `${WRAP_CLASSNAME}.wp-block-wcb-image`;

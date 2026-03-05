@@ -6,7 +6,7 @@ import getBoxShadowStyles from "../utils/getBoxShadowStyles";
 import getCssProperyHasResponsive from "../utils/getCssProperyHasResponsive";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbBlockPostsGridAttrs } from "./attributes";
 
 interface Props extends Required<WcbBlockPostsGridAttrs> {}
@@ -37,7 +37,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .wcbPostCard`;

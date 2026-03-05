@@ -417,7 +417,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					<div className="wcb-image__overlay-content">
 						<InnerBlocks
 							allowedBlocks={[]}
-							template={[["wcb/heading", InitWcbBlockHeadingAttrs]]}
+							template={[["boostify-blocks/heading", InitWcbBlockHeadingAttrs]]}
 						/>
 					</div>
 				</div>

@@ -2,42 +2,38 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-function wcb_var_dump($value)
-{
-    echo '<p style="color:red; padding: 50px 200px">';
-    echo ('-----------start--wcb_var_dump-----------------');
-    echo ('<br />');
-    echo ('<br />');
-    echo ('<br />');
-    var_dump($value);
-    echo ('<br />');
-    echo ('<br />');
-    echo ('<br />');
-    echo ('-----------end--wcb_var_dump-----------------');
-    echo '</p>';
-};
+// Debug helpers removed for production safety.
+    /**
+     * Recursively sanitize an array of data.
+     *
+     * @param array $data The data to sanitize.
+     * @return array The sanitized data.
+     */
+    function boostify_blocks_sanitize_array( $data ) {
+        if ( ! is_array( $data ) ) {
+            return sanitize_text_field( $data );
+        }
+        $sanitized = array();
+        foreach ( $data as $key => $value ) {
+            $sanitized_key = sanitize_text_field( $key );
+            if ( is_array( $value ) ) {
+                $sanitized[ $sanitized_key ] = boostify_blocks_sanitize_array( $value );
+            } else {
+                $sanitized[ $sanitized_key ] = sanitize_text_field( $value );
+            }
+        }
+        return $sanitized;
+    }
 
-function wcb_var_export($value)
-{
-    echo '<pre style="color:red;"><code>';
-    echo ('-----------start--wcb_var_dump-----------------');
-    echo ('-----------start--vcb_var_export-----------------');
-    echo ('<br />');
-    var_export($value);
-    echo ('<br />');
-    echo ('-----------end--vcb_var_export-----------------');
-    echo '</code></pre>';
-};
 // 
-if (!function_exists('wcb_get_wcb_block_type_list')) :
-    function wcb_get_wcb_block_type_list()
+    function boostify_blocks_get_block_type_list()
     {
         $blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
-        $wcbBlockList = [];
+        $boostify_block_list = [];
         foreach ($blocks as $key => $value) {
-            $pos = strpos($key, 'wcb/');
+            $pos = strpos($key, 'boostify-blocks/');
             if ($pos === 0) {
-                $wcbBlockList[] = [
+                $boostify_block_list[] = [
                     'name' => $value->name,
                     'title' => $value->title,
                     'category' => $value->category,
@@ -47,27 +43,23 @@ if (!function_exists('wcb_get_wcb_block_type_list')) :
                 ];
             }
         }
-        return $wcbBlockList;
+        return $boostify_block_list;
     };
-endif;
 
 // 
-if (!function_exists('wcb_get_wcb_block_name_enable_init')) :
-    function wcb_get_wcb_block_name_enable_init()
+    function boostify_blocks_get_block_name_enable_init()
     {
-        $blocks = wcb_get_wcb_block_type_list();
-        $wcbBlockName = [];
+        $blocks = boostify_blocks_get_block_type_list();
+        $boostify_block_name = [];
         foreach ($blocks as $key => $value) {
-            $wcbBlockName[$value['name']] = 'enabled';
+            $boostify_block_name[$value['name']] = 'enabled';
         }
 
-        return $wcbBlockName;
+        return $boostify_block_name;
     };
-endif;
 
 //
-if (!function_exists('wcb_get_default_blocks_settings')) :
-    function wcb_get_default_blocks_settings()
+    function boostify_blocks_get_default_blocks_settings()
     {
         return [
             'media_tablet'              => '768px',
@@ -88,11 +80,9 @@ if (!function_exists('wcb_get_default_blocks_settings')) :
             ],
         ];
     }
-endif;
 
 // 
-if (!function_exists("wcb_pagination_bar")) {
-    function wcb_pagination_bar($the_query, $attrPagination)
+    function boostify_blocks_pagination_bar($the_query, $attrPagination)
     {
         $nextPreIcons =  [
             "none" => 'None',
@@ -113,8 +103,8 @@ if (!function_exists("wcb_pagination_bar")) {
         $nextText =  $attrPagination['nextText'] ?? "";
         $previousText =  $attrPagination['previousText'] ?? "";
 
-        $nextHtml = !empty($nextText) ? '<span>' . $nextText . '</span>' . $icon : $icon;
-        $prevHtml = !empty($previousText) ?  $icon . ' <span>' . $previousText . '</span>'  : $icon;
+        $nextHtml = !empty($nextText) ? '<span>' . esc_html($nextText) . '</span>' . $icon : $icon;
+        $prevHtml = !empty($previousText) ?  $icon . ' <span>' . esc_html($previousText) . '</span>'  : $icon;
 
         $max_page = $attrPagination['pageLimit'] ?? 0;
         $total         = !$max_page || $max_page > $the_query->max_num_pages ? $the_query->max_num_pages : $max_page;
@@ -130,34 +120,29 @@ if (!function_exists("wcb_pagination_bar")) {
             'prev_text' => $prevHtml
         )));
     }
-}
 
 // 
-if (!function_exists("wcb__is_enabled")) :
-    function wcb__is_enabled($variable)
+    function boostify_blocks_is_enabled($variable)
     {
         if (!isset($variable)) return null;
         return filter_var($variable, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
-endif;
 
 
 // 
-if (!function_exists("wcb__get_layout_global_settings")) :
-    function wcb__get_layout_global_settings()
+    function boostify_blocks_get_layout_global_settings()
     {
-        $wcb_layout_global_settings = wp_get_global_settings(['layout']);
+        $boostify_layout_global_settings = wp_get_global_settings(['layout']);
         // IF USING WOOSTIFYBLOCKS THEME
         if (class_exists('Woostify_Customizer')) {
             $customizer = new Woostify_Customizer();
             $options = $customizer->woostify_get_woostify_options();
             // container_width
             if (!empty($options['container_width'] ?? '')) {
-                $wcb_layout_global_settings['contentSize'] =  $options['container_width'] . "px";
-                $wcb_layout_global_settings['contentSizeOfWoostify'] =  true;
+                $boostify_layout_global_settings['contentSize'] =  $options['container_width'] . "px";
+                $boostify_layout_global_settings['contentSizeOfWoostify'] =  true;
             }
         }
 
-        return $wcb_layout_global_settings;
+        return $boostify_layout_global_settings;
     }
-endif;

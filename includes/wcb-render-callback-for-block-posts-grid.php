@@ -3,14 +3,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 //============================================= block 1 ===============================================================
-function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
+function boostify_blocks_block_posts_grid_render_callback($attributes, $content, $block)
 {
 
-    wp_enqueue_script__block_commoncss_frontend_styles();
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     // 
 
     $DEFAULT_ATTRS = [
-        'uniqueId' => 'xxblock-wcb_posts',
+        'uniqueId' => 'xxblock-boostify_posts',
         'general_sortingAndFiltering' =>  [
             'queries' =>  [
                 'postType'              => 'post',
@@ -307,6 +307,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
     $the_query = new WP_Query([
         'post_type'         => $queries['postType'],
         'author'            => $queries['selectedAuthorId'],
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Required for filtering posts by taxonomy terms.
         'tax_query'         => [
             !empty($aTermsId) ? [
                 'taxonomy'      => $queries["taxonomySlug"],
@@ -314,6 +315,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                 'terms'         =>  $aTermsId,
             ] : null
         ],
+        // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in -- Required to exclude current post from related posts.
         'post__not_in'          => boolval($queries["isExcludeCurrentPost"]) ? [get_the_ID()] : [],
         'posts_per_page'        => $queries["numberOfItems"],
         'ignore_sticky_posts'   => true,
@@ -323,8 +325,8 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
         'paged'                 => $paged
     ]);
 
-    if (!function_exists("wcb_block_posts_grid__render_taxonomy")) {
-        function wcb_block_posts_grid__render_taxonomy($queries, $attributes, $modifiedClass = "")
+    if (!function_exists("boostify_blocks_block_posts_grid_render_taxonomy")) {
+        function boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes, $modifiedClass = "")
         {
             $isShow = boolval($attributes['general_postMeta']['isShowTaxonomy'] ?? false);
             if (!$isShow) {
@@ -375,14 +377,14 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                         <!-- Post Thumbnail -->
                         <?php if ($hasFeaturedImage) : ?>
                             <div class="wcbPostCard__featuredImage">
-                                <?php echo get_the_post_thumbnail(null, $attributes['general_postFeaturedImage']['featuredImageSize'] ?? "post-thumbnail"); ?>
+                                <?php echo wp_kses_post(get_the_post_thumbnail(null, $attributes['general_postFeaturedImage']['featuredImageSize'] ?? "post-thumbnail")); ?>
 
                                 <!-- TAXONOMIES  -->
                                 <?php if (($attributes['general_postMeta']["isShowTaxonomy"] ?? true) &&
                                     ($attributes['general_postMeta']["taxonomyPosition"] ?? "Inside featured image") === "Inside featured image" &&
                                     $featuredImagePosition !== "background"
                                 ) {
-                                    wcb_block_posts_grid__render_taxonomy($queries, $attributes, "Insidefeaturedimage");
+                                    boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes, "Insidefeaturedimage");
                                 }; ?>
 
                             </div>
@@ -397,7 +399,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                             <?php
 
                             if (($attributes['general_postMeta']['taxonomyPosition'] ?? "Below featured image") === "Below featured image" || !$hasFeaturedImage ||  $featuredImagePosition === 'background') {
-                                wcb_block_posts_grid__render_taxonomy($queries, $attributes,);
+                                boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes,);
                             }; ?>
 
                             <!-- TITLE -->
@@ -406,8 +408,8 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                 $titleHtmlTag = $attributes['general_postMeta']['titleHtmlTag'] ?? "h4";
                                 echo sprintf('<%1$s class="wcbPostCard__title">', tag_escape($titleHtmlTag));
                             ?>
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_title(); ?>
+                                <a href="<?php echo esc_url(get_permalink()); ?>">
+                                    <?php echo esc_html(get_the_title()); ?>
                                 </a>
                                 <?php echo sprintf('</%1$s>', tag_escape($titleHtmlTag)); ?>
                             <?php endif; ?>
@@ -417,7 +419,8 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                 <!-- FULL POST CONTENT -->
                                 <?php if (($attributes['general_postContent']['contentType'] ?? "excerpt") === "Full post") {
                                     echo '<div class="wcbPostCard__fullContent">';
-                                    echo wp_kses_post(apply_filters('the_content', get_the_content()));
+                                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook.
+                                    echo wp_kses_post(apply_filters('the_content', (string) get_the_content()));
                                     echo '</div>';
                                 };  ?>
 
@@ -457,7 +460,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
 
                                             </span>
                                         <?php endif; ?>
-                                        <a class="wcbPostCard__meta-author" href="<?php echo esc_url(get_author_posts_url(get_the_author_meta('ID'))); ?>" title="<?php echo esc_attr(get_the_author()); ?>"><?php the_author(); ?></a>
+                                        <a class="wcbPostCard__meta-author" href="<?php echo esc_url(get_author_posts_url(get_the_author_meta('ID'))); ?>" title="<?php echo esc_attr(get_the_author()); ?>"><?php echo esc_html(get_the_author()); ?></a>
                                     </div>
                                 <?php endif; ?>
 
@@ -475,7 +478,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
                                                     </svg>
                                                 </span>
                                             <?php endif; ?>
-                                            <time datetime="<?php echo get_the_date('c'); ?>" itemprop="datePublished"><?php echo get_the_date(); ?></time>
+                                            <time datetime="<?php echo esc_attr(get_the_date('c')); ?>" itemprop="datePublished"><?php echo esc_html(get_the_date()); ?></time>
                                         </span>
                                     <?php endif; ?>
 
@@ -503,7 +506,7 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
 
                             <!-- READMORE BUTTON -->
                             <?php if (boolval($attributes['general_readmoreLink']['isShowReadmore'] ?? true)) : ?>
-                                <a class="wcbPostCard__readmoreLink" href="<?php echo esc_url(the_permalink()); ?>" rel="noopener noreferrer" target="<?php echo esc_attr(($attributes['general_readmoreLink']['isOpenInNewTab'] ?? false) ? "_blank" : "_self") ?>">
+                                <a class="wcbPostCard__readmoreLink" href="<?php echo esc_url(get_permalink()); ?>" rel="noopener noreferrer" target="<?php echo esc_attr(($attributes['general_readmoreLink']['isOpenInNewTab'] ?? false) ? "_blank" : "_self") ?>">
                                     <?php echo esc_html($attributes['general_readmoreLink']['text'] ?? "Read more"); ?>
                                 </a>
                             <?php endif; ?>
@@ -515,9 +518,9 @@ function wcb_block_posts_grid__renderCallback($attributes, $content, $block)
         </div>
 
         <!-- pagination here -->
-        <?php if (wcb__is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
+        <?php if (boostify_blocks_is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
             <div class="wcb-posts-grid__pagination">
-                <?php wcb_pagination_bar($the_query, $attributes['general_pagination']); ?>
+                <?php boostify_blocks_pagination_bar($the_query, $attributes['general_pagination']); ?>
             </div>
         <?php endif; ?>
 
