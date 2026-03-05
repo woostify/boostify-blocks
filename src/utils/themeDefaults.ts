@@ -1,0 +1,95 @@
+import { TextAlignment} from "../components/controls/MyTextAlignControl/MyTextAlignControl";
+
+export type ThemeDefaults = {
+    product_per_row?: { desktop?: number; tablet?: number; mobile?: number };
+    product_per_page?: number;
+    shop_archive_border?: { style?: string; width?: number; color?: string };
+    shop_archive_product_content?: {
+        title_flag?: boolean;
+        category_flag?: string;
+        rating_flag?: string;
+        price_flag?: string;
+        quantity_flag?: string;
+        equal_flag?: string;
+        align?: TextAlignment;
+        min_height?: number;
+    };
+    shop_archive_product_image?: {
+        style?: string;
+        width?: number;
+        color?: string;
+        hover?: "swap" | "zoom" | "none";
+    };
+    shop_archive_sale_tag?: {
+        bg_color?: string;
+        text_color?: string;
+        position?: string;
+    };
+    shop_archive_out_of_stock?: {
+        bg_color?: string;
+        text_color?: string;
+        position?: string;
+    };
+    shop_archive_general_design?: {
+        title_color?: string;
+        title_font_size?: {
+            desktop?: number;
+            tablet?: number;
+            mobile?: number;
+        };
+        price_color?: string;
+        price_font_size?: {
+            desktop?: number;
+            tablet?: number;
+            mobile?: number;
+        };
+    };
+    shop_archive_add_to_cart_btn?: {
+        text_color?: string;
+        bg_color?: string;
+        hover_text_color?: string;
+        hover_bg_color?: string;
+        border_radius?: number;
+        position?: string;
+    };
+    shop_archive_wishlist_btn?: {
+        position?: 'top-right' | 'bottom-right' | 'none';
+        style?:  'yith' | 'ti';
+        wishlist_plugin_active?: boolean;
+    };
+    shop_quick_view_btn?: {
+        enabled?: boolean;
+        position?: 'bottom-image' | 'top-right' | 'center-image' | 'none';
+        show_icon?: boolean;
+        bg_color?: string;
+        text_color?: string;
+        hover_bg_color?: string;
+        hover_text_color?: string;
+        border_radius?: number;
+        woostify_pro_active?: boolean;
+    };
+    countdown_urgency?: {
+        active?: boolean;
+        style?: 'default' | 'style-1';
+        apply_for?: 'all' | 'categories' | 'products';
+        categories_selected?: string | false;
+        products_selected?: string | false;
+        categories_exclude?: string | false;
+        products_exclude?: string | false;
+        time_duration?: string;
+        time_type?: 'days' | 'hours' | 'minutes';
+        message?: string;
+        days_label?: string;
+        hours_label?: string;
+        minutes_label?: string;
+        seconds_label?: string;
+        display_on_thumbnail?: '0' | '1';
+        hide_after_time_up?: '0' | '1';
+    };
+};
+  
+export function getThemeDefaults(): ThemeDefaults {
+    // @ts-ignore
+    const win = window as any;
+    return win?.WCB_THEME_DEFAULTS || {};
+}
