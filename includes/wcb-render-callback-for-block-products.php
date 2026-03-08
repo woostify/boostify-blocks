@@ -337,6 +337,7 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
             ?>
         <?php
         else :
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
             do_action('woocommerce_no_products_found');
         endif; ?>
 
@@ -548,11 +549,16 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     // Countdown urgency
     $countdownHtml = boostify_blocks_block_products__get_countdown_html( $attributes['style_countdownUrgency'] ?? [] );
 
+    $escaped_classes = esc_attr($classes);
+    $escaped_index = intval($index);
+    $escaped_permalink = esc_url($data->permalink);
+    $escaped_feat_classes = esc_attr($featuredClasses);
+
     return apply_filters(
-        'woocommerce_blocks_product_grid_item_html',
-        "<div class=\"scroll-snap-slide {$classes}\" data-index=\"{$index}\">
+        'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
+        "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\">
 				<div class=\"wcb-products__product-featured \">
-                    <a href=\"{$data->permalink}\" class=\"{$featuredClasses}\">
+                    <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
                         {$isSwapHover}
                     </a>
@@ -716,7 +722,7 @@ function boostify_blocks_block_products_get_title_html($product, $headingTag = "
     if (empty($headingTag)) {
         $headingTag = 'div';
     };
-    return '<' . $headingTag . ' class="wcb-products__product-title wc-block-grid__product-title"> <a href=" ' . $link . ' ">' . wp_kses_post($product->get_title()) . '</a></' . $headingTag . '>';
+    return '<' . tag_escape($headingTag) . ' class="wcb-products__product-title wc-block-grid__product-title"> <a href="' . esc_url($link) . '">' . wp_kses_post($product->get_title()) . '</a></' . tag_escape($headingTag) . '>';
 }
 
 function boostify_blocks_block_products_get_category_html($product)
@@ -1024,21 +1030,24 @@ if (!function_exists("boostify_blocks_block_products_set_ordering_query_args")) 
                 break;
     
             case 'popularity':
-                $query_args['meta_key'] = 'total_sales'; 
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for sorting by sales count.
+                $query_args['meta_key'] = 'total_sales';
                 $query_args['orderby'] = 'meta_value_num';
                 $query_args['order'] = $order;
                 $is_handled = true;
                 break;
-    
+
             case 'price':
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for sorting by price.
                 $query_args['meta_key'] = '_price';
                 $query_args['orderby'] = 'meta_value_num';
                 $query_args['order'] = $order;
                 $is_handled = true;
                 break;
-    
+
             case 'rating':
-                $query_args['meta_key'] = '_wc_average_rating'; 
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for sorting by rating.
+                $query_args['meta_key'] = '_wc_average_rating';
                 $query_args['orderby'] = 'meta_value_num';
                 $query_args['order'] = $order;
                 $is_handled = true;
@@ -1119,12 +1128,13 @@ if (!function_exists("boostify_blocks_block_products_set_block_query_args")) :
                 }
             }
 
-            // Remove duplicates and store in transient.
+            // Remove duplicates and store in transient with a unique, prefixed name.
             $product_ids_on_sale = array_unique($product_ids_on_sale);
             set_transient('wc_product_ids_on_sale', $product_ids_on_sale, DAY_IN_SECONDS);
         }
 
-        return apply_filters('woocommerce_product_ids_on_sale', $product_ids_on_sale);
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
+        return apply_filters('boostify_blocks_product_ids_on_sale', $product_ids_on_sale);
     }
 
     function boostify_blocks_block_products_set_block_query_args(&$query_args, $filtersAttrs)

@@ -183,7 +183,7 @@
 
 	&.wcb-products__product--btnInsideImage {
 		.wcb-products__product-featured {
-            position: relative; /* Đảm bảo container của ảnh là tham chiếu cho button */
+            position: relative; /* Ensure the image container is a positioning reference for the button */
         }
 	
 		.wcb-products__product-add-to-cart {

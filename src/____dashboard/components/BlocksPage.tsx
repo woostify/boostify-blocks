@@ -47,7 +47,8 @@ const BlocksPage: FC<Props> = ({
 		};
 		setBlocksStatus(newBlocksStatus);
 		const data = {
-			action: "wcb_dashboard_blocks_disable_enable",
+			action: "boostify_blocks_dashboard_blocks_disable_enable",
+			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
 			blocksStatus: newBlocksStatus,
 		};
 		toast.promise(
@@ -197,11 +198,10 @@ const BlocksPage: FC<Props> = ({
 		return (
 			<div
 				key={key}
-				className={`relative border rounded-xl bg-white transition-colors ${
-					enabled
+				className={`relative border rounded-xl bg-white transition-colors ${enabled
 						? "border-slate-100 text-slate-800 bg-slate-50"
 						: "border-slate-200/80 hover:border-slate-300 text-slate-400"
-				}`}
+					}`}
 			>
 				<div className="relative z-10 h-20 p-4 flex items-center gap-x-5">
 					<div className="flex-shrink-0">
@@ -262,11 +262,10 @@ const BlocksPage: FC<Props> = ({
 		return (
 			<div
 				key={key}
-				className={`relative border rounded-xl bg-white transition-colors ${
-					enabled
+				className={`relative border rounded-xl bg-white transition-colors ${enabled
 						? "border-slate-100 text-slate-800 bg-slate-50"
 						: "border-slate-200/80 hover:border-slate-300 text-slate-400"
-				}`}
+					}`}
 			>
 				<div className="relative z-10 p-6 flex items-start gap-x-5">
 					<div className="flex-1 min-w-0 flex flex-col items-start">

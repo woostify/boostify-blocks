@@ -34,8 +34,8 @@ registerBlockType(metadata.name, {
 	example: convertObjectAttrToPreview(attributes),
 	// deprecated: deprecated,
 	providesContext: {
-		"wcb/faq_general": "general_general",
-		"wcb/faq_icon": "general_icon",
+		"boostify-blocks/faq_general": "general_general",
+		"boostify-blocks/faq_icon": "general_icon",
 	},
 	icon: (
 		<svg

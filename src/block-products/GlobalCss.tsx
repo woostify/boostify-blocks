@@ -6,7 +6,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getCssProperyHasResponsive from "../utils/getCssProperyHasResponsive";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
@@ -48,7 +48,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const LIST_CLASS = `${WRAP_CLASSNAME} .wcb-products__list`;
@@ -162,7 +162,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 								? {
 										scrollSnapAlign: "start",
 										flexShrink: 0,
-										// tinh toan the nay de tao phan thut-tho cho slider
+										// Calculate flex-basis to create the peek/overflow effect for the slider.
 										flexBasis: `calc((100% - (${
 											Number(numberOfColumn_desktop) - 1
 										} * ${colunmGap_desktop})) / ${Number(

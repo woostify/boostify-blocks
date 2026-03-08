@@ -1,10 +1,9 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "wcb/form",
+  "name": "boostify-blocks/form",
   "version": "0.1.0",
   "title": "Form",
-  "category": "wcb-blocks",
+  "category": "boostify-blocks",
   "icon": "- wcb-block-editor-block-icon lni lni-postcard",
   "description": "Create a contact form or marketing form and style it within the block editor.",
   "supports": {
@@ -12,7 +11,7 @@
     "anchor": true,
     "align": true
   },
-  "textdomain": "wcb-blocks",
+  "textdomain": "boostify-blocks",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

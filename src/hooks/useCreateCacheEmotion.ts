@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import createCache, { EmotionCache } from "@emotion/cache";
 
 const useCreateCacheEmotion = (key = "wcb-custom-cache-key") => {
-	// DIEU NAY GIUP EMOTION GLOBAL CSS DUOC IMPORT TRONG MOBILE IFRAME!!!
+	// This ensures Emotion global CSS is imported inside the mobile iframe.
 	const ref = useRef<HTMLDivElement>(null);
 
 	const cache = createCache({

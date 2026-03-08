@@ -20,8 +20,8 @@ const Edit: FC<
 	EditProps<
 		WcbAttrs,
 		{
-			"wcb/faq_icon"?: WCB_FAQ_PANEL_ICON;
-			"wcb/faq_general"?: WCB_FAQ_PANEL_GENERAL;
+			"boostify-blocks/faq_icon"?: WCB_FAQ_PANEL_ICON;
+			"boostify-blocks/faq_general"?: WCB_FAQ_PANEL_GENERAL;
 		}
 	>
 > = (props) => {
@@ -51,9 +51,9 @@ const Edit: FC<
 	useEffect(() => {
 		console.log(12, "------ FAQ CHILD setAttributes ON useEffect --------");
 		// setAttributes({
-		// 	enableSeparator: context["wcb/faq_general"]?.enableSeparator,
+		// 	enableSeparator: context["boostify-blocks/faq_general"]?.enableSeparator,
 		// });
-	}, [context["wcb/faq_general"], context["wcb/faq_icon"], blockIndex]);
+	}, [context["boostify-blocks/faq_general"], context["boostify-blocks/faq_icon"], blockIndex]);
 
 	//
 	const MY_TEMPLATE = [

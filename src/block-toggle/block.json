@@ -1,17 +1,18 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "wcb/toggle",
+	"name": "boostify-blocks/toggle",
 	"version": "0.1.0",
-	"parent": ["wcb/form"],
+	"parent": [
+		"boostify-blocks/form"
+	],
 	"title": "Toggle",
-	"category": "wcb-blocks",
+	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-capsule text-xl",
 	"description": "Example static block scaffolded with Create Block tool.",
 	"supports": {
 		"__experimentalSelector": "span,label"
 	},
-	"textdomain": "wcb-blocks",
+	"textdomain": "boostify-blocks",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"

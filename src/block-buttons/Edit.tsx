@@ -225,7 +225,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	};
 
 	const {} = attributes;
-	const ALLOWED_BLOCKS = ["wcb/button"];
+	const ALLOWED_BLOCKS = ["boostify-blocks/button"];
 
 	const blockProps = useBlockProps({
 		className: `wcb-buttons__inner`,

@@ -596,7 +596,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					}
 
 					{general_layout.enableCTAButton && (
-						<InnerBlocks allowedBlocks={[]} template={[["wcb/button", {}]]} />
+						<InnerBlocks allowedBlocks={[]} template={[["boostify-blocks/button", {}]]} />
 					)}
 				</div>
 

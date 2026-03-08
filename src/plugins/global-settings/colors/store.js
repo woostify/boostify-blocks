@@ -35,7 +35,7 @@ const STORE_REDUCER = (state = DEFAULT_STATE, action) => {
 	}
 };
 
-registerStore('wcb/global-colors', {
+registerStore('boostify-blocks/global-colors', {
 	reducer: STORE_REDUCER,
 	actions: STORE_ACTIONS,
 	selectors: STORE_SELECTORS,
@@ -75,7 +75,7 @@ domReady(() => {
 				({ slug }) => !wcbColorSlugs.includes(slug)
 			);
 
-			dispatch('wcb/global-colors').updateSettings({
+			dispatch('boostify-blocks/global-colors').updateSettings({
 				defaultColors,
 				wcbColors,
 				isInitializing: false,

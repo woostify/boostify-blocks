@@ -1,5 +1,5 @@
 export default function ncFormatDate(date) {
-	// CAN LAM THEM PHAN DATE FOrMAT ---- get_option(date_format)
+	// TODO: Add support for custom date format via get_option(date_format).
 
 	let d = new Date(date);
 	let ye = new Intl.DateTimeFormat("en", { year: "numeric" }).format(d);

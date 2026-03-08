@@ -10,7 +10,7 @@ const client = new ApolloClient({
 });
 
 const App = () => {
-	if (wcbGlobalVariables?.enableTemplatesButton === "false") {
+	if (window.boostify_blocks_global_variables?.enableTemplatesButton === "false") {
 		return null;
 	}
 
@@ -27,7 +27,7 @@ const domObserver = new MutationObserver(() => {
 	);
 
 	if (modalRoot) {
-		// ko disconect vi toolbar co the re-render dan den bi mat nut cua minh
+		// Do not disconnect — toolbar may re-render, which would remove our button.
 		// domObserver.disconnect();
 
 		if (!document.getElementById("wcb-block-templates-button-wrap")) {

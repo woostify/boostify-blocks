@@ -25,3 +25,6 @@
 if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
+
+delete_option('boostify_blocks_settings_options');
+delete_option('boostify_blocks_enable_disable_options');

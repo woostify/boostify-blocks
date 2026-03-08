@@ -5,7 +5,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import { WcbAttrs } from "./attributes";
 
@@ -29,13 +29,13 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 		style_dimension,
 		advance_motionEffect,
 	} = attrs;
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	// Higher specificity selector for child blocks
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}][data-block-type="icon-item"]`;
 	const ICON_CLASS = `${WRAP_CLASSNAME} .wcb-icon-list__icon`;
 
-	// ------------------- WRAP DIV với higher specificity
+	// ------------------- WRAP DIV with higher specificity
 	const getDivWrapStyles = (): CSSObject[] => {
 		return [
 			{

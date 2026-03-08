@@ -71,7 +71,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			{reCaptchaV2 && (
 				<div
 					className="g-recaptcha"
-					// data-sitekey= key se duoc jQuery add o Frontend.tsx
+					// data-sitekey will be added dynamically via jQuery in Frontend.tsx.
 				></div>
 			)}
 

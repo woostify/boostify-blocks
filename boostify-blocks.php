@@ -12,7 +12,7 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       boostify-blocks
  *
- * @package           create-block
+ * @package           Boostify-Blocks
  */
 
 defined('ABSPATH') || exit;

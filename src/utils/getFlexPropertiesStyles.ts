@@ -1,7 +1,7 @@
 import { CSSObject } from "@emotion/react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import { MyFlexPropertiesControlData } from "../components/controls/MyFlexPropertiesControl/types";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import getValueFromAttrsResponsives from "./getValueFromAttrsResponsives";
 
 interface FlexProperties extends Partial<MyFlexPropertiesControlData> {
@@ -18,7 +18,7 @@ const getFlexPropertiesStyles = ({
 	flexProperties,
 	className,
 }: Params): CSSObject => {
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	//
 	const {

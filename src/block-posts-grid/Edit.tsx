@@ -652,7 +652,7 @@ const Edit: FC<EditProps<WcbBlockPostsGridAttrs>> = (props) => {
 
 				{uniqueId && !!style_layout && (
 					<ServerSideRender
-						block="wcb/posts-grid"
+						block="boostify-blocks/posts-grid"
 						attributes={{ ...WcbAttrsForServerSide }}
 						EmptyResponsePlaceholder={EmptyPlaceholder}
 						LoadLoadingResponsePlaceholder={LoadingPlaceholder}

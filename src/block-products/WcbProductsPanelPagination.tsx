@@ -68,7 +68,7 @@ const WcbProductsPanelPagination: FC<Props> = ({
 	const renderRadioIcons = () => {
 		return (
 			<MyRadioGroup
-				label={__("Prev & Next Icons", "boostify-blocks")}
+				label={__("Prev & Next Icons", "wcb")}
 				onChange={(name) => {
 					setAttr__({ ...panelData, iconName: name as any });
 				}}
@@ -118,11 +118,11 @@ const WcbProductsPanelPagination: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Pagination", "boostify-blocks")}
+			title={__("Pagination", "wcb")}
 		>
 			<div className={"space-y-5"}>
 				<ToggleControl
-					label={__("Show pagination", "boostify-blocks")}
+					label={__("Show pagination", "wcb")}
 					onChange={(checked) =>
 						setAttr__({ ...panelData, isShowPagination: checked })
 					}

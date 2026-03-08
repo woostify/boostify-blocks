@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { CSSObject } from "@emotion/react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import getValueFromAttrsResponsives from "./getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
 
@@ -12,7 +12,7 @@ interface Params {
 	prefix_3?: keyof CSSProperties;
 	prefix_4?: keyof CSSProperties;
 	className: string;
-	// da co san unit trong value roi thi khong can them unit nua
+	// If the value already includes a unit, no need to append one.
 	hasUnit?: boolean;
 	unit?: string;
 }
@@ -27,7 +27,7 @@ function getStyleObjectFromResponsiveAttr({
 	hasUnit = true,
 	unit,
 }: Params): CSSObject {
-	const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	let { value_Desktop, value_Tablet, value_Mobile } =
 		getValueFromAttrsResponsives(value);

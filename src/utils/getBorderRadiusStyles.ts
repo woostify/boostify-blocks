@@ -1,7 +1,7 @@
 import { css, CSSObject } from "@emotion/react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import { BorderRadiusSettings } from "../components/controls/MyBorderControl/types";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import getValueFromAttrsResponsives from "./getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
 
@@ -12,7 +12,7 @@ interface Params {
 }
 
 const getBorderRadiusStyles = ({ className, radius, isWithIframe = false }: Params): CSSObject => {
-    const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES;
+    const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
     let {
         value_Desktop: radiusDesktop,

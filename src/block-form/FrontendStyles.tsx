@@ -1,7 +1,7 @@
 import { WcbAttrs } from "./attributes";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 
-interface Props extends WcbAttrs {}
+interface Props extends WcbAttrs { }
 
 // --------------------------- FORM AJAX
 export function handleSubmitFormForWcbForm(div: Element, props: Props) {
@@ -23,7 +23,7 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 	if (reCaptchaV2) {
 		$(`.${dataUniqueid} .g-recaptcha`).attr(
 			"data-sitekey",
-			DEMO_WCB_GLOBAL_VARIABLES.reCAPTCHA_v2_site_key || ""
+			DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.reCAPTCHA_v2_site_key || ""
 		);
 	}
 
@@ -48,16 +48,17 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 				bcc: props.general_action.main.BCC.email || "",
 			};
 			$.ajax({
-				type: "post", //Phương thức truyền post hoặc get
-				dataType: "json", //Dạng dữ liệu trả về xml, json, script, or html
-				url: wcbFrontendAjaxObject.ajaxurl, //Đường dẫn chứa hàm xử lý dữ liệu. Mặc định của WP như vậy
+				type: "post", // HTTP method: post or get.
+				dataType: "json", // Response data type: xml, json, script, or html.
+				url: boostify_blocks_frontend_ajax_object.ajaxurl, // WP default AJAX handler URL.
 				data: {
-					action: "wcbform_action", //Tên action
+					action: "boostify_blocks_form_action",
+					nonce: boostify_blocks_frontend_ajax_object.nonce,
 					formData,
 					mailInfo,
 				},
 				context: this,
-				beforeSend: function () {},
+				beforeSend: function () { },
 				success: function (response) {
 					// This is OK code
 					console.log(99, "-----------OK", { props, response, formData });
@@ -97,13 +98,13 @@ export function handleSubmitFormForWcbForm(div: Element, props: Props) {
 		if (typeof grecaptcha === "object" && reCaptchaV3) {
 			grecaptcha.ready(function () {
 				grecaptcha
-					.execute(DEMO_WCB_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key, {
+					.execute(DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key, {
 						action: "submit",
 					})
 					.then(function (token) {
 						console.log(123, {
 							token,
-							key: DEMO_WCB_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key,
+							key: DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES.reCAPTCHA_v3_site_key,
 						});
 						handleAjaxAction();
 					});

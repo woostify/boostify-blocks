@@ -38,13 +38,13 @@ registerBlockType(metadata.name, {
 		attributes: convertObjectAttrToPreview(attributes),
 		innerBlocks: [
 			{
-				name: "wcb/input",
+				name: "boostify-blocks/input",
 				attributes: {
 					label: "Name",
 				},
 			},
 			{
-				name: "wcb/email",
+				name: "boostify-blocks/email",
 				attributes: {
 					label: "Email",
 				},

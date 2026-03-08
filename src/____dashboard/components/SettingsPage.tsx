@@ -41,7 +41,7 @@ const TABS: Tab[] = [
 ];
 
 interface Props {
-	initData: typeof window.wcbGlobalVariables;
+	initData: typeof window.boostify_blocks_global_variables;
 	themeLayoutGlobal?: Wcb_theme_layout_global_settings;
 }
 
@@ -69,7 +69,7 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 		history.replaceState(null, "", `?${queryParams.toString()}`);
 	};
 
-	const handleUpdateSettings = (newData: typeof window.wcbGlobalVariables) => {
+	const handleUpdateSettings = (newData: typeof window.boostify_blocks_global_variables) => {
 		if (typeof jQuery !== "function") {
 			return;
 		}
@@ -80,7 +80,8 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 		};
 		setAllSettings(newSettings);
 		const data = {
-			action: "wcb_dashboard_blocks_update_settings",
+			action: "boostify_blocks_dashboard_update_settings",
+			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
 			settings: newSettings,
 		};
 
@@ -105,20 +106,18 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 					return (
 						<div
 							key={item.name}
-							className={`flex items-center space-x-3 text-base font-medium px-3.5 py-3.5 rounded-xl cursor-pointer ${
-								isActive
+							className={`flex items-center space-x-3 text-base font-medium px-3.5 py-3.5 rounded-xl cursor-pointer ${isActive
 									? "bg-slate-100/80 text-blue-600"
 									: "text-slate-800 hover:bg-slate-50"
-							}`}
+								}`}
 							onClick={() => {
 								setcurrentTab(item.name);
 								setHistoryStateParams(item.name);
 							}}
 						>
 							<item.icon
-								className={`w-6 h-6  ${
-									isActive ? " text-blue-600" : "text-slate-400"
-								}`}
+								className={`w-6 h-6  ${isActive ? " text-blue-600" : "text-slate-400"
+									}`}
 							/>
 							<span>{item.label}</span>
 						</div>

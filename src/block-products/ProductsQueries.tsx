@@ -5,12 +5,13 @@ const ProductsQueries = () => {
 	const [productHtmls, setProductHtmls] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {}, []);
+	useEffect(() => { }, []);
 
 	const handleAjaxGetProducts = () => {
 		setLoading(true);
 		const data = {
-			action: "wcb_get_product_filters",
+			action: "boostify_blocks_get_product_filters",
+			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
 			data: "ProductsQueries",
 		};
 		jQuery.post((window as any).ajaxurl, data, function (response) {
