@@ -88,9 +88,9 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	sliders: {
 		type: "array",
 		default: [
-			["wcb/slider-child"],
-			["wcb/slider-child"],
-			["wcb/slider-child"]
+			["boostify-blocks/slider-child"],
+			["boostify-blocks/slider-child"],
+			["boostify-blocks/slider-child"]
 		]
 	},
 

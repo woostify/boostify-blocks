@@ -422,5 +422,18 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                 "view_script_handles" => []
             ]
         );
+
+        // SLIDER BLOCK
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider',
+            [
+                "ancestor" => (($boostify_blocks_enable_disable['boostify-blocks/slider'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+            ]
+        );
+        // SLIDER CHILD
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider-child',
+            []
+        );
     }
 }

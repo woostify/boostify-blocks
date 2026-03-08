@@ -68,7 +68,7 @@ import {
 	WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO
 } from "../block-slider-child/WcbSliderPanel_ButtonPreset";
 
-export const SLIDER_ITEM_DEMO: string[] = ["wcb/slider-child"];
+export const SLIDER_ITEM_DEMO: string[] = ["boostify-blocks/slider-child"];
 
 // Arrow components for slider
 function SampleNextArrow(props: any) {
@@ -228,7 +228,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		if (currentNumber === 0 && targetNumber > 0) {
 			const timeoutId = setTimeout(() => {
 				for (let i = 0; i < targetNumber; i++) {
-					const newBlock = wp.blocks.createBlock("wcb/slider-child");
+					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
 					insertBlock(newBlock, i, clientId);
 				}
 			}, 100);
@@ -287,7 +287,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				// Add blocks
 				const blocksToAdd = targetNumber - currentNumber;
 				for (let i = 0; i < blocksToAdd; i++) {
-					const newBlock = wp.blocks.createBlock("wcb/slider-child");
+					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
 					insertBlock(newBlock, currentNumber + i, clientId);
 				}
 			} else if (currentNumber > targetNumber) {

@@ -1,10 +1,9 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 2,
-  "name": "wcb/slider",
+  "apiVersion": 3,
+  "name": "boostify-blocks/slider",
   "version": "0.1.0",
   "title": "Slider",
-  "category": "wcb-blocks",
+  "category": "boostify-blocks",
   "icon": "- wcb-block-editor-block-icon lni lni-quotation",
   "description": "Create beautiful sliders with slider block.",
   "supports": {
