@@ -5,7 +5,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import getImageUrlBySize from "../utils/getImageUrlBySize";
 import VideoBackgroundByBgControl from "../components/VideoBackgroundByBgControl";
 import OverlayBackgroundByBgControl from "../components/OverlayBackgroundByBgControl";
-import { DEMO_WCB_GLOBAL_VARIABLES } from "../________";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 
 // Old SliderItem interface for backward compatibility
 interface OldSliderItem {
@@ -119,7 +119,7 @@ const oldSave = ({ attributes }: { attributes: OldWcbAttrs }) => {
 	const renderTestimonialItemImage = (item: OldSliderItem, index: number) => {
 		const { images, isShowImage, imageSize } = general_images || {};
 		const { imageSize: imageSizeAttr } = style_image || {};
-		const { media_desktop, media_tablet } = DEMO_WCB_GLOBAL_VARIABLES || {};
+		const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES || {};
 		const { mediaId, mediaSrcSet } = images?.[index] || {};
 		
 		if (!isShowImage || !mediaId) {

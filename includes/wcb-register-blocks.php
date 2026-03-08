@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 //============================================================================================================================================
 // START REGISTER GUTENBERG BLOCKS
 //======================================================================================================================================
+require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-editor-defaults.php';
 require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-render-callback-for-block-posts-grid.php';
 require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-render-callback-for-block-products.php';
 require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-ajax-for-block-form.php';
