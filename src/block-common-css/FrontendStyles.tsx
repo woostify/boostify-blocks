@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { initCarouselForWcbFaq } from "../block-faq/FrontendStyles";
 import { handleSubmitFormForWcbForm } from "../block-form/FrontendStyles";
 import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendStyles";
+import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
 import { initCountDown } from "../block-countdown/FrontendScript";
 import { initTabsForWcbTabs } from "../block-tabs/FrontendStyles";
@@ -89,6 +90,15 @@ const classes: {
 		F: animateProgressElements,
 	},
 	{
+		D: ".wcb-slider__wrap.wcb-update-div",
+		C: React.lazy(() => import("../block-slider/GlobalCss")),
+		F: initCarouselForWcbSliders,
+	},
+	{
+		D: ".wcb-slider-child__wrap.wcb-update-div",
+		C: React.lazy(() => import("../block-slider-child/GlobalCss")),
+	},
+	{
 		D: ".wcb-icon-list__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-icon-list/GlobalCss")),
 	},
@@ -101,7 +111,6 @@ const classes: {
 		C: React.lazy(() => import("../block-icon/GlobalCss")),
 	},
 ];
-
 classes.forEach(({ D, C, F }) => {
 	const divs = document.querySelectorAll(D);
 
@@ -110,8 +119,13 @@ classes.forEach(({ D, C, F }) => {
 	}
 });
 
-// ---
-
+/**
+ * Renders the GlobalCss component to the DOM and optionally executes a function on each element.
+ * 
+ * @param {NodeListOf<Element>} divsToUpdate - The divs to update.
+ * @param {React.LazyExoticComponent<React.NamedExoticComponent<any>>} GlobalCss - The GlobalCss component to render.
+ * @param {(el: Element, props: any) => void} [funcRunOnEl] - Optional function to run on each element after rendering.
+ */
 function renderToDom(
 	divsToUpdate: NodeListOf<Element>,
 	GlobalCss: React.LazyExoticComponent<React.NamedExoticComponent<any>>,

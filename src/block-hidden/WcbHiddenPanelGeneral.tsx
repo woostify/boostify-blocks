@@ -42,14 +42,14 @@ const WcbHiddenPanelGeneral: FC<Props> = ({
 				<InputControl
 					label={__("Name", "boostify-blocks")}
 					value={name}
-					onChange={(nextValue) => {
+					onChange={(nextValue: any) => {
 						setAttr__({ ...panelData, name: nextValue });
 					}}
 				/>
 				<InputControl
 					label={__("Value", "boostify-blocks")}
 					value={value}
-					onChange={(nextValue) => {
+					onChange={(nextValue: any) => {
 						setAttr__({ ...panelData, value: nextValue });
 					}}
 				/>

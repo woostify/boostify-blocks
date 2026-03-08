@@ -90,7 +90,7 @@ const WcbPostsGridPanelSortingAndFiltering: FC<Props> = ({
 			<InputControl
 				value={panelData.emptyMessage}
 				label={__("Message when Posts Not Found", "boostify-blocks")}
-				onChange={(nextValue) =>
+				onChange={(nextValue: any) =>
 					setAttr__({ ...panelData, emptyMessage: nextValue })
 				}
 			/>

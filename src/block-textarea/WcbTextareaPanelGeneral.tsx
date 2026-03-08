@@ -66,7 +66,7 @@ const WcbTextareaPanelGeneral: FC<Props> = ({
 				<InputControl
 					label={__("PLACEHOLDER", "boostify-blocks")}
 					value={placeholder}
-					onChange={(nextValue) => {
+					onChange={(nextValue: any) => {
 						setAttr__({ ...panelData, placeholder: nextValue });
 					}}
 				/>

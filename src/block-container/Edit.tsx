@@ -24,6 +24,7 @@ export type ContainerEditProps<T, C = any> = {
 	setAttributes: (newAttributes: Partial<T>) => void;
 	clientId: string;
 	isSelected: boolean;
+	index?: number;
 	context: C;
 	className: string;
 	insertBlocksAfter: Function;
@@ -94,7 +95,7 @@ const Placeholder: FC<TPlaceholder> = ({
 	);
 };
 
-const Edit = (props) => {
+const Edit = (props: any) => {
 	const { clientId, attributes, setAttributes } = props;
 	const { hasInnerBlocks, hasParent } = useSelect(
 		(select) => {

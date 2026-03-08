@@ -54,7 +54,7 @@ const MyMediaUploadCheck: FC<Props> = ({
 		});
 	};
 
-	const onSelectMedia = (media) => {
+	const onSelectMedia = (media: any) => {
 		onChange({
 			mediaId: media.id,
 			mediaUrl: media.url,

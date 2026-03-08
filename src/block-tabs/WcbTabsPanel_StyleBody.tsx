@@ -186,7 +186,7 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 							</MyLabelControl>
 						}
 						values={currentPadding}
-						onChange={(value) => {
+						onChange={(value: any) => {
 							setAttr__({
 								...panelData,
 								padding: {
@@ -203,7 +203,7 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 							</MyLabelControl>
 						}
 						values={currentMargin}
-						onChange={(value) => {
+						onChange={(value: any) => {
 							setAttr__({
 								...panelData,
 								margin: {

@@ -122,7 +122,7 @@ const WcbPostGridPanelPostMeta: FC<Props> = ({
 					<InputControl
 						value={taxonomyDivider}
 						label={__("Separator", "boostify-blocks")}
-						onChange={(value) =>
+						onChange={(value: any) =>
 							setAttr__({ ...panelData, taxonomyDivider: value })
 						}
 					/>

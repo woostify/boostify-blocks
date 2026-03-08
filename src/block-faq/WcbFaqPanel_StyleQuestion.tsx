@@ -152,7 +152,7 @@ const WcbFaqPanel_StyleQuestion: FC<Props> = ({
 							</MyLabelControl>
 						}
 						values={currentPadding}
-						onChange={(value) => {
+						onChange={(value: any) => {
 							setAttr__({
 								...panelData,
 								padding: {

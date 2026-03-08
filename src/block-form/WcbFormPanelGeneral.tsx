@@ -176,7 +176,7 @@ const WcbFormPanelGeneral: FC<Props> = ({
 					<InputControl
 						label={__("SUCCESS REDIRECT URL", "boostify-blocks")}
 						value={successRedirectUrl}
-						onChange={(value) => {
+						onChange={(value: any) => {
 							setAttr__({
 								...panelData,
 								successRedirectUrl: value,

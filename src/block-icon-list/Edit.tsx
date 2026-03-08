@@ -244,11 +244,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	};
 
-	const ALLOWED_BLOCKS = ["wcb/icon"];
+	const ALLOWED_BLOCKS = ["wcb/icon-child"];
 	const TEMPLATE = [
-		["wcb/icon", {}],
-		["wcb/icon", {}],
-		["wcb/icon", {}],
+		["wcb/icon-child", {}],
+		["wcb/icon-child", {}],
+		["wcb/icon-child", {}],
 	];
 
 	const innerBlocksProps = useInnerBlocksProps({

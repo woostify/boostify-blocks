@@ -95,7 +95,7 @@ const WcbPostGridPanelPagination: FC<Props> = ({
 				<InputControl
 					value={panelData.previousText}
 					label={__("Previous text", "boostify-blocks")}
-					onChange={(nextValue) =>
+					onChange={(nextValue: any) =>
 						setAttr__({ ...panelData, previousText: nextValue })
 					}
 				/>
@@ -103,7 +103,7 @@ const WcbPostGridPanelPagination: FC<Props> = ({
 				<InputControl
 					value={panelData.nextText}
 					label={__("Next text", "boostify-blocks")}
-					onChange={(nextValue) =>
+					onChange={(nextValue: any) =>
 						setAttr__({ ...panelData, nextText: nextValue })
 					}
 				/>

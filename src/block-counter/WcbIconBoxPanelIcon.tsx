@@ -89,7 +89,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 					<>
 						<SelecIcon
 							iconData={icon}
-							onChange={(value) => {
+							onChange={(value:any) => {
 								setAttr__({
 									...panelData,
 									icon: value,

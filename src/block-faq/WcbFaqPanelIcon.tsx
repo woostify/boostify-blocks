@@ -66,7 +66,7 @@ const WcbFaqPanelIcon: FC<Props> = ({
 						<SelecIcon
 							label={__("Active Icon:", "boostify-blocks")}
 							iconData={icon}
-							onChange={(value) => {
+							onChange={(value: any) => {
 								setAttr__({
 									...panelData,
 									icon: value,
@@ -77,7 +77,7 @@ const WcbFaqPanelIcon: FC<Props> = ({
 						<SelecIcon
 							label={__("Inactive Icon:", "boostify-blocks")}
 							iconData={inactiveIcon || DEFAULT_MY_ICON}
-							onChange={(value) => {
+							onChange={(value: any) => {
 								setAttr__({
 									...panelData,
 									inactiveIcon: value,

@@ -67,7 +67,7 @@ const WcbDatePanelGenera: FC<Props> = ({
 							label={__("Min", "boostify-blocks")}
 							value={min}
 							type="date"
-							onChange={(nextValue) => {
+							onChange={(nextValue: any) => {
 								console.log(11, { nextValue });
 
 								setAttr__({ ...panelData, min: nextValue });
@@ -77,7 +77,7 @@ const WcbDatePanelGenera: FC<Props> = ({
 							label={__("Max", "boostify-blocks")}
 							value={max}
 							type="date"
-							onChange={(nextValue) => {
+							onChange={(nextValue: any) => {
 								setAttr__({ ...panelData, max: nextValue });
 							}}
 						/>
