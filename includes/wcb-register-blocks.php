@@ -47,6 +47,9 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         'general_sortingAndFiltering' => array(
                             'type'      => 'object',
                         ),
+                        'general_layout' => array(
+                            'type'      => 'object',
+                        ),
                         'general_content' => array(
                             'type'      => 'object',
                         ),
@@ -80,6 +83,9 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         'style_saleBadge' => array(
                             'type'      => 'object',
                         ),
+                        'style_outOfStock' => array(
+                            'type'      => 'object',
+                        ),
                         'style_border' => array(
                             'type'      => 'object',
                         ),
@@ -87,6 +93,15 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                             'type'      => 'object',
                         ),
                         'style_category' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_wishlistBtn' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_quickViewBtn' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_countdownUrgency' => array(
                             'type'      => 'object',
                         ),
                         'advance_responsiveCondition' => array(

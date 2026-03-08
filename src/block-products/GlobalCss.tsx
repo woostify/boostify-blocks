@@ -199,7 +199,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							}),
 
 						// OUT OF STOCK BADGE positioning
-						...(style_outOfStock.position === "top-left"
+						...(style_outOfStock?.position === "top-left"
 							? {
 									".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
 										position: "absolute",
@@ -208,7 +208,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 										zIndex: 10,
 									},
 							}
-							: style_outOfStock.position === "top-right"
+							: style_outOfStock?.position === "top-right"
 							? {
 									".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
 										position: "absolute",
@@ -336,7 +336,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_tablet: outofstockBadgeMarginBottom_tablet,
 			value_desktop: outofstockBadgeMarginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_outOfStock.marginBottom,
+			cssProperty: style_outOfStock?.marginBottom,
 		});
 		const {
 			value_mobile: featuredImageMarginBottom_mobile,
@@ -846,8 +846,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 					".wcb-products__product-outofstock-badge": {
 						marginBottom: outofstockBadgeMarginBottom_mobile_new,
 						".wcb-products__product-on-outofstock": {
-							color: style_outOfStock.textColor,
-							backgroundColor: style_outOfStock.backgroundColor,
+							color: style_outOfStock?.textColor,
+							backgroundColor: style_outOfStock?.backgroundColor,
 						},
 					},
 					".wcb-products__product-price": {
@@ -1112,7 +1112,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				<Global
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-on-outofstock",
-						typography: style_outOfStock.typography,
+						typography: style_outOfStock?.typography,
 					})}
 				/>
 			)}
