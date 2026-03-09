@@ -130,8 +130,8 @@ function woostifyBuyNowProduct() {
 				// Determine AJAX URL.
 				var ajaxUrl = '';
 
-				if ( typeof wcb_buynow_data !== 'undefined' && wcb_buynow_data.ajax_url ) {
-					ajaxUrl = wcb_buynow_data.ajax_url.toString().replace( '%%endpoint%%', 'add_to_cart' );
+				if ( typeof boostify_blocks_buynow_data !== 'undefined' && boostify_blocks_buynow_data.ajax_url ) {
+					ajaxUrl = boostify_blocks_buynow_data.ajax_url.toString().replace( '%%endpoint%%', 'add_to_cart' );
 				} else if ( typeof wc_add_to_cart_params !== 'undefined' && wc_add_to_cart_params.wc_ajax_url ) {
 					ajaxUrl = wc_add_to_cart_params.wc_ajax_url.toString().replace( '%%endpoint%%', 'add_to_cart' );
 				}
@@ -160,8 +160,8 @@ function woostifyBuyNowProduct() {
 				}
 
 				// Delay (ms) to show the cart sidebar before redirecting to checkout.
-				var redirectDelay = typeof wcb_buynow_data !== 'undefined' && wcb_buynow_data.redirect_delay
-					? parseInt( wcb_buynow_data.redirect_delay )
+				var redirectDelay = typeof boostify_blocks_buynow_data !== 'undefined' && boostify_blocks_buynow_data.redirect_delay
+					? parseInt( boostify_blocks_buynow_data.redirect_delay )
 					: 300;
 
 				// Step 1: Show updating state & open sidebar (same as default Add to Cart).

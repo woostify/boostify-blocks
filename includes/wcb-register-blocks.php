@@ -427,13 +427,17 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider',
             [
-                "ancestor" => (($boostify_blocks_enable_disable['boostify-blocks/slider'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "render_callback"     => "boostify_blocks_block_slider_render_callback",
+                "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/slider'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
             ]
         );
         // SLIDER CHILD
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider-child',
-            []
+            [
+                "view_script_handles" => []
+            ]
         );
     }
 }

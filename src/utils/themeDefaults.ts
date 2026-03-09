@@ -91,5 +91,5 @@ export type ThemeDefaults = {
 export function getThemeDefaults(): ThemeDefaults {
     // @ts-ignore
     const win = window as any;
-    return win?.WCB_THEME_DEFAULTS || {};
+    return win?.BOOSTIFY_BLOCKS_THEME_DEFAULTS || {};
 }

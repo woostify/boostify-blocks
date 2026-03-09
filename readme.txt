@@ -64,6 +64,13 @@ This plugin connects to the Google Fonts API, it's needed to show and use custom
 It sends requests to https://fonts.googleapis.com to download font stylesheets every time a page containing a block with custom typography is loaded. (If no custom Google Fonts are selected, no requests are made).
 This service is provided by "Google LLC": [Terms of Service](https://policies.google.com/terms), [Privacy Policy](https://policies.google.com/privacy).
 
+= Tiny Slider (via cdnjs) =
+
+This plugin loads the Tiny Slider library from the Cloudflare CDN (cdnjs.cloudflare.com), it's needed to power the slider/carousel functionality in the included blocks.
+
+It sends requests to https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js every time a page containing a slider block is loaded. Standard CDN access logs (IP address, browser info) may be retained by Cloudflare. No personal data is collected or stored by this plugin.
+This service is provided by "Cloudflare, Inc.": [Terms of Service](https://www.cloudflare.com/terms/), [Privacy Policy](https://www.cloudflare.com/privacypolicy/).
+
 == Frequently Asked Questions ==
 
 = Who should use Boostify Blocks? =
