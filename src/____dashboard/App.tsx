@@ -5,6 +5,7 @@ import Heading from "./components/Heading";
 import Nav from "./components/Nav";
 import WelcomePage from "./components/WelcomePage";
 import "./types";
+import "../________";
 import toast, { Toaster } from "react-hot-toast";
 import SettingsPage from "./components/SettingsPage";
 import { Wcb_theme_layout_global_settings } from "../types";
@@ -47,6 +48,7 @@ const App: FC<Props> = ({
 }) => {
 	//
 	const [currentPath, setcurrentPath] = useState<Path>(PAGES[0].path);
+	const [blocksStatus, setBlocksStatus] = useState<Wcb_blocks_enable_disable_options_Type>(boostify_blocks_enable_disable_options);
 
 	useEffect(() => {
 		const queryString = window.location.search;
@@ -77,6 +79,8 @@ const App: FC<Props> = ({
 					<BlocksPage
 						initWcbBlocksList={boostify_blocks_list}
 						initWcbBlocksEnableDisable={boostify_blocks_enable_disable_options}
+						blocksStatus={blocksStatus}
+						setBlocksStatus={setBlocksStatus}
 					/>
 				);
 			case "settings":
