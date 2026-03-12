@@ -6,12 +6,14 @@ import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 export interface WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN {
 	isShowButton: boolean;
 	position: "bottom" | "inside image" | "bottom visible" | "icon" | "none";
+	isShowQuantity: boolean;
 }
 
 export const WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN =
 	{
 		isShowButton: true,
 		position: "bottom",
+		isShowQuantity: false,
 	};
 
 interface Props

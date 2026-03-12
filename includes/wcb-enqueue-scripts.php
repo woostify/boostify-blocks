@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function boostify_blocks_my_scripts_method()
 {
     wp_enqueue_style( 'boostify-blocks-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), BOOSTIFY_BLOCKS_VERSION );
+    wp_enqueue_style( 'boostify-blocks-frontend', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css', array(), BOOSTIFY_BLOCKS_VERSION );
     wp_localize_script(
         'jquery',
         'boostify_blocks_frontend_ajax_object',
@@ -58,6 +59,14 @@ function boostify_blocks_my_scripts_method()
         'boostify-blocks-buynow',
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-buynow.js',
         array( 'jquery', 'boostify-blocks-tiny-slider' ),
+        BOOSTIFY_BLOCKS_VERSION,
+        true
+    );
+
+    wp_enqueue_script(
+        'boostify-blocks-product-quantity',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-product-quantity.js',
+        array(),
         BOOSTIFY_BLOCKS_VERSION,
         true
     );

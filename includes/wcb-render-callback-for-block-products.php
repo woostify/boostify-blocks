@@ -192,6 +192,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
                     : (($atc['position'] ?? '') === 'icon' ? 'icon'
                         : (($atc['position'] ?? '') === 'bottom' ? 'bottom'
                             : (($atc['position'] ?? null) ?: ($attributes['general_addToCartBtn']['position'] ?? null))))),
+            'isShowQuantity' => $to_bool($content['quantity_flag'] ?? null, $attributes['general_addToCartBtn']['isShowQuantity'] ?? null),
         ]
     );
 
@@ -920,8 +921,12 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         </style>
     ";
 
-    return $inline_css . sprintf(
-        '<a 
+    // $position     = $attributesFromBlock['general_addToCartBtn']['position'] ?? 'bottom';
+    $show_quantity = $attributesFromBlock['general_addToCartBtn']['isShowQuantity'];
+     //   && in_array( $position, array( 'bottom', 'bottom visible' ), true );
+
+    $btn_markup = sprintf(
+        '<a
             href="%s"
             data-product_id="%s"
             data-quantity="1"
@@ -935,6 +940,27 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         $icon_markup,
         $label_markup
     );
+
+    if ( $show_quantity ) {
+        $quantity_input = '<div class="wcb-products__quantity">'
+            . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
+            . '<input'
+            . ' type="number"'
+            . ' class="wcb-products__quantity-input input-text qty text"'
+            . ' step="1"'
+            . ' min="1"'
+            . ' value="1"'
+            . ' size="4"'
+            . ' pattern="[0-9]*"'
+            . ' inputmode="numeric"'
+            . ' aria-label="' . esc_attr__( 'Quantity', 'boostify-blocks' ) . '"'
+            . '>'
+            . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
+            . '</div>';
+        return $inline_css . '<div class="wcb-products__quantity-add-to-cart">' . $quantity_input . $btn_markup . '</div>';
+    }
+
+    return $inline_css . $btn_markup;
 }
 
 // ===============================
