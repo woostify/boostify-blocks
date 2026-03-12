@@ -86,7 +86,7 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 
-	const STOCK_STATUS_OPTIONS = get_STOCK_STATUS_OPTIONS();
+	const STOCK_STATUS_OPTIONS = get_STOCK_STATUS_OPTIONS() as Record<string, string>;
 
 	const renderSelectOrderBy = () => {
 		const OPTIONS: {
@@ -246,7 +246,7 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 			<InputControl
 				value={panelData.keyword}
 				label={__("KEYWORD", "boostify-blocks")}
-				onChange={(nextValue) =>
+				onChange={(nextValue: any) =>
 					setAttr__({ ...panelData, keyword: nextValue })
 				}
 			/>
@@ -296,7 +296,7 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 			<InputControl
 				value={panelData.emptyMessage}
 				label={__("Message when Posts Not Found", "boostify-blocks")}
-				onChange={(nextValue) =>
+				onChange={(nextValue: any) =>
 					setAttr__({ ...panelData, emptyMessage: nextValue })
 				}
 			/>

@@ -97,7 +97,7 @@ const WcbImagePanel_StyleCaption: FC<Props> = ({
 						</MyLabelControl>
 					}
 					values={currentMargin}
-					onChange={(data) => {
+					onChange={(data: any) => {
 						setAttr__({
 							...panelData,
 							margin: {

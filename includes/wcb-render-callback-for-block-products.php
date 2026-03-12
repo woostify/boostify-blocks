@@ -3,8 +3,258 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+/**
+ * Apply current theme defaults to block attributes so already-saved blocks
+ * pick up Customizer changes on render.
+ */
+function boostify_blocks_block_products_apply_theme_defaults($attributes)
+{
+    if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
+        return $attributes;
+    }
+
+    $theme = boostify_blocks_get_theme_defaults_data();
+
+    $to_bool = function ($value, $default) {
+        if ($value === null) {
+            return $default;
+        }
+        return $value === true || $value === '1' || $value === 1 || $value === 'true';
+    };
+
+    // Style layout
+    $style_layout = $attributes['style_layout'] ?? [];
+    $style_layout['numberOfColumn'] = [
+        'Desktop' => $theme['product_per_row']['desktop'] ?? ($style_layout['numberOfColumn']['Desktop'] ?? null),
+        'Tablet'  => $theme['product_per_row']['tablet'] ?? ($style_layout['numberOfColumn']['Tablet'] ?? null),
+        'Mobile'  => $theme['product_per_row']['mobile'] ?? ($style_layout['numberOfColumn']['Mobile'] ?? null),
+    ];
+    if (isset($theme['shop_archive_product_content']['align'])) {
+        $style_layout['textAlignment'] = $theme['shop_archive_product_content']['align'];
+    }
+    $attributes['style_layout'] = $style_layout;
+
+    // Border
+    $border = $attributes['style_border']['mainSettings'] ?? [];
+    $border_style = $theme['shop_archive_border']['style'] ?? null;
+    if ($border_style && $border_style !== 'none') {
+        $attributes['style_border']['mainSettings'] = [
+            'color' => $theme['shop_archive_border']['color'] ?? ($border['color'] ?? null),
+            'style' => $border_style ?? ($border['style'] ?? null),
+            'width' => isset($theme['shop_archive_border']['width']) ? $theme['shop_archive_border']['width'] . 'px' : ($border['width'] ?? null),
+        ];
+    }
+
+    // Sorting & filtering
+    $attributes['general_sortingAndFiltering'] = array_merge(
+        $attributes['general_sortingAndFiltering'] ?? [],
+        [
+            'numberOfItems' => $theme['product_per_page'] ?? ($attributes['general_sortingAndFiltering']['numberOfItems'] ?? null),
+        ]
+    );
+
+    // Content visibility flags
+    $content = $theme['shop_archive_product_content'] ?? [];
+    $attributes['general_content'] = array_merge(
+        $attributes['general_content'] ?? [],
+        [
+            'isShowTitle' => $to_bool($content['title_flag'] ?? null, $attributes['general_content']['isShowTitle'] ?? null),
+            'isShowCategory' => $to_bool($content['category_flag'] ?? null, $attributes['general_content']['isShowCategory'] ?? null),
+            'isShowRating' => $to_bool($content['rating_flag'] ?? null, $attributes['general_content']['isShowRating'] ?? null),
+            'isShowPrice' => $to_bool($content['price_flag'] ?? null, $attributes['general_content']['isShowPrice'] ?? null),
+        ]
+    );
+
+    // Featured image hover
+    $attributes['general_featuredImage'] = array_merge(
+        $attributes['general_featuredImage'] ?? [],
+        [
+            'hoverType' => $theme['shop_archive_product_image']['hover'] ?? ($attributes['general_featuredImage']['hoverType'] ?? null),
+        ]
+    );
+
+    // Featured image border
+    $featured_border = $attributes['style_featuredImage']['border']['mainSettings'] ?? [];
+    $fi_style = $theme['shop_archive_product_image']['style'] ?? null;
+    if ($fi_style && $fi_style !== 'none') {
+        $attributes['style_featuredImage']['border']['mainSettings'] = [
+            'color' => $theme['shop_archive_product_image']['color'] ?? ($featured_border['color'] ?? null),
+            'style' => $fi_style ?? ($featured_border['style'] ?? null),
+            'width' => isset($theme['shop_archive_product_image']['width']) ? $theme['shop_archive_product_image']['width'] . 'px' : ($featured_border['width'] ?? null),
+        ];
+    }
+
+    // Sale badge
+    $sale = $theme['shop_archive_sale_tag'] ?? [];
+    $sale_position = $sale['position'] ?? ($attributes['style_saleBadge']['position'] ?? 'top-right');
+    $attributes['style_saleBadge'] = array_merge(
+        $attributes['style_saleBadge'] ?? [],
+        [
+            'backgroundColor' => $sale['bg_color'] ?? ($attributes['style_saleBadge']['backgroundColor'] ?? null),
+            'textColor' => $sale['text_color'] ?? ($attributes['style_saleBadge']['textColor'] ?? null),
+            'position' => $sale_position === 'left' ? 'top-left' : 'top-right',
+        ]
+    );
+
+    // Out of stock badge
+    $outofstock = $theme['shop_archive_out_of_stock'] ?? [];
+    $raw_out_position = $outofstock['position'] ?? ($attributes['style_outOfStock']['position'] ?? 'none');
+    $mapped_out_position = $raw_out_position === 'left'
+        ? 'top-left'
+        : ($raw_out_position === 'right' ? 'top-right' : 'none');
+    $attributes['style_outOfStock'] = array_merge(
+        $attributes['style_outOfStock'] ?? [],
+        [
+            'backgroundColor' => $outofstock['bg_color'] ?? ($attributes['style_outOfStock']['backgroundColor'] ?? null),
+            'textColor' => $outofstock['text_color'] ?? ($attributes['style_outOfStock']['textColor'] ?? null),
+            'position' => $mapped_out_position,
+        ]
+    );
+
+    // Title styles
+    $general_design = $theme['shop_archive_general_design'] ?? [];
+    $attributes['style_title'] = array_merge(
+        $attributes['style_title'] ?? [],
+        [
+            'textColor' => $general_design['title_color'] ?? ($attributes['style_title']['textColor'] ?? null),
+            'typography' => array_merge(
+                $attributes['style_title']['typography'] ?? [],
+                [
+                    'fontSizes' => [
+                        'Desktop' => isset($general_design['title_font_size']['desktop']) ? $general_design['title_font_size']['desktop'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Desktop'] ?? null),
+                        'Tablet' => isset($general_design['title_font_size']['tablet']) ? $general_design['title_font_size']['tablet'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Tablet'] ?? null),
+                        'Mobile' => isset($general_design['title_font_size']['mobile']) ? $general_design['title_font_size']['mobile'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Mobile'] ?? null),
+                    ],
+                ]
+            ),
+        ]
+    );
+
+    // Price styles
+    $attributes['style_price'] = array_merge(
+        $attributes['style_price'] ?? [],
+        [
+            'textColor' => $general_design['price_color'] ?? ($attributes['style_price']['textColor'] ?? null),
+            'typography' => array_merge(
+                $attributes['style_price']['typography'] ?? [],
+                [
+                    'fontSizes' => [
+                        'Desktop' => isset($general_design['price_font_size']['desktop']) ? $general_design['price_font_size']['desktop'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Desktop'] ?? null),
+                        'Tablet' => isset($general_design['price_font_size']['tablet']) ? $general_design['price_font_size']['tablet'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Tablet'] ?? null),
+                        'Mobile' => isset($general_design['price_font_size']['mobile']) ? $general_design['price_font_size']['mobile'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Mobile'] ?? null),
+                    ],
+                ]
+            ),
+        ]
+    );
+
+    // Add to cart styles
+    $atc = $theme['shop_archive_add_to_cart_btn'] ?? [];
+    $existing_colors = $attributes['style_addToCardBtn']['colorAndBackgroundColor'] ?? [];
+    $attributes['style_addToCardBtn'] = array_merge(
+        $attributes['style_addToCardBtn'] ?? [],
+        [
+            'colorAndBackgroundColor' => array_merge(
+                $existing_colors,
+                [
+                    'Normal' => [
+                        'color' => $atc['text_color'] ?? ($existing_colors['Normal']['color'] ?? null),
+                        'backgroundColor' => $atc['bg_color'] ?? ($existing_colors['Normal']['backgroundColor'] ?? null),
+                    ],
+                    'Hover' => [
+                        'color' => $atc['hover_text_color'] ?? ($existing_colors['Hover']['color'] ?? null),
+                        'backgroundColor' => $atc['hover_bg_color'] ?? ($existing_colors['Hover']['backgroundColor'] ?? null),
+                    ],
+                ]
+            ),
+            'border' => array_merge(
+                $attributes['style_addToCardBtn']['border'] ?? [],
+                [
+                    'radius' => [
+                        'Desktop' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null),
+                        'Tablet' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null),
+                        'Mobile' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null),
+                    ],
+                ]
+            ),
+        ]
+    );
+
+    // Add to cart general settings
+    $attributes['general_addToCartBtn'] = array_merge(
+        $attributes['general_addToCartBtn'] ?? [],
+        [
+            'isShowButton' => ($atc['position'] ?? '') === 'none'
+                ? false
+                : ($attributes['general_addToCartBtn']['isShowButton'] ?? true),
+            'position' => ($atc['position'] ?? '') === 'bottom-visible' ? 'bottom visible'
+                : (($atc['position'] ?? '') === 'image' ? 'inside image'
+                    : (($atc['position'] ?? '') === 'icon' ? 'icon'
+                        : (($atc['position'] ?? '') === 'bottom' ? 'bottom'
+                            : (($atc['position'] ?? null) ?: ($attributes['general_addToCartBtn']['position'] ?? null))))),
+        ]
+    );
+
+    // Wishlist button
+    $wishlist = $theme['shop_archive_wishlist_btn'] ?? [];
+    $attributes['style_wishlistBtn'] = array_merge(
+        $attributes['style_wishlistBtn'] ?? [],
+        [
+            'position' => $wishlist['position'] ?? ($attributes['style_wishlistBtn']['position'] ?? null),
+            'style' => $wishlist['style'] ?? ($attributes['style_wishlistBtn']['style'] ?? null),
+            'wishlist_plugin_active' => $wishlist['wishlist_plugin_active'] ?? ($attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
+        ]
+    );
+
+    // Quick view button
+    $quickview = $theme['shop_quick_view_btn'] ?? [];
+    $attributes['style_quickViewBtn'] = array_merge(
+        $attributes['style_quickViewBtn'] ?? [],
+        [
+            'enabled' => $quickview['enabled'] ?? ($attributes['style_quickViewBtn']['enabled'] ?? null),
+            'position' => $quickview['position'] ?? ($attributes['style_quickViewBtn']['position'] ?? null),
+            'show_icon' => $quickview['show_icon'] ?? ($attributes['style_quickViewBtn']['show_icon'] ?? null),
+            'bg_color' => $quickview['bg_color'] ?? ($attributes['style_quickViewBtn']['bg_color'] ?? null),
+            'text_color' => $quickview['text_color'] ?? ($attributes['style_quickViewBtn']['text_color'] ?? null),
+            'hover_bg_color' => $quickview['hover_bg_color'] ?? ($attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
+            'hover_text_color' => $quickview['hover_text_color'] ?? ($attributes['style_quickViewBtn']['hover_text_color'] ?? null),
+            'border_radius' => isset($quickview['border_radius']) ? $quickview['border_radius'] . 'px' : ($attributes['style_quickViewBtn']['border_radius'] ?? null),
+            'woostify_pro_active' => $quickview['woostify_pro_active'] ?? ($attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
+        ]
+    );
+
+    // Countdown urgency
+    $cu = $theme['countdown_urgency'] ?? [];
+    $attributes['style_countdownUrgency'] = array_merge(
+        $attributes['style_countdownUrgency'] ?? [],
+        [
+            'countdownUrgencyActive' => $cu['active'] ?? ($attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
+            'style'                  => $cu['style'] ?? ($attributes['style_countdownUrgency']['style'] ?? null),
+            'applyFor'               => $cu['apply_for'] ?? ($attributes['style_countdownUrgency']['applyFor'] ?? null),
+            'categoriesSelected'     => $cu['categories_selected'] ?? ($attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
+            'productsSelected'       => $cu['products_selected'] ?? ($attributes['style_countdownUrgency']['productsSelected'] ?? null),
+            'categoriesExclude'      => $cu['categories_exclude'] ?? ($attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
+            'productsExclude'        => $cu['products_exclude'] ?? ($attributes['style_countdownUrgency']['productsExclude'] ?? null),
+            'timeDuration'           => $cu['time_duration'] ?? ($attributes['style_countdownUrgency']['timeDuration'] ?? null),
+            'timeType'               => $cu['time_type'] ?? ($attributes['style_countdownUrgency']['timeType'] ?? null),
+            'message'                => $cu['message'] ?? ($attributes['style_countdownUrgency']['message'] ?? null),
+            'daysLabel'              => $cu['days_label'] ?? ($attributes['style_countdownUrgency']['daysLabel'] ?? null),
+            'hoursLabel'             => $cu['hours_label'] ?? ($attributes['style_countdownUrgency']['hoursLabel'] ?? null),
+            'minutesLabel'           => $cu['minutes_label'] ?? ($attributes['style_countdownUrgency']['minutesLabel'] ?? null),
+            'secondsLabel'           => $cu['seconds_label'] ?? ($attributes['style_countdownUrgency']['secondsLabel'] ?? null),
+            'displayOnThumbnail'     => $cu['display_on_thumbnail'] ?? ($attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
+            'hideAfterTimeUp'        => $cu['hide_after_time_up'] ?? ($attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
+        ]
+    );
+
+    return $attributes;
+}
+
+
 function boostify_blocks_block_products_render_callback($attributes, $content)
 {
+    // Re-apply theme defaults on render so saved blocks stay in sync with Customizer changes.
+    $attributes = boostify_blocks_block_products_apply_theme_defaults($attributes);
 
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     // 
@@ -23,13 +273,26 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
     ob_start();
     $loop = new WP_Query($args);
 
+
     if (!$loop->have_posts()) {
         return '';
     }
 
 ?>
 
-    <?php echo wp_kses_post($content); ?>
+    <?php
+        // Update the serialized attributes inside the saved content so frontend CSS uses refreshed defaults.
+        if (!empty($uniqueId)) {
+            $json = esc_html(wp_json_encode($attributes));
+            $content = preg_replace(
+                '/(<pre[^>]*data-wcb-block-attrs=["\']?' . preg_quote($uniqueId, '/') . '["\']?[^>]*>)(.*?)(<\/pre>)/s',
+                '$1' . $json . '$3',
+                $content
+            );
+        }
+
+        echo $content;
+    ?>
     <div class="wcb-products__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
 
         <?php
@@ -45,7 +308,7 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
 
                     global $product;
                     if (!empty($product)) {
-                        echo wp_kses_post(boostify_blocks_block_products_render_product($product, $attributes, $loop->current_post));
+                        echo boostify_blocks_block_products_render_product($product, $attributes, $loop->current_post);
                     }
                 endwhile;
                 ?>
@@ -93,7 +356,6 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
 // 
 function boostify_blocks_block_products_render_product($product, $attributes, $index)
 {
-
     $data = (object) array(
         'permalink' => esc_url($product->get_permalink()),
         'image'     => "",
@@ -102,6 +364,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         'rating'    => "",
         'price'     => "",
         'badge'     => "",
+        'out_of_stock' => "",
         'button'    => "",
         'categories'    => "",
     );
@@ -125,19 +388,60 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowSaleBadge'] ?? "")) {
         $data->badge = boostify_blocks_block_products_get_sale_badge_html($product, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? false);
     }
-    if (boostify_blocks_is_enabled($attributes['general_content']['isShowPrice'] ?? "")) {
-        $data->price = boostify_blocks_block_products_get_price_html($product);
-    }
-    if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
-        $data->button = boostify_blocks_block_products_get_button_html($product);
+
+    if ($attributes['general_addToCartBtn']['position'] === "bottom") {
+        $price_html  = '';
+        $button_html = '';
+
+        if (boostify_blocks_is_enabled($attributes['general_content']['isShowPrice'] ?? "")) {
+            $price_html = $data->price = boostify_blocks_block_products_get_price_html($product);
+        }
+        if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
+            $button_html = $data->button = boostify_blocks_block_products_get_button_html($product, $attributes);
+        }
+
+        $data->price = "";
+        $data->button = "";
+
+        $data->price_button_group = "
+            <div class=\"wcb-products__price-button-wrapper\">
+                {$price_html}
+                {$button_html}
+            </div>
+        ";
+    } else {
+        if (boostify_blocks_is_enabled($attributes['general_content']['isShowPrice'] ?? "")) {
+            $data->price = boostify_blocks_block_products_get_price_html($product);
+        }
+        if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
+            $data->button = boostify_blocks_block_products_get_button_html($product, $attributes);
+        }
     }
 
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowCategory'] ?? "")) {
         $data->categories = boostify_blocks_block_products_get_category_html($product);
     }
 
+    $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
+    // pre-order badge
+    $data->preorder_badge = boostify_blocks_block_products__get_preorder_html($product);
+
     $btnInsideImage = ($attributes['general_addToCartBtn']['position'] ?? "") === "inside image";
+    $btnIconAddToCart = ($attributes['general_addToCartBtn']['position'] ?? "") === "icon";
     $saleInsideImage = ($attributes['general_content']['saleBadgePosition'] ?? "") === "Inside image";
+    $btnQuickViewBottomImage = ($attributes['style_quickViewBtn']['position'] ?? "") === "bottom-image" || ($attributes['style_quickViewBtn']['position'] ?? "") === "center-image" || ($attributes['style_quickViewBtn']['position'] ?? "") === "top-right";
+
+    $btnWishListTopRight = false;
+    $btnWishListBottomRight = false;
+    $wishlistPluginActive = !empty($attributes['style_wishlistBtn']['wishlist_plugin_active']);
+    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "top-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+        $btnWishListTopRight = true;
+    }
+
+    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "bottom-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+        $btnWishListBottomRight = true;
+    }   
+
     $classes = "wcb-products__product ";
 
     if (!boostify_blocks_is_enabled($attributes['general_featuredImage']['isShowFeaturedImage'] ?? "")) {
@@ -147,12 +451,42 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
 
     // button
     $classes .= $btnInsideImage ? " wcb-products__product--btnInsideImage" : "";
-    $btn1 = $btnInsideImage ? $data->button : "";
-    $btn2 = $btnInsideImage ?   "" : $data->button;
+    $classes .= $btnIconAddToCart ? " wcb-products__product--btnIconAddToCart" : "";
+
+    // Add to Wishlist default
+    // $btn1 = $btnInsideImage ? $data->button : "";
+    $btn2 = $data->button;
+
     // sale badge
     $classes .= $saleInsideImage ? " wcb-products__product--onsaleInsideImage" : "";
     $saleBadge1 = $saleInsideImage ? $data->badge : "";
     $saleBadge2 = $saleInsideImage ?   "" : $data->badge;
+
+    // out of stock
+    $classes .= $saleInsideImage ? " wcb-products__product--onsaleInsideImage" : "";
+    $saleOutOfStock = $data->out_of_stock ? : "";
+    $preorderBadge = $data->preorder_badge ? : "";
+
+    // wishlist button
+    global $wpdb;
+
+    $product_id = $product->get_id();
+    $variation_id = $product->is_type('variation') ? $product->get_id() : 0;
+
+    $table = $wpdb->prefix . 'tinvwl_items';
+
+    $is_in_wishlist = (bool) $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM $table WHERE product_id = %d AND variation_id = %d",
+            $product_id,
+            $variation_id
+        )
+    );
+
+    $wishlist_active_class = $is_in_wishlist ? ' is-in-wishlist' : '';
+
+    $classes .= $btnWishListTopRight ? " wcb-products__product--wishlistTopRight" : "";
+    $classes .= $btnWishListBottomRight ? " wcb-products__product--wishlistBottomRight" : "";
     // 
     $isSwapHover = $data->gallery_image_1 ? "<div class=\"wcb-products__product-galley_image_1\">{$data->gallery_image_1}</div>" : '';
     // 
@@ -163,6 +497,57 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         }
     }
 
+    $topRightIconsHtml = '';
+    $product_id_attr = esc_attr($product_id);
+    if ($btnIconAddToCart || $btnWishListTopRight) {
+        $topRightItems = array();
+        if ($btnIconAddToCart) {
+            // AJAX add to cart URL
+            $add_to_cart_url = esc_url($product->add_to_cart_url());
+            // TODO: handle load to add to cart class
+            $ajax_class = ($product->supports('ajax_add_to_cart') &&
+                $product->is_purchasable() &&
+                ($product->is_in_stock() || $product->backorders_allowed())) ? ' ajax_add_to_cart' : '';
+
+            $topRightItems[] = '
+                <a
+                    href="' . $add_to_cart_url . '"
+                    data-product_id="' . $product_id_attr . '"
+                    data-quantity="1"
+                    class="wcb-products__product--btnIconAddToCart--item add_to_cart_button ' . $ajax_class . '"
+                    rel="nofollow"
+                ></a>';
+        }
+
+        if ($btnWishListTopRight) {
+            $topRightItems[] = 
+                '<button 
+                    class="wcb-products__product--wishlistTopRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
+                    data-tinv-wl-list="[]"
+                    data-tinv-wl-product="' . $product_id_attr . '"
+                    data-tinv-wl-action="add"
+                    type="button"
+                ></button>';
+        }
+
+        $topRightIconsHtml = '<div class="wcb-products__product--topRight">' . implode('', $topRightItems) . '</div>';
+    }
+
+    $bottomRightIconHtml = $btnWishListBottomRight ? 
+        '<button 
+            class="wcb-products__product--wishlistBottomRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
+            data-tinv-wl-list="[]"
+            data-tinv-wl-product="' . $product_id_attr . '"
+            data-tinv-wl-action="add"
+            type="button"
+        ></button>' : '';
+    
+    // Quick view button at bottom of image
+    $btnQuickViewBottomImageHtml = $btnQuickViewBottomImage ?
+        boostify_blocks_block_products__build_quick_view_html($product_id_attr, $attributes['style_quickViewBtn']['position']) : '';
+
+    // Countdown urgency
+    $countdownHtml = boostify_blocks_block_products__get_countdown_html( $attributes['style_countdownUrgency'] ?? [] );
 
     $escaped_classes = esc_attr($classes);
     $escaped_index = intval($index);
@@ -177,21 +562,112 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                         {$data->image}
                         {$isSwapHover}
                     </a>
+                    {$topRightIconsHtml}
+                    {$bottomRightIconHtml}
+                    {$btnQuickViewBottomImageHtml}
+                    {$countdownHtml}
                     {$saleBadge1}
-                    {$btn1}
+                    {$saleOutOfStock}
                 </div>
                 {$data->categories}
                 {$data->title}
+                {$preorderBadge}
 				{$saleBadge2}
 				{$data->rating}
-				{$data->price}
-               {$btn2}
+				" . ($data->price_button_group ?? ($data->price . $btn2)) . "
 			</div>",
         $data,
         $product
     );
 }
 
+function boostify_blocks_block_products__get_countdown_html( $countdown_attrs ) {
+    if ( empty( $countdown_attrs ) ) {
+        return '';
+    }
+
+    $active   = $countdown_attrs['countdownUrgencyActive'] ?? false;
+    $position = $countdown_attrs['position'] ?? 'none';
+    $style    = $countdown_attrs['style'] ?? 'default';
+    $displayOnThumbnail = $countdown_attrs['displayOnThumbnail'] ?? '1';
+
+    if ( ! $active || $position === 'none' || $displayOnThumbnail === '0') {
+        return '';
+    }
+
+    $time_duration = intval( $countdown_attrs['timeDuration'] ?? 1 );
+    $time_type     = $countdown_attrs['timeType'] ?? 'days';
+    $multipliers   = [
+        'days'    => 86400000,
+        'hours'   => 3600000,
+        'minutes' => 60000,
+    ];
+    $duration_ms  = $time_duration * ( $multipliers[ $time_type ] ?? 86400000 );
+    $hide_time_up = ( $countdown_attrs['hideAfterTimeUp'] ?? '1' ) === '1' ? '1' : '0';
+
+    $days_label    = esc_html( $countdown_attrs['daysLabel']    ?? 'Days' );
+    $hours_label   = esc_html( $countdown_attrs['hoursLabel']   ?? 'Hours' );
+    $minutes_label = esc_html( $countdown_attrs['minutesLabel'] ?? 'Mins' );
+    $seconds_label = esc_html( $countdown_attrs['secondsLabel'] ?? 'Secs' );
+
+    // TODO: handle message and position in the future if needed
+    // $message    = $countdown_attrs['message'] ?? '';
+    // $message_html = '';
+    // if ( $message ) {
+    //     $message_html = '<div class="wcb-countdown-urgency__message">' . esc_html( $message ) . '</div>';
+    // }
+    $position_class = $position !== 'none' ? 'wcb-countdown-urgency-wrap--' . esc_attr( $position ) : '';
+
+    return "
+            <div class=\"woostify-countdown-urgency {$position_class}\" data-duration=\"{$duration_ms}\" data-time-up=\"{$hide_time_up}\">
+                <div class=\"woostify-countdown-urgency-timer {$style}\">
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"days\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$days_label}</div>
+                    </div>
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"hours\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$hours_label}</div>
+                    </div>
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"minutes\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$minutes_label}</div>
+                    </div>
+                    <div class=\"woostify-cc-timer-item\">
+                        <div class=\"woostify-cc-timer\" data-time=\"seconds\">00</div>
+                        <div class=\"woostify-cc-timer-label\">{$seconds_label}</div>
+                    </div>
+                </div>
+            </div>";
+}
+
+function boostify_blocks_block_products__build_quick_view_html( $product_id_attr, $position ) {
+
+    $html  = '<button 
+        class="wcb-products__product--quickViewBottomImage--item product-quick-view-btn"
+        data-product_id="' . esc_attr( $product_id_attr ) . '"
+        data-pid="' . esc_attr( $product_id_attr ) . '"
+        type="button"
+        aria-haspopup="dialog"
+    >';
+
+    $html .= '
+        <span class="wcb-products__product--quickViewBottomImage-svg__icon icon-eye">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
+                <path d="M16.965 8.817c-1.284-3.267-4.687-5.463-8.465-5.463s-7.181 2.196-8.465 5.463c-0.046 0.117-0.046 0.248 0 0.365 1.285 3.268 4.687 5.464 8.465 5.464s7.18-2.195 8.465-5.463c0.047-0.118 0.047-0.248 0-0.366zM8.5 13.646c-3.298 0-6.269-1.859-7.459-4.646 1.189-2.787 4.16-4.646 7.459-4.646s6.27 1.859 7.459 4.646c-1.19 2.786-4.161 4.646-7.459 4.646zM8.5 5.357c-2.009 0-3.643 1.634-3.643 3.643s1.634 3.643 3.644 3.643c2.008 0 3.643-1.634 3.643-3.643s-1.635-3.643-3.644-3.643zM8.5 11.643c-1.458 0-2.644-1.186-2.644-2.643s1.187-2.643 2.644-2.643c1.457 0 2.643 1.186 2.643 2.643s-1.185 2.643-2.643 2.643z" fill="currentColor"></path>
+            </svg>
+        </span>';
+
+    if ( $position !== 'top-right' ) {
+        $html .= '<span class="wcb-products__product--quickViewBottomImage__text">'
+            . esc_html__( 'Quick View', 'woostify-pro' ) .
+        '</span>';
+    }
+
+    $html .= '</button>';
+
+    return $html;
+}
 
 //  
 function boostify_blocks_block_products_get_image_gallery_image_1_html($product)
@@ -204,26 +680,44 @@ function boostify_blocks_block_products_get_image_gallery_image_1_html($product)
     return wp_get_attachment_image($attachment_ids[0], 'full');
 }
 
-
 function boostify_blocks_block_products_get_image_html($product)
 {
-
     $attr = array(
         'alt' => '',
     );
 
+    // Get the image alt text (use the product name as a fallback)
     if ($product->get_image_id()) {
         $image_alt = get_post_meta($product->get_image_id(), '_wp_attachment_image_alt', true);
-        $attr      = array(
+        $attr = array(
             'alt' => ($image_alt ? $image_alt : $product->get_name()),
         );
     }
 
-    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . wp_kses_post($product->get_image('woocommerce_thumbnail', $attr)) . '</div>';
+    // Get Woostify theme settings
+    $woostify = get_option('woostify_setting') ?: [];
+
+    // Get image height from theme setting, default to 300 if not set
+    $imageHeight = !empty($woostify['shop_page_product_image_height'])
+        ? intval($woostify['shop_page_product_image_height'])
+        : 300;
+
+    // Get the default WooCommerce thumbnail HTML
+    $image_html = $product->get_image('woocommerce_thumbnail', $attr);
+
+    // Add inline style to control rendered height
+    // This forces the browser to display the image at that height
+    $style = 'style="height:' . esc_attr($imageHeight) . 'px; object-fit:cover;"';
+
+    // Inject the style attribute into the <img> tag
+    $image_html = preg_replace('/<img(.*?)>/', '<img$1 ' . $style . '>', $image_html);
+
+    // Return the final HTML wrapped in a container
+    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 
-function boostify_blocks_block_products_get_title_html($product, $headingTag, $link)
+function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link)
 {
     if (empty($headingTag)) {
         $headingTag = 'div';
@@ -246,9 +740,8 @@ function boostify_blocks_block_products_get_rating_html($product)
 
 
     if ($rating_count > 0) {
-        /* translators: %s: Average rating score */
-        $label = sprintf(__('Rated %s out of 5', 'boostify-blocks'), $average);
-        $html  = '<div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wp_kses_post(wc_get_star_rating_html($average, $rating_count)) . '</div>';
+        $label = sprintf(__('Rated %s out of 5', 'woocommerce'), $average);
+        $html  = '<div class="wcb-products__product-rating-wrap"><div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . '</div></div>';
         return $html;
     }
     return '';
@@ -287,67 +780,162 @@ function boostify_blocks_block_products_add_percentage_to_sale_badge($product)
 
         $percentage    = round(100 - ($sale_price / $regular_price * 100)) . '%';
     }
-    return '<span class="onsale">' . esc_html__('SALE', 'boostify-blocks') . ' ' . esc_html($percentage) . '</span>';
+    return '<span class="onsale">' . esc_html__('-', 'boostify-blocks') . ' ' . $percentage . '</span>';
 }
 
 
 function boostify_blocks_block_products_get_sale_badge_html($product,  $showSaleBadgeDiscoutPercent)
 {
-
     if (!$product->is_on_sale()) {
         return;
     }
 
-    if (boostify_blocks_is_enabled($showSaleBadgeDiscoutPercent)) {
+    $woostify = get_option('woostify_setting') ?: [];
+    $is_show_sale_percent = $woostify['shop_page_sale_percent'];
+
+
+    if ($product->is_on_sale() && $is_show_sale_percent) {
         return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
-        ' . boostify_blocks_block_products_add_percentage_to_sale_badge($product) . '
-        <span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
-    </div></div>';
+            ' . boostify_blocks_block_products_add_percentage_to_sale_badge($product) . '
+            <span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
+        </div></div>';
     }
 
-
     return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
-			<span aria-hidden="true">' . esc_html__('Sale', 'boostify-blocks') . '</span>
+			<span aria-hidden="true">' . esc_html__($woostify['shop_page_sale_text'] ?? 'Sale', 'boostify-blocks') . '</span>
 			<span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
 		</div></div>';
 }
 
-
-function boostify_blocks_block_products_get_button_html($product)
+function boostify_blocks_block_products__get_out_of_stock_html($product)
 {
+    $woostify = get_option('woostify_setting') ?: [];
 
-    return '<div class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart">' . boostify_blocks_block_products_get_add_to_cart($product) . '</div>';
+
+    if ($product->get_stock_status() === 'outofstock') {
+        return '<div class="wcb-products__product-outofstock-badge"><div class="wcb-products__product-on-outofstock wc-block-grid__product-outofstock">
+                    <span aria-hidden="true">' . esc_html__($woostify['shop_page_out_of_stock_text'] ?? 'Sold Out', 'boostify-blocks') . '</span>
+                    <span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
+                </div></div>';
+    }
 }
 
+function boostify_blocks_block_products__get_preorder_html( $product ) {
 
-function boostify_blocks_block_products_get_add_to_cart($product)
-{
-    $attributes = array(
-        'aria-label'       => $product->add_to_cart_description(),
-        'data-quantity'    => '1',
-        'data-product_id'  => $product->get_id(),
-        'data-product_sku' => $product->get_sku(),
-        'rel'              => 'nofollow',
-        'class'            => 'wp-block-button__link ' . (function_exists('wc_wp_theme_get_element_class_name') ? wc_wp_theme_get_element_class_name('button') : '') . ' add_to_cart_button',
-    );
-
-    if (
-        $product->supports('ajax_add_to_cart') &&
-        $product->is_purchasable() &&
-        ($product->is_in_stock() || $product->backorders_allowed())
-    ) {
-        $attributes['class'] .= ' ajax_add_to_cart';
+    if ( ! $product instanceof WC_Product ) {
+        return '';
     }
 
-    return sprintf(
-        '<a href="%s" %s>%s</a>',
-        esc_url($product->add_to_cart_url()),
-        wc_implode_html_attributes($attributes),
-        esc_html($product->add_to_cart_text())
-    );
+    // Check if Woostify Pro is active
+    $woostify_pro_active = in_array('woostify-pro/woostify-pro.php', get_option('active_plugins', []));
+    if ( ! $woostify_pro_active ) {
+        return '';
+    }
+
+    // Check if Pre-Order add-on is enabled
+    $preorder_addon_active = ( 'activated' === get_option( 'woostify_wc_pre_order' ) || defined( 'WOOSTIFY_PRO_PRE_ORDER' ) );
+    if ( ! $preorder_addon_active ) {
+        return '';
+    }
+
+    $product_id = $product->get_id();
+
+    // Woostify Pre-Order detection
+    $preorder_date = get_post_meta( $product_id, '_onpreorder_date_to', true );
+
+    if ( empty( $preorder_date ) ) {
+        return '';
+    }
+
+    // Optional: hide badge if preorder expired
+    if ( strtotime( $preorder_date ) < current_time( 'timestamp' ) ) {
+        return '';
+    }
+
+    // Format the date to display (e.g., "January 29, 2026")
+    $formatted_date = wp_date( 'F d, Y', strtotime( $preorder_date ) );
+
+    $html = '<style>
+        .wcb-products__product-preorder-message {
+            color: #000000;
+            font-size: 15px;
+            font-weight: 400;
+        }
+    </style>';
+    $html .= '<div class="wcb-products__product-preorder-badge">';
+    $html .= '<div class="wcb-products__product-salebadge">';
+    $html .= '<div class="wcb-products__product-onsale wc-block-grid__product-onsale">';
+    $html .= '<span aria-hidden="true">Pre-Order</span>';
+    $html .= '</div>';
+    $html .= '</div>';
+    $html .= '<div class="wcb-products__product-preorder-info">';
+    $html .= '<span class="wcb-products__product-preorder-message">Available for Pre-Order - This item will be available on ' . esc_html( $formatted_date ) . '</span>';
+    $html .= '</div>';
+    $html .= '</div>';
+
+    return $html;
 }
 
 
+function boostify_blocks_block_products_get_button_html($product, $attributes)
+{
+
+    return '<div class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart">' . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . '</div>';
+}
+
+
+function boostify_blocks_block_products_get_add_to_cart($product, $attributesFromBlock)
+{
+    $ajax_class = ($product->supports('ajax_add_to_cart') &&
+        $product->is_purchasable() &&
+        ($product->is_in_stock() || $product->backorders_allowed())) ? ' ajax_add_to_cart' : '';
+    
+    // NEW: get color from block attributes
+    $svg_color = $attributesFromBlock['style_addToCardBtn']['colorAndBackgroundColor']['Normal']['color'] ?? '#000000';
+    $hover_svg_color = $attributesFromBlock['style_addToCardBtn']['colorAndBackgroundColor']['Hover']['color'] ?? '#000000';
+
+    // product specific class for hover color change
+    $product_class = 'wcb-add-to-cart-icon-' . $product->get_id();
+
+    // NEW: inline SVG with color
+    $icon_markup = '
+        <span class="wcb-products__add-to-cart-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
+                <path 
+                    fill="' . esc_attr($svg_color) . '"
+                    d="m 14.176,12.5 c 0.965,0 1.75,0.785 1.75,1.75 0,0.965 -0.785,1.75 -1.75,1.75 -0.965,0 -1.75,-0.785 -1.75,-1.75 0,-0.965 0.785,-1.75 1.75,-1.75 z m 0,2.5 c 0.414,0 0.75,-0.337 0.75,-0.75 0,-0.413 -0.336,-0.75 -0.75,-0.75 -0.414,0 -0.75,0.337 -0.75,0.75 0,0.413 0.336,0.75 0.75,0.75 z m -8.5,-2.5 c 0.965,0 1.75,0.785 1.75,1.75 0,0.965 -0.785,1.75 -1.75,1.75 -0.965,0 -1.75,-0.785 -1.75,-1.75 0,-0.965 0.785,-1.75 1.75,-1.75 z m 0,2.5 c 0.414,0 0.75,-0.337 0.75,-0.75 0,-0.413 -0.336,-0.75 -0.75,-0.75 -0.414,0 -0.75,0.337 -0.75,0.75 0,0.413 0.336,0.75 0.75,0.75 z M 3.555,2 3.857,4 H 17 l -1.118,8.036 H 3.969 L 2.931,4.573 2.695,3 H -0.074 V 2 Z M 4,5 4.139,6 H 15.713 L 15.852,5 Z M 15.012,11.036 15.573,7 H 4.278 l 0.561,4.036 z"
+                ></path>
+            </svg>
+        </span>';
+    
+    $label_markup = '<span class="wcb-products__add-to-cart-label">' . esc_html($product->add_to_cart_text()) . '</span>';
+
+    // Inline CSS for hover color change
+    $inline_css = "
+        <style>
+            .{$product_class}:hover svg path {
+                fill: {$hover_svg_color} !important;
+                transition: fill 0.3s ease;
+            }
+        </style>
+    ";
+
+    return $inline_css . sprintf(
+        '<a 
+            href="%s"
+            data-product_id="%s"
+            data-quantity="1"
+            class="add_to_cart_button %s %s"
+            rel="nofollow"
+        >%s%s</a>',
+        esc_url($product->add_to_cart_url()),
+        esc_attr($product->get_id()),
+        esc_attr($product_class),
+        esc_attr($ajax_class),
+        $icon_markup,
+        $label_markup
+    );
+}
 
 // ===============================
 
@@ -404,8 +992,6 @@ if (!function_exists("boostify_blocks_block_products_parse_query_args")) :
         return $query_args;
     }
 endif;
-
-
 
 if (!function_exists("boostify_blocks_block_products_set_ordering_query_args")) :
 
@@ -501,21 +1087,14 @@ if (!function_exists("boostify_blocks_block_products_set_ordering_query_args")) 
     }
 endif;
 
-    function boostify_blocks_block_products_set_block_query_args(&$query_args, $filtersAttrs)
-    {
-        if (boostify_blocks_is_enabled($filtersAttrs['isOnSale'] ?? "")) {
-            $query_args['post__in'] = array_merge(array(0), boostify_blocks_wc_get_product_ids_on_sale());
-        }
-    }
-
-
+if (!function_exists("boostify_blocks_block_products_set_block_query_args")) :
     /**
      * Get product IDs that are on sale.
      *
      * @return array Array of product IDs.
      */
-    function boostify_blocks_wc_get_product_ids_on_sale() {
-        $product_ids_on_sale = get_transient('boostify_blocks_product_ids_on_sale');
+    function wc_get_product_ids_on_sale_myself() {
+        $product_ids_on_sale = get_transient('wc_product_ids_on_sale');
 
         if (false === $product_ids_on_sale) {
             $product_ids_on_sale = array();
@@ -551,13 +1130,20 @@ endif;
 
             // Remove duplicates and store in transient with a unique, prefixed name.
             $product_ids_on_sale = array_unique($product_ids_on_sale);
-            set_transient('boostify_blocks_product_ids_on_sale', $product_ids_on_sale, DAY_IN_SECONDS);
+            set_transient('wc_product_ids_on_sale', $product_ids_on_sale, DAY_IN_SECONDS);
         }
 
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
         return apply_filters('boostify_blocks_product_ids_on_sale', $product_ids_on_sale);
     }
 
+    function boostify_blocks_block_products_set_block_query_args(&$query_args, $filtersAttrs)
+    {
+        if (boostify_blocks_is_enabled($filtersAttrs['isOnSale'] ?? "")) {
+            $query_args['post__in'] = array_merge(array(0), wc_get_product_ids_on_sale_myself());
+        }
+    }
+endif;
 
 if (!function_exists("boostify_blocks_block_products_set_categories_query_args")) :
     function boostify_blocks_block_products_set_categories_query_args(&$query_args, $attributes)
@@ -581,8 +1167,31 @@ if (!function_exists("boostify_blocks_block_products_set_categories_query_args")
     }
 endif;
 
+
 if (!function_exists("boostify_blocks_block_products_set_tags_query_args")) :
     function boostify_blocks_block_products_set_tags_query_args(&$query_args, $attributes)
+    {
+        if (!empty($attributes['categories'])) {
+            $categories = array_map('absint', $attributes['categories']);
+
+            $query_args['tax_query'][] = array(
+                'taxonomy'         => 'product_cat',
+                'terms'            => $categories,
+                'field'            => 'term_id',
+                'operator'         => boostify_blocks_block_products_tax_operator_mapping($attributes['catOperator'] ?? null),
+
+                /*
+				 * When cat_operator is AND, the children categories should be excluded,
+				 * as only products belonging to all the children categories would be selected.
+				 */
+                'include_children' => 'all' === $attributes['catOperator'] ? false : true,
+            );
+        }
+    }
+endif;
+
+if (!function_exists("boostify_blocks_block_products_set_attributes_query_args")) :
+    function boostify_blocks_block_products_set_attributes_query_args(&$query_args, $attributes)
     {
         if (!empty($attributes['tags'])) {
             $query_args['tax_query'][] = array(

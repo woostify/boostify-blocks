@@ -6,8 +6,8 @@
  * Requires at least: 5.8
  * Requires PHP:      7.3
  * Version:           1.1.13
- * Author:            Woostify
- * Author URI:        https://woostify.com/about/
+ * Author:            Boostify
+ * Author URI:        https://boostify.com/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       boostify-blocks

@@ -461,7 +461,7 @@ const Edit: FC<EditProps<WcbBlockPostsGridAttrs>> = (props) => {
 								labelPosition="edge"
 								min={1}
 								max={100}
-								onChange={(value) => {
+								onChange={(value: any) => {
 									if (isNaN(value) || value < 1 || value > 100) {
 										return;
 									}
@@ -487,7 +487,7 @@ const Edit: FC<EditProps<WcbBlockPostsGridAttrs>> = (props) => {
 								labelPosition="edge"
 								min={0}
 								max={100}
-								onChange={(value) => {
+								onChange={(value: any) => {
 									if (isNaN(value) || value < 0 || value > 100) {
 										return;
 									}
@@ -534,7 +534,7 @@ const Edit: FC<EditProps<WcbBlockPostsGridAttrs>> = (props) => {
 									label={__("Max page to show")}
 									labelPosition="edge"
 									min={0}
-									onChange={(value) => {
+									onChange={(value: any) => {
 										if (isNaN(value) || value < 0) {
 											return;
 										}

@@ -2,9 +2,10 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-add_action('wp_ajax_boostify_blocks_get_product_filters', 'boostify_blocks_ajax_get_product_filters');
+add_action('wp_ajax_boostify_blocks_get_product_filters', 'boostify_blocks_woo__ajax_get_product_filters');
+add_action('wp_ajax_nopriv_boostify_blocks_get_product_filters', 'boostify_blocks_woo__ajax_get_product_filters');
 
-function boostify_blocks_ajax_get_product_filters()
+function boostify_blocks_woo__ajax_get_product_filters()
 {
     // Verify nonce for security.
     if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
@@ -42,7 +43,7 @@ function boostify_blocks_ajax_get_product_filters()
 }
 
 
-function boostify_blocks_get_product_filters_no_ajax()
+function boostify_blocks_woo__get_product_filters_no_ajax()
 {
     $args = array(
         'post_type'      => 'product', // product, not products

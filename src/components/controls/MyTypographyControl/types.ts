@@ -24,6 +24,16 @@ export const TYPOGRAPHY_CONTROL_DEMO: MyTypographyControlData = {
 	fontFamily: undefined,
 };
 
+export const TYPOGRAPHY_CONTROL_PRODUCT_DEMO: MyTypographyControlData = {
+	fontSizes: { Desktop: "", Tablet: "", Mobile: "" },
+	appearance: FONT_APPEARANCE_OPTIONS[0],
+	textDecoration: undefined,
+	textTransform: undefined,
+	lineHeight: { Desktop: undefined },
+	letterSpacing: { Desktop: undefined },
+	fontFamily: undefined,
+};
+
 export const FONT_SIZES_DEMO = [
 	{
 		name: "Tiny",

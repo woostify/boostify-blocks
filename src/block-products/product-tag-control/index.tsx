@@ -79,7 +79,7 @@ const ProductTagControl: FC<Props> = ({
 			});
 	}, []);
 
-	const renderItem = (args) => {
+	const renderItem = (args: any) => {
 		const { item, search, depth = 0 } = args;
 
 		const accessibleName = !item.breadcrumbs.length
@@ -143,7 +143,7 @@ const ProductTagControl: FC<Props> = ({
 		list: __("Product Tags", "boostify-blocks"),
 		noItems: __("Your store doesn't have any product tags.", "boostify-blocks"),
 		search: __("Search for product tags", "boostify-blocks"),
-		selected: (n) =>
+		selected: (n: number) =>
 			sprintf(
 				/* translators: %d is the count of selected tags. */
 				_n("%d tag selected", "%d tags selected", n, "boostify-blocks"),

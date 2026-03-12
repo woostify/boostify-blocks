@@ -71,7 +71,7 @@ const WcbHeadingPanelSeparator: FC<Props> = ({
 					className="flex-grow ml-3"
 					units={units}
 					value={CUSTOM_WIDTH}
-					onChange={(value) => {
+					onChange={(value: any) => {
 						setAttr__panelSeparator({
 							...panelSeparator,
 							width: {

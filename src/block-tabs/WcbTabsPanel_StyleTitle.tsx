@@ -218,7 +218,7 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 							</MyLabelControl>
 						}
 						values={currentPadding}
-						onChange={(value) => {
+						onChange={(value: any) => {
 							setAttr__({
 								...panelData,
 								padding: {

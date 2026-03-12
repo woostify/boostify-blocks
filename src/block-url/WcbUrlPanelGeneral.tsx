@@ -1,83 +1,83 @@
-import {
-	PanelBody,
-	SelectControl,
-	ToggleControl,
-	// @ts-ignore
-	__experimentalInputControl as InputControl,
-} from "@wordpress/components";
-import { __ } from "@wordpress/i18n";
-import React, { FC, CSSProperties } from "react";
-import { MyInputAutocomplete } from "./types";
+		import {
+			PanelBody,
+			SelectControl,
+			ToggleControl,
+			// @ts-ignore
+			__experimentalInputControl as InputControl,
+		} from "@wordpress/components";
+		import { __ } from "@wordpress/i18n";
+		import React, { FC, CSSProperties } from "react";
+		import { MyInputAutocomplete } from "./types";
 
-export interface WCB_URL_PANEL_GENERAL {
-	autocomplete: MyInputAutocomplete;
-	placeholder: string;
-	isRequired: boolean;
-}
+		export interface WCB_URL_PANEL_GENERAL {
+			autocomplete: MyInputAutocomplete;
+			placeholder: string;
+			isRequired: boolean;
+		}
 
-export const WCB_URL_PANEL_GENERAL_DEMO: WCB_URL_PANEL_GENERAL = {
-	autocomplete: "url",
-	isRequired: false,
-	placeholder: "https/example.net",
-};
+		export const WCB_URL_PANEL_GENERAL_DEMO: WCB_URL_PANEL_GENERAL = {
+			autocomplete: "url",
+			isRequired: false,
+			placeholder: "https/example.net",
+		};
 
-interface Props
-	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
-	panelData: WCB_URL_PANEL_GENERAL;
-	setAttr__: (data: WCB_URL_PANEL_GENERAL) => void;
-}
+		interface Props
+			extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
+			panelData: WCB_URL_PANEL_GENERAL;
+			setAttr__: (data: WCB_URL_PANEL_GENERAL) => void;
+		}
 
-const WcbUrlPanelGeneral: FC<Props> = ({
-	panelData = WCB_URL_PANEL_GENERAL_DEMO,
-	setAttr__,
-	initialOpen,
-	onToggle,
-	opened,
-}) => {
-	const { autocomplete, isRequired, placeholder } = panelData;
+		const WcbUrlPanelGeneral: FC<Props> = ({
+			panelData = WCB_URL_PANEL_GENERAL_DEMO,
+			setAttr__,
+			initialOpen,
+			onToggle,
+			opened,
+		}) => {
+			const { autocomplete, isRequired, placeholder } = panelData;
 
-	return (
-		<PanelBody
-			initialOpen={initialOpen}
-			onToggle={onToggle}
-			opened={opened}
-			title={__("General", "boostify-blocks")}
-		>
-			<div className={"space-y-5"}>
-				<SelectControl
-					label={__("Autocomplete", "boostify-blocks")}
-					value={autocomplete}
-					onChange={(selection) => {
-						setAttr__({
-							...panelData,
-							autocomplete: selection,
-						});
-					}}
-					// @ts-ignore
-					__nextHasNoMarginBottom
+			return (
+				<PanelBody
+					initialOpen={initialOpen}
+					onToggle={onToggle}
+					opened={opened}
+					title={__("General", "boostify-blocks")}
 				>
-					<option value="off">{__("Off", "boostify-blocks")}</option>
-					<option value="url">{__("Url", "boostify-blocks")}</option>
-				</SelectControl>
+					<div className={"space-y-5"}>
+						<SelectControl
+							label={__("Autocomplete", "boostify-blocks")}
+							value={autocomplete}
+							onChange={(selection) => {
+								setAttr__({
+									...panelData,
+									autocomplete: selection,
+								});
+							}}
+							// @ts-ignore
+							__nextHasNoMarginBottom
+						>
+							<option value="off">{__("Off", "boostify-blocks")}</option>
+							<option value="url">{__("Url", "boostify-blocks")}</option>
+						</SelectControl>
 
-				<InputControl
-					label={__("PLACEHOLDER", "boostify-blocks")}
-					value={placeholder}
-					onChange={(nextValue) => {
-						setAttr__({ ...panelData, placeholder: nextValue });
-					}}
-				/>
+						<InputControl
+							label={__("PLACEHOLDER", "boostify-blocks")}
+							value={placeholder}
+							onChange={(nextValue: string) => {
+								setAttr__({ ...panelData, placeholder: nextValue });
+							}}
+						/>
 
-				<ToggleControl
-					label={__("Required", "boostify-blocks")}
-					checked={isRequired}
-					onChange={(isChecked) => {
-						setAttr__({ ...panelData, isRequired: isChecked });
-					}}
-				/>
-			</div>
-		</PanelBody>
-	);
-};
+						<ToggleControl
+							label={__("Required", "boostify-blocks")}
+							checked={isRequired}
+							onChange={(isChecked) => {
+								setAttr__({ ...panelData, isRequired: isChecked });
+							}}
+						/>
+					</div>
+				</PanelBody>
+			);
+		};
 
-export default WcbUrlPanelGeneral;
+		export default WcbUrlPanelGeneral;

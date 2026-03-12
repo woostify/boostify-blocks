@@ -74,12 +74,13 @@ function boostify_blocks_block_button_render_callback($attributes, $content)
 }
 
 //============================================= block 1 ===============================================================
-function boostify_blocks_block_icon_unused_render_callback($attributes, $content)
+function boostify_blocks_block_icon_render_callback($attributes, $content)
 {
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
 
     return $content;
 }
+
 //============================================= block 1 ===============================================================
 function boostify_blocks_block_testimonials_render_callback($attributes, $content)
 {
@@ -148,7 +149,6 @@ function boostify_blocks_block_heading_render_callback($attributes, $content)
     return $content;
 }
 
-
 //============================================= block 1 ===============================================================
 function boostify_blocks_block_container_render_callback($attributes, $content)
 {
@@ -156,12 +156,30 @@ function boostify_blocks_block_container_render_callback($attributes, $content)
     return $content;
 }
 
+//============================================= block 1 ===============================================================
+function boostify_blocks_block_slider_render_callback($attributes, $content)
+{
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
+    return $content;
+}
 
 if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_styles')) :
     function boostify_blocks_enqueue_script_block_commoncss_frontend_styles($deps = ['wp-element', 'jquery'])
     {
         if (!is_admin()) {
             wp_enqueue_script('boostify-blocks-commoncss-frontend', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/FrontendStyles.js', $deps, BOOSTIFY_BLOCKS_VERSION, true);
+
+            // Expose theme defaults on the frontend so JS helpers can read them.
+            static $boostify_blocks_theme_defaults_enqueued = false;
+            if (!$boostify_blocks_theme_defaults_enqueued && function_exists('boostify_blocks_get_theme_defaults_data')) {
+                $data = boostify_blocks_get_theme_defaults_data();
+                wp_add_inline_script(
+                    'boostify-blocks-commoncss-frontend',
+                    'window.BOOSTIFY_BLOCKS_THEME_DEFAULTS=' . wp_json_encode($data) . ';',
+                    'before'
+                );
+                $boostify_blocks_theme_defaults_enqueued = true;
+            }
         }
     }
 endif;
@@ -182,12 +200,6 @@ function boostify_blocks_block_icon_list_render_callback($attributes, $content)
 
 //============================================= block 1 ===============================================================
 function boostify_blocks_block_icon_child_render_callback($attributes, $content)
-{
-    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
-    return $content;
-}
-
-function boostify_blocks_block_icon_render_callback($attributes, $content)
 {
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     return $content;

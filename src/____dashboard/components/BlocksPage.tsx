@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { Dispatch, FC, SetStateAction, useState } from "react";
 import {
 	CheckIcon,
 	HeartIcon,
@@ -16,26 +16,16 @@ import { EllipsisHorizontalIcon } from "@heroicons/react/20/solid";
 interface Props {
 	initWcbBlocksEnableDisable: Wcb_blocks_enable_disable_options_Type;
 	initWcbBlocksList: Wcb_block_Type[];
+	blocksStatus: Wcb_blocks_enable_disable_options_Type;
+	setBlocksStatus: (status: Wcb_blocks_enable_disable_options_Type) => void;
 }
 
 const BlocksPage: FC<Props> = ({
-	initWcbBlocksEnableDisable,
 	initWcbBlocksList,
+	blocksStatus,
+	setBlocksStatus,
 }) => {
-	const [blocksStatus, setBlocksStatus] = useState(initWcbBlocksEnableDisable);
-	// const [blocksList, setBlocksList] = useState(initWcbBlocksList);
-	const [blocksList, setBlocksList] = useState(
-		(function () {
-			return initWcbBlocksList;
-		})()
-	);
-
-	// console.log(211, {
-	// 	initWcbBlocksList,
-	// 	initWcbBlocksEnableDisable,
-	// 	blocksStatus,
-	// 	blocksList,
-	// });
+	const [blocksList] = useState(initWcbBlocksList);
 
 	const handleDisableEnableBlocks = (obj: any) => {
 		if (typeof jQuery !== "function") {

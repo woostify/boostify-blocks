@@ -8,7 +8,7 @@ import { __ } from "@wordpress/i18n";
 
 interface Props {
 	value: number;
-	onChange: (value) => void;
+	onChange: (value: number) => void;
 }
 
 const MaxPageToShowInput: FC<Props> = ({ value, onChange }) => {

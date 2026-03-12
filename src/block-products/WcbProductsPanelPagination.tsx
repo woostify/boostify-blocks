@@ -94,7 +94,7 @@ const WcbProductsPanelPagination: FC<Props> = ({
 
 				<InputControl
 					value={panelData.previousText}
-					label={__("Previous text", "wcb")}
+					label={__("Previous text", "boostify-blocks")}
 					onChange={(nextValue: any) =>
 						setAttr__({ ...panelData, previousText: nextValue })
 					}
@@ -102,7 +102,7 @@ const WcbProductsPanelPagination: FC<Props> = ({
 
 				<InputControl
 					value={panelData.nextText}
-					label={__("Next text", "wcb")}
+					label={__("Next text", "boostify-blocks")}
 					onChange={(nextValue: any) =>
 						setAttr__({ ...panelData, nextText: nextValue })
 					}

@@ -111,7 +111,7 @@ const MyBorderControl: FC<Props> = ({
 				</MyLabelControl>
 				<BorderRadiusControl
 					values={RADIUS}
-					onChange={(value) => {
+					onChange={(value: any) => {
 						handleChangeBorderRadius(value);
 					}}
 					label={""}

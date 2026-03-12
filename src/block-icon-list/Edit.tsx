@@ -244,11 +244,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	};
 
-	const ALLOWED_BLOCKS = ["boostify-blocks/icon"];
+	const ALLOWED_BLOCKS = ["boostify-blocks/icon-child"];
 	const TEMPLATE = [
-		["boostify-blocks/icon", {}],
-		["boostify-blocks/icon", {}],
-		["boostify-blocks/icon", {}],
+		["boostify-blocks/icon-child", {}],
+		["boostify-blocks/icon-child", {}],
+		["boostify-blocks/icon-child", {}],
 	];
 
 	const innerBlocksProps = useInnerBlocksProps({

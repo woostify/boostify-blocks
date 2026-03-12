@@ -420,7 +420,7 @@ const Placeholder: FC<TPlaceholder> = ({
 	);
 };
 
-const FormEdit = (props) => {
+const FormEdit = (props: any) => {
 	const { clientId } = props;
 	const hasInnerBlocks = useSelect(
 		(select) =>

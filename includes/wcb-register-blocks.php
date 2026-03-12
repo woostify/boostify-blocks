@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 //============================================================================================================================================
 // START REGISTER GUTENBERG BLOCKS
 //======================================================================================================================================
+require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-editor-defaults.php';
 require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-render-callback-for-block-posts-grid.php';
 require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-render-callback-for-block-products.php';
 require BOOSTIFY_BLOCKS_PATH . 'includes/wcb-ajax-for-block-form.php';
@@ -45,6 +46,104 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                             'default'   => '',
                         ),
                         'general_sortingAndFiltering' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_layout' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_content' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_featuredImage' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_addToCartBtn' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_pagination' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_title' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_featuredImage' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_price' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_layout' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_addToCardBtn' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_pagination' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_saleBadge' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_outOfStock' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_border' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_rating' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_category' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_wishlistBtn' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_quickViewBtn' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_countdownUrgency' => array(
+                            'type'      => 'object',
+                        ),
+                        'advance_responsiveCondition' => array(
+                            'type'      => 'object',
+                        ),
+                        'advance_zIndex' => array(
+                            'type'      => 'object',
+                        ),
+                        'advance_motionEffect' => array(
+                            'type'      => 'object',
+                        ),
+
+                    ),
+                    "render_callback"     => "boostify_blocks_block_products_render_callback",
+                    "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/products'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                    "view_script_handles" => []
+                ]
+            );
+        endif;
+
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-heading',
+            [
+                "render_callback"     => "boostify_blocks_block_heading_render_callback",
+                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/heading'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
+            ]
+        );
+
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-posts-grid',
+       [
+                    'attributes'      => array(
+                        'uniqueId'    => array(
+                            'type'      => 'string',
+                            'default'   => '',
+                        ),
+                        'general_sortingAndFiltering' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_layout' => array(
                             'type'      => 'object',
                         ),
                         'general_content' => array(
@@ -89,6 +188,12 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         'style_category' => array(
                             'type'      => 'object',
                         ),
+                        'style_wishlistBtn' => array(
+                            'type'      => 'object',
+                        ),
+                        'style_quickViewBtn' => array(
+                            'type'      => 'object',
+                        ),
                         'advance_responsiveCondition' => array(
                             'type'      => 'object',
                         ),
@@ -100,94 +205,10 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         ),
 
                     ),
-                    "render_callback"     => "boostify_blocks_block_products_render_callback",
-                    "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/products'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                    "render_callback"     => "boostify_blocks_block_posts_grid_render_callback",
+                    "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/posts-grid'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                     "view_script_handles" => []
                 ]
-            );
-        endif;
-
-        register_block_type(
-            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-heading',
-            [
-                "render_callback"     => "boostify_blocks_block_heading_render_callback",
-                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/heading'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
-                "view_script_handles" => []
-            ]
-        );
-
-        register_block_type(
-            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-posts-grid',
-            [
-                'attributes'      => array(
-                    'uniqueId'    => array(
-                        'type'      => 'string',
-                        'default'   => '',
-                    ),
-                    'general_sortingAndFiltering' => array(
-                        'type'      => 'object',
-                    ),
-                    'general_postContent' => array(
-                        'type'      => 'object',
-                    ),
-                    'general_postMeta' => array(
-                        'type'      => 'object',
-                    ),
-                    'general_postFeaturedImage' => array(
-                        'type'      => 'object',
-                    ),
-                    'general_readmoreLink' => array(
-                        'type'      => 'object',
-                    ),
-                    'general_pagination' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_layout' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_title' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_excerpt' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_taxonomy' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_meta' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_readmoreLink' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_pagination' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_featuredImage' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_border' => array(
-                        'type'      => 'object',
-                    ),
-                    'style_boxShadow' => array(
-                        'type'      => 'object',
-                    ),
-                    'advance_responsiveCondition' => array(
-                        'type'      => 'object',
-                    ),
-                    'advance_zIndex' => array(
-                        'type'      => 'object',
-                    ),
-                    'advance_motionEffect' => array(
-                        'type'      => 'object',
-                    ),
-
-                ),
-                "render_callback"     => "boostify_blocks_block_posts_grid_render_callback",
-                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/posts-grid'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
-                "view_script_handles" => []
-
-            ]
         );
 
         // FORM
@@ -398,6 +419,23 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             [
                 "render_callback"     => "boostify_blocks_block_icon_render_callback",
                 "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/icon'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
+            ]
+        );
+
+        // SLIDER BLOCK
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider',
+            [
+                "render_callback"     => "boostify_blocks_block_slider_render_callback",
+                "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/slider'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
+            ]
+        );
+        // SLIDER CHILD
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider-child',
+            [
                 "view_script_handles" => []
             ]
         );

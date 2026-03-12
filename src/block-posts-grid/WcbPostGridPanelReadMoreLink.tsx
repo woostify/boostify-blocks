@@ -62,7 +62,7 @@ const WcbPostGridPanelReadMoreLink: FC<Props> = ({
 					<InputControl
 						value={text}
 						label={__("Text", "boostify-blocks")}
-						onChange={(nextValue) =>
+						onChange={(nextValue: any) =>
 							setAttr__({ ...panelData, text: nextValue || "" })
 						}
 					/>

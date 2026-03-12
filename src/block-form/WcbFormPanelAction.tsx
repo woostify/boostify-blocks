@@ -78,7 +78,7 @@ const WcbFormPanelAction: FC<Props> = ({
 							type="email"
 							placeholder={__("email@example.com", "boostify-blocks")}
 							value={main[tab.name as TabsHere].email}
-							onChange={(nextValue) => {
+							onChange={(nextValue: string) => {
 								setAttr__({
 									...panelData,
 									main: {
@@ -97,7 +97,7 @@ const WcbFormPanelAction: FC<Props> = ({
 				<InputControl
 					label={__("SUBJECT", "boostify-blocks")}
 					value={subject}
-					onChange={(nextValue) => {
+					onChange={(nextValue: any) => {
 						setAttr__({
 							...panelData,
 							subject: nextValue,
