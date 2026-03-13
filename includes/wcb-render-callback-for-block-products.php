@@ -368,6 +368,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         'out_of_stock' => "",
         'button'    => "",
         'categories'    => "",
+        'quantity_input' => "",
     );
 
 
@@ -389,8 +390,15 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowSaleBadge'] ?? "")) {
         $data->badge = boostify_blocks_block_products_get_sale_badge_html($product, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? false);
     }
+    
+    // Quantity input
+    if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "") && $attributes['general_addToCartBtn']['position'] !== "none") {
+        $data->quantity_input = boostify_blocks_block_products_get_product_quantity(true);
+    }
 
-    if ($attributes['general_addToCartBtn']['position'] === "bottom") {
+    $add_to_cart_position = $attributes['general_addToCartBtn']['position'] ?? '';
+
+    if ($add_to_cart_position === "bottom" || $add_to_cart_position === "bottom visible") {
         $price_html  = '';
         $button_html = '';
 
@@ -403,13 +411,26 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
 
         $data->price = "";
         $data->button = "";
-
-        $data->price_button_group = "
-            <div class=\"wcb-products__price-button-wrapper\">
-                {$price_html}
-                {$button_html}
-            </div>
-        ";
+        
+        // Add element quantity
+        if ($add_to_cart_position === "bottom") {
+            $data->price_button_group = "
+                <div class=\"wcb-products__price-button-wrapper\">
+                    {$data->quantity_input}
+                    {$price_html}
+                    {$button_html}
+                </div>
+            ";
+        } else {
+            $data->price_button_group = "
+                <div class=\"wcb-products__price-button-wrapper\">
+                    {$price_html}
+                    {$data->quantity_input}
+                    {$button_html}
+                </div>
+            ";
+        }
+       
     } else {
         if (boostify_blocks_is_enabled($attributes['general_content']['isShowPrice'] ?? "")) {
             $data->price = boostify_blocks_block_products_get_price_html($product);
@@ -426,7 +447,6 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
     // pre-order badge
     $data->preorder_badge = boostify_blocks_block_products__get_preorder_html($product);
-
     $btnInsideImage = ($attributes['general_addToCartBtn']['position'] ?? "") === "inside image";
     $btnIconAddToCart = ($attributes['general_addToCartBtn']['position'] ?? "") === "icon";
     $saleInsideImage = ($attributes['general_content']['saleBadgePosition'] ?? "") === "Inside image";
@@ -575,7 +595,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                 {$preorderBadge}
 				{$saleBadge2}
 				{$data->rating}
-				" . ($data->price_button_group ?? ($data->price . $btn2)) . "
+				" . ($data->price_button_group ?? ($data->price . $data->quantity_input . $btn2)) . "
 			</div>",
         $data,
         $product
@@ -921,10 +941,6 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         </style>
     ";
 
-    // $position     = $attributesFromBlock['general_addToCartBtn']['position'] ?? 'bottom';
-    $show_quantity = $attributesFromBlock['general_addToCartBtn']['isShowQuantity'];
-     //   && in_array( $position, array( 'bottom', 'bottom visible' ), true );
-
     $btn_markup = sprintf(
         '<a
             href="%s"
@@ -941,7 +957,12 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         $label_markup
     );
 
-    if ( $show_quantity ) {
+    return $inline_css . $btn_markup;
+}
+
+
+function boostify_blocks_block_products_get_product_quantity()
+{
         $quantity_input = '<div class="wcb-products__quantity">'
             . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
             . '<input'
@@ -957,11 +978,10 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
             . '>'
             . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
             . '</div>';
-        return $inline_css . '<div class="wcb-products__quantity-add-to-cart">' . $quantity_input . $btn_markup . '</div>';
-    }
-
-    return $inline_css . $btn_markup;
+        return '<div class="wcb-products__quantity-add-to-cart">' . $quantity_input . '</div>';
 }
+
+
 
 // ===============================
 

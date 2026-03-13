@@ -731,8 +731,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 					textAlign: style_layout.textAlignment,
 					backgroundColor: style_layout.backgroundColor,
 					".wcb-products__price-button-wrapper": {
-						height: "40px",
-						lineHeight: "36px",
+						// Add element quantity
+						height: general_addToCartBtn?.position === "bottom visible" ? "auto" : general_addToCartBtn?.isShowQuantity ? "84px" : "50px",
+						lineHeight: general_addToCartBtn?.position === "bottom visible" ? "normal" : "36px",
 						overflow: "hidden",
 					},
 					// Style layout bottom add to cart button
@@ -760,9 +761,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 					":hover": {
 						".wcb-products__product-price": {
 							// opacity: general_addToCartBtn?.position === "bottom" ? 0 : "unset",
-							transform: general_addToCartBtn?.position === "bottom" ? "translateY(-30px)" : "unset",
+							// Add element quantity
+							transform: general_addToCartBtn?.position === "bottom" ? `translateY(${general_addToCartBtn?.isShowQuantity ? -36 : -30}px)` : "unset",
 							transition: general_addToCartBtn?.position === "bottom" ? "all 0.3s ease-in-out" : "unset",
-							// display: general_addToCartBtn?.position === "bottom" ? "none" : "block",
 						},
 						//TODO: handle style in edit page
 						".wcb-products__product-add-to-cart": {

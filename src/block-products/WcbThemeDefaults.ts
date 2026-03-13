@@ -402,6 +402,10 @@ export function buildGeneralAddToCartBtnDefault(attr?: Partial<typeof WCB_PRODUC
             addToCartBtn?.position ??
             attr?.position ?? 
             WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.position,
+        isShowQuantity:
+            addToCartBtn?.position === 'none' ? false :
+            attr?.isShowQuantity ??
+            WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowQuantity,
     };
 }
 

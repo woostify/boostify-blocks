@@ -84,6 +84,16 @@ function boostify_blocks_my_scripts_method()
 }
 add_action('wp_enqueue_scripts', 'boostify_blocks_my_scripts_method');
 
+// Add style for editor
+add_action( 'enqueue_block_editor_assets', function() {
+    wp_enqueue_style(
+        'boostify-blocks-frontend',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css',
+        array(),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+});
+
 // Enqueue for admin
 function boostify_blocks_my_enqueue_scripts_for_admin_editor($hook)
 {
