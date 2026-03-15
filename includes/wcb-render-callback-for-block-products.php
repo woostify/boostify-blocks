@@ -397,7 +397,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         $data->title = boostify_blocks_block_products_get_title_html($product, $attributes['general_content']['titleHtmlTag'] ?? null, $data->permalink);
     }
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowRating'] ?? "")) {
-        $data->rating = boostify_blocks_block_products_get_rating_html($product);
+        $data->rating = boostify_blocks_block_products_get_rating_html($product, $attributes);
     }
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowSaleBadge'] ?? "")) {
         $data->badge = boostify_blocks_block_products_get_sale_badge_html($product, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? false);
@@ -589,8 +589,8 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
 
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-        "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\" style=\"align-items: " . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ";\">
-				<div class=\"wcb-products__product-featured \">
+		"<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\">
+                <div class=\"wcb-products__product-featured \">
                     <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
                         {$isSwapHover}
@@ -624,7 +624,7 @@ function convert_to_alignment_style($alignment) {
         case 'left':
             return 'flex-start';
         case 'center':
-            return 'align-center';
+            return 'center';
         case 'right':
             return 'flex-end';
         default:
@@ -810,7 +810,7 @@ function boostify_blocks_block_products_get_category_html($product)
 }
 
 
-function boostify_blocks_block_products_get_rating_html($product)
+function boostify_blocks_block_products_get_rating_html($product, $attributes)
 {
 
     $rating_count = $product->get_rating_count();
@@ -820,7 +820,11 @@ function boostify_blocks_block_products_get_rating_html($product)
 
     if ($rating_count > 0) {
         $label = sprintf(__('Rated %s out of 5', 'woocommerce'), $average);
-        $html  = '<div class="wcb-products__product-rating-wrap"><div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . '</div></div>';
+        $html  = '<div class="wcb-products__product-rating-wrap" style="justify-content: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">
+                    <div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' 
+                        . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . 
+                    '</div>
+                </div>';
         return $html;
     }
     return '';
@@ -978,8 +982,19 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
  */
 function boostify_blocks_block_products_get_button_html($product, $attributes)
 {
-
-    return '<div class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart">' . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . '</div>';
+    $isCheckBottom = false;
+    if ($attributes['general_addToCartBtn']['position'] === "bottom") {
+        $isCheckBottom = true;
+    }
+    
+    return '<div 
+                class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart" 
+                style="
+                    align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';
+                    overflow: ' . ($isCheckBottom ? 'hidden' : 'visible') . ';
+                ">' 
+                . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . 
+            '</div>';
 }
 
 /**

@@ -762,7 +762,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						".wcb-products__product-price": {
 							// opacity: general_addToCartBtn?.position === "bottom" ? 0 : "unset",
 							// Add element quantity
-							transform: general_addToCartBtn?.position === "bottom" ? `translateY(${general_addToCartBtn?.isShowQuantity ? -36 : -30}px)` : "unset",
+							transform: general_addToCartBtn?.position === "bottom" ? `translateY(${general_addToCartBtn?.isShowQuantity ? -44 : -30}px)` : "unset",
 							transition: general_addToCartBtn?.position === "bottom" ? "all 0.3s ease-in-out" : "unset",
 						},
 						//TODO: handle style in edit page
