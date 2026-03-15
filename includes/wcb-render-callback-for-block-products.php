@@ -4,8 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Apply current theme defaults to block attributes so already-saved blocks
- * pick up Customizer changes on render.
+ * Apply theme default settings to the block attributes for the products block, ensuring that any missing attributes are filled in with values from the theme customizer.
+ * @param array $attributes The original block attributes that may be missing some values.
+ * @return array The modified block attributes with theme defaults applied where necessary.
  */
 function boostify_blocks_block_products_apply_theme_defaults($attributes)
 {
@@ -251,7 +252,12 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     return $attributes;
 }
 
-
+/**
+ * Render callback for the products block, generating the HTML output based on the block attributes and product data.
+ * @param array $attributes The block attributes that determine how the products should be displayed.
+ * @param string $content The saved inner content of the block, which may contain serialized attributes for frontend use.
+ * @return string The generated HTML for the products block, including product listings, pagination, and other elements based on the attributes.
+ */
 function boostify_blocks_block_products_render_callback($attributes, $content)
 {
     // Re-apply theme defaults on render so saved blocks stay in sync with Customizer changes.
@@ -354,7 +360,13 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
     return ob_get_clean();
 }
 
-// 
+/**
+ * Generate the HTML for a single product within the products block, based on the provided attributes and product data.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributes The block attributes that determine which product elements to display and how to style them.
+ * @param int $index The index of the current product in the loop, used for conditional styling or behavior if needed.
+ * @return string The generated HTML for the product, including elements like image, title, price, rating, badges, etc., based on the block attributes.
+ */
 function boostify_blocks_block_products_render_product($product, $attributes, $index)
 {
     $data = (object) array(
@@ -393,7 +405,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     
     // Quantity input
     if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "") && $attributes['general_addToCartBtn']['position'] !== "none") {
-        $data->quantity_input = boostify_blocks_block_products_get_product_quantity(true);
+        $data->quantity_input = boostify_blocks_block_products_get_product_quantity($attributes);
     }
 
     $add_to_cart_position = $attributes['general_addToCartBtn']['position'] ?? '';
@@ -577,7 +589,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
 
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-        "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\">
+        "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\" style=\"align-items: " . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ";\">
 				<div class=\"wcb-products__product-featured \">
                     <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
@@ -602,6 +614,29 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     );
 }
 
+/**
+ * Convert block alignment value to CSS flex alignment.
+ * @param string $alignment The block alignment value (e.g., 'left', 'center', 'right').
+ * @return string The corresponding CSS flex alignment value.
+ */
+function convert_to_alignment_style($alignment) {
+    switch ($alignment) {
+        case 'left':
+            return 'flex-start';
+        case 'center':
+            return 'align-center';
+        case 'right':
+            return 'flex-end';
+        default:
+            return '';
+    }
+}
+
+/**
+ * Generate the HTML for the countdown urgency timer based on the provided attributes.
+ * @param array $countdown_attrs The attributes for the countdown urgency timer.
+ * @return string The generated HTML for the countdown urgency timer, or an empty string if not active or applicable.
+ */
 function boostify_blocks_block_products__get_countdown_html( $countdown_attrs ) {
     if ( empty( $countdown_attrs ) ) {
         return '';
@@ -662,6 +697,12 @@ function boostify_blocks_block_products__get_countdown_html( $countdown_attrs ) 
             </div>";
 }
 
+/**
+ * Generate the HTML for the quick view button based on the provided product ID and position.
+ * @param int $product_id_attr The product ID to be used in the button's data
+ * attributes. @param string $position The position of the quick view button (e.g., 'bottom-image', 'center-image', 'top-right').
+ * @return string The generated HTML for the quick view button, or an empty string if the position is not recognized.
+ */
 function boostify_blocks_block_products__build_quick_view_html( $product_id_attr, $position ) {
 
     $html  = '<button 
@@ -701,6 +742,11 @@ function boostify_blocks_block_products_get_image_gallery_image_1_html($product)
     return wp_get_attachment_image($attachment_ids[0], 'full');
 }
 
+/**
+ * Generate the HTML for the product image, applying the height from the Woostify theme settings and ensuring accessibility with alt text.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the product image, wrapped in a container with appropriate classes
+ */
 function boostify_blocks_block_products_get_image_html($product)
 {
     $attr = array(
@@ -737,7 +783,14 @@ function boostify_blocks_block_products_get_image_html($product)
     return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
-
+/**
+ * Generate the HTML for the product title, wrapped in a heading tag and linked to the product page.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param string $headingTag The HTML tag to use for the title (e.g.,
+ * 'div', 'h2', 'h3'). Defaults to 'div' if not provided or empty.
+ * @param string $link The URL to link the product title to.
+ * @return string The generated HTML for the product title, wrapped in the specified heading tag and linked to the product page.
+ */
 function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link)
 {
     if (empty($headingTag)) {
@@ -746,6 +799,11 @@ function boostify_blocks_block_products_get_title_html($product, $headingTag = "
     return '<' . tag_escape($headingTag) . ' class="wcb-products__product-title wc-block-grid__product-title"> <a href="' . esc_url($link) . '">' . wp_kses_post($product->get_title()) . '</a></' . tag_escape($headingTag) . '>';
 }
 
+/**
+ * Generate the HTML for the product categories, wrapped in a container with appropriate classes.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the product categories, wrapped in a container with appropriate classes
+ */
 function boostify_blocks_block_products_get_category_html($product)
 {
     return wc_get_product_category_list($product->get_id(), ", ", '<div class="wcb-products__product-categories">', '</div>');
@@ -804,7 +862,12 @@ function boostify_blocks_block_products_add_percentage_to_sale_badge($product)
     return '<span class="onsale">' . esc_html__('-', 'boostify-blocks') . ' ' . $percentage . '</span>';
 }
 
-
+/**
+ * Generate the HTML for the sale badge, including the discount percentage if applicable.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param bool $showSaleBadgeDiscoutPercent Whether to show the discount percentage on the sale badge.
+ * @return string The generated HTML for the sale badge.
+ */
 function boostify_blocks_block_products_get_sale_badge_html($product,  $showSaleBadgeDiscoutPercent)
 {
     if (!$product->is_on_sale()) {
@@ -828,6 +891,11 @@ function boostify_blocks_block_products_get_sale_badge_html($product,  $showSale
 		</div></div>';
 }
 
+/**
+ * Generate the HTML for the out of stock badge.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the out of stock badge.
+ */
 function boostify_blocks_block_products__get_out_of_stock_html($product)
 {
     $woostify = get_option('woostify_setting') ?: [];
@@ -841,6 +909,11 @@ function boostify_blocks_block_products__get_out_of_stock_html($product)
     }
 }
 
+/**
+ * Generate the HTML for the pre-order badge.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the pre-order badge.
+ */
 function boostify_blocks_block_products__get_preorder_html( $product ) {
 
     if ( ! $product instanceof WC_Product ) {
@@ -897,14 +970,24 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
     return $html;
 }
 
-
+/**
+ * Generate the HTML for the add to cart button.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributes The block attributes.
+ * @return string The generated HTML for the add to cart button.
+ */
 function boostify_blocks_block_products_get_button_html($product, $attributes)
 {
 
     return '<div class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart">' . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . '</div>';
 }
 
-
+/**
+ * Generate the HTML for the add to cart button.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributesFromBlock The block attributes.
+ * @return string The generated HTML for the add to cart button.
+ */
 function boostify_blocks_block_products_get_add_to_cart($product, $attributesFromBlock)
 {
     $ajax_class = ($product->supports('ajax_add_to_cart') &&
@@ -960,31 +1043,30 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
     return $inline_css . $btn_markup;
 }
 
-
-function boostify_blocks_block_products_get_product_quantity()
-{
-        $quantity_input = '<div class="wcb-products__quantity">'
-            . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
-            . '<input'
-            . ' type="number"'
-            . ' class="wcb-products__quantity-input input-text qty text"'
-            . ' step="1"'
-            . ' min="1"'
-            . ' value="1"'
-            . ' size="4"'
-            . ' pattern="[0-9]*"'
-            . ' inputmode="numeric"'
-            . ' aria-label="' . esc_attr__( 'Quantity', 'boostify-blocks' ) . '"'
-            . '>'
-            . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
-            . '</div>';
-        return '<div class="wcb-products__quantity-add-to-cart">' . $quantity_input . '</div>';
+/**
+ * Generate the HTML for the product quantity input.
+ * @param array $attributes The block attributes.
+ * @return string The generated HTML for the product quantity input.
+ */
+function boostify_blocks_block_products_get_product_quantity($attributes)
+{   
+    $quantity_input = '<div class="wcb-products__quantity">'
+        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
+        . '<input'
+        . ' type="number"'
+        . ' class="wcb-products__quantity-input input-text qty text"'
+        . ' step="1"'
+        . ' min="1"'
+        . ' value="1"'
+        . ' size="4"'
+        . ' pattern="[0-9]*"'
+        . ' inputmode="numeric"'
+        . ' aria-label="' . esc_attr__( 'Quantity', 'boostify-blocks' ) . '"'
+        . '>'
+        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
+        . '</div>';
+    return '<div class="wcb-products__quantity-add-to-cart" style="align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">' . $quantity_input . '</div>';
 }
-
-
-
-// ===============================
-
 
 if (!function_exists("boostify_blocks_block_products_parse_filter_attributes")) :
     function boostify_blocks_block_products_parse_filter_attributes($filterAttrs)
