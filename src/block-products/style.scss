@@ -24,7 +24,7 @@
 			}
 
 			img {
-				@apply w-auto h-auto object-cover transition-transform duration-300;
+				@apply object-cover transition-transform duration-300;
 			}
 
 			&:hover {

@@ -391,7 +391,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
 
     if (boostify_blocks_is_enabled($attributes['general_featuredImage']['isShowFeaturedImage'] ?? "")) {
-        $data->image = boostify_blocks_block_products_get_image_html($product);
+        $data->image = boostify_blocks_block_products_get_image_html($product, $attributes);        
     }
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowTitle'] ?? "")) {
         $data->title = boostify_blocks_block_products_get_title_html($product, $attributes['general_content']['titleHtmlTag'] ?? null, $data->permalink);
@@ -747,7 +747,7 @@ function boostify_blocks_block_products_get_image_gallery_image_1_html($product)
  * @param WC_Product $product The WooCommerce product object.
  * @return string The generated HTML for the product image, wrapped in a container with appropriate classes
  */
-function boostify_blocks_block_products_get_image_html($product)
+function boostify_blocks_block_products_get_image_html($product, $attributes = [])
 {
     $attr = array(
         'alt' => '',
@@ -765,9 +765,16 @@ function boostify_blocks_block_products_get_image_html($product)
     $woostify = get_option('woostify_setting') ?: [];
 
     // Get image height from theme setting, default to 300 if not set
-    $imageHeight = !empty($woostify['shop_page_product_image_height'])
-        ? intval($woostify['shop_page_product_image_height'])
-        : 300;
+     if (($attributes['general_featuredImage']['hoverType'] ?? "") === 'swap') {
+        $imageHeight = !empty($woostify['shop_page_product_image_height'])
+                ? intval($woostify['shop_page_product_image_height'])
+                : 'auto';
+     } else {
+        $imageHeight = 'auto';
+     }
+   
+
+    error_log('Image height for product ID ' . $product->get_id() . ': ' . $imageHeight);
 
     // Get the default WooCommerce thumbnail HTML
     $image_html = $product->get_image('woocommerce_thumbnail', $attr);
