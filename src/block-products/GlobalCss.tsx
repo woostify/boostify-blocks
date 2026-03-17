@@ -805,26 +805,26 @@ const GlobalCss: FC<Props> = (attrs) => {
 					},
 
 					// ".wcb-products__product-image":
-					".wcb-products__product-image-link":
-						featuredImageMarginBottom_mobile_new ||
-						featuredImageMarginBottom_tablet_new ||
-						featuredImageMarginBottom_desktop_new
-							? {
-									marginBottom: featuredImageMarginBottom_mobile_new,
-									[`@media (min-width: ${media_tablet})`]:
-										featuredImageMarginBottom_tablet_new
-											? {
-													marginBottom: featuredImageMarginBottom_tablet_new,
-											  }
-											: undefined,
-									[`@media (min-width: ${media_desktop})`]:
-										featuredImageMarginBottom_desktop_new
-											? {
-													marginBottom: featuredImageMarginBottom_desktop_new,
-											  }
-											: undefined,
-							  }
-							: undefined,
+					// ".wcb-products__product-image-link":
+					// 	featuredImageMarginBottom_mobile_new ||
+					// 	featuredImageMarginBottom_tablet_new ||
+					// 	featuredImageMarginBottom_desktop_new
+					// 		? {
+					// 				marginBottom: featuredImageMarginBottom_mobile_new,
+					// 				[`@media (min-width: ${media_tablet})`]:
+					// 					featuredImageMarginBottom_tablet_new
+					// 						? {
+					// 								marginBottom: featuredImageMarginBottom_tablet_new,
+					// 						  }
+					// 						: undefined,
+					// 				[`@media (min-width: ${media_desktop})`]:
+					// 					featuredImageMarginBottom_desktop_new
+					// 						? {
+					// 								marginBottom: featuredImageMarginBottom_desktop_new,
+					// 						  }
+					// 						: undefined,
+					// 		  }
+					// 		: undefined,
 
 					".wcb-products__product-title": {
 						marginBottom: titleMarginBottom_mobile_new,

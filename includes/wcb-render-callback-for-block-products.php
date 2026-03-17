@@ -418,7 +418,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
             $price_html = $data->price = boostify_blocks_block_products_get_price_html($product);
         }
         if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
-            $button_html = $data->button = boostify_blocks_block_products_get_button_html($product, $attributes);
+            $button_html = $data->button = boostify_blocks_block_products_get_button_html($product, $attributes, $product->get_price_html());
         }
 
         $data->price = "";
@@ -448,7 +448,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
             $data->price = boostify_blocks_block_products_get_price_html($product);
         }
         if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
-            $data->button = boostify_blocks_block_products_get_button_html($product, $attributes);
+            $data->button = boostify_blocks_block_products_get_button_html($product, $attributes, $product->get_price_html());
         }
     }
 
@@ -602,12 +602,14 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$saleBadge1}
                     {$saleOutOfStock}
                 </div>
-                {$data->categories}
-                {$data->title}
-                {$preorderBadge}
-				{$saleBadge2}
-				{$data->rating}
-				" . ($data->price_button_group ?? ($data->price . $data->quantity_input . $btn2)) . "
+                <div class=\"wcb-products__product-content\">
+                    {$data->categories}
+                    {$data->title}
+                    {$preorderBadge}
+                    {$saleBadge2}
+                    {$data->rating}
+                    " . ($data->price_button_group ?? ($data->price . $data->quantity_input . $btn2)) . "
+                </div>
 			</div>",
         $data,
         $product
@@ -987,7 +989,7 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
  * @param array $attributes The block attributes.
  * @return string The generated HTML for the add to cart button.
  */
-function boostify_blocks_block_products_get_button_html($product, $attributes)
+function boostify_blocks_block_products_get_button_html($product, $attributes, $badge_html = '')
 {
     $isCheckBottom = false;
     if ($attributes['general_addToCartBtn']['position'] === "bottom") {
@@ -998,7 +1000,7 @@ function boostify_blocks_block_products_get_button_html($product, $attributes)
                 class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart" 
                 style="
                     align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';
-                    overflow: ' . ($isCheckBottom ? 'hidden' : 'visible') . ';
+                    overflow: ' . ($isCheckBottom && ($badge_html == "")? 'hidden' : 'visible') . ';
                 ">' 
                 . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . 
             '</div>';
