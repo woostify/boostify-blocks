@@ -169,6 +169,17 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
         if (!is_admin()) {
             wp_enqueue_script('boostify-blocks-commoncss-frontend', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/FrontendStyles.js', $deps, BOOSTIFY_BLOCKS_VERSION, true);
 
+            // Inject build URL so webpack can resolve dynamic chunk paths correctly in all environments.
+            static $boostify_blocks_public_path_set = false;
+            if (!$boostify_blocks_public_path_set) {
+                wp_add_inline_script(
+                    'boostify-blocks-commoncss-frontend',
+                    'window.__boostifyBlocksBuildUrl = ' . wp_json_encode(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/') . ';',
+                    'before'
+                );
+                $boostify_blocks_public_path_set = true;
+            }
+
             // Expose theme defaults on the frontend so JS helpers can read them.
             static $boostify_blocks_theme_defaults_enqueued = false;
             if (!$boostify_blocks_theme_defaults_enqueued && function_exists('boostify_blocks_get_theme_defaults_data')) {

@@ -1,3 +1,11 @@
+// Override webpack public path with the value injected by PHP.
+// This ensures dynamic chunk imports (React.lazy) resolve correctly in all environments
+// (reverse proxy, subdirectory installs, etc.) where document.currentScript may be null.
+if (typeof (window as any).__boostifyBlocksBuildUrl !== "undefined") {
+	// @ts-ignore: __webpack_public_path__ is a webpack magic variable, not a regular TS identifier
+	__webpack_public_path__ = (window as any).__boostifyBlocksBuildUrl;
+}
+
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
 import { initCarouselForWcbFaq } from "../block-faq/FrontendStyles";
