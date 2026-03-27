@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Enqueue for Frontend
 function boostify_blocks_my_scripts_method()
 {
+    // animate nay enqueue cho frontend, trong trang editor da duoc import voi npm
+    wp_enqueue_style('boostify-blocks-animate-css', 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css', [], '4.1.1');
+    //
     wp_enqueue_style( 'boostify-blocks-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), BOOSTIFY_BLOCKS_VERSION );
     wp_localize_script(
         'jquery',
@@ -132,7 +135,7 @@ function boostify_blocks_enqueue_script_to_setting_page()
         wp_register_style('boostify-blocks-settings-page', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/style-index.css');
         wp_enqueue_style('boostify-blocks-settings-page');
         //
-        wp_enqueue_style('boostify-blocks-dashboard-tailwind',plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/dashboard-tailwind.css', [], BOOSTIFY_BLOCKS_VERSION);
+        wp_enqueue_script('boostify-blocks-dashboard-app-tailwind', "https://cdn.tailwindcss.com?plugins=forms", [], '3.2.6', false);
         wp_add_inline_script('boostify-blocks-dashboard-app-tailwind', 'tailwind.config = { important: true }', 'after');
         //
         wp_enqueue_script('boostify-blocks-dashboard-app', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js', ['wp-blocks', 'wp-element', 'jquery'], BOOSTIFY_BLOCKS_VERSION, true);
