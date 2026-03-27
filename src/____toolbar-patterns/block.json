@@ -1,6 +1,6 @@
 {
 	"apiVersion": 3,
-	"name": "create-block-wcbxxyyyzz/wcbxxyyyzz-blocks-toolbar-patterns",
+	"name": "boostify-blocks/toolbar-patterns",
 	"version": "0.1.0",
 	"title": "Block Common CSS",
 	"category": "boostify-blocks",
