@@ -441,9 +441,17 @@ function handleQuickViewAddToCartManual($button) {
             setTimeout(() => {
                 if (typeof cartSidebarOpen === 'function') {
                     cartSidebarOpen();
-                }
-            }, 100);
 
+                    // Add loading state to cart sidebar
+                    const cartSidebarDOM = jQuery('#shop-cart-sidebar');
+                    cartSidebarDOM.addClass('cart-sidebar--loading');
+
+                    setTimeout(() => {
+                        cartSidebarDOM.removeClass('cart-sidebar--loading');
+                    }, 400);
+                }
+            }, 200);
+            
              // Re-init buy now button.
             if ( 'function' === typeof( woostifyBuyNowProduct ) ) {
                 woostifyBuyNowProduct( true );

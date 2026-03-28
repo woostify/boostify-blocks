@@ -83,6 +83,29 @@
 	animation: circle-loading 0.35s linear infinite;
 }
 
+#shop-cart-sidebar.cart-sidebar--loading::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: rgba(255, 255, 255, 0.6);
+	z-index: 1;
+}
+
+#shop-cart-sidebar.cart-sidebar--loading::before {
+	content: "" !important;
+	z-index: 2;
+	position: absolute;
+	border: 1px solid #ddd;
+	border-top-color: #222;
+	border-radius: 50%;
+	height: 14px;
+	width: 14px;
+	top: calc( 50% );
+	left: calc( 50% );
+	transform: translateY(-50%) translateX(-50%);
+	animation: circle-loading 0.35s linear infinite;
+}
+
 .add_to_cart_button__insite-image--loading::before {
 	content: "" !important; 
 	z-index: 2; 
