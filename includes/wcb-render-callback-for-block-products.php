@@ -6,9 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Apply theme default settings to the block attributes for the products block, ensuring that any missing attributes are filled in with values from the theme customizer.
  * @param array $attributes The original block attributes that may be missing some values.
+ * @param bool  $block_overrides When true (isCustomizerGeneralLayout ON), block-level attributes take priority over Customizer values; Customizer is used only as fallback.
  * @return array The modified block attributes with theme defaults applied where necessary.
  */
-function boostify_blocks_block_products_apply_theme_defaults($attributes)
+function boostify_blocks_block_products_apply_theme_defaults($attributes, $block_overrides = false)
 {
     if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
         return $attributes;
@@ -23,26 +24,53 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
         return $value === true || $value === '1' || $value === 1 || $value === 'true';
     };
 
+    // $block_overrides=false → Customizer wins (theme_val ?? block_val)
+    // $block_overrides=true  → Block wins     (block_val ?? theme_val)
+    $pick = function ($theme_val, $block_val) use ($block_overrides) {
+        return $block_overrides ? ($block_val ?? $theme_val) : ($theme_val ?? $block_val);
+    };
+
+    $pick_bool = function ($theme_val, $block_val) use ($block_overrides, $to_bool) {
+        return $block_overrides
+            ? $to_bool($block_val, $theme_val)
+            : $to_bool($theme_val, $block_val);
+    };
+
     // Style layout
     $style_layout = $attributes['style_layout'] ?? [];
     $style_layout['numberOfColumn'] = [
-        'Desktop' => $theme['product_per_row']['desktop'] ?? ($style_layout['numberOfColumn']['Desktop'] ?? null),
-        'Tablet'  => $theme['product_per_row']['tablet'] ?? ($style_layout['numberOfColumn']['Tablet'] ?? null),
-        'Mobile'  => $theme['product_per_row']['mobile'] ?? ($style_layout['numberOfColumn']['Mobile'] ?? null),
+        'Desktop' => $pick($theme['product_per_row']['desktop'] ?? null, $style_layout['numberOfColumn']['Desktop'] ?? null),
+        'Tablet'  => $pick($theme['product_per_row']['tablet'] ?? null, $style_layout['numberOfColumn']['Tablet'] ?? null),
+        'Mobile'  => $pick($theme['product_per_row']['mobile'] ?? null, $style_layout['numberOfColumn']['Mobile'] ?? null),
     ];
-    if (isset($theme['shop_archive_product_content']['align'])) {
-        $style_layout['textAlignment'] = $theme['shop_archive_product_content']['align'];
+    $theme_align = $theme['shop_archive_product_content']['align'] ?? null;
+    if ($block_overrides) {
+        // Block's textAlignment takes priority; only use Customizer if block has none.
+        if (!isset($style_layout['textAlignment']) && $theme_align !== null) {
+            $style_layout['textAlignment'] = $theme_align;
+        }
+    } else {
+        if ($theme_align !== null) {
+            $style_layout['textAlignment'] = $theme_align;
+        }
     }
     $attributes['style_layout'] = $style_layout;
 
     // Border
     $border = $attributes['style_border']['mainSettings'] ?? [];
     $border_style = $theme['shop_archive_border']['style'] ?? null;
-    if ($border_style && $border_style !== 'none') {
+    // In block-override mode, prefer block's border style; fall back to Customizer if block has none.
+    $effective_border_style = $block_overrides
+        ? (($border['style'] ?? null) ?: $border_style)
+        : ($border_style ?: ($border['style'] ?? null));
+    if ($effective_border_style && $effective_border_style !== 'none') {
         $attributes['style_border']['mainSettings'] = [
-            'color' => $theme['shop_archive_border']['color'] ?? ($border['color'] ?? null),
-            'style' => $border_style ?? ($border['style'] ?? null),
-            'width' => isset($theme['shop_archive_border']['width']) ? $theme['shop_archive_border']['width'] . 'px' : ($border['width'] ?? null),
+            'color' => $pick($theme['shop_archive_border']['color'] ?? null, $border['color'] ?? null),
+            'style' => $effective_border_style,
+            'width' => $pick(
+                isset($theme['shop_archive_border']['width']) ? $theme['shop_archive_border']['width'] . 'px' : null,
+                $border['width'] ?? null
+            ),
         ];
     }
 
@@ -50,7 +78,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['general_sortingAndFiltering'] = array_merge(
         $attributes['general_sortingAndFiltering'] ?? [],
         [
-            'numberOfItems' => $theme['product_per_page'] ?? ($attributes['general_sortingAndFiltering']['numberOfItems'] ?? null),
+            'numberOfItems' => $pick($theme['product_per_page'] ?? null, $attributes['general_sortingAndFiltering']['numberOfItems'] ?? null),
         ]
     );
 
@@ -59,10 +87,10 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['general_content'] = array_merge(
         $attributes['general_content'] ?? [],
         [
-            'isShowTitle' => $to_bool($content['title_flag'] ?? null, $attributes['general_content']['isShowTitle'] ?? null),
-            'isShowCategory' => $to_bool($content['category_flag'] ?? null, $attributes['general_content']['isShowCategory'] ?? null),
-            'isShowRating' => $to_bool($content['rating_flag'] ?? null, $attributes['general_content']['isShowRating'] ?? null),
-            'isShowPrice' => $to_bool($content['price_flag'] ?? null, $attributes['general_content']['isShowPrice'] ?? null),
+            'isShowTitle'    => $pick_bool($content['title_flag'] ?? null, $attributes['general_content']['isShowTitle'] ?? null),
+            'isShowCategory' => $pick_bool($content['category_flag'] ?? null, $attributes['general_content']['isShowCategory'] ?? null),
+            'isShowRating'   => $pick_bool($content['rating_flag'] ?? null, $attributes['general_content']['isShowRating'] ?? null),
+            'isShowPrice'    => $pick_bool($content['price_flag'] ?? null, $attributes['general_content']['isShowPrice'] ?? null),
         ]
     );
 
@@ -70,45 +98,51 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['general_featuredImage'] = array_merge(
         $attributes['general_featuredImage'] ?? [],
         [
-            'hoverType' => $theme['shop_archive_product_image']['hover'] ?? ($attributes['general_featuredImage']['hoverType'] ?? null),
+            'hoverType' => $pick($theme['shop_archive_product_image']['hover'] ?? null, $attributes['general_featuredImage']['hoverType'] ?? null),
         ]
     );
 
     // Featured image border
     $featured_border = $attributes['style_featuredImage']['border']['mainSettings'] ?? [];
     $fi_style = $theme['shop_archive_product_image']['style'] ?? null;
-    if ($fi_style && $fi_style !== 'none') {
+    $effective_fi_style = $block_overrides
+        ? (($featured_border['style'] ?? null) ?: $fi_style)
+        : ($fi_style ?: ($featured_border['style'] ?? null));
+    if ($effective_fi_style && $effective_fi_style !== 'none') {
         $attributes['style_featuredImage']['border']['mainSettings'] = [
-            'color' => $theme['shop_archive_product_image']['color'] ?? ($featured_border['color'] ?? null),
-            'style' => $fi_style ?? ($featured_border['style'] ?? null),
-            'width' => isset($theme['shop_archive_product_image']['width']) ? $theme['shop_archive_product_image']['width'] . 'px' : ($featured_border['width'] ?? null),
+            'color' => $pick($theme['shop_archive_product_image']['color'] ?? null, $featured_border['color'] ?? null),
+            'style' => $effective_fi_style,
+            'width' => $pick(
+                isset($theme['shop_archive_product_image']['width']) ? $theme['shop_archive_product_image']['width'] . 'px' : null,
+                $featured_border['width'] ?? null
+            ),
         ];
     }
 
     // Sale badge
     $sale = $theme['shop_archive_sale_tag'] ?? [];
-    $sale_position = $sale['position'] ?? ($attributes['style_saleBadge']['position'] ?? 'top-right');
+    $sale_position = $pick($sale['position'] ?? null, $attributes['style_saleBadge']['position'] ?? null) ?? 'top-right';
     $attributes['style_saleBadge'] = array_merge(
         $attributes['style_saleBadge'] ?? [],
         [
-            'backgroundColor' => $sale['bg_color'] ?? ($attributes['style_saleBadge']['backgroundColor'] ?? null),
-            'textColor' => $sale['text_color'] ?? ($attributes['style_saleBadge']['textColor'] ?? null),
-            'position' => $sale_position === 'left' ? 'top-left' : 'top-right',
+            'backgroundColor' => $pick($sale['bg_color'] ?? null, $attributes['style_saleBadge']['backgroundColor'] ?? null),
+            'textColor'       => $pick($sale['text_color'] ?? null, $attributes['style_saleBadge']['textColor'] ?? null),
+            'position'        => $sale_position === 'left' ? 'top-left' : 'top-right',
         ]
     );
 
     // Out of stock badge
     $outofstock = $theme['shop_archive_out_of_stock'] ?? [];
-    $raw_out_position = $outofstock['position'] ?? ($attributes['style_outOfStock']['position'] ?? 'none');
+    $raw_out_position = $pick($outofstock['position'] ?? null, $attributes['style_outOfStock']['position'] ?? null) ?? 'none';
     $mapped_out_position = $raw_out_position === 'left'
         ? 'top-left'
         : ($raw_out_position === 'right' ? 'top-right' : 'none');
     $attributes['style_outOfStock'] = array_merge(
         $attributes['style_outOfStock'] ?? [],
         [
-            'backgroundColor' => $outofstock['bg_color'] ?? ($attributes['style_outOfStock']['backgroundColor'] ?? null),
-            'textColor' => $outofstock['text_color'] ?? ($attributes['style_outOfStock']['textColor'] ?? null),
-            'position' => $mapped_out_position,
+            'backgroundColor' => $pick($outofstock['bg_color'] ?? null, $attributes['style_outOfStock']['backgroundColor'] ?? null),
+            'textColor'       => $pick($outofstock['text_color'] ?? null, $attributes['style_outOfStock']['textColor'] ?? null),
+            'position'        => $mapped_out_position,
         ]
     );
 
@@ -117,14 +151,23 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_title'] = array_merge(
         $attributes['style_title'] ?? [],
         [
-            'textColor' => $general_design['title_color'] ?? ($attributes['style_title']['textColor'] ?? null),
+            'textColor' => $pick($general_design['title_color'] ?? null, $attributes['style_title']['textColor'] ?? null),
             'typography' => array_merge(
                 $attributes['style_title']['typography'] ?? [],
                 [
                     'fontSizes' => [
-                        'Desktop' => isset($general_design['title_font_size']['desktop']) ? $general_design['title_font_size']['desktop'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Desktop'] ?? null),
-                        'Tablet' => isset($general_design['title_font_size']['tablet']) ? $general_design['title_font_size']['tablet'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Tablet'] ?? null),
-                        'Mobile' => isset($general_design['title_font_size']['mobile']) ? $general_design['title_font_size']['mobile'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Mobile'] ?? null),
+                        'Desktop' => $pick(
+                            isset($general_design['title_font_size']['desktop']) ? $general_design['title_font_size']['desktop'] . 'px' : null,
+                            $attributes['style_title']['typography']['fontSizes']['Desktop'] ?? null
+                        ),
+                        'Tablet' => $pick(
+                            isset($general_design['title_font_size']['tablet']) ? $general_design['title_font_size']['tablet'] . 'px' : null,
+                            $attributes['style_title']['typography']['fontSizes']['Tablet'] ?? null
+                        ),
+                        'Mobile' => $pick(
+                            isset($general_design['title_font_size']['mobile']) ? $general_design['title_font_size']['mobile'] . 'px' : null,
+                            $attributes['style_title']['typography']['fontSizes']['Mobile'] ?? null
+                        ),
                     ],
                 ]
             ),
@@ -135,14 +178,23 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_price'] = array_merge(
         $attributes['style_price'] ?? [],
         [
-            'textColor' => $general_design['price_color'] ?? ($attributes['style_price']['textColor'] ?? null),
+            'textColor' => $pick($general_design['price_color'] ?? null, $attributes['style_price']['textColor'] ?? null),
             'typography' => array_merge(
                 $attributes['style_price']['typography'] ?? [],
                 [
                     'fontSizes' => [
-                        'Desktop' => isset($general_design['price_font_size']['desktop']) ? $general_design['price_font_size']['desktop'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Desktop'] ?? null),
-                        'Tablet' => isset($general_design['price_font_size']['tablet']) ? $general_design['price_font_size']['tablet'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Tablet'] ?? null),
-                        'Mobile' => isset($general_design['price_font_size']['mobile']) ? $general_design['price_font_size']['mobile'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Mobile'] ?? null),
+                        'Desktop' => $pick(
+                            isset($general_design['price_font_size']['desktop']) ? $general_design['price_font_size']['desktop'] . 'px' : null,
+                            $attributes['style_price']['typography']['fontSizes']['Desktop'] ?? null
+                        ),
+                        'Tablet' => $pick(
+                            isset($general_design['price_font_size']['tablet']) ? $general_design['price_font_size']['tablet'] . 'px' : null,
+                            $attributes['style_price']['typography']['fontSizes']['Tablet'] ?? null
+                        ),
+                        'Mobile' => $pick(
+                            isset($general_design['price_font_size']['mobile']) ? $general_design['price_font_size']['mobile'] . 'px' : null,
+                            $attributes['style_price']['typography']['fontSizes']['Mobile'] ?? null
+                        ),
                     ],
                 ]
             ),
@@ -159,12 +211,12 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
                 $existing_colors,
                 [
                     'Normal' => [
-                        'color' => $atc['text_color'] ?? ($existing_colors['Normal']['color'] ?? null),
-                        'backgroundColor' => $atc['bg_color'] ?? ($existing_colors['Normal']['backgroundColor'] ?? null),
+                        'color'           => $pick($atc['text_color'] ?? null, $existing_colors['Normal']['color'] ?? null),
+                        'backgroundColor' => $pick($atc['bg_color'] ?? null, $existing_colors['Normal']['backgroundColor'] ?? null),
                     ],
                     'Hover' => [
-                        'color' => $atc['hover_text_color'] ?? ($existing_colors['Hover']['color'] ?? null),
-                        'backgroundColor' => $atc['hover_bg_color'] ?? ($existing_colors['Hover']['backgroundColor'] ?? null),
+                        'color'           => $pick($atc['hover_text_color'] ?? null, $existing_colors['Hover']['color'] ?? null),
+                        'backgroundColor' => $pick($atc['hover_bg_color'] ?? null, $existing_colors['Hover']['backgroundColor'] ?? null),
                     ],
                 ]
             ),
@@ -172,9 +224,18 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
                 $attributes['style_addToCardBtn']['border'] ?? [],
                 [
                     'radius' => [
-                        'Desktop' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null),
-                        'Tablet' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null),
-                        'Mobile' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null),
+                        'Desktop' => $pick(
+                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
+                            $attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null
+                        ),
+                        'Tablet' => $pick(
+                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
+                            $attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null
+                        ),
+                        'Mobile' => $pick(
+                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
+                            $attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null
+                        ),
                     ],
                 ]
             ),
@@ -182,18 +243,22 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     );
 
     // Add to cart general settings
+    $atc_position = $atc['position'] ?? null;
+    $mapped_atc_position = $atc_position === 'bottom-visible' ? 'bottom visible'
+        : ($atc_position === 'image' ? 'inside image'
+            : ($atc_position === 'icon' ? 'icon'
+                : ($atc_position === 'bottom' ? 'bottom'
+                    : ($atc_position ?: ($attributes['general_addToCartBtn']['position'] ?? null)))));
     $attributes['general_addToCartBtn'] = array_merge(
         $attributes['general_addToCartBtn'] ?? [],
         [
-            'isShowButton' => ($atc['position'] ?? '') === 'none'
-                ? false
-                : ($attributes['general_addToCartBtn']['isShowButton'] ?? true),
-            'position' => ($atc['position'] ?? '') === 'bottom-visible' ? 'bottom visible'
-                : (($atc['position'] ?? '') === 'image' ? 'inside image'
-                    : (($atc['position'] ?? '') === 'icon' ? 'icon'
-                        : (($atc['position'] ?? '') === 'bottom' ? 'bottom'
-                            : (($atc['position'] ?? null) ?: ($attributes['general_addToCartBtn']['position'] ?? null))))),
-            'isShowQuantity' => $to_bool($content['quantity_flag'] ?? null, $attributes['general_addToCartBtn']['isShowQuantity'] ?? null),
+            'isShowButton' => $block_overrides
+                ? ($attributes['general_addToCartBtn']['isShowButton'] ?? ($atc_position !== 'none'))
+                : ($atc_position === 'none' ? false : ($attributes['general_addToCartBtn']['isShowButton'] ?? true)),
+            'position' => $block_overrides && !empty($attributes['general_addToCartBtn']['position'])
+                ? $attributes['general_addToCartBtn']['position']
+                : $mapped_atc_position,
+            'isShowQuantity' => $pick_bool($content['quantity_flag'] ?? null, $attributes['general_addToCartBtn']['isShowQuantity'] ?? null),
         ]
     );
 
@@ -202,9 +267,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_wishlistBtn'] = array_merge(
         $attributes['style_wishlistBtn'] ?? [],
         [
-            'position' => $wishlist['position'] ?? ($attributes['style_wishlistBtn']['position'] ?? null),
-            'style' => $wishlist['style'] ?? ($attributes['style_wishlistBtn']['style'] ?? null),
-            'wishlist_plugin_active' => $wishlist['wishlist_plugin_active'] ?? ($attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
+            'position'               => $pick($wishlist['position'] ?? null, $attributes['style_wishlistBtn']['position'] ?? null),
+            'style'                  => $pick($wishlist['style'] ?? null, $attributes['style_wishlistBtn']['style'] ?? null),
+            'wishlist_plugin_active' => $pick($wishlist['wishlist_plugin_active'] ?? null, $attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
         ]
     );
 
@@ -213,15 +278,18 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_quickViewBtn'] = array_merge(
         $attributes['style_quickViewBtn'] ?? [],
         [
-            'enabled' => $quickview['enabled'] ?? ($attributes['style_quickViewBtn']['enabled'] ?? null),
-            'position' => $quickview['position'] ?? ($attributes['style_quickViewBtn']['position'] ?? null),
-            'show_icon' => $quickview['show_icon'] ?? ($attributes['style_quickViewBtn']['show_icon'] ?? null),
-            'bg_color' => $quickview['bg_color'] ?? ($attributes['style_quickViewBtn']['bg_color'] ?? null),
-            'text_color' => $quickview['text_color'] ?? ($attributes['style_quickViewBtn']['text_color'] ?? null),
-            'hover_bg_color' => $quickview['hover_bg_color'] ?? ($attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
-            'hover_text_color' => $quickview['hover_text_color'] ?? ($attributes['style_quickViewBtn']['hover_text_color'] ?? null),
-            'border_radius' => isset($quickview['border_radius']) ? $quickview['border_radius'] . 'px' : ($attributes['style_quickViewBtn']['border_radius'] ?? null),
-            'woostify_pro_active' => $quickview['woostify_pro_active'] ?? ($attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
+            'enabled'             => $pick($quickview['enabled'] ?? null, $attributes['style_quickViewBtn']['enabled'] ?? null),
+            'position'            => $pick($quickview['position'] ?? null, $attributes['style_quickViewBtn']['position'] ?? null),
+            'show_icon'           => $pick($quickview['show_icon'] ?? null, $attributes['style_quickViewBtn']['show_icon'] ?? null),
+            'bg_color'            => $pick($quickview['bg_color'] ?? null, $attributes['style_quickViewBtn']['bg_color'] ?? null),
+            'text_color'          => $pick($quickview['text_color'] ?? null, $attributes['style_quickViewBtn']['text_color'] ?? null),
+            'hover_bg_color'      => $pick($quickview['hover_bg_color'] ?? null, $attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
+            'hover_text_color'    => $pick($quickview['hover_text_color'] ?? null, $attributes['style_quickViewBtn']['hover_text_color'] ?? null),
+            'border_radius'       => $pick(
+                isset($quickview['border_radius']) ? $quickview['border_radius'] . 'px' : null,
+                $attributes['style_quickViewBtn']['border_radius'] ?? null
+            ),
+            'woostify_pro_active' => $pick($quickview['woostify_pro_active'] ?? null, $attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
         ]
     );
 
@@ -230,22 +298,22 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_countdownUrgency'] = array_merge(
         $attributes['style_countdownUrgency'] ?? [],
         [
-            'countdownUrgencyActive' => $cu['active'] ?? ($attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
-            'style'                  => $cu['style'] ?? ($attributes['style_countdownUrgency']['style'] ?? null),
-            'applyFor'               => $cu['apply_for'] ?? ($attributes['style_countdownUrgency']['applyFor'] ?? null),
-            'categoriesSelected'     => $cu['categories_selected'] ?? ($attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
-            'productsSelected'       => $cu['products_selected'] ?? ($attributes['style_countdownUrgency']['productsSelected'] ?? null),
-            'categoriesExclude'      => $cu['categories_exclude'] ?? ($attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
-            'productsExclude'        => $cu['products_exclude'] ?? ($attributes['style_countdownUrgency']['productsExclude'] ?? null),
-            'timeDuration'           => $cu['time_duration'] ?? ($attributes['style_countdownUrgency']['timeDuration'] ?? null),
-            'timeType'               => $cu['time_type'] ?? ($attributes['style_countdownUrgency']['timeType'] ?? null),
-            'message'                => $cu['message'] ?? ($attributes['style_countdownUrgency']['message'] ?? null),
-            'daysLabel'              => $cu['days_label'] ?? ($attributes['style_countdownUrgency']['daysLabel'] ?? null),
-            'hoursLabel'             => $cu['hours_label'] ?? ($attributes['style_countdownUrgency']['hoursLabel'] ?? null),
-            'minutesLabel'           => $cu['minutes_label'] ?? ($attributes['style_countdownUrgency']['minutesLabel'] ?? null),
-            'secondsLabel'           => $cu['seconds_label'] ?? ($attributes['style_countdownUrgency']['secondsLabel'] ?? null),
-            'displayOnThumbnail'     => $cu['display_on_thumbnail'] ?? ($attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
-            'hideAfterTimeUp'        => $cu['hide_after_time_up'] ?? ($attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
+            'countdownUrgencyActive' => $pick($cu['active'] ?? null, $attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
+            'style'                  => $pick($cu['style'] ?? null, $attributes['style_countdownUrgency']['style'] ?? null),
+            'applyFor'               => $pick($cu['apply_for'] ?? null, $attributes['style_countdownUrgency']['applyFor'] ?? null),
+            'categoriesSelected'     => $pick($cu['categories_selected'] ?? null, $attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
+            'productsSelected'       => $pick($cu['products_selected'] ?? null, $attributes['style_countdownUrgency']['productsSelected'] ?? null),
+            'categoriesExclude'      => $pick($cu['categories_exclude'] ?? null, $attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
+            'productsExclude'        => $pick($cu['products_exclude'] ?? null, $attributes['style_countdownUrgency']['productsExclude'] ?? null),
+            'timeDuration'           => $pick($cu['time_duration'] ?? null, $attributes['style_countdownUrgency']['timeDuration'] ?? null),
+            'timeType'               => $pick($cu['time_type'] ?? null, $attributes['style_countdownUrgency']['timeType'] ?? null),
+            'message'                => $pick($cu['message'] ?? null, $attributes['style_countdownUrgency']['message'] ?? null),
+            'daysLabel'              => $pick($cu['days_label'] ?? null, $attributes['style_countdownUrgency']['daysLabel'] ?? null),
+            'hoursLabel'             => $pick($cu['hours_label'] ?? null, $attributes['style_countdownUrgency']['hoursLabel'] ?? null),
+            'minutesLabel'           => $pick($cu['minutes_label'] ?? null, $attributes['style_countdownUrgency']['minutesLabel'] ?? null),
+            'secondsLabel'           => $pick($cu['seconds_label'] ?? null, $attributes['style_countdownUrgency']['secondsLabel'] ?? null),
+            'displayOnThumbnail'     => $pick($cu['display_on_thumbnail'] ?? null, $attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
+            'hideAfterTimeUp'        => $pick($cu['hide_after_time_up'] ?? null, $attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
         ]
     );
 
@@ -261,7 +329,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
 function boostify_blocks_block_products_render_callback($attributes, $content)
 {
     // Re-apply theme defaults on render so saved blocks stay in sync with Customizer changes.
-    $attributes = boostify_blocks_block_products_apply_theme_defaults($attributes);
+    // When isCustomizerGeneralLayout is ON, block-level attributes override Customizer values.
+    $block_overrides = !empty($attributes['general_layout']['isCustomizerGeneralLayout']);
+    $attributes = boostify_blocks_block_products_apply_theme_defaults($attributes, $block_overrides);
 
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     // 
