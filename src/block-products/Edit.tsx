@@ -1,6 +1,6 @@
 import { __ } from "@wordpress/i18n";
 import { BlockControls, useBlockProps } from "@wordpress/block-editor";
-import React, { useEffect, FC, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, FC, useCallback, useMemo } from "react";
 // @ts-ignore
 import ServerSideRender from "@wordpress/server-side-render";
 import { WcbAttrs } from "./attributes";
@@ -174,6 +174,31 @@ const Edit: FC<Props> = (props) => {
 		setAttributes({ ...DEFAULT });
 	}, [style_layout]);
 	
+	// When isCustomizerGeneralLayout switches from true → false, reset affected attributes to customizer defaults
+	const prevIsCustomizerGeneralLayout = useRef(general_layout?.isCustomizerGeneralLayout);
+	useEffect(() => {
+		const prev = prevIsCustomizerGeneralLayout.current;
+		const curr = general_layout?.isCustomizerGeneralLayout;
+		prevIsCustomizerGeneralLayout.current = curr;
+
+		if (prev === true && curr === false) {
+			setAttributes({
+				general_content: buildGeneralContractDefault(undefined),
+				general_featuredImage: buildGeneralFeaturedImageDefault(undefined),
+				general_addToCartBtn: buildGeneralAddToCartBtnDefault(undefined) as any,
+				general_sortingAndFiltering: buildSortingAndFilteringDefault(undefined),
+				style_layout: buildStyleLayoutDefault(undefined),
+				style_border: buildStyleBorderDefault(undefined),
+				style_featuredImage: buildStyleFeaturedImageDefault(undefined),
+				style_saleBadge: buildStyleSaleBadgeDefault(undefined),
+				style_outOfStock: buildStyleOutOfStockDefault(undefined),
+				style_title: buildStyleTitleDefault(undefined),
+				style_price: buildStylePriceDefault(undefined),
+				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined),
+			});
+		}
+	}, [general_layout?.isCustomizerGeneralLayout]);
+
 	//
 	useEffect(() => {
 		if (!advance_motionEffect) {
