@@ -56,11 +56,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const ADD_TO_CART_BTN_BG = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart`;
 	const ADD_TO_CART_BTN = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart a`;
 	const ADD_TO_CART_BTN_ICON = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart-icon`;
-	const ADD_TO_CART_BTN_VIEW_CARD_BG = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart added_to_cart`;
 	const ADD_TO_CART_VIEW_CARD_BTN = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart a.added_to_cart`;
-	const ADD_TO_CART_BTN_VIEW_CARD_ICON = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart-icon`;
 	const PRODUCT_IMAGE_CLASS = `${WRAP_CLASSNAME} .wcb-products__product-image`;
-	const PRODUCT_PRICE_CLASS = `${POST_CARD_CLASS} .wcb-products__product-price`;
 
 	// ------------------- WRAP DIV
 
@@ -128,11 +125,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							: `repeat(${numberOfColumn_mobile}, minmax(0, 1fr))`,
 						// ------ end setting snap scroll x
 						//
-						rowGap: rowGap_mobile,
-						columnGap: colunmGap_mobile,
+						rowGap: rowGap_mobile ?? undefined,
+						columnGap: colunmGap_mobile ?? undefined,
 						[`@media (min-width: ${media_tablet})`]: {
-							rowGap: rowGap_tablet,
-							columnGap: colunmGap_tablet,
+							rowGap: rowGap_tablet ?? undefined,
+							columnGap: colunmGap_tablet ?? undefined,
 							// ------ setting snap scroll x
 							"> div": isSnapScrollTablet
 								? {
@@ -594,9 +591,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 								content: '""',
 								width: "1.2rem",
 								height: "1.2rem",
-								backgroundImage: svgToDataUrl(
+								backgroundImage: `${svgToDataUrl(
 									`${SHOPPING_CART_SVG(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color as any)}`
-								),
+								)} !important` as any,
 								margin: "auto",
 								transformOrigin: "top right",
 								zIndex: 1,
@@ -615,21 +612,21 @@ const GlobalCss: FC<Props> = (attrs) => {
 							content: "none",
 						},
 						".wcb-products__product--btnIconAddToCart--item:hover": {
-							background: style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor ? 
+							background: style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor ?
 								style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor : "#474747",
 							marginTop: "0px !important",
-							"&::after": {
-								content: '""',
-								width: "1.2rem",
-								height: "1.2rem",
-								backgroundImage: svgToDataUrl(`${SHOPPING_CART_SVG(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any)}`),
-								margin: "auto",
-								zIndex: 1,
-								backgroundSize: "contain",
-								backgroundRepeat: "no-repeat",
-								backgroundPosition: "center",
-								pointerEvents: "none",
-							},
+						},
+						".wcb-products__product--btnIconAddToCart--item:hover::after": {
+							content: '""',
+							width: "1.2rem",
+							height: "1.2rem",
+							backgroundImage: `${svgToDataUrl(SHOPPING_CART_SVG(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any))} !important` as any,
+							margin: "auto",
+							zIndex: 1,
+							backgroundSize: "contain",
+							backgroundRepeat: "no-repeat",
+							backgroundPosition: "center",
+							pointerEvents: "none",
 						},
 						// Style loading display is none for top right icon add to cart button
 						".add_to_cart_button--loading.wcb-products__product--btnIconAddToCart--item:hover": {
@@ -795,17 +792,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 							".add_to_cart_button span": {
 								color: (style_addToCardBtn?.colorAndBackgroundColor?.Hover.color as any),
 							},
-							"span.woostify-svg-icon svg": {
-								color: general_addToCartBtn?.position === "bottom" ? "#2b2b2b !important" : "#FFFFFF !important",
-							}
+							".wcb-products__add-to-cart-icon svg path": {
+								fill: `${style_addToCardBtn?.colorAndBackgroundColor?.Hover.color} !important` as any,
+							},
 						},
-						"span.woostify-svg-icon svg": {
-							color: general_addToCartBtn?.position === "bottom" ? "#2b2b2b !important" : "#FFFFFF !important",
+						".wcb-products__add-to-cart-icon svg path": {
+							fill: `${style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color} !important` as any,
 						}
 					},
 
 					// ".wcb-products__product-image":
-					// ".wcb-products__product-image-link":
+					// ".wcb-products__product-image-link":wcb-add-to-cart-icon-113
 					// 	featuredImageMarginBottom_mobile_new ||
 					// 	featuredImageMarginBottom_tablet_new ||
 					// 	featuredImageMarginBottom_desktop_new
@@ -827,36 +824,36 @@ const GlobalCss: FC<Props> = (attrs) => {
 					// 		: undefined,
 
 					".wcb-products__product-title": {
-						marginBottom: titleMarginBottom_mobile_new,
+						marginBottom: titleMarginBottom_mobile_new ?? undefined,
 						color: style_title.textColor,
 					},
 					".wcb-products__product-categories": {
-						marginBottom: categoryMarginBottom_mobile_new,
+						marginBottom: categoryMarginBottom_mobile_new ?? undefined,
 						color: style_category.textColor,
 						a: {
 							color: style_category.textColor,
 						},
 					},
 					".wcb-products__product-salebadge": {
-						marginBottom: saleBadgeMarginBottom_mobile_new,
+						marginBottom: saleBadgeMarginBottom_mobile_new ?? undefined,
 						".wcb-products__product-onsale": {
 							color: style_saleBadge.textColor,
 							backgroundColor: style_saleBadge.backgroundColor,
 						},
 					},
 					".wcb-products__product-outofstock-badge": {
-						marginBottom: outofstockBadgeMarginBottom_mobile_new,
+						marginBottom: outofstockBadgeMarginBottom_mobile_new ?? undefined,
 						".wcb-products__product-on-outofstock": {
 							color: style_outOfStock?.textColor,
 							backgroundColor: style_outOfStock?.backgroundColor,
 						},
 					},
 					".wcb-products__product-price": {
-						marginBottom: priceMarginBottom_mobile_new,
+						marginBottom: priceMarginBottom_mobile_new ?? undefined,
 						color: style_price.textColor,
 					},
 					".wcb-products__product-rating": {
-						marginBottom: ratingMarginBottom_mobile_new,
+						marginBottom: ratingMarginBottom_mobile_new ?? undefined,
 						color: style_rating.color,
 					},
 					[`@media (min-width: ${media_tablet})`]:
@@ -993,7 +990,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				display: (position === "icon" || position === "bottom") ? "none" : "block",
 				color,
 				backgroundColor: (position === "bottom visible" || position === "inside image")  ? backgroundColor : "#fff",
-				marginBottom: marginBottom_mobile_new,
+				marginBottom: marginBottom_mobile_new ?? undefined,
 				":hover": {
 					color: color_h ? `${color_h} !important` : undefined,
 					backgroundColor: (position === "bottom visible" || position === "inside image" || position === "icon") ? backgroundColor_h : "#fff !important",
@@ -1036,7 +1033,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			[ADD_TO_CART_BTN_ICON]: {
 				color,
 				backgroundColor,
-				marginBottom: marginBottom_mobile_new,
+				marginBottom: marginBottom_mobile_new ?? undefined,
 				":hover": {
 					color: color_h,
 					backgroundColor: backgroundColor_h,
