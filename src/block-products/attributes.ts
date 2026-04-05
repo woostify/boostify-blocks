@@ -4,66 +4,96 @@ import {
 } from "../block-container/attributes";
 import {
 	MyBorderControlData,
+	MY_BORDER_CONTROL_DEMO,
 } from "../components/controls/MyBorderControl/types";
 import {
 	MyMotionEffectData,
+	MY_MOTION_EFFECT_DEMO,
 } from "../components/controls/MyMotionEffectControl/MyMotionEffectControl";
 import {
 	MyResponsiveConditionControlData,
+	RESPONSIVE_CONDITON_DEMO,
 } from "../components/controls/MyResponsiveConditionControl/MyResponsiveConditionControl";
 import {
 	MyZIndexControlData,
+	Z_INDEX_DEMO,
 } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import {
 	WCB_PRODUCTS_PANEL_SORTINGANDFILTERING,
+	WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO,
 } from "./WcbProducstPanelSortingAndFiltering";
 import {
 	WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN,
+	WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
 } from "./WcbProductsPanelButton";
 import {
 	WCB_PRODUCTS_PANEL_COTENT,
+	WCB_PRODUCTS_PANEL_COTENT_DEMO,
 } from "./WcbProductsPanelContent";
 import {
 	WCB_PRODUCTS_PANEL_FEATURED_IMAGE,
+	WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO,
 } from "./WcbProductsPanelFeaturedImage";
 import {
 	WCB_PRODUCTS_PANEL_PAGINATION,
+	WCB_PRODUCTS_PANEL_PAGINATION_DEMO,
 } from "./WcbProductsPanelPagination";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN,
+	WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO,
 } from "./WcbProductsPanel_StyleAddToCartBtn";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_CATEGORY,
+	WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO,
 } from "./WcbProductsPanel_StyleCategory";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE,
+	WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO,
 } from "./WcbProductsPanel_StyleFeaturedImage";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_LAYOUT,
+	WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
 } from "./WcbProductsPanel_StyleLayout";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_PAGINATION,
+	WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO,
 } from "./WcbProductsPanel_StylePagination";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_PRICE,
+	WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
 } from "./WcbProductsPanel_StylePrice";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_RATING,
+	WCB_PRODUCTS_PANEL_STYLE_RATING_DEMO,
 } from "./WcbProductsPanel_StyleRating";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE,
+	WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
 } from "./WcbProductsPanel_StyleSaleBadge";
 import {
 	WCB_PRODUCTS_PANEL_STYLE_TITLE,
+	WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO,
 } from "./WcbProductsPanel_StyleTitle";
 import {
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT,
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO
 } from "./WcbProducstPanel_GeneralLayout";
-import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK } from "./WcbProductsPanel_StyleOutOfStock";
-import { WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON } from "./WcbProductsPanel_StyleWishListButton";
-import { WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON } from "./WcbProductsPanel_StyleQuickViewButton";
-import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY } from "./WcbProductsPanel_StyleCountdownUrgency";
+import { 
+	WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK, 
+	WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO 
+} from "./WcbProductsPanel_StyleOutOfStock";
+import { 
+	WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON, 
+	WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO 
+} from "./WcbProductsPanel_StyleWishListButton";
+import { 
+	WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON,
+	WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO
+} from "./WcbProductsPanel_StyleQuickViewButton";
+import { 
+	WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY,
+	WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO
+ } from "./WcbProductsPanel_StyleCountdownUrgency";
 
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
@@ -188,15 +218,15 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	// ADVANCE
 	advance_responsiveCondition: {
 		type: "object",
-		// default: RESPONSIVE_CONDITON_DEMO,
+		default: RESPONSIVE_CONDITON_DEMO,
 	},
 	advance_zIndex: {
 		type: "object",
-		// default: Z_INDEX_DEMO,
+		default: Z_INDEX_DEMO,
 	},
 	advance_motionEffect: {
 		type: "object",
-		// default: MY_MOTION_EFFECT_DEMO,
+		default: MY_MOTION_EFFECT_DEMO,
 	},
 };
 

@@ -89,7 +89,6 @@ import {
 	buildStyleQuickViewButtonDefault,
 	buildStyleCountdownUrgencyDefault,
 } from "./WcbThemeDefaults";
-import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO } from "./WcbProductsPanel_StyleCountdownUrgency";
 
 interface Props extends EditProps<WcbAttrs> {}
 
@@ -671,7 +670,7 @@ const Edit: FC<Props> = (props) => {
 		);
 	};
 
-	const WcbAttrsForSave = useCallback((): Required<WcbAttrsForSave> | null => {
+	const WcbAttrsForSave = useCallback((): WcbAttrsForSave => {
 		const cs: WcbAttrsForSave = {
 			uniqueId,
 			advance_responsiveCondition,
@@ -696,10 +695,7 @@ const Edit: FC<Props> = (props) => {
 			advance_motionEffect,
 			style_category,
 		};
-		if (Object.values(cs).some((item) => !item)) {
-			return null;
-		}
-		return cs as Required<WcbAttrsForSave>;
+		return cs;
 	}, [
 		uniqueId,
 		advance_responsiveCondition,
@@ -776,7 +772,10 @@ const Edit: FC<Props> = (props) => {
 				{!!uniqueId &&
 					!!style_layout &&
 					!!style_price &&
-					WcbAttrsForSaveValue && <GlobalCss {...WcbAttrsForSaveValue} />}
+					!!advance_zIndex &&
+					!!advance_responsiveCondition &&
+					!!advance_motionEffect &&
+					<GlobalCss {...(WcbAttrsForSaveValue as Required<WcbAttrsForSave>)} />}
 
 				{/* CHILD CONTENT  */}
 				{uniqueId && !!style_layout && !!style_price && (

@@ -26,22 +26,22 @@
 		background-color: rgba(255, 255, 255, 0.6);
 		z-index: 9997;
 	}
-`,Re=({advance_motionEffect:e,advance_zIndex:a,advance_responsiveCondition:t,className:l,defaultDisplay:i})=>{const{media_desktop:r,media_tablet:n}=Ne;try{if(e?.entranceAnimation){const a=document.querySelectorAll(l),t=new IntersectionObserver((a=>{a.forEach((a=>{if(a.isIntersecting){const l=a.target,i=/\banimate__\S+/g,r=l?.className.replace(i,"");l.setAttribute("class",r),setTimeout((()=>{l?.classList.add("animate__animated",`animate__${e?.entranceAnimation}`,`animate__${e?.animationDuration}`,`animate__delay-${e?.animationDelay}ms`,`animate__repeat-${e?.repeat}`)}),50),t.unobserve(l)}}))}),{threshold:.2});a.forEach((e=>t.observe(e)))}}catch(e){console.log("error, advance_motionEffect",e)}const{mobile_v:s,tablet_v:c,desktop_v:o}=Ae({mobile_v:a.Mobile||a.Tablet||a.Desktop,tablet_v:a.Tablet||a.Desktop,desktop_v:a.Desktop}),{mobile_v:u,tablet_v:g,desktop_v:f}=Ae({mobile_v:t.isHiddenOnMobile,tablet_v:t.isHiddenOnTablet,desktop_v:t.isHiddenOnDesktop}),d=e=>""===e?"":e?Pe:Te`display: ${i};`;return Te`
+`,Re=({advance_motionEffect:e,advance_zIndex:a,advance_responsiveCondition:t,className:l,defaultDisplay:i})=>{const{media_desktop:r,media_tablet:n}=Ne;try{if(e?.entranceAnimation){const a=document.querySelectorAll(l),t=new IntersectionObserver((a=>{a.forEach((a=>{if(a.isIntersecting){const l=a.target,i=/\banimate__\S+/g,r=l?.className.replace(i,"");l.setAttribute("class",r),setTimeout((()=>{l?.classList.add("animate__animated",`animate__${e?.entranceAnimation}`,`animate__${e?.animationDuration}`,`animate__delay-${e?.animationDelay}ms`,`animate__repeat-${e?.repeat}`)}),50),t.unobserve(l)}}))}),{threshold:.2});a.forEach((e=>t.observe(e)))}}catch(e){console.log("error, advance_motionEffect",e)}const{mobile_v:s,tablet_v:c,desktop_v:o}=Ae({mobile_v:a?.Mobile||a?.Tablet||a?.Desktop,tablet_v:a?.Tablet||a?.Desktop,desktop_v:a?.Desktop}),u=e=>""===e?"":e?Pe:Te`display: ${i};`;return Te`
 		${l} {
 			visibility: visible;
 			@media (min-width: ${r}) {
 				z-index: ${o};
-				${d(t.isHiddenOnDesktop)}
+				${u(t?.isHiddenOnDesktop)}
 			}
 
 			@media (min-width: ${n}) and (max-width: ${r}) {
 				z-index: ${c};
-				${d(t.isHiddenOnTablet)}
+				${u(t?.isHiddenOnTablet)}
 			}
 
 			@media (max-width: ${n}) {
 				z-index: ${s};
-				${d(t.isHiddenOnMobile)}
+				${u(t?.isHiddenOnMobile)}
 			}
 		}
 	`},Le=function(e,a){var t,l;const i=e?.Desktop,r=null!==(t=e?.Tablet)&&void 0!==t?t:i,n=null!==(l=e?.Mobile)&&void 0!==l?l:r;let s;return a&&(s="Desktop"===a?i:"Tablet"===a?r:n),{value_Desktop:null!=i?i:null,value_Tablet:null!=r?r:null,value_Mobile:null!=n?n:null,currentDeviceValue:s}},De=({className:e,padding:a,margin:t})=>{const{media_desktop:l,media_tablet:i}=Ne,{value_Desktop:r,value_Tablet:n,value_Mobile:s}=Le(t),{value_Desktop:c,value_Tablet:o,value_Mobile:u}=Le(a),{mobile_v:g,tablet_v:f,desktop_v:d}=Ae({mobile_v:u?.top,tablet_v:o?.top,desktop_v:c?.top}),{mobile_v:h,tablet_v:b,desktop_v:p}=Ae({mobile_v:u?.left,tablet_v:o?.left,desktop_v:c?.left}),{mobile_v:m,tablet_v:w,desktop_v:k}=Ae({mobile_v:u?.right,tablet_v:o?.right,desktop_v:c?.right}),{mobile_v:v,tablet_v:y,desktop_v:C}=Ae({mobile_v:u?.bottom,tablet_v:o?.bottom,desktop_v:c?.bottom}),{mobile_v:S,tablet_v:_,desktop_v:E}=Ae({mobile_v:s?.top,tablet_v:n?.top,desktop_v:r?.top}),{mobile_v:x,tablet_v:I,desktop_v:M}=Ae({mobile_v:s?.left,tablet_v:n?.left,desktop_v:r?.left}),{mobile_v:O,tablet_v:T,desktop_v:N}=Ae({mobile_v:s?.right,tablet_v:n?.right,desktop_v:r?.right}),{mobile_v:A,tablet_v:P,desktop_v:R}=Ae({mobile_v:s?.bottom,tablet_v:n?.bottom,desktop_v:r?.bottom});return Te`
