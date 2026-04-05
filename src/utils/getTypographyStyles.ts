@@ -75,8 +75,8 @@ const getTypographyStyles = ({ typography, className }: Params): CSSObject => {
 	return {
 		[`${className}`]: {
 			fontFamily: fontFamily,
-			fontWeight: appearance.style?.fontWeight,
-			fontStyle: appearance.style?.fontStyle,
+			fontWeight: appearance?.style?.fontWeight,
+			fontStyle: appearance?.style?.fontStyle,
 			textDecoration,
 			textTransform,
 			//

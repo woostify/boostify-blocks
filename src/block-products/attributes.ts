@@ -156,6 +156,10 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 		type: "object",
 		// default: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
 	},
+	style_outOfStock: {
+		type: "object",
+		// default: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO,
+	},
 	style_border: {
 		type: "object",
 		// default: MY_BORDER_CONTROL_DEMO,

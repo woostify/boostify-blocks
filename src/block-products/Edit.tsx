@@ -235,6 +235,18 @@ const Edit: FC<Props> = (props) => {
 			});
 		}
 	}, [style_countdownUrgency]);
+
+	useEffect(() => {
+		const hasQuickViewConfig =
+			style_quickViewBtn && Object.keys(style_quickViewBtn).length > 0;
+		if (!hasQuickViewConfig) {
+			setAttributes({
+				style_quickViewBtn: buildStyleQuickViewButtonDefault(
+					attributes.style_quickViewBtn as any
+				),
+			});
+		}
+	}, [style_quickViewBtn]);
 	//
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
