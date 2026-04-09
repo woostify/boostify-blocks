@@ -71,7 +71,7 @@ import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectCont
 import WcbProducstPanelGeneralLayout, {
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO
 } from "./WcbProducstPanel_GeneralLayout";	
-import WcbProductsPanel_StyleOutOfStock, { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO } from "./WcbProductsPanel_StyleOutOfStock";
+import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock";
 import { 
 	buildStyleBorderDefault, 
 	buildStyleLayoutDefault, 

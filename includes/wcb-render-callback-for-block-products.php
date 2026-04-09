@@ -1393,28 +1393,6 @@ endif;
 if (!function_exists("boostify_blocks_block_products_set_tags_query_args")) :
     function boostify_blocks_block_products_set_tags_query_args(&$query_args, $attributes)
     {
-        if (!empty($attributes['categories'])) {
-            $categories = array_map('absint', $attributes['categories']);
-
-            $query_args['tax_query'][] = array(
-                'taxonomy'         => 'product_cat',
-                'terms'            => $categories,
-                'field'            => 'term_id',
-                'operator'         => boostify_blocks_block_products_tax_operator_mapping($attributes['catOperator'] ?? null),
-
-                /*
-				 * When cat_operator is AND, the children categories should be excluded,
-				 * as only products belonging to all the children categories would be selected.
-				 */
-                'include_children' => 'all' === $attributes['catOperator'] ? false : true,
-            );
-        }
-    }
-endif;
-
-if (!function_exists("boostify_blocks_block_products_set_attributes_query_args")) :
-    function boostify_blocks_block_products_set_attributes_query_args(&$query_args, $attributes)
-    {
         if (!empty($attributes['tags'])) {
             $query_args['tax_query'][] = array(
                 'taxonomy' => 'product_tag',
