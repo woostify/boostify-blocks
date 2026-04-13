@@ -82,8 +82,6 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	},
 	designation: {
 		type: "string",
-		source: "html",
-		selector: ".wcb-icon-box__designation",
 		default: "Write a Prefix",
 	},
 	description: {
