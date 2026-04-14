@@ -1,11 +1,11 @@
 {
 	"apiVersion": 3,
-	"name": "create-block-wcbxxyyyzz/wcbxxyyyzz-blocks-common-css",
+	"name": "create-block-boostify-blocks/boostify-blocks-blocks-common-css",
 	"version": "0.1.0",
 	"title": "Block Common CSS",
 	"category": "boostify-blocks",
 	"parent": [
-		"boostify-blocks/create-block-wcbxxyyyzz"
+		"boostify-blocks/create-block-boostify-blocks"
 	],
 	"icon": "heart",
 	"description": "Example static block scaffolded with Create Block tool.",

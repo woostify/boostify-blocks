@@ -103,24 +103,24 @@ export const getAdvanveDivWrapStyles = ({
 		desktop_v: zIndexDesktop,
 	} = checkResponsiveValueForOptimizeCSS({
 		mobile_v:
-			advance_zIndex.Mobile || advance_zIndex.Tablet || advance_zIndex.Desktop,
-		tablet_v: advance_zIndex.Tablet || advance_zIndex.Desktop,
-		desktop_v: advance_zIndex.Desktop,
+			advance_zIndex?.Mobile || advance_zIndex?.Tablet || advance_zIndex?.Desktop,
+		tablet_v: advance_zIndex?.Tablet || advance_zIndex?.Desktop,
+		desktop_v: advance_zIndex?.Desktop,
 	});
 	//
 
-	const {
-		mobile_v: isHiddenOnMobile,
-		tablet_v: isHiddenOnTablet,
-		desktop_v: isHiddenOnDesktop,
-	} = checkResponsiveValueForOptimizeCSS({
-		// @ts-ignore
-		mobile_v: advance_responsiveCondition.isHiddenOnMobile,
-		// @ts-ignore
-		tablet_v: advance_responsiveCondition.isHiddenOnTablet,
-		// @ts-ignore
-		desktop_v: advance_responsiveCondition.isHiddenOnDesktop,
-	});
+	// const {
+	// 	mobile_v: isHiddenOnMobile,
+	// 	tablet_v: isHiddenOnTablet,
+	// 	desktop_v: isHiddenOnDesktop,
+	// } = checkResponsiveValueForOptimizeCSS({
+	// 	// @ts-ignore
+	// 	mobile_v: advance_responsiveCondition.isHiddenOnMobile,
+	// 	// @ts-ignore
+	// 	tablet_v: advance_responsiveCondition.isHiddenOnTablet,
+	// 	// @ts-ignore
+	// 	desktop_v: advance_responsiveCondition.isHiddenOnDesktop,
+	// });
 
 	// Helper
 	const getHiddenCss = (isHidden: any) => {
@@ -133,17 +133,17 @@ export const getAdvanveDivWrapStyles = ({
 			visibility: visible;
 			@media (min-width: ${media_desktop}) {
 				z-index: ${zIndexDesktop};
-				${getHiddenCss(advance_responsiveCondition.isHiddenOnDesktop)}
+				${getHiddenCss(advance_responsiveCondition?.isHiddenOnDesktop)}
 			}
 
 			@media (min-width: ${media_tablet}) and (max-width: ${media_desktop}) {
 				z-index: ${zIndexTablet};
-				${getHiddenCss(advance_responsiveCondition.isHiddenOnTablet)}
+				${getHiddenCss(advance_responsiveCondition?.isHiddenOnTablet)}
 			}
 
 			@media (max-width: ${media_tablet}) {
 				z-index: ${zIndexMobile};
-				${getHiddenCss(advance_responsiveCondition.isHiddenOnMobile)}
+				${getHiddenCss(advance_responsiveCondition?.isHiddenOnMobile)}
 			}
 		}
 	`;

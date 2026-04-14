@@ -1,6 +1,6 @@
 import { __ } from "@wordpress/i18n";
 import { BlockControls, useBlockProps } from "@wordpress/block-editor";
-import React, { useEffect, FC, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, FC, useCallback, useMemo } from "react";
 // @ts-ignore
 import ServerSideRender from "@wordpress/server-side-render";
 import { WcbAttrs } from "./attributes";
@@ -71,7 +71,7 @@ import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectCont
 import WcbProducstPanelGeneralLayout, {
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO
 } from "./WcbProducstPanel_GeneralLayout";	
-import WcbProductsPanel_StyleOutOfStock, { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO } from "./WcbProductsPanel_StyleOutOfStock";
+import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock";
 import { 
 	buildStyleBorderDefault, 
 	buildStyleLayoutDefault, 
@@ -89,7 +89,6 @@ import {
 	buildStyleQuickViewButtonDefault,
 	buildStyleCountdownUrgencyDefault,
 } from "./WcbThemeDefaults";
-import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO } from "./WcbProductsPanel_StyleCountdownUrgency";
 
 interface Props extends EditProps<WcbAttrs> {}
 
@@ -174,6 +173,31 @@ const Edit: FC<Props> = (props) => {
 		setAttributes({ ...DEFAULT });
 	}, [style_layout]);
 	
+	// When isCustomizerGeneralLayout switches from true → false, reset affected attributes to customizer defaults
+	const prevIsCustomizerGeneralLayout = useRef(general_layout?.isCustomizerGeneralLayout);
+	useEffect(() => {
+		const prev = prevIsCustomizerGeneralLayout.current;
+		const curr = general_layout?.isCustomizerGeneralLayout;
+		prevIsCustomizerGeneralLayout.current = curr;
+
+		if (prev === true && curr === false) {
+			setAttributes({
+				general_content: buildGeneralContractDefault(undefined),
+				general_featuredImage: buildGeneralFeaturedImageDefault(undefined),
+				general_addToCartBtn: buildGeneralAddToCartBtnDefault(undefined) as any,
+				general_sortingAndFiltering: buildSortingAndFilteringDefault(undefined),
+				style_layout: buildStyleLayoutDefault(undefined),
+				style_border: buildStyleBorderDefault(undefined),
+				style_featuredImage: buildStyleFeaturedImageDefault(undefined),
+				style_saleBadge: buildStyleSaleBadgeDefault(undefined),
+				style_outOfStock: buildStyleOutOfStockDefault(undefined),
+				style_title: buildStyleTitleDefault(undefined),
+				style_price: buildStylePriceDefault(undefined),
+				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined),
+			});
+		}
+	}, [general_layout?.isCustomizerGeneralLayout]);
+
 	//
 	useEffect(() => {
 		if (!advance_motionEffect) {
@@ -210,6 +234,18 @@ const Edit: FC<Props> = (props) => {
 			});
 		}
 	}, [style_countdownUrgency]);
+
+	useEffect(() => {
+		const hasQuickViewConfig =
+			style_quickViewBtn && Object.keys(style_quickViewBtn).length > 0;
+		if (!hasQuickViewConfig) {
+			setAttributes({
+				style_quickViewBtn: buildStyleQuickViewButtonDefault(
+					attributes.style_quickViewBtn as any
+				),
+			});
+		}
+	}, [style_quickViewBtn]);
 	//
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
@@ -634,7 +670,7 @@ const Edit: FC<Props> = (props) => {
 		);
 	};
 
-	const WcbAttrsForSave = useCallback((): Required<WcbAttrsForSave> | null => {
+	const WcbAttrsForSave = useCallback((): WcbAttrsForSave => {
 		const cs: WcbAttrsForSave = {
 			uniqueId,
 			advance_responsiveCondition,
@@ -659,10 +695,7 @@ const Edit: FC<Props> = (props) => {
 			advance_motionEffect,
 			style_category,
 		};
-		if (Object.values(cs).some((item) => !item)) {
-			return null;
-		}
-		return cs as Required<WcbAttrsForSave>;
+		return cs;
 	}, [
 		uniqueId,
 		advance_responsiveCondition,
@@ -695,6 +728,7 @@ const Edit: FC<Props> = (props) => {
 			uniqueId,
 			general_sortingAndFiltering,
 			general_content,
+			general_layout,
 			general_featuredImage,
 			general_addToCartBtn,
 			general_pagination,
@@ -707,6 +741,7 @@ const Edit: FC<Props> = (props) => {
 		className,
 		general_sortingAndFiltering,
 		general_content,
+		general_layout,
 		general_featuredImage,
 		general_addToCartBtn,
 		general_pagination,
@@ -737,7 +772,10 @@ const Edit: FC<Props> = (props) => {
 				{!!uniqueId &&
 					!!style_layout &&
 					!!style_price &&
-					WcbAttrsForSaveValue && <GlobalCss {...WcbAttrsForSaveValue} />}
+					!!advance_zIndex &&
+					!!advance_responsiveCondition &&
+					!!advance_motionEffect &&
+					<GlobalCss {...(WcbAttrsForSaveValue as Required<WcbAttrsForSave>)} />}
 
 				{/* CHILD CONTENT  */}
 				{uniqueId && !!style_layout && !!style_price && (

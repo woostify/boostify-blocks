@@ -12,196 +12,152 @@ import { WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO } from "./WcbProductsPane
 import { WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO } from "./WcbProductsPanelButton";
 import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO } from "./WcbProductsPanel_StyleOutOfStock";
 import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK } from "./WcbProductsPanel_StyleOutOfStock";
-import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE } from "./WcbProductsPanel_StyleSaleBadge"; 
+import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE } from "./WcbProductsPanel_StyleSaleBadge";
 import { WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO } from "./WcbProductsPanel_StyleWishListButton";
 import { WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO } from "./WcbProductsPanel_StyleQuickViewButton";
 import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO } from "./WcbProductsPanel_StyleCountdownUrgency";
 
 /**
  * Builds style_layout with theme numberOfColumn and textAlignment.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleLayoutDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO>) {
+export function buildStyleLayoutDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO>) {
     const theme = getThemeDefaults();
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
-        ...(attr || {}),
         numberOfColumn: {
-            Desktop: 
-                theme.product_per_row?.desktop ?? 
-                attr?.numberOfColumn?.Desktop ?? 
+            Desktop:
+                theme.product_per_row?.desktop ??
                 WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Desktop,
-            Tablet:  
-                theme.product_per_row?.tablet ?? 
-                attr?.numberOfColumn?.Tablet ?? 
+            Tablet:
+                theme.product_per_row?.tablet ??
                 WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Tablet,
-            Mobile:  
+            Mobile:
                 theme.product_per_row?.mobile ??
-                attr?.numberOfColumn?.Mobile ?? 
                 WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Mobile,
         },
-        textAlignment: 
+        textAlignment:
             theme.shop_archive_product_content?.align ??
-            attr?.textAlignment ?? 
             WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.textAlignment,
     };
 }
-  
+
 /**
  * Builds style_border with theme border styles.
- * 
- * @param {Partial<typeof MY_BORDER_CONTROL_DEMO>} [attr] - Attributes to override.
- * @returns {typeof MY_BORDER_CONTROL_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleBorderDefault(attr?: Partial<typeof MY_BORDER_CONTROL_DEMO>) {
+export function buildStyleBorderDefault(_attr?: Partial<typeof MY_BORDER_CONTROL_DEMO>) {
     const theme = getThemeDefaults();
     const style = theme.shop_archive_border?.style;
     const color = theme.shop_archive_border?.color;
-    const widthPx = theme.shop_archive_border?.width != null ? 
+    const widthPx = theme.shop_archive_border?.width != null ?
         `${theme.shop_archive_border.width}px` : undefined;
-    const base = (attr?.mainSettings ?? MY_BORDER_CONTROL_DEMO.mainSettings) as any;
+    const base = MY_BORDER_CONTROL_DEMO.mainSettings as any;
     const resolved = style && style !== "none"
-        ? { 
-            color: color ?? base.color, 
-            style: style ?? base.style, 
+        ? {
+            color: color ?? base.color,
+            style: style ?? base.style,
             width: widthPx ?? base.width }
         : base;
-    return { ...MY_BORDER_CONTROL_DEMO, ...(attr || {}), mainSettings: resolved };
+    return { ...MY_BORDER_CONTROL_DEMO, mainSettings: resolved };
 }
 
 /**
  * Builds general_sortingAndFiltering with theme numberOfItems.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
 export function buildSortingAndFilteringDefault(
-    attr?: Partial<typeof WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO>
+    _attr?: Partial<typeof WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO>
 ) {
     const theme = getThemeDefaults();
     return {
         ...WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO,
-        ...(attr || {}),
         numberOfItems:
             theme.product_per_page ||
-            (attr?.numberOfItems as number | undefined) ||
             WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO.numberOfItems,
     };
 }
 
 /**
  * Builds general_content with theme content flags.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_COTENT_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_COTENT_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildGeneralContractDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_COTENT_DEMO>) {
+export function buildGeneralContractDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_COTENT_DEMO>) {
     const theme = getThemeDefaults();
     const content = theme.shop_archive_product_content;
     const toBool = (v: any, def: boolean): boolean =>
         v === undefined ? def : v === true || v === '1' || v === 1;
     return {
         ...WCB_PRODUCTS_PANEL_COTENT_DEMO,
-        ...(attr || {}),
-        isShowTitle: toBool(
-            content?.title_flag,
-            attr?.isShowTitle ?? WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowTitle
-        ),
-        isShowCategory: toBool(
-            content?.category_flag,
-            attr?.isShowCategory ?? WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowCategory
-        ),
-        isShowRating: toBool(
-            content?.rating_flag,
-            attr?.isShowRating ?? WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowRating
-        ),
-        isShowPrice: toBool(
-            content?.price_flag,
-            attr?.isShowPrice ?? WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowPrice
-        ),
+        isShowTitle: toBool(content?.title_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowTitle),
+        isShowCategory: toBool(content?.category_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowCategory),
+        isShowRating: toBool(content?.rating_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowRating),
+        isShowPrice: toBool(content?.price_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowPrice),
     };
 }
 
 /**
  * Builds general_featuredImage with theme hover type.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildGeneralFeaturedImageDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO>) {
+export function buildGeneralFeaturedImageDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO>) {
     const theme = getThemeDefaults();
     const content = theme.shop_archive_product_image;
     return {
         ...WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO,
-        ...(attr || {}),
-        hoverType: 
-            content?.hover ?? 
-            attr?.hoverType ?? 
+        hoverType:
+            content?.hover ??
             WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO.hoverType,
     };
 }
 
 /**
  * Builds style_featuredImage with theme border styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleFeaturedImageDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO>) {
+export function buildStyleFeaturedImageDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO>) {
     const theme = getThemeDefaults();
     const style = theme.shop_archive_product_image?.style;
     const color = theme.shop_archive_product_image?.color;
-    const widthPx = theme.shop_archive_product_image?.width != null ? 
+    const widthPx = theme.shop_archive_product_image?.width != null ?
         `${theme.shop_archive_product_image.width}px` : undefined;
 
-    const base = (attr?.border?.mainSettings ?? WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO.border.mainSettings) as any;
+    const base = WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO.border.mainSettings as any;
     const resolved = style && style !== "none"
-        ? { 
-            color: color ?? base.color, 
-            style: style ?? base.style, 
+        ? {
+            color: color ?? base.color,
+            style: style ?? base.style,
             width: widthPx ?? base.width }
         : base;
 
-    return { 
-        ...WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO, ...(attr || {}),
-        border: { ...WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO.border, ...(attr?.border || {}), mainSettings: resolved } 
+    return {
+        ...WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO,
+        border: { ...WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO.border, mainSettings: resolved },
     };
 }
 
 /**
  * Builds style_saleBadge with theme styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleSaleBadgeDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO>) {
+export function buildStyleSaleBadgeDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO>) {
     const theme = getThemeDefaults();
     const saleTag = theme.shop_archive_sale_tag;
 
-    	// Get the base position value from theme or attr
-	const rawPosition =
-		saleTag?.position ??
-		attr?.position ??
-		WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO.position;
+    const rawPosition =
+        saleTag?.position ??
+        WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO.position;
 
-	// Convert to standardized values
-	const convertedPosition: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE["position"] =
-		rawPosition === "left"
-			? "top-left"
-			: "top-right";
+    const convertedPosition: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE["position"] =
+        rawPosition === "left" ? "top-left" : "top-right";
 
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
-        ...(attr || {}),
-        backgroundColor: 
-            saleTag?.bg_color ?? 
-            attr?.backgroundColor ?? 
+        backgroundColor:
+            saleTag?.bg_color ??
             WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO.backgroundColor,
-        textColor: 
-            saleTag?.text_color ?? 
-            attr?.textColor ?? 
+        textColor:
+            saleTag?.text_color ??
             WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO.textColor,
         position: convertedPosition,
     };
@@ -209,74 +165,58 @@ export function buildStyleSaleBadgeDefault(attr?: Partial<typeof WCB_PRODUCTS_PA
 
 /**
  * Builds style_outOfStock with theme styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleOutOfStockDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO>) {
-	const theme = getThemeDefaults();
-	const outOfStock = theme.shop_archive_out_of_stock;
+export function buildStyleOutOfStockDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO>) {
+    const theme = getThemeDefaults();
+    const outOfStock = theme.shop_archive_out_of_stock;
 
-	// Get the base position value from theme or attr
-	const rawPosition =
-		outOfStock?.position ??
-		attr?.position ??
-		WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.position;
+    const rawPosition =
+        outOfStock?.position ??
+        WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.position;
 
-	// Convert to standardized values while keeping the literal union type
-	const convertedPosition: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK["position"] =
-		rawPosition === "left"
-			? "top-left"
-			: rawPosition === "right"
-			? "top-right"
-			: "none";
+    const convertedPosition: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK["position"] =
+        rawPosition === "left"
+            ? "top-left"
+            : rawPosition === "right"
+            ? "top-right"
+            : "none";
 
-	return {
-		...WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO,
-		...(attr || {}),
-		backgroundColor:
-			outOfStock?.bg_color ??
-			attr?.backgroundColor ??
-			WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.backgroundColor,
-		textColor:
-			outOfStock?.text_color ??
-			attr?.textColor ??
-			WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.textColor,
-		position: convertedPosition, // Use the mapped value
-	};
+    return {
+        ...WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO,
+        backgroundColor:
+            outOfStock?.bg_color ??
+            WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.backgroundColor,
+        textColor:
+            outOfStock?.text_color ??
+            WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.textColor,
+        position: convertedPosition,
+    };
 }
 
 /**
  * Builds style_title with theme title styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleTitleDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO>) {
+export function buildStyleTitleDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO>) {
     const theme = getThemeDefaults();
     const general = theme.shop_archive_general_design;
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO,
-        ...(attr || {}),
-        textColor: 
-            general?.title_color ?? 
-            attr?.textColor ?? 
+        textColor:
+            general?.title_color ??
             WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.textColor,
         typography: {
             ...WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography,
-            ...(attr?.typography || {}),
             fontSizes: {
-                Desktop: 
+                Desktop:
                     (general?.title_font_size != null ? `${general.title_font_size.desktop}px` : undefined) ??
-                    attr?.typography?.fontSizes?.Desktop ??
                     WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Desktop,
-                Tablet: 
+                Tablet:
                     (general?.title_font_size != null ? `${general.title_font_size.tablet}px` : undefined) ??
-                    attr?.typography?.fontSizes?.Tablet ??
                     WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Tablet,
-                Mobile: 
+                Mobile:
                     (general?.title_font_size != null ? `${general.title_font_size.mobile}px` : undefined) ??
-                    attr?.typography?.fontSizes?.Mobile ??
                     WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Mobile,
             },
         },
@@ -285,35 +225,27 @@ export function buildStyleTitleDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_
 
 /**
  * Builds style_price with theme price styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStylePriceDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO>) {
+export function buildStylePriceDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO>) {
     const theme = getThemeDefaults();
     const general = theme.shop_archive_general_design;
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
-        ...(attr || {}),
-        textColor: 
-            general?.price_color ?? 
-            attr?.textColor ??
+        textColor:
+            general?.price_color ??
             WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.textColor,
         typography: {
             ...WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography,
-            ...(attr?.typography || {}),
             fontSizes: {
-                Desktop: 
+                Desktop:
                     (general?.price_font_size != null ? `${general.price_font_size.desktop}px` : undefined) ??
-                    attr?.typography?.fontSizes?.Desktop ??
                     WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Desktop,
-                Tablet: 
+                Tablet:
                     (general?.price_font_size != null ? `${general.price_font_size.tablet}px` : undefined) ??
-                    attr?.typography?.fontSizes?.Tablet ??
                     WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Tablet,
-                Mobile: 
+                Mobile:
                     (general?.price_font_size != null ? `${general.price_font_size.mobile}px` : undefined) ??
-                    attr?.typography?.fontSizes?.Mobile ??
                     WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Mobile,
             },
         },
@@ -322,243 +254,190 @@ export function buildStylePriceDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_
 
 /**
  * Builds style_addToCartBtn with theme styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleAddToCartBtnDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO>) {
+export function buildStyleAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO>) {
     const theme = getThemeDefaults();
     const addToCartBtn = theme.shop_archive_add_to_cart_btn;
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO,
-        ...(attr || {}),
         colorAndBackgroundColor: {
             ...WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor,
-            ...(attr?.colorAndBackgroundColor || {}),
             Normal: {
-                color: 
-                    addToCartBtn?.text_color ?? 
-                    attr?.colorAndBackgroundColor?.Normal?.color ?? 
+                color:
+                    addToCartBtn?.text_color ??
                     WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Normal?.color,
-                backgroundColor: 
-                    addToCartBtn?.bg_color ?? 
-                    attr?.colorAndBackgroundColor?.Normal?.backgroundColor ?? 
+                backgroundColor:
+                    addToCartBtn?.bg_color ??
                     WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Normal?.backgroundColor,
             },
             Hover: {
-                color: 
-                    addToCartBtn?.hover_text_color ?? 
-                    attr?.colorAndBackgroundColor?.Hover?.color ?? 
+                color:
+                    addToCartBtn?.hover_text_color ??
                     WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Hover?.color,
-                backgroundColor: 
-                    addToCartBtn?.hover_bg_color ?? 
-                    attr?.colorAndBackgroundColor?.Hover?.backgroundColor ?? 
+                backgroundColor:
+                    addToCartBtn?.hover_bg_color ??
                     WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Hover?.backgroundColor,
-            }
+            },
         },
         border: {
             ...WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border,
-            ...(attr?.border || {}),
             radius: {
                 Desktop:
                     (addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) ??
-                    attr?.border?.radius?.Desktop ??
                     WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Desktop,
                 Tablet:
                     (addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) ??
-                    attr?.border?.radius?.Tablet ??
                     WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Tablet,
                 Mobile:
                     (addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) ??
-                    attr?.border?.radius?.Mobile ??
                     WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Mobile,
-            }
-        }
+            },
+        },
     };
 }
 
 /**
  * Builds general_addToCartBtn with theme styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildGeneralAddToCartBtnDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO>) {
+export function buildGeneralAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO>) {
     const theme = getThemeDefaults();
     const addToCartBtn = theme.shop_archive_add_to_cart_btn;
     return {
         ...WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
-        ...(attr || {}),
-        isShowButton: 
-            addToCartBtn?.position === 'none' ? false : 
-            (attr?.isShowButton ?? WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowButton),
-        position: 
+        isShowButton:
+            addToCartBtn?.position === 'none' ? false :
+            WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowButton,
+        position:
             addToCartBtn?.position === 'bottom-visible' ? 'bottom visible' :
             addToCartBtn?.position === 'image' ? 'inside image' :
             addToCartBtn?.position === 'icon' ? 'icon' :
             addToCartBtn?.position === 'bottom' ? 'bottom' :
-            // Default to 'bottom' if no position is specified
-            // This is consistent with the default in WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO
             addToCartBtn?.position ??
-            attr?.position ?? 
             WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.position,
+        isShowQuantity:
+            addToCartBtn?.position === 'none' ? false :
+            WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowQuantity,
     };
 }
 
 /**
  * Builds style_wishlistButton with theme styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleWishlistButtonDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO>) {
+export function buildStyleWishlistButtonDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO>) {
     const theme = getThemeDefaults();
     const wishlistBtn = theme.shop_archive_wishlist_btn;
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO,
-        ...(attr || {}),
         position:
             wishlistBtn?.position ??
-            attr?.position ??
             WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.position,
         style:
             wishlistBtn?.style ??
-            attr?.style ??
             WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.style,
         wishlist_plugin_active:
             wishlistBtn?.wishlist_plugin_active ??
-            attr?.wishlist_plugin_active ??
             WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.wishlist_plugin_active,
     };
 }
 
 /**
  * Builds style_quickViewButton with theme styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleQuickViewButtonDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO>) {
+export function buildStyleQuickViewButtonDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO>) {
     const theme = getThemeDefaults();
     const quickViewBtn = theme.shop_quick_view_btn;
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO,
-        ...(attr || {}),
         enabled:
             quickViewBtn?.enabled ??
-            attr?.enabled ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.enabled,
         position:
             quickViewBtn?.position ??
-            attr?.position ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.position,
         show_icon:
             quickViewBtn?.show_icon ??
-            attr?.show_icon ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.show_icon,
         bg_color:
             quickViewBtn?.bg_color ??
-            attr?.bg_color ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.bg_color,
         text_color:
             quickViewBtn?.text_color ??
-            attr?.text_color ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.text_color,
         hover_bg_color:
             quickViewBtn?.hover_bg_color ??
-            attr?.hover_bg_color ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.hover_bg_color,
         hover_text_color:
             quickViewBtn?.hover_text_color ??
-            attr?.hover_text_color ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.hover_text_color,
         border_radius:
             quickViewBtn?.border_radius ??
-            attr?.border_radius ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.border_radius,
         woostify_pro_active:
             quickViewBtn?.woostify_pro_active ??
-            attr?.woostify_pro_active ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.woostify_pro_active,
     };
 }
 
-
 /**
  * Builds style_countdownUrgency with theme styles.
- * 
- * @param {Partial<typeof WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO>} [attr] - Attributes to override.
- * @returns {typeof WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO} Attributes with theme defaults applied.
+ * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleCountdownUrgencyDefault(attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO>) {
+export function buildStyleCountdownUrgencyDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO>) {
     const theme = getThemeDefaults();
     const cu = theme.countdown_urgency;
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO,
-        ...(attr || {}),
         countdownUrgencyActive:
             cu?.active ??
-            attr?.countdownUrgencyActive ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.countdownUrgencyActive,
         style:
             cu?.style ??
-            attr?.style ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.style,
         applyFor:
             cu?.apply_for ??
-            attr?.applyFor ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.applyFor,
         categoriesSelected:
             cu?.categories_selected ??
-            attr?.categoriesSelected ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.categoriesSelected,
         productsSelected:
             cu?.products_selected ??
-            attr?.productsSelected ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.productsSelected,
         categoriesExclude:
             cu?.categories_exclude ??
-            attr?.categoriesExclude ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.categoriesExclude,
         productsExclude:
             cu?.products_exclude ??
-            attr?.productsExclude ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.productsExclude,
         timeDuration:
             cu?.time_duration ??
-            attr?.timeDuration ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.timeDuration,
         timeType:
             cu?.time_type ??
-            attr?.timeType ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.timeType,
         message:
             cu?.message ??
-            attr?.message ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.message,
         daysLabel:
             cu?.days_label ??
-            attr?.daysLabel ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.daysLabel,
         hoursLabel:
             cu?.hours_label ??
-            attr?.hoursLabel ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.hoursLabel,
         minutesLabel:
             cu?.minutes_label ??
-            attr?.minutesLabel ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.minutesLabel,
         secondsLabel:
             cu?.seconds_label ??
-            attr?.secondsLabel ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.secondsLabel,
         displayOnThumbnail:
             cu?.display_on_thumbnail ??
-            attr?.displayOnThumbnail ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.displayOnThumbnail,
         hideAfterTimeUp:
             cu?.hide_after_time_up ??
-            attr?.hideAfterTimeUp ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.hideAfterTimeUp,
     };
 }

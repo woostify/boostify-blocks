@@ -4,10 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Apply current theme defaults to block attributes so already-saved blocks
- * pick up Customizer changes on render.
+ * Apply theme default settings to the block attributes for the products block, ensuring that any missing attributes are filled in with values from the theme customizer.
+ * @param array $attributes The original block attributes that may be missing some values.
+ * @param bool  $block_overrides When true (isCustomizerGeneralLayout ON), block-level attributes take priority over Customizer values; Customizer is used only as fallback.
+ * @return array The modified block attributes with theme defaults applied where necessary.
  */
-function boostify_blocks_block_products_apply_theme_defaults($attributes)
+function boostify_blocks_block_products_apply_theme_defaults($attributes, $block_overrides = false)
 {
     if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
         return $attributes;
@@ -22,26 +24,53 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
         return $value === true || $value === '1' || $value === 1 || $value === 'true';
     };
 
+    // $block_overrides=false → Customizer wins (theme_val ?? block_val)
+    // $block_overrides=true  → Block wins     (block_val ?? theme_val)
+    $pick = function ($theme_val, $block_val) use ($block_overrides) {
+        return $block_overrides ? ($block_val ?? $theme_val) : ($theme_val ?? $block_val);
+    };
+
+    $pick_bool = function ($theme_val, $block_val) use ($block_overrides, $to_bool) {
+        return $block_overrides
+            ? $to_bool($block_val, $theme_val)
+            : $to_bool($theme_val, $block_val);
+    };
+
     // Style layout
     $style_layout = $attributes['style_layout'] ?? [];
     $style_layout['numberOfColumn'] = [
-        'Desktop' => $theme['product_per_row']['desktop'] ?? ($style_layout['numberOfColumn']['Desktop'] ?? null),
-        'Tablet'  => $theme['product_per_row']['tablet'] ?? ($style_layout['numberOfColumn']['Tablet'] ?? null),
-        'Mobile'  => $theme['product_per_row']['mobile'] ?? ($style_layout['numberOfColumn']['Mobile'] ?? null),
+        'Desktop' => $pick($theme['product_per_row']['desktop'] ?? null, $style_layout['numberOfColumn']['Desktop'] ?? null),
+        'Tablet'  => $pick($theme['product_per_row']['tablet'] ?? null, $style_layout['numberOfColumn']['Tablet'] ?? null),
+        'Mobile'  => $pick($theme['product_per_row']['mobile'] ?? null, $style_layout['numberOfColumn']['Mobile'] ?? null),
     ];
-    if (isset($theme['shop_archive_product_content']['align'])) {
-        $style_layout['textAlignment'] = $theme['shop_archive_product_content']['align'];
+    $theme_align = $theme['shop_archive_product_content']['align'] ?? null;
+    if ($block_overrides) {
+        // Block's textAlignment takes priority; only use Customizer if block has none.
+        if (!isset($style_layout['textAlignment']) && $theme_align !== null) {
+            $style_layout['textAlignment'] = $theme_align;
+        }
+    } else {
+        if ($theme_align !== null) {
+            $style_layout['textAlignment'] = $theme_align;
+        }
     }
     $attributes['style_layout'] = $style_layout;
 
     // Border
     $border = $attributes['style_border']['mainSettings'] ?? [];
     $border_style = $theme['shop_archive_border']['style'] ?? null;
-    if ($border_style && $border_style !== 'none') {
+    // In block-override mode, prefer block's border style; fall back to Customizer if block has none.
+    $effective_border_style = $block_overrides
+        ? (($border['style'] ?? null) ?: $border_style)
+        : ($border_style ?: ($border['style'] ?? null));
+    if ($effective_border_style && $effective_border_style !== 'none') {
         $attributes['style_border']['mainSettings'] = [
-            'color' => $theme['shop_archive_border']['color'] ?? ($border['color'] ?? null),
-            'style' => $border_style ?? ($border['style'] ?? null),
-            'width' => isset($theme['shop_archive_border']['width']) ? $theme['shop_archive_border']['width'] . 'px' : ($border['width'] ?? null),
+            'color' => $pick($theme['shop_archive_border']['color'] ?? null, $border['color'] ?? null),
+            'style' => $effective_border_style,
+            'width' => $pick(
+                isset($theme['shop_archive_border']['width']) ? $theme['shop_archive_border']['width'] . 'px' : null,
+                $border['width'] ?? null
+            ),
         ];
     }
 
@@ -49,7 +78,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['general_sortingAndFiltering'] = array_merge(
         $attributes['general_sortingAndFiltering'] ?? [],
         [
-            'numberOfItems' => $theme['product_per_page'] ?? ($attributes['general_sortingAndFiltering']['numberOfItems'] ?? null),
+            'numberOfItems' => $pick($theme['product_per_page'] ?? null, $attributes['general_sortingAndFiltering']['numberOfItems'] ?? null),
         ]
     );
 
@@ -58,10 +87,10 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['general_content'] = array_merge(
         $attributes['general_content'] ?? [],
         [
-            'isShowTitle' => $to_bool($content['title_flag'] ?? null, $attributes['general_content']['isShowTitle'] ?? null),
-            'isShowCategory' => $to_bool($content['category_flag'] ?? null, $attributes['general_content']['isShowCategory'] ?? null),
-            'isShowRating' => $to_bool($content['rating_flag'] ?? null, $attributes['general_content']['isShowRating'] ?? null),
-            'isShowPrice' => $to_bool($content['price_flag'] ?? null, $attributes['general_content']['isShowPrice'] ?? null),
+            'isShowTitle'    => $pick_bool($content['title_flag'] ?? null, $attributes['general_content']['isShowTitle'] ?? null),
+            'isShowCategory' => $pick_bool($content['category_flag'] ?? null, $attributes['general_content']['isShowCategory'] ?? null),
+            'isShowRating'   => $pick_bool($content['rating_flag'] ?? null, $attributes['general_content']['isShowRating'] ?? null),
+            'isShowPrice'    => $pick_bool($content['price_flag'] ?? null, $attributes['general_content']['isShowPrice'] ?? null),
         ]
     );
 
@@ -69,45 +98,51 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['general_featuredImage'] = array_merge(
         $attributes['general_featuredImage'] ?? [],
         [
-            'hoverType' => $theme['shop_archive_product_image']['hover'] ?? ($attributes['general_featuredImage']['hoverType'] ?? null),
+            'hoverType' => $pick($theme['shop_archive_product_image']['hover'] ?? null, $attributes['general_featuredImage']['hoverType'] ?? null),
         ]
     );
 
     // Featured image border
     $featured_border = $attributes['style_featuredImage']['border']['mainSettings'] ?? [];
     $fi_style = $theme['shop_archive_product_image']['style'] ?? null;
-    if ($fi_style && $fi_style !== 'none') {
+    $effective_fi_style = $block_overrides
+        ? (($featured_border['style'] ?? null) ?: $fi_style)
+        : ($fi_style ?: ($featured_border['style'] ?? null));
+    if ($effective_fi_style && $effective_fi_style !== 'none') {
         $attributes['style_featuredImage']['border']['mainSettings'] = [
-            'color' => $theme['shop_archive_product_image']['color'] ?? ($featured_border['color'] ?? null),
-            'style' => $fi_style ?? ($featured_border['style'] ?? null),
-            'width' => isset($theme['shop_archive_product_image']['width']) ? $theme['shop_archive_product_image']['width'] . 'px' : ($featured_border['width'] ?? null),
+            'color' => $pick($theme['shop_archive_product_image']['color'] ?? null, $featured_border['color'] ?? null),
+            'style' => $effective_fi_style,
+            'width' => $pick(
+                isset($theme['shop_archive_product_image']['width']) ? $theme['shop_archive_product_image']['width'] . 'px' : null,
+                $featured_border['width'] ?? null
+            ),
         ];
     }
 
     // Sale badge
     $sale = $theme['shop_archive_sale_tag'] ?? [];
-    $sale_position = $sale['position'] ?? ($attributes['style_saleBadge']['position'] ?? 'top-right');
+    $sale_position = $pick($sale['position'] ?? null, $attributes['style_saleBadge']['position'] ?? null) ?? 'top-right';
     $attributes['style_saleBadge'] = array_merge(
         $attributes['style_saleBadge'] ?? [],
         [
-            'backgroundColor' => $sale['bg_color'] ?? ($attributes['style_saleBadge']['backgroundColor'] ?? null),
-            'textColor' => $sale['text_color'] ?? ($attributes['style_saleBadge']['textColor'] ?? null),
-            'position' => $sale_position === 'left' ? 'top-left' : 'top-right',
+            'backgroundColor' => $pick($sale['bg_color'] ?? null, $attributes['style_saleBadge']['backgroundColor'] ?? null),
+            'textColor'       => $pick($sale['text_color'] ?? null, $attributes['style_saleBadge']['textColor'] ?? null),
+            'position'        => $sale_position === 'left' ? 'top-left' : 'top-right',
         ]
     );
 
     // Out of stock badge
     $outofstock = $theme['shop_archive_out_of_stock'] ?? [];
-    $raw_out_position = $outofstock['position'] ?? ($attributes['style_outOfStock']['position'] ?? 'none');
+    $raw_out_position = $pick($outofstock['position'] ?? null, $attributes['style_outOfStock']['position'] ?? null) ?? 'none';
     $mapped_out_position = $raw_out_position === 'left'
         ? 'top-left'
         : ($raw_out_position === 'right' ? 'top-right' : 'none');
     $attributes['style_outOfStock'] = array_merge(
         $attributes['style_outOfStock'] ?? [],
         [
-            'backgroundColor' => $outofstock['bg_color'] ?? ($attributes['style_outOfStock']['backgroundColor'] ?? null),
-            'textColor' => $outofstock['text_color'] ?? ($attributes['style_outOfStock']['textColor'] ?? null),
-            'position' => $mapped_out_position,
+            'backgroundColor' => $pick($outofstock['bg_color'] ?? null, $attributes['style_outOfStock']['backgroundColor'] ?? null),
+            'textColor'       => $pick($outofstock['text_color'] ?? null, $attributes['style_outOfStock']['textColor'] ?? null),
+            'position'        => $mapped_out_position,
         ]
     );
 
@@ -116,14 +151,23 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_title'] = array_merge(
         $attributes['style_title'] ?? [],
         [
-            'textColor' => $general_design['title_color'] ?? ($attributes['style_title']['textColor'] ?? null),
+            'textColor' => $pick($general_design['title_color'] ?? null, $attributes['style_title']['textColor'] ?? null),
             'typography' => array_merge(
                 $attributes['style_title']['typography'] ?? [],
                 [
                     'fontSizes' => [
-                        'Desktop' => isset($general_design['title_font_size']['desktop']) ? $general_design['title_font_size']['desktop'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Desktop'] ?? null),
-                        'Tablet' => isset($general_design['title_font_size']['tablet']) ? $general_design['title_font_size']['tablet'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Tablet'] ?? null),
-                        'Mobile' => isset($general_design['title_font_size']['mobile']) ? $general_design['title_font_size']['mobile'] . 'px' : ($attributes['style_title']['typography']['fontSizes']['Mobile'] ?? null),
+                        'Desktop' => $pick(
+                            isset($general_design['title_font_size']['desktop']) ? $general_design['title_font_size']['desktop'] . 'px' : null,
+                            $attributes['style_title']['typography']['fontSizes']['Desktop'] ?? null
+                        ),
+                        'Tablet' => $pick(
+                            isset($general_design['title_font_size']['tablet']) ? $general_design['title_font_size']['tablet'] . 'px' : null,
+                            $attributes['style_title']['typography']['fontSizes']['Tablet'] ?? null
+                        ),
+                        'Mobile' => $pick(
+                            isset($general_design['title_font_size']['mobile']) ? $general_design['title_font_size']['mobile'] . 'px' : null,
+                            $attributes['style_title']['typography']['fontSizes']['Mobile'] ?? null
+                        ),
                     ],
                 ]
             ),
@@ -134,14 +178,23 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_price'] = array_merge(
         $attributes['style_price'] ?? [],
         [
-            'textColor' => $general_design['price_color'] ?? ($attributes['style_price']['textColor'] ?? null),
+            'textColor' => $pick($general_design['price_color'] ?? null, $attributes['style_price']['textColor'] ?? null),
             'typography' => array_merge(
                 $attributes['style_price']['typography'] ?? [],
                 [
                     'fontSizes' => [
-                        'Desktop' => isset($general_design['price_font_size']['desktop']) ? $general_design['price_font_size']['desktop'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Desktop'] ?? null),
-                        'Tablet' => isset($general_design['price_font_size']['tablet']) ? $general_design['price_font_size']['tablet'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Tablet'] ?? null),
-                        'Mobile' => isset($general_design['price_font_size']['mobile']) ? $general_design['price_font_size']['mobile'] . 'px' : ($attributes['style_price']['typography']['fontSizes']['Mobile'] ?? null),
+                        'Desktop' => $pick(
+                            isset($general_design['price_font_size']['desktop']) ? $general_design['price_font_size']['desktop'] . 'px' : null,
+                            $attributes['style_price']['typography']['fontSizes']['Desktop'] ?? null
+                        ),
+                        'Tablet' => $pick(
+                            isset($general_design['price_font_size']['tablet']) ? $general_design['price_font_size']['tablet'] . 'px' : null,
+                            $attributes['style_price']['typography']['fontSizes']['Tablet'] ?? null
+                        ),
+                        'Mobile' => $pick(
+                            isset($general_design['price_font_size']['mobile']) ? $general_design['price_font_size']['mobile'] . 'px' : null,
+                            $attributes['style_price']['typography']['fontSizes']['Mobile'] ?? null
+                        ),
                     ],
                 ]
             ),
@@ -158,12 +211,12 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
                 $existing_colors,
                 [
                     'Normal' => [
-                        'color' => $atc['text_color'] ?? ($existing_colors['Normal']['color'] ?? null),
-                        'backgroundColor' => $atc['bg_color'] ?? ($existing_colors['Normal']['backgroundColor'] ?? null),
+                        'color'           => $pick($atc['text_color'] ?? null, $existing_colors['Normal']['color'] ?? null),
+                        'backgroundColor' => $pick($atc['bg_color'] ?? null, $existing_colors['Normal']['backgroundColor'] ?? null),
                     ],
                     'Hover' => [
-                        'color' => $atc['hover_text_color'] ?? ($existing_colors['Hover']['color'] ?? null),
-                        'backgroundColor' => $atc['hover_bg_color'] ?? ($existing_colors['Hover']['backgroundColor'] ?? null),
+                        'color'           => $pick($atc['hover_text_color'] ?? null, $existing_colors['Hover']['color'] ?? null),
+                        'backgroundColor' => $pick($atc['hover_bg_color'] ?? null, $existing_colors['Hover']['backgroundColor'] ?? null),
                     ],
                 ]
             ),
@@ -171,9 +224,18 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
                 $attributes['style_addToCardBtn']['border'] ?? [],
                 [
                     'radius' => [
-                        'Desktop' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null),
-                        'Tablet' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null),
-                        'Mobile' => isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null),
+                        'Desktop' => $pick(
+                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
+                            $attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null
+                        ),
+                        'Tablet' => $pick(
+                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
+                            $attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null
+                        ),
+                        'Mobile' => $pick(
+                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
+                            $attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null
+                        ),
                     ],
                 ]
             ),
@@ -181,17 +243,22 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     );
 
     // Add to cart general settings
+    $atc_position = $atc['position'] ?? null;
+    $mapped_atc_position = $atc_position === 'bottom-visible' ? 'bottom visible'
+        : ($atc_position === 'image' ? 'inside image'
+            : ($atc_position === 'icon' ? 'icon'
+                : ($atc_position === 'bottom' ? 'bottom'
+                    : ($atc_position ?: ($attributes['general_addToCartBtn']['position'] ?? null)))));
     $attributes['general_addToCartBtn'] = array_merge(
         $attributes['general_addToCartBtn'] ?? [],
         [
-            'isShowButton' => ($atc['position'] ?? '') === 'none'
-                ? false
-                : ($attributes['general_addToCartBtn']['isShowButton'] ?? true),
-            'position' => ($atc['position'] ?? '') === 'bottom-visible' ? 'bottom visible'
-                : (($atc['position'] ?? '') === 'image' ? 'inside image'
-                    : (($atc['position'] ?? '') === 'icon' ? 'icon'
-                        : (($atc['position'] ?? '') === 'bottom' ? 'bottom'
-                            : (($atc['position'] ?? null) ?: ($attributes['general_addToCartBtn']['position'] ?? null))))),
+            'isShowButton' => $block_overrides
+                ? ($attributes['general_addToCartBtn']['isShowButton'] ?? ($atc_position !== 'none'))
+                : ($atc_position === 'none' ? false : ($attributes['general_addToCartBtn']['isShowButton'] ?? true)),
+            'position' => $block_overrides && !empty($attributes['general_addToCartBtn']['position'])
+                ? $attributes['general_addToCartBtn']['position']
+                : $mapped_atc_position,
+            'isShowQuantity' => $pick_bool($content['quantity_flag'] ?? null, $attributes['general_addToCartBtn']['isShowQuantity'] ?? null),
         ]
     );
 
@@ -200,9 +267,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_wishlistBtn'] = array_merge(
         $attributes['style_wishlistBtn'] ?? [],
         [
-            'position' => $wishlist['position'] ?? ($attributes['style_wishlistBtn']['position'] ?? null),
-            'style' => $wishlist['style'] ?? ($attributes['style_wishlistBtn']['style'] ?? null),
-            'wishlist_plugin_active' => $wishlist['wishlist_plugin_active'] ?? ($attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
+            'position'               => $pick($wishlist['position'] ?? null, $attributes['style_wishlistBtn']['position'] ?? null),
+            'style'                  => $pick($wishlist['style'] ?? null, $attributes['style_wishlistBtn']['style'] ?? null),
+            'wishlist_plugin_active' => $pick($wishlist['wishlist_plugin_active'] ?? null, $attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
         ]
     );
 
@@ -211,15 +278,18 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_quickViewBtn'] = array_merge(
         $attributes['style_quickViewBtn'] ?? [],
         [
-            'enabled' => $quickview['enabled'] ?? ($attributes['style_quickViewBtn']['enabled'] ?? null),
-            'position' => $quickview['position'] ?? ($attributes['style_quickViewBtn']['position'] ?? null),
-            'show_icon' => $quickview['show_icon'] ?? ($attributes['style_quickViewBtn']['show_icon'] ?? null),
-            'bg_color' => $quickview['bg_color'] ?? ($attributes['style_quickViewBtn']['bg_color'] ?? null),
-            'text_color' => $quickview['text_color'] ?? ($attributes['style_quickViewBtn']['text_color'] ?? null),
-            'hover_bg_color' => $quickview['hover_bg_color'] ?? ($attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
-            'hover_text_color' => $quickview['hover_text_color'] ?? ($attributes['style_quickViewBtn']['hover_text_color'] ?? null),
-            'border_radius' => isset($quickview['border_radius']) ? $quickview['border_radius'] . 'px' : ($attributes['style_quickViewBtn']['border_radius'] ?? null),
-            'woostify_pro_active' => $quickview['woostify_pro_active'] ?? ($attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
+            'enabled'             => $pick($quickview['enabled'] ?? null, $attributes['style_quickViewBtn']['enabled'] ?? null),
+            'position'            => $pick($quickview['position'] ?? null, $attributes['style_quickViewBtn']['position'] ?? null),
+            'show_icon'           => $pick($quickview['show_icon'] ?? null, $attributes['style_quickViewBtn']['show_icon'] ?? null),
+            'bg_color'            => $pick($quickview['bg_color'] ?? null, $attributes['style_quickViewBtn']['bg_color'] ?? null),
+            'text_color'          => $pick($quickview['text_color'] ?? null, $attributes['style_quickViewBtn']['text_color'] ?? null),
+            'hover_bg_color'      => $pick($quickview['hover_bg_color'] ?? null, $attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
+            'hover_text_color'    => $pick($quickview['hover_text_color'] ?? null, $attributes['style_quickViewBtn']['hover_text_color'] ?? null),
+            'border_radius'       => $pick(
+                isset($quickview['border_radius']) ? $quickview['border_radius'] . 'px' : null,
+                $attributes['style_quickViewBtn']['border_radius'] ?? null
+            ),
+            'woostify_pro_active' => $pick($quickview['woostify_pro_active'] ?? null, $attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
         ]
     );
 
@@ -228,33 +298,40 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes)
     $attributes['style_countdownUrgency'] = array_merge(
         $attributes['style_countdownUrgency'] ?? [],
         [
-            'countdownUrgencyActive' => $cu['active'] ?? ($attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
-            'style'                  => $cu['style'] ?? ($attributes['style_countdownUrgency']['style'] ?? null),
-            'applyFor'               => $cu['apply_for'] ?? ($attributes['style_countdownUrgency']['applyFor'] ?? null),
-            'categoriesSelected'     => $cu['categories_selected'] ?? ($attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
-            'productsSelected'       => $cu['products_selected'] ?? ($attributes['style_countdownUrgency']['productsSelected'] ?? null),
-            'categoriesExclude'      => $cu['categories_exclude'] ?? ($attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
-            'productsExclude'        => $cu['products_exclude'] ?? ($attributes['style_countdownUrgency']['productsExclude'] ?? null),
-            'timeDuration'           => $cu['time_duration'] ?? ($attributes['style_countdownUrgency']['timeDuration'] ?? null),
-            'timeType'               => $cu['time_type'] ?? ($attributes['style_countdownUrgency']['timeType'] ?? null),
-            'message'                => $cu['message'] ?? ($attributes['style_countdownUrgency']['message'] ?? null),
-            'daysLabel'              => $cu['days_label'] ?? ($attributes['style_countdownUrgency']['daysLabel'] ?? null),
-            'hoursLabel'             => $cu['hours_label'] ?? ($attributes['style_countdownUrgency']['hoursLabel'] ?? null),
-            'minutesLabel'           => $cu['minutes_label'] ?? ($attributes['style_countdownUrgency']['minutesLabel'] ?? null),
-            'secondsLabel'           => $cu['seconds_label'] ?? ($attributes['style_countdownUrgency']['secondsLabel'] ?? null),
-            'displayOnThumbnail'     => $cu['display_on_thumbnail'] ?? ($attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
-            'hideAfterTimeUp'        => $cu['hide_after_time_up'] ?? ($attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
+            'countdownUrgencyActive' => $pick($cu['active'] ?? null, $attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
+            'style'                  => $pick($cu['style'] ?? null, $attributes['style_countdownUrgency']['style'] ?? null),
+            'applyFor'               => $pick($cu['apply_for'] ?? null, $attributes['style_countdownUrgency']['applyFor'] ?? null),
+            'categoriesSelected'     => $pick($cu['categories_selected'] ?? null, $attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
+            'productsSelected'       => $pick($cu['products_selected'] ?? null, $attributes['style_countdownUrgency']['productsSelected'] ?? null),
+            'categoriesExclude'      => $pick($cu['categories_exclude'] ?? null, $attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
+            'productsExclude'        => $pick($cu['products_exclude'] ?? null, $attributes['style_countdownUrgency']['productsExclude'] ?? null),
+            'timeDuration'           => $pick($cu['time_duration'] ?? null, $attributes['style_countdownUrgency']['timeDuration'] ?? null),
+            'timeType'               => $pick($cu['time_type'] ?? null, $attributes['style_countdownUrgency']['timeType'] ?? null),
+            'message'                => $pick($cu['message'] ?? null, $attributes['style_countdownUrgency']['message'] ?? null),
+            'daysLabel'              => $pick($cu['days_label'] ?? null, $attributes['style_countdownUrgency']['daysLabel'] ?? null),
+            'hoursLabel'             => $pick($cu['hours_label'] ?? null, $attributes['style_countdownUrgency']['hoursLabel'] ?? null),
+            'minutesLabel'           => $pick($cu['minutes_label'] ?? null, $attributes['style_countdownUrgency']['minutesLabel'] ?? null),
+            'secondsLabel'           => $pick($cu['seconds_label'] ?? null, $attributes['style_countdownUrgency']['secondsLabel'] ?? null),
+            'displayOnThumbnail'     => $pick($cu['display_on_thumbnail'] ?? null, $attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
+            'hideAfterTimeUp'        => $pick($cu['hide_after_time_up'] ?? null, $attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
         ]
     );
 
     return $attributes;
 }
 
-
+/**
+ * Render callback for the products block, generating the HTML output based on the block attributes and product data.
+ * @param array $attributes The block attributes that determine how the products should be displayed.
+ * @param string $content The saved inner content of the block, which may contain serialized attributes for frontend use.
+ * @return string The generated HTML for the products block, including product listings, pagination, and other elements based on the attributes.
+ */
 function boostify_blocks_block_products_render_callback($attributes, $content)
 {
     // Re-apply theme defaults on render so saved blocks stay in sync with Customizer changes.
-    $attributes = boostify_blocks_block_products_apply_theme_defaults($attributes);
+    // When isCustomizerGeneralLayout is ON, block-level attributes override Customizer values.
+    $block_overrides = !empty($attributes['general_layout']['isCustomizerGeneralLayout']);
+    $attributes = boostify_blocks_block_products_apply_theme_defaults($attributes, $block_overrides);
 
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     // 
@@ -353,7 +430,13 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
     return ob_get_clean();
 }
 
-// 
+/**
+ * Generate the HTML for a single product within the products block, based on the provided attributes and product data.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributes The block attributes that determine which product elements to display and how to style them.
+ * @param int $index The index of the current product in the loop, used for conditional styling or behavior if needed.
+ * @return string The generated HTML for the product, including elements like image, title, price, rating, badges, etc., based on the block attributes.
+ */
 function boostify_blocks_block_products_render_product($product, $attributes, $index)
 {
     $data = (object) array(
@@ -367,6 +450,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         'out_of_stock' => "",
         'button'    => "",
         'categories'    => "",
+        'quantity_input' => "",
     );
 
 
@@ -377,19 +461,26 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
 
     if (boostify_blocks_is_enabled($attributes['general_featuredImage']['isShowFeaturedImage'] ?? "")) {
-        $data->image = boostify_blocks_block_products_get_image_html($product);
+        $data->image = boostify_blocks_block_products_get_image_html($product, $attributes);        
     }
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowTitle'] ?? "")) {
         $data->title = boostify_blocks_block_products_get_title_html($product, $attributes['general_content']['titleHtmlTag'] ?? null, $data->permalink);
     }
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowRating'] ?? "")) {
-        $data->rating = boostify_blocks_block_products_get_rating_html($product);
+        $data->rating = boostify_blocks_block_products_get_rating_html($product, $attributes);
     }
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowSaleBadge'] ?? "")) {
         $data->badge = boostify_blocks_block_products_get_sale_badge_html($product, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? false);
     }
+    
+    // Quantity input
+    if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "") && $attributes['general_addToCartBtn']['position'] !== "none") {
+        $data->quantity_input = boostify_blocks_block_products_get_product_quantity($attributes);
+    }
 
-    if ($attributes['general_addToCartBtn']['position'] === "bottom") {
+    $add_to_cart_position = $attributes['general_addToCartBtn']['position'] ?? '';
+
+    if ($add_to_cart_position === "bottom" || $add_to_cart_position === "bottom visible") {
         $price_html  = '';
         $button_html = '';
 
@@ -397,24 +488,37 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
             $price_html = $data->price = boostify_blocks_block_products_get_price_html($product);
         }
         if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
-            $button_html = $data->button = boostify_blocks_block_products_get_button_html($product, $attributes);
+            $button_html = $data->button = boostify_blocks_block_products_get_button_html($product, $attributes, $product->get_price_html());
         }
 
         $data->price = "";
         $data->button = "";
-
-        $data->price_button_group = "
-            <div class=\"wcb-products__price-button-wrapper\">
-                {$price_html}
-                {$button_html}
-            </div>
-        ";
+        
+        // Add element quantity
+        if ($add_to_cart_position === "bottom") {
+            $data->price_button_group = "
+                <div class=\"wcb-products__price-button-wrapper\">
+                    {$data->quantity_input}
+                    {$price_html}
+                    {$button_html}
+                </div>
+            ";
+        } else {
+            $data->price_button_group = "
+                <div class=\"wcb-products__price-button-wrapper\">
+                    {$price_html}
+                    {$data->quantity_input}
+                    {$button_html}
+                </div>
+            ";
+        }
+       
     } else {
         if (boostify_blocks_is_enabled($attributes['general_content']['isShowPrice'] ?? "")) {
             $data->price = boostify_blocks_block_products_get_price_html($product);
         }
         if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
-            $data->button = boostify_blocks_block_products_get_button_html($product, $attributes);
+            $data->button = boostify_blocks_block_products_get_button_html($product, $attributes, $product->get_price_html());
         }
     }
 
@@ -425,7 +529,6 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
     // pre-order badge
     $data->preorder_badge = boostify_blocks_block_products__get_preorder_html($product);
-
     $btnInsideImage = ($attributes['general_addToCartBtn']['position'] ?? "") === "inside image";
     $btnIconAddToCart = ($attributes['general_addToCartBtn']['position'] ?? "") === "icon";
     $saleInsideImage = ($attributes['general_content']['saleBadgePosition'] ?? "") === "Inside image";
@@ -556,8 +659,8 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
 
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-        "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\">
-				<div class=\"wcb-products__product-featured \">
+		"<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\">
+                <div class=\"wcb-products__product-featured \">
                     <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
                         {$isSwapHover}
@@ -569,18 +672,43 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$saleBadge1}
                     {$saleOutOfStock}
                 </div>
-                {$data->categories}
-                {$data->title}
-                {$preorderBadge}
-				{$saleBadge2}
-				{$data->rating}
-				" . ($data->price_button_group ?? ($data->price . $btn2)) . "
+                <div class=\"wcb-products__product-content\">
+                    {$data->categories}
+                    {$data->title}
+                    {$preorderBadge}
+                    {$saleBadge2}
+                    {$data->rating}
+                    " . ($data->price_button_group ?? ($data->price . $data->quantity_input . $btn2)) . "
+                </div>
 			</div>",
         $data,
         $product
     );
 }
 
+/**
+ * Convert block alignment value to CSS flex alignment.
+ * @param string $alignment The block alignment value (e.g., 'left', 'center', 'right').
+ * @return string The corresponding CSS flex alignment value.
+ */
+function convert_to_alignment_style($alignment) {
+    switch ($alignment) {
+        case 'left':
+            return 'flex-start';
+        case 'center':
+            return 'center';
+        case 'right':
+            return 'flex-end';
+        default:
+            return '';
+    }
+}
+
+/**
+ * Generate the HTML for the countdown urgency timer based on the provided attributes.
+ * @param array $countdown_attrs The attributes for the countdown urgency timer.
+ * @return string The generated HTML for the countdown urgency timer, or an empty string if not active or applicable.
+ */
 function boostify_blocks_block_products__get_countdown_html( $countdown_attrs ) {
     if ( empty( $countdown_attrs ) ) {
         return '';
@@ -641,6 +769,12 @@ function boostify_blocks_block_products__get_countdown_html( $countdown_attrs ) 
             </div>";
 }
 
+/**
+ * Generate the HTML for the quick view button based on the provided product ID and position.
+ * @param int $product_id_attr The product ID to be used in the button's data
+ * attributes. @param string $position The position of the quick view button (e.g., 'bottom-image', 'center-image', 'top-right').
+ * @return string The generated HTML for the quick view button, or an empty string if the position is not recognized.
+ */
 function boostify_blocks_block_products__build_quick_view_html( $product_id_attr, $position ) {
 
     $html  = '<button 
@@ -680,7 +814,12 @@ function boostify_blocks_block_products_get_image_gallery_image_1_html($product)
     return wp_get_attachment_image($attachment_ids[0], 'full');
 }
 
-function boostify_blocks_block_products_get_image_html($product)
+/**
+ * Generate the HTML for the product image, applying the height from the Woostify theme settings and ensuring accessibility with alt text.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the product image, wrapped in a container with appropriate classes
+ */
+function boostify_blocks_block_products_get_image_html($product, $attributes = [])
 {
     $attr = array(
         'alt' => '',
@@ -698,9 +837,16 @@ function boostify_blocks_block_products_get_image_html($product)
     $woostify = get_option('woostify_setting') ?: [];
 
     // Get image height from theme setting, default to 300 if not set
-    $imageHeight = !empty($woostify['shop_page_product_image_height'])
-        ? intval($woostify['shop_page_product_image_height'])
-        : 300;
+     if (($attributes['general_featuredImage']['hoverType'] ?? "") === 'swap') {
+        $imageHeight = !empty($woostify['shop_page_product_image_height'])
+                ? intval($woostify['shop_page_product_image_height'])
+                : 'auto';
+     } else {
+        $imageHeight = 'auto';
+     }
+   
+
+    error_log('Image height for product ID ' . $product->get_id() . ': ' . $imageHeight);
 
     // Get the default WooCommerce thumbnail HTML
     $image_html = $product->get_image('woocommerce_thumbnail', $attr);
@@ -716,7 +862,14 @@ function boostify_blocks_block_products_get_image_html($product)
     return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
-
+/**
+ * Generate the HTML for the product title, wrapped in a heading tag and linked to the product page.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param string $headingTag The HTML tag to use for the title (e.g.,
+ * 'div', 'h2', 'h3'). Defaults to 'div' if not provided or empty.
+ * @param string $link The URL to link the product title to.
+ * @return string The generated HTML for the product title, wrapped in the specified heading tag and linked to the product page.
+ */
 function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link)
 {
     if (empty($headingTag)) {
@@ -725,13 +878,18 @@ function boostify_blocks_block_products_get_title_html($product, $headingTag = "
     return '<' . tag_escape($headingTag) . ' class="wcb-products__product-title wc-block-grid__product-title"> <a href="' . esc_url($link) . '">' . wp_kses_post($product->get_title()) . '</a></' . tag_escape($headingTag) . '>';
 }
 
+/**
+ * Generate the HTML for the product categories, wrapped in a container with appropriate classes.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the product categories, wrapped in a container with appropriate classes
+ */
 function boostify_blocks_block_products_get_category_html($product)
 {
     return wc_get_product_category_list($product->get_id(), ", ", '<div class="wcb-products__product-categories">', '</div>');
 }
 
 
-function boostify_blocks_block_products_get_rating_html($product)
+function boostify_blocks_block_products_get_rating_html($product, $attributes)
 {
 
     $rating_count = $product->get_rating_count();
@@ -741,7 +899,11 @@ function boostify_blocks_block_products_get_rating_html($product)
 
     if ($rating_count > 0) {
         $label = sprintf(__('Rated %s out of 5', 'woocommerce'), $average);
-        $html  = '<div class="wcb-products__product-rating-wrap"><div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . '</div></div>';
+        $html  = '<div class="wcb-products__product-rating-wrap" style="justify-content: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">
+                    <div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' 
+                        . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . 
+                    '</div>
+                </div>';
         return $html;
     }
     return '';
@@ -783,7 +945,12 @@ function boostify_blocks_block_products_add_percentage_to_sale_badge($product)
     return '<span class="onsale">' . esc_html__('-', 'boostify-blocks') . ' ' . $percentage . '</span>';
 }
 
-
+/**
+ * Generate the HTML for the sale badge, including the discount percentage if applicable.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param bool $showSaleBadgeDiscoutPercent Whether to show the discount percentage on the sale badge.
+ * @return string The generated HTML for the sale badge.
+ */
 function boostify_blocks_block_products_get_sale_badge_html($product,  $showSaleBadgeDiscoutPercent)
 {
     if (!$product->is_on_sale()) {
@@ -807,6 +974,11 @@ function boostify_blocks_block_products_get_sale_badge_html($product,  $showSale
 		</div></div>';
 }
 
+/**
+ * Generate the HTML for the out of stock badge.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the out of stock badge.
+ */
 function boostify_blocks_block_products__get_out_of_stock_html($product)
 {
     $woostify = get_option('woostify_setting') ?: [];
@@ -820,6 +992,11 @@ function boostify_blocks_block_products__get_out_of_stock_html($product)
     }
 }
 
+/**
+ * Generate the HTML for the pre-order badge.
+ * @param WC_Product $product The WooCommerce product object.
+ * @return string The generated HTML for the pre-order badge.
+ */
 function boostify_blocks_block_products__get_preorder_html( $product ) {
 
     if ( ! $product instanceof WC_Product ) {
@@ -876,14 +1053,35 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
     return $html;
 }
 
-
-function boostify_blocks_block_products_get_button_html($product, $attributes)
+/**
+ * Generate the HTML for the add to cart button.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributes The block attributes.
+ * @return string The generated HTML for the add to cart button.
+ */
+function boostify_blocks_block_products_get_button_html($product, $attributes, $badge_html = '')
 {
-
-    return '<div class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart">' . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . '</div>';
+    $isCheckBottom = false;
+    if ($attributes['general_addToCartBtn']['position'] === "bottom") {
+        $isCheckBottom = true;
+    }
+    
+    return '<div 
+                class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart" 
+                style="
+                    align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';
+                    overflow: ' . ($isCheckBottom && ($badge_html == "")? 'hidden' : 'visible') . ';
+                ">' 
+                . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . 
+            '</div>';
 }
 
-
+/**
+ * Generate the HTML for the add to cart button.
+ * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributesFromBlock The block attributes.
+ * @return string The generated HTML for the add to cart button.
+ */
 function boostify_blocks_block_products_get_add_to_cart($product, $attributesFromBlock)
 {
     $ajax_class = ($product->supports('ajax_add_to_cart') &&
@@ -920,8 +1118,8 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         </style>
     ";
 
-    return $inline_css . sprintf(
-        '<a 
+    $btn_markup = sprintf(
+        '<a
             href="%s"
             data-product_id="%s"
             data-quantity="1"
@@ -935,10 +1133,34 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         $icon_markup,
         $label_markup
     );
+
+    return $inline_css . $btn_markup;
 }
 
-// ===============================
-
+/**
+ * Generate the HTML for the product quantity input.
+ * @param array $attributes The block attributes.
+ * @return string The generated HTML for the product quantity input.
+ */
+function boostify_blocks_block_products_get_product_quantity($attributes)
+{   
+    $quantity_input = '<div class="wcb-products__quantity">'
+        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
+        . '<input'
+        . ' type="number"'
+        . ' class="wcb-products__quantity-input input-text qty text"'
+        . ' step="1"'
+        . ' min="1"'
+        . ' value="1"'
+        . ' size="4"'
+        . ' pattern="[0-9]*"'
+        . ' inputmode="numeric"'
+        . ' aria-label="' . esc_attr__( 'Quantity', 'boostify-blocks' ) . '"'
+        . '>'
+        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
+        . '</div>';
+    return '<div class="wcb-products__quantity-add-to-cart" style="align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">' . $quantity_input . '</div>';
+}
 
 if (!function_exists("boostify_blocks_block_products_parse_filter_attributes")) :
     function boostify_blocks_block_products_parse_filter_attributes($filterAttrs)
@@ -1170,28 +1392,6 @@ endif;
 
 if (!function_exists("boostify_blocks_block_products_set_tags_query_args")) :
     function boostify_blocks_block_products_set_tags_query_args(&$query_args, $attributes)
-    {
-        if (!empty($attributes['categories'])) {
-            $categories = array_map('absint', $attributes['categories']);
-
-            $query_args['tax_query'][] = array(
-                'taxonomy'         => 'product_cat',
-                'terms'            => $categories,
-                'field'            => 'term_id',
-                'operator'         => boostify_blocks_block_products_tax_operator_mapping($attributes['catOperator'] ?? null),
-
-                /*
-				 * When cat_operator is AND, the children categories should be excluded,
-				 * as only products belonging to all the children categories would be selected.
-				 */
-                'include_children' => 'all' === $attributes['catOperator'] ? false : true,
-            );
-        }
-    }
-endif;
-
-if (!function_exists("boostify_blocks_block_products_set_attributes_query_args")) :
-    function boostify_blocks_block_products_set_attributes_query_args(&$query_args, $attributes)
     {
         if (!empty($attributes['tags'])) {
             $query_args['tax_query'][] = array(

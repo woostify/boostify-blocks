@@ -56,11 +56,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const ADD_TO_CART_BTN_BG = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart`;
 	const ADD_TO_CART_BTN = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart a`;
 	const ADD_TO_CART_BTN_ICON = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart-icon`;
-	const ADD_TO_CART_BTN_VIEW_CARD_BG = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart added_to_cart`;
 	const ADD_TO_CART_VIEW_CARD_BTN = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart a.added_to_cart`;
-	const ADD_TO_CART_BTN_VIEW_CARD_ICON = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart-icon`;
 	const PRODUCT_IMAGE_CLASS = `${WRAP_CLASSNAME} .wcb-products__product-image`;
-	const PRODUCT_PRICE_CLASS = `${POST_CARD_CLASS} .wcb-products__product-price`;
 
 	// ------------------- WRAP DIV
 
@@ -69,14 +66,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_Desktop: rowGap_desktop,
 			value_Mobile: rowGap_mobile,
 			value_Tablet: rowGap_tablet,
-		} = getValueFromAttrsResponsives(style_layout.rowGap);
+		} = getValueFromAttrsResponsives(style_layout?.rowGap);
 		const {
 			value_Desktop: colunmGap_desktop,
 			value_Mobile: colunmGap_mobile,
 			value_Tablet: colunmGap_tablet,
-		} = getValueFromAttrsResponsives(style_layout.colunmGap);
+		} = getValueFromAttrsResponsives(style_layout?.colunmGap);
 
-		const { numberOfColumn, swithToScrollSnapX, peekAfter } = style_layout;
+		const { numberOfColumn, swithToScrollSnapX, peekAfter } = style_layout ?? {};
 		const {
 			value_Desktop: numberOfColumn_desktop,
 			value_Tablet: numberOfColumn_tablet,
@@ -128,11 +125,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							: `repeat(${numberOfColumn_mobile}, minmax(0, 1fr))`,
 						// ------ end setting snap scroll x
 						//
-						rowGap: rowGap_mobile,
-						columnGap: colunmGap_mobile,
+						rowGap: rowGap_mobile ?? undefined,
+						columnGap: colunmGap_mobile ?? undefined,
 						[`@media (min-width: ${media_tablet})`]: {
-							rowGap: rowGap_tablet,
-							columnGap: colunmGap_tablet,
+							rowGap: rowGap_tablet ?? undefined,
+							columnGap: colunmGap_tablet ?? undefined,
 							// ------ setting snap scroll x
 							"> div": isSnapScrollTablet
 								? {
@@ -234,7 +231,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_tablet: marginTop_tablet,
 			value_desktop: marginTop_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_pagination.marginTop,
+			cssProperty: style_pagination?.marginTop,
 		});
 		const {
 			mobile_v: marginTop_mobile_new,
@@ -248,14 +245,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 		return {
 			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
 				marginTop: marginTop_mobile_new,
-				justifyContent: style_pagination.justifyContent,
+				justifyContent: style_pagination?.justifyContent,
 				[`.page-numbers`]: {
-					color: style_pagination.mainStyle.Normal.color,
-					backgroundColor: style_pagination.mainStyle.Normal.backgroundColor,
+					color: style_pagination?.mainStyle?.Normal?.color,
+					backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
 				},
 				[`.page-numbers.current`]: {
-					color: style_pagination.mainStyle.Active.color,
-					backgroundColor: style_pagination.mainStyle.Active.backgroundColor,
+					color: style_pagination?.mainStyle?.Active?.color,
+					backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
 				},
 				[`@media (min-width: ${media_tablet})`]: marginTop_tablet_new
 					? {
@@ -277,7 +274,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_tablet: marginTop_tablet,
 			value_desktop: marginTop_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_pagination.marginTop,
+			cssProperty: style_pagination?.marginTop,
 		});
 		const {
 			mobile_v: marginTop_mobile_new,
@@ -291,14 +288,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 		return {
 			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
 				marginTop: marginTop_mobile_new,
-				justifyContent: style_pagination.justifyContent,
+				justifyContent: style_pagination?.justifyContent,
 				[`.page-numbers`]: {
-					color: style_pagination.mainStyle.Normal.color,
-					backgroundColor: style_pagination.mainStyle.Normal.backgroundColor,
+					color: style_pagination?.mainStyle?.Normal?.color,
+					backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
 				},
 				[`.page-numbers.current`]: {
-					color: style_pagination.mainStyle.Active.color,
-					backgroundColor: style_pagination.mainStyle.Active.backgroundColor,
+					color: style_pagination?.mainStyle?.Active?.color,
+					backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
 				},
 				[`@media (min-width: ${media_tablet})`]: marginTop_tablet_new
 					? {
@@ -322,14 +319,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_tablet: titleMarginBottom_tablet,
 			value_desktop: titleMarginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_title.marginBottom,
+			cssProperty: style_title?.marginBottom,
 		});
 		const {
 			value_mobile: saleBadgeMarginBottom_mobile,
 			value_tablet: saleBadgeMarginBottom_tablet,
 			value_desktop: saleBadgeMarginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_saleBadge.marginBottom,
+			cssProperty: style_saleBadge?.marginBottom,
 		});
 		const {
 			value_mobile: outofstockBadgeMarginBottom_mobile,
@@ -343,28 +340,28 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_tablet: featuredImageMarginBottom_tablet,
 			value_desktop: featuredImageMarginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_featuredImage.marginBottom,
+			cssProperty: style_featuredImage?.marginBottom,
 		});
 		const {
 			value_mobile: priceMarginBottom_mobile,
 			value_tablet: priceMarginBottom_tablet,
 			value_desktop: priceMarginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_price.marginBottom,
+			cssProperty: style_price?.marginBottom,
 		});
 		const {
 			value_mobile: ratingMarginBottom_mobile,
 			value_tablet: ratingMarginBottom_tablet,
 			value_desktop: ratingMarginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_rating.marginBottom,
+			cssProperty: style_rating?.marginBottom,
 		});
 		const {
 			value_mobile: categoryMarginBottom_mobile,
 			value_tablet: categoryMarginBottom_tablet,
 			value_desktop: categoryMarginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_category.marginBottom,
+			cssProperty: style_category?.marginBottom,
 		});
 
 		//
@@ -594,9 +591,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 								content: '""',
 								width: "1.2rem",
 								height: "1.2rem",
-								backgroundImage: svgToDataUrl(
+								backgroundImage: `${svgToDataUrl(
 									`${SHOPPING_CART_SVG(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color as any)}`
-								),
+								)} !important` as any,
 								margin: "auto",
 								transformOrigin: "top right",
 								zIndex: 1,
@@ -615,21 +612,21 @@ const GlobalCss: FC<Props> = (attrs) => {
 							content: "none",
 						},
 						".wcb-products__product--btnIconAddToCart--item:hover": {
-							background: style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor ? 
+							background: style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor ?
 								style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor : "#474747",
 							marginTop: "0px !important",
-							"&::after": {
-								content: '""',
-								width: "1.2rem",
-								height: "1.2rem",
-								backgroundImage: svgToDataUrl(`${SHOPPING_CART_SVG(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any)}`),
-								margin: "auto",
-								zIndex: 1,
-								backgroundSize: "contain",
-								backgroundRepeat: "no-repeat",
-								backgroundPosition: "center",
-								pointerEvents: "none",
-							},
+						},
+						".wcb-products__product--btnIconAddToCart--item:hover::after": {
+							content: '""',
+							width: "1.2rem",
+							height: "1.2rem",
+							backgroundImage: `${svgToDataUrl(SHOPPING_CART_SVG(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any))} !important` as any,
+							margin: "auto",
+							zIndex: 1,
+							backgroundSize: "contain",
+							backgroundRepeat: "no-repeat",
+							backgroundPosition: "center",
+							pointerEvents: "none",
 						},
 						// Style loading display is none for top right icon add to cart button
 						".add_to_cart_button--loading.wcb-products__product--btnIconAddToCart--item:hover": {
@@ -727,12 +724,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 					display: "flex",
 					flexDirection: "column",
 					position: "relative",
-					height: !style_layout.isEqualHeight ? "max-content" : undefined,
-					textAlign: style_layout.textAlignment,
-					backgroundColor: style_layout.backgroundColor,
+					height: !style_layout?.isEqualHeight ? "max-content" : undefined,
+					textAlign: style_layout?.textAlignment,
+					backgroundColor: style_layout?.backgroundColor,
 					".wcb-products__price-button-wrapper": {
-						height: "40px",
-						lineHeight: "36px",
+						// Add element quantity
+						height: general_addToCartBtn?.position === "bottom visible" ? "auto" : general_addToCartBtn?.isShowQuantity ? "84px" : "50px",
+						lineHeight: general_addToCartBtn?.position === "bottom visible" ? "normal" : "36px",
 						overflow: "hidden",
 					},
 					// Style layout bottom add to cart button
@@ -760,15 +758,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 					":hover": {
 						".wcb-products__product-price": {
 							// opacity: general_addToCartBtn?.position === "bottom" ? 0 : "unset",
-							transform: general_addToCartBtn?.position === "bottom" ? "translateY(-30px)" : "unset",
+							// Add element quantity
+							transform: general_addToCartBtn?.position === "bottom" ? `translateY(${general_addToCartBtn?.isShowQuantity ? -44 : -30}px)` : "unset",
 							transition: general_addToCartBtn?.position === "bottom" ? "all 0.3s ease-in-out" : "unset",
-							// display: general_addToCartBtn?.position === "bottom" ? "none" : "block",
 						},
 						//TODO: handle style in edit page
 						".wcb-products__product-add-to-cart": {
 							backgroundColor: general_addToCartBtn?.position === "bottom" ? "#fff" : "inherit",
 							"span": {
-								color: (style_addToCardBtn?.colorAndBackgroundColor?.Normal.color as any),
+								color: (style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color as any),
 							},
 							".wcb-products__add-to-cart-icon, .wcb-products__add-to-cart-label": {
 								// display: general_addToCartBtn?.position === "icon" ? "none" : "block",
@@ -792,71 +790,71 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 						".wcb-products__product-add-to-cart:hover": {
 							".add_to_cart_button span": {
-								color: (style_addToCardBtn?.colorAndBackgroundColor?.Hover.color as any),
+								color: (style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any),
 							},
-							"span.woostify-svg-icon svg": {
-								color: general_addToCartBtn?.position === "bottom" ? "#2b2b2b !important" : "#FFFFFF !important",
-							}
+							".wcb-products__add-to-cart-icon svg path": {
+								fill: `${style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color} !important` as any,
+							},
 						},
-						"span.woostify-svg-icon svg": {
-							color: general_addToCartBtn?.position === "bottom" ? "#2b2b2b !important" : "#FFFFFF !important",
+						".wcb-products__add-to-cart-icon svg path": {
+							fill: `${style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color} !important` as any,
 						}
 					},
 
 					// ".wcb-products__product-image":
-					".wcb-products__product-image-link":
-						featuredImageMarginBottom_mobile_new ||
-						featuredImageMarginBottom_tablet_new ||
-						featuredImageMarginBottom_desktop_new
-							? {
-									marginBottom: featuredImageMarginBottom_mobile_new,
-									[`@media (min-width: ${media_tablet})`]:
-										featuredImageMarginBottom_tablet_new
-											? {
-													marginBottom: featuredImageMarginBottom_tablet_new,
-											  }
-											: undefined,
-									[`@media (min-width: ${media_desktop})`]:
-										featuredImageMarginBottom_desktop_new
-											? {
-													marginBottom: featuredImageMarginBottom_desktop_new,
-											  }
-											: undefined,
-							  }
-							: undefined,
+					// ".wcb-products__product-image-link":wcb-add-to-cart-icon-113
+					// 	featuredImageMarginBottom_mobile_new ||
+					// 	featuredImageMarginBottom_tablet_new ||
+					// 	featuredImageMarginBottom_desktop_new
+					// 		? {
+					// 				marginBottom: featuredImageMarginBottom_mobile_new,
+					// 				[`@media (min-width: ${media_tablet})`]:
+					// 					featuredImageMarginBottom_tablet_new
+					// 						? {
+					// 								marginBottom: featuredImageMarginBottom_tablet_new,
+					// 						  }
+					// 						: undefined,
+					// 				[`@media (min-width: ${media_desktop})`]:
+					// 					featuredImageMarginBottom_desktop_new
+					// 						? {
+					// 								marginBottom: featuredImageMarginBottom_desktop_new,
+					// 						  }
+					// 						: undefined,
+					// 		  }
+					// 		: undefined,
 
 					".wcb-products__product-title": {
-						marginBottom: titleMarginBottom_mobile_new,
-						color: style_title.textColor,
+						marginBottom: titleMarginBottom_mobile_new ?? undefined,
+						color: style_title?.textColor,
 					},
 					".wcb-products__product-categories": {
-						marginBottom: categoryMarginBottom_mobile_new,
-						color: style_category.textColor,
+						marginBottom: categoryMarginBottom_mobile_new ?? undefined,
+						color: style_category?.textColor,
 						a: {
-							color: style_category.textColor,
+							color: style_category?.textColor,
 						},
 					},
 					".wcb-products__product-salebadge": {
-						marginBottom: saleBadgeMarginBottom_mobile_new,
+						marginBottom: saleBadgeMarginBottom_mobile_new ?? undefined,
 						".wcb-products__product-onsale": {
-							color: style_saleBadge.textColor,
-							backgroundColor: style_saleBadge.backgroundColor,
+							color: style_saleBadge?.textColor,
+							backgroundColor: style_saleBadge?.backgroundColor,
 						},
 					},
 					".wcb-products__product-outofstock-badge": {
-						marginBottom: outofstockBadgeMarginBottom_mobile_new,
+						marginBottom: outofstockBadgeMarginBottom_mobile_new ?? undefined,
 						".wcb-products__product-on-outofstock": {
 							color: style_outOfStock?.textColor,
 							backgroundColor: style_outOfStock?.backgroundColor,
 						},
 					},
 					".wcb-products__product-price": {
-						marginBottom: priceMarginBottom_mobile_new,
-						color: style_price.textColor,
+						marginBottom: priceMarginBottom_mobile_new ?? undefined,
+						color: style_price?.textColor,
 					},
 					".wcb-products__product-rating": {
-						marginBottom: ratingMarginBottom_mobile_new,
-						color: style_rating.color,
+						marginBottom: ratingMarginBottom_mobile_new ?? undefined,
+						color: style_rating?.color,
 					},
 					[`@media (min-width: ${media_tablet})`]:
 						titleMarginBottom_tablet_new ||
@@ -948,7 +946,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			getBorderStyles({
 				// className: `${POST_CARD_CLASS} .wcb-products__product-image`,
 				className: `${WRAP_CLASSNAME} .wcb-products__product-image-link`,
-				border: style_featuredImage.border,
+				border: style_featuredImage?.border,
 				isWithRadius: true,
 			}),
 		];
@@ -956,15 +954,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	const getPostCardStyles_AddToCart = (position: string): CSSObject => {
 		const { backgroundColor, color } =
-			style_addToCardBtn.colorAndBackgroundColor.Normal;
+			style_addToCardBtn?.colorAndBackgroundColor?.Normal ?? {};
 		const { backgroundColor: backgroundColor_h, color: color_h } =
-			style_addToCardBtn.colorAndBackgroundColor.Hover;
+			style_addToCardBtn?.colorAndBackgroundColor?.Hover ?? {};
 		const {
 			value_mobile: marginBottom_mobile,
 			value_tablet: marginBottom_tablet,
 			value_desktop: marginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_addToCardBtn.marginBottom || { Desktop: "1rem" },
+			cssProperty: style_addToCardBtn?.marginBottom || { Desktop: "1rem" },
 		});
 
 		//
@@ -992,7 +990,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				display: (position === "icon" || position === "bottom") ? "none" : "block",
 				color,
 				backgroundColor: (position === "bottom visible" || position === "inside image")  ? backgroundColor : "#fff",
-				marginBottom: marginBottom_mobile_new,
+				marginBottom: marginBottom_mobile_new ?? undefined,
 				":hover": {
 					color: color_h ? `${color_h} !important` : undefined,
 					backgroundColor: (position === "bottom visible" || position === "inside image" || position === "icon") ? backgroundColor_h : "#fff !important",
@@ -1035,7 +1033,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			[ADD_TO_CART_BTN_ICON]: {
 				color,
 				backgroundColor,
-				marginBottom: marginBottom_mobile_new,
+				marginBottom: marginBottom_mobile_new ?? undefined,
 				":hover": {
 					color: color_h,
 					backgroundColor: backgroundColor_h,
@@ -1063,52 +1061,52 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{renderDivListWrapStyle()}
 
 			{/* TITLE */}
-			{general_content.isShowTitle && (
+			{general_content?.isShowTitle && (
 				<Global
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-title",
-						typography: style_title.typography,
+						typography: style_title?.typography,
 					})}
 				/>
 			)}
 
 			{/* CATEOGRY */}
-			{general_content.isShowCategory && (
+			{general_content?.isShowCategory && (
 				<Global
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-categories",
-						typography: style_category.typography,
+						typography: style_category?.typography,
 					})}
 				/>
 			)}
 
 			{/* RATING */}
-			{general_content.isShowRating && (
+			{general_content?.isShowRating && (
 				<Global styles={getDivWrapStyles_Rating()} />
 			)}
 
 			{/* PRICE */}
-			{general_content.isShowPrice && (
+			{general_content?.isShowPrice && (
 				<Global
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-price",
-						typography: style_price.typography,
+						typography: style_price?.typography,
 					})}
 				/>
 			)}
 
 			{/* SALE BADGE */}
-			{general_content.isShowSaleBadge && (
+			{general_content?.isShowSaleBadge && (
 				<Global
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-onsale",
-						typography: style_saleBadge.typography,
+						typography: style_saleBadge?.typography,
 					})}
 				/>
 			)}
 
 			{/* OUT OF STOCK BADGE */}
-			{general_content.isShowOutOfStock && (
+			{general_content?.isShowOutOfStock && (
 				<Global
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-on-outofstock",
@@ -1118,20 +1116,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 			)}
 
 			{/* PAGINATION */}
-			{general_pagination.isShowPagination ? (
+			{general_pagination?.isShowPagination ? (
 				<>
 					<Global styles={getDivWrapStyles_Pagination()} />
 					<Global
 						styles={getBorderStyles({
 							className: `${WRAP_CLASSNAME} .wcb-products__pagination .page-numbers`,
-							border: style_pagination.mainStyle.Normal.border,
+							border: style_pagination?.mainStyle?.Normal?.border,
 							isWithRadius: true,
 						})}
 					/>
 					<Global
 						styles={getBorderStyles({
 							className: `${WRAP_CLASSNAME} .wcb-products__pagination .page-numbers.current`,
-							border: style_pagination.mainStyle.Active.border,
+							border: style_pagination?.mainStyle?.Active?.border,
 							isWithRadius: true,
 						})}
 					/>
@@ -1143,7 +1141,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global
 				styles={getPaddingMarginStyles({
 					className: POST_CARD_CLASS,
-					padding: style_layout.padding,
+					padding: style_layout?.padding,
 				})}
 			/>
 			<Global
@@ -1155,7 +1153,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			/>
 
 			{/* ADD TO CART BUTTON */}
-			{general_addToCartBtn.isShowButton ? (
+			{general_addToCartBtn?.isShowButton ? (
 				<>
 					<>
 					{
@@ -1171,20 +1169,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global
 						styles={getTypographyStyles({
 							className: ADD_TO_CART_BTN,
-							typography: style_addToCardBtn.typography,
+							typography: style_addToCardBtn?.typography,
 						})}
 					/>
 					<Global
 						styles={getBorderStyles({
 							className: ADD_TO_CART_BTN,
-							border: style_addToCardBtn.border,
+							border: style_addToCardBtn?.border,
 							isWithRadius: true,
 						})}
 					/>
 					<Global
 						styles={getPaddingMarginStyles({
 							className: ADD_TO_CART_BTN,
-							padding: style_addToCardBtn.padding,
+							padding: style_addToCardBtn?.padding,
 						})}
 					/>
 				</>

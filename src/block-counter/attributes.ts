@@ -72,16 +72,16 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	},
 
 	// THE ATTRS OF BLOCK HERE
+	heading: {
+		type: "string",
+		default: "",
+	},
 	endNumber: {
 		type: "string",
-		source: "html",
-		selector: ".wcb-icon-box__heading",
 		default: "80",
 	},
 	designation: {
 		type: "string",
-		source: "html",
-		selector: ".wcb-icon-box__designation",
 		default: "Write a Prefix",
 	},
 	description: {

@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function boostify_blocks_my_scripts_method()
 {
     wp_enqueue_style( 'boostify-blocks-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), BOOSTIFY_BLOCKS_VERSION );
+    wp_enqueue_style( 'boostify-blocks-frontend', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css', array(), BOOSTIFY_BLOCKS_VERSION );
     wp_localize_script(
         'jquery',
         'boostify_blocks_frontend_ajax_object',
@@ -62,6 +63,14 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
+    wp_enqueue_script(
+        'boostify-blocks-product-quantity',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-product-quantity.js',
+        array(),
+        BOOSTIFY_BLOCKS_VERSION,
+        true
+    );
+
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(
             'boostify-blocks-buynow',
@@ -74,6 +83,16 @@ function boostify_blocks_my_scripts_method()
     }
 }
 add_action('wp_enqueue_scripts', 'boostify_blocks_my_scripts_method');
+
+// Add style for editor
+add_action( 'enqueue_block_editor_assets', function() {
+    wp_enqueue_style(
+        'boostify-blocks-frontend',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css',
+        array(),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+});
 
 // Enqueue for admin
 function boostify_blocks_my_enqueue_scripts_for_admin_editor($hook)
