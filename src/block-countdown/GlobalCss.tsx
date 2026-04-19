@@ -105,6 +105,21 @@ const GlobalCss: FC<Props> = (attrs) => {
 					: "center",
 	};
 
+	const isRow = (dir: string | undefined | null) =>
+		dir === "row" || dir === "row-reverse";
+
+	const ALIGN_ITEMS_justify: HasResponsive<CSSProperties["justifyContent"]> = {
+		Desktop: isRow(flexDirection_Desktop) ? ALIGN_ITEMS.Desktop : undefined,
+		Tablet: isRow(flexDirection_tablet) ? ALIGN_ITEMS.Tablet : undefined,
+		Mobile: isRow(flexDirection_mobile) ? ALIGN_ITEMS.Mobile : undefined,
+	};
+
+	const ALIGN_ITEMS_align: HasResponsive<CSSProperties["alignItems"]> = {
+		Desktop: !isRow(flexDirection_Desktop) ? ALIGN_ITEMS.Desktop : undefined,
+		Tablet: !isRow(flexDirection_tablet) ? ALIGN_ITEMS.Tablet : undefined,
+		Mobile: !isRow(flexDirection_mobile) ? ALIGN_ITEMS.Mobile : undefined,
+	};
+
 	if (!uniqueId) {
 		return null;
 	}
@@ -139,8 +154,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 					getStyleObjectFromResponsiveAttr({
 						className: CONTENT_CLASSNAME,
-						value: ALIGN_ITEMS,
+						value: ALIGN_ITEMS_justify,
 						prefix: "justifyContent",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: CONTENT_CLASSNAME,
+						value: ALIGN_ITEMS_align,
+						prefix: "alignItems",
 					}),
 
 					getStyleObjectFromResponsiveAttr({
@@ -150,9 +170,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 					}),
 
 					getStyleObjectFromResponsiveAttr({
-						className: BOX_CLASSNAME + '+ div',
+						className: CONTENT_CLASSNAME,
 						value: style_dimension.gap_boxes,
-						prefix: "marginLeft",
+						prefix: "gap",
 					}),
 
 					getStyleObjectFromResponsiveAttr({
