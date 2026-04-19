@@ -22,6 +22,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_description,
         style_desination,
         style_Icon,
+        style_progress,
         style_title,
         general_icon,
         style_dimension,
@@ -38,6 +39,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_description,
         style_desination,
         style_Icon,
+        style_progress,
         style_title,
         general_icon,
         style_dimension,
@@ -87,7 +89,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                     />
                     <circle
                         className="wcb-icon-box__progress-circle"
-                        stroke="#007cba"
+                        stroke={style_progress.progressColor}
                         fill="transparent"
                         strokeWidth={stroke}
                         strokeDasharray={`${circumference} ${circumference}`}
@@ -169,7 +171,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         style={{
                             width: "0%", // Initially set to 0% progress
                             height: "100%",
-                            backgroundColor: "#007cba",
+                            backgroundColor: style_progress.progressColor,
                             transition: "transparent",
                             color: "white",
                             display: "flex",

@@ -20,6 +20,7 @@ import WcbTeamPanel_StyleDescription from "./WcbTeamPanel_StyleDescription";
 import WcbIconBoxPanel_StyleIcons from "./WcbIconBoxPanel_StyleIcons";
 import MyIconFull from "../components/controls/MyIconFull";
 import WcbIconBoxPanel_StyleDimension from "./WcbIconBoxPanel_StyleDimension";
+import WcbIconBoxPanel_StyleProgress from "./WcbIconBoxPanel_StyleProgress";
 import { MY_DIMENSIONS_NO_GAP_DEMO__EMPTY } from "../components/controls/MyDimensionsControl/types";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 
@@ -38,6 +39,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_desination,
 		style_description,
 		style_Icon,
+		style_progress,
 		style_dimension,
 		advance_motionEffect,
 	} = attributes;
@@ -147,7 +149,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						cy={radius}
 					/>
 					<circle
-						stroke="#007cba"
+						stroke={style_progress.progressColor}
 						fill="transparent"
                         strokeWidth={stroke}
 						strokeDasharray={`${circumference} ${circumference}`}
@@ -220,7 +222,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						style={{
 							width: `${progress}%`, // Dynamic width based on progress
 							height: "100%",
-							backgroundColor: "#007cba", // Blue fill color as in the image
+							backgroundColor: style_progress.progressColor,
 							transition: "transparent", // Smooth transition for the fill
 							color: "white",
 							display: "flex",
@@ -376,6 +378,19 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								generalLayoutType={general_layout.type}
 							/>
 						)}
+
+						{(general_layout.type === "circle" || general_layout.type === "bar") && (
+							<WcbIconBoxPanel_StyleProgress
+								onToggle={() => handleTogglePanel("Styles", "_StyleProgress")}
+								initialOpen={tabStylesIsPanelOpen === "_StyleProgress"}
+								opened={tabStylesIsPanelOpen === "_StyleProgress" || undefined}
+								//
+								setAttr__={(data) => {
+									setAttributes({ style_progress: data });
+								}}
+								panelData={style_progress}
+							/>
+						)}
 						{general_layout.enablePrefix && (
 							<WcbTeamPanel_StyleDesignation
 								onToggle={() =>
@@ -473,6 +488,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			style_desination,
 			style_description,
 			style_Icon,
+			style_progress,
 			style_dimension,
 			general_icon,
 			advance_motionEffect,
@@ -488,6 +504,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_desination,
 		style_description,
 		style_Icon,
+		style_progress,
 		style_dimension,
 		general_icon,
 		advance_motionEffect,

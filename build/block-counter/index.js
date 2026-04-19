@@ -7762,8 +7762,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WcbIconBoxPanel_StyleIcons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleIcons */ "./src/block-counter/WcbIconBoxPanel_StyleIcons.tsx");
 /* harmony import */ var _components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../components/controls/MyIconFull */ "./src/components/controls/MyIconFull.tsx");
 /* harmony import */ var _WcbIconBoxPanel_StyleDimension__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleDimension */ "./src/block-counter/WcbIconBoxPanel_StyleDimension.tsx");
-/* harmony import */ var _components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../components/controls/MyDimensionsControl/types */ "./src/components/controls/MyDimensionsControl/types.ts");
-/* harmony import */ var _utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../utils/converUniqueIdToAnphaKey */ "./src/utils/converUniqueIdToAnphaKey.ts");
+/* harmony import */ var _WcbIconBoxPanel_StyleProgress__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleProgress */ "./src/block-counter/WcbIconBoxPanel_StyleProgress.tsx");
+/* harmony import */ var _components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../components/controls/MyDimensionsControl/types */ "./src/components/controls/MyDimensionsControl/types.ts");
+/* harmony import */ var _utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../utils/converUniqueIdToAnphaKey */ "./src/utils/converUniqueIdToAnphaKey.ts");
+
 
 
 
@@ -7803,6 +7805,7 @@ const Edit = props => {
     style_desination,
     style_description,
     style_Icon,
+    style_progress,
     style_dimension,
     advance_motionEffect
   } = attributes;
@@ -7824,7 +7827,7 @@ const Edit = props => {
   const UNIQUE_ID = wrapBlockProps.id;
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     setAttributes({
-      uniqueId: (0,_utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_18__["default"])(UNIQUE_ID)
+      uniqueId: (0,_utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_19__["default"])(UNIQUE_ID)
     });
   }, [UNIQUE_ID]);
 
@@ -7897,7 +7900,7 @@ const Edit = props => {
       cx: radius,
       cy: radius
     }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {
-      stroke: "#007cba",
+      stroke: style_progress.progressColor,
       fill: "transparent",
       strokeWidth: stroke,
       strokeDasharray: `${circumference} ${circumference}`,
@@ -7966,8 +7969,7 @@ const Edit = props => {
         width: `${progress}%`,
         // Dynamic width based on progress
         height: "100%",
-        backgroundColor: "#007cba",
-        // Blue fill color as in the image
+        backgroundColor: style_progress.progressColor,
         transition: "transparent",
         // Smooth transition for the fill
         color: "white",
@@ -8032,10 +8034,10 @@ const Edit = props => {
                 style_Icon: {
                   ...style_Icon,
                   dimensions: {
-                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_17__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
+                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
                     margin: {
                       Desktop: {
-                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_17__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
+                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
                         right: "1rem"
                       }
                     }
@@ -8057,10 +8059,10 @@ const Edit = props => {
                 style_Icon: {
                   ...style_Icon,
                   dimensions: {
-                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_17__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
+                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
                     margin: {
                       Desktop: {
-                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_17__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
+                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
                         left: "1rem"
                       }
                     }
@@ -8073,10 +8075,10 @@ const Edit = props => {
               style_Icon: {
                 ...style_Icon,
                 dimensions: {
-                  ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_17__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
+                  ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
                   margin: {
                     Desktop: {
-                      ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_17__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
+                      ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
                       top: "1rem",
                       bottom: "1rem"
                     }
@@ -8101,6 +8103,18 @@ const Edit = props => {
           },
           panelData: style_Icon,
           generalLayoutType: general_layout.type
+        }), (general_layout.type === "circle" || general_layout.type === "bar") && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbIconBoxPanel_StyleProgress__WEBPACK_IMPORTED_MODULE_17__["default"], {
+          onToggle: () => handleTogglePanel("Styles", "_StyleProgress"),
+          initialOpen: tabStylesIsPanelOpen === "_StyleProgress",
+          opened: tabStylesIsPanelOpen === "_StyleProgress" || undefined
+          //
+          ,
+          setAttr__: data => {
+            setAttributes({
+              style_progress: data
+            });
+          },
+          panelData: style_progress
         }), general_layout.enablePrefix && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbTeamPanel_StyleDesignation__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onToggle: () => handleTogglePanel("Styles", "_StyleDesignation"),
           initialOpen: tabStylesIsPanelOpen === "_StyleDesignation",
@@ -8175,11 +8189,12 @@ const Edit = props => {
       style_desination,
       style_description,
       style_Icon,
+      style_progress,
       style_dimension,
       general_icon,
       advance_motionEffect
     };
-  }, [uniqueId, advance_responsiveCondition, advance_zIndex, general_layout, endNumber, designation, style_title, style_desination, style_description, style_Icon, style_dimension, general_icon, advance_motionEffect]);
+  }, [uniqueId, advance_responsiveCondition, advance_zIndex, general_layout, endNumber, designation, style_title, style_desination, style_description, style_Icon, style_progress, style_dimension, general_icon, advance_motionEffect]);
   const renderIcon = () => {
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.enableIcon && general_layout.type !== "circle" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__icon-wrap"
@@ -8459,6 +8474,7 @@ function save({
     style_description,
     style_desination,
     style_Icon,
+    style_progress,
     style_title,
     general_icon,
     style_dimension,
@@ -8474,6 +8490,7 @@ function save({
     style_description,
     style_desination,
     style_Icon,
+    style_progress,
     style_title,
     general_icon,
     style_dimension,
@@ -8520,7 +8537,7 @@ function save({
       cy: radius
     }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {
       className: "wcb-icon-box__progress-circle",
-      stroke: "#007cba",
+      stroke: style_progress.progressColor,
       fill: "transparent",
       strokeWidth: stroke,
       strokeDasharray: `${circumference} ${circumference}`,
@@ -8587,7 +8604,7 @@ function save({
         width: "0%",
         // Initially set to 0% progress
         height: "100%",
-        backgroundColor: "#007cba",
+        backgroundColor: style_progress.progressColor,
         transition: "transparent",
         color: "white",
         display: "flex",
@@ -9602,6 +9619,65 @@ const WcbIconBoxPanel_StyleIcons = ({
 
 /***/ }),
 
+/***/ "./src/block-counter/WcbIconBoxPanel_StyleProgress.tsx":
+/*!*************************************************************!*\
+  !*** ./src/block-counter/WcbIconBoxPanel_StyleProgress.tsx ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO: () => (/* binding */ WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_controls_MyColorPicker_MyColorPicker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/controls/MyColorPicker/MyColorPicker */ "./src/components/controls/MyColorPicker/MyColorPicker.tsx");
+
+
+
+
+
+const WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO = {
+  progressColor: "#007cba"
+};
+const WcbIconBoxPanel_StyleProgress = ({
+  panelData = WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO,
+  setAttr__,
+  initialOpen,
+  onToggle,
+  opened
+}) => {
+  const {
+    progressColor
+  } = panelData;
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+    initialOpen: initialOpen,
+    onToggle: onToggle,
+    opened: opened,
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Progress", "boostify-blocks")
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "space-y-5"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyColorPicker_MyColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    onChange: color => {
+      setAttr__({
+        ...panelData,
+        progressColor: color
+      });
+    },
+    color: progressColor,
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Progress color", "boostify-blocks")
+  })));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WcbIconBoxPanel_StyleProgress);
+
+/***/ }),
+
 /***/ "./src/block-counter/WcbTeamPanel_StyleDescription.tsx":
 /*!*************************************************************!*\
   !*** ./src/block-counter/WcbTeamPanel_StyleDescription.tsx ***!
@@ -9947,7 +10023,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WcbTeamPanel_StyleTitle__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./WcbTeamPanel_StyleTitle */ "./src/block-counter/WcbTeamPanel_StyleTitle.tsx");
 /* harmony import */ var _WcbIconBoxPanel_StyleIcons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleIcons */ "./src/block-counter/WcbIconBoxPanel_StyleIcons.tsx");
 /* harmony import */ var _WcbIconBoxPanel_StyleDimension__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleDimension */ "./src/block-counter/WcbIconBoxPanel_StyleDimension.tsx");
-/* harmony import */ var _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/controls/MyMotionEffectControl/MyMotionEffectControl */ "./src/components/controls/MyMotionEffectControl/MyMotionEffectControl.tsx");
+/* harmony import */ var _WcbIconBoxPanel_StyleProgress__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleProgress */ "./src/block-counter/WcbIconBoxPanel_StyleProgress.tsx");
+/* harmony import */ var _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/controls/MyMotionEffectControl/MyMotionEffectControl */ "./src/components/controls/MyMotionEffectControl/MyMotionEffectControl.tsx");
+
 
 
 
@@ -10008,6 +10086,10 @@ const blokc1Attrs = {
     type: "object",
     default: _WcbIconBoxPanel_StyleIcons__WEBPACK_IMPORTED_MODULE_7__.WCB_ICON_BOX_PANEL_STYLE_ICON_DEMO
   },
+  style_progress: {
+    type: "object",
+    default: _WcbIconBoxPanel_StyleProgress__WEBPACK_IMPORTED_MODULE_9__.WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO
+  },
   style_dimension: {
     type: "object",
     default: _WcbIconBoxPanel_StyleDimension__WEBPACK_IMPORTED_MODULE_8__.WCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO
@@ -10023,7 +10105,7 @@ const blokc1Attrs = {
   },
   advance_motionEffect: {
     type: "object",
-    default: _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_9__.MY_MOTION_EFFECT_DEMO
+    default: _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_10__.MY_MOTION_EFFECT_DEMO
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (blokc1Attrs);
