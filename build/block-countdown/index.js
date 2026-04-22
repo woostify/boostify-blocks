@@ -6126,6 +6126,17 @@ const GlobalCss = attrs => {
     Tablet: textAlignment_tablet === "left" ? "start" : textAlignment_tablet === "right" ? "end" : "center",
     Mobile: textAlignment_mobile === "left" ? "start" : textAlignment_mobile === "right" ? "end" : "center"
   };
+  const isRow = dir => dir === "row" || dir === "row-reverse";
+  const ALIGN_ITEMS_justify = {
+    Desktop: isRow(flexDirection_Desktop) ? ALIGN_ITEMS.Desktop : undefined,
+    Tablet: isRow(flexDirection_tablet) ? ALIGN_ITEMS.Tablet : undefined,
+    Mobile: isRow(flexDirection_mobile) ? ALIGN_ITEMS.Mobile : undefined
+  };
+  const ALIGN_ITEMS_align = {
+    Desktop: !isRow(flexDirection_Desktop) ? ALIGN_ITEMS.Desktop : undefined,
+    Tablet: !isRow(flexDirection_tablet) ? ALIGN_ITEMS.Tablet : undefined,
+    Mobile: !isRow(flexDirection_mobile) ? ALIGN_ITEMS.Mobile : undefined
+  };
   if (!uniqueId) {
     return null;
   }
@@ -6149,16 +6160,20 @@ const GlobalCss = attrs => {
       prefix: "textAlign"
     }), (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_6__["default"])({
       className: CONTENT_CLASSNAME,
-      value: ALIGN_ITEMS,
+      value: ALIGN_ITEMS_justify,
       prefix: "justifyContent"
+    }), (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_6__["default"])({
+      className: CONTENT_CLASSNAME,
+      value: ALIGN_ITEMS_align,
+      prefix: "alignItems"
     }), (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_6__["default"])({
       className: CONTENT_CLASSNAME,
       value: general_layout.flexDirection,
       prefix: "flexDirection"
     }), (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_6__["default"])({
-      className: BOX_CLASSNAME + '+ div',
+      className: CONTENT_CLASSNAME,
       value: style_dimension.gap_boxes,
-      prefix: "marginLeft"
+      prefix: "gap"
     }), (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_6__["default"])({
       className: BOX_CLASSNAME,
       value: style_dimension.width_box,

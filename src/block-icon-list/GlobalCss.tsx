@@ -145,6 +145,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 				})}
 			/>
 
+			{style_dimension.gapBetweenItems && (
+				<Global
+					styles={getStyleObjectFromResponsiveAttr({
+						className: `${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`,
+						value: style_dimension.gapBetweenItems,
+						prefix: "gap",
+					})}
+				/>
+			)}
+
 			{/* --------- ICON --------- */}
 			{general_icon.enableIcon ? (
 				<Global

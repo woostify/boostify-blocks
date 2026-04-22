@@ -135,6 +135,12 @@ const GlobalCss = attrs => {
       margin: style_dimension.margin,
       padding: style_dimension.padding
     })
+  }), style_dimension.gapBetweenItems && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_9__.Global, {
+    styles: (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__["default"])({
+      className: `${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`,
+      value: style_dimension.gapBetweenItems,
+      prefix: "gap"
+    })
   }), general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_9__.Global, {
     styles: [(0,_utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
       className: `${WRAP_CLASSNAME} .wcb-icon-list__icon`,

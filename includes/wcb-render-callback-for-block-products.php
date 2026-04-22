@@ -76,10 +76,10 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
 
     // Sorting & filtering
     $attributes['general_sortingAndFiltering'] = array_merge(
-        $attributes['general_sortingAndFiltering'] ?? [],
         [
             'numberOfItems' => $pick($theme['product_per_page'] ?? null, $attributes['general_sortingAndFiltering']['numberOfItems'] ?? null),
-        ]
+        ],
+        $attributes['general_sortingAndFiltering'] ?? []
     );
 
     // Content visibility flags

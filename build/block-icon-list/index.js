@@ -8192,6 +8192,12 @@ const GlobalCss = attrs => {
       margin: style_dimension.margin,
       padding: style_dimension.padding
     })
+  }), style_dimension.gapBetweenItems && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_9__.Global, {
+    styles: (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__["default"])({
+      className: `${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`,
+      value: style_dimension.gapBetweenItems,
+      prefix: "gap"
+    })
   }), general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_9__.Global, {
     styles: [(0,_utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
       className: `${WRAP_CLASSNAME} .wcb-icon-list__icon`,
@@ -8307,6 +8313,9 @@ function save({
       marginRight: style_dimension.margin.Desktop.right || "",
       marginBottom: style_dimension.margin.Desktop.bottom || "",
       marginLeft: style_dimension.margin.Desktop.left || ""
+    }),
+    ...(style_dimension?.gapBetweenItems?.Desktop && {
+      gap: style_dimension.gapBetweenItems.Desktop
     })
   };
 
@@ -9189,6 +9198,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _components_controls_MyDimensionsControl_MyDimensionsNoGapControl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/controls/MyDimensionsControl/MyDimensionsNoGapControl */ "./src/components/controls/MyDimensionsControl/MyDimensionsNoGapControl.tsx");
 /* harmony import */ var _components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/controls/MyDimensionsControl/types */ "./src/components/controls/MyDimensionsControl/types.ts");
+/* harmony import */ var _hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../hooks/useGetDeviceType */ "./src/hooks/useGetDeviceType.ts");
+/* harmony import */ var _components_controls_MyUnitControl__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/controls/MyUnitControl */ "./src/components/controls/MyUnitControl.tsx");
+/* harmony import */ var _utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/getValueFromAttrsResponsives */ "./src/utils/getValueFromAttrsResponsives.ts");
+
+
+
 
 
 
@@ -9212,6 +9227,11 @@ const WCB_ICON_LIST_PANEL_STYLE_DIMENSION_DEMO = {
       right: "",
       bottom: ""
     }
+  },
+  gapBetweenItems: {
+    Desktop: "",
+    Tablet: "",
+    Mobile: ""
   }
 };
 const WcbIconListPanel_StyleDimension = ({
@@ -9221,6 +9241,10 @@ const WcbIconListPanel_StyleDimension = ({
   onToggle,
   opened
 }) => {
+  const deviceType = (0,_hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_5__["default"])() || "Desktop";
+  const {
+    currentDeviceValue: gapValue
+  } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_7__["default"])(panelData.gapBetweenItems, deviceType);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.PanelBody, {
     initialOpen: initialOpen,
     onToggle: onToggle,
@@ -9228,7 +9252,18 @@ const WcbIconListPanel_StyleDimension = ({
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Dimension", "boostify-blocks")
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "space-y-5"
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyDimensionsControl_MyDimensionsNoGapControl__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyUnitControl__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Gap Between Items", "boostify-blocks"),
+    hasResponsive: true,
+    value: gapValue || "",
+    onChange: value => setAttr__({
+      ...panelData,
+      gapBetweenItems: {
+        ...panelData.gapBetweenItems,
+        [deviceType]: value
+      }
+    })
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyDimensionsControl_MyDimensionsNoGapControl__WEBPACK_IMPORTED_MODULE_3__["default"], {
     dimensionControl: panelData,
     setAttrs__dimensions: data => setAttr__({
       ...panelData,
@@ -13199,6 +13234,68 @@ const FONT_SIZES_DEMO = [{
   slug: "huge",
   size: "36px"
 }];
+
+/***/ }),
+
+/***/ "./src/components/controls/MyUnitControl.tsx":
+/*!***************************************************!*\
+  !*** ./src/components/controls/MyUnitControl.tsx ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _MyLabelControl_MyLabelControl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MyLabelControl/MyLabelControl */ "./src/components/controls/MyLabelControl/MyLabelControl.tsx");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+
+const MyUnitControl = ({
+  className = "",
+  label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_3__.__)("Column Gap", "boostify-blocks"),
+  hasResponsive,
+  onChange,
+  value,
+  units = [{
+    value: "px",
+    label: "px",
+    default: 32
+  }, {
+    value: "rem",
+    label: "rem",
+    default: 2
+  }, {
+    value: "%",
+    label: "%",
+    default: 10
+  }]
+}) => {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: `flex items-center justify-center space-x-2`
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_MyLabelControl_MyLabelControl__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    className: "flex-[2.2]",
+    hasResponsive: hasResponsive
+  }, label), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "flex-1"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalUnitControl, {
+    onChange: onChange,
+    value: value,
+    label: "",
+    units: units
+    // size={"__unstable-large"}
+  })));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MyUnitControl);
 
 /***/ }),
 

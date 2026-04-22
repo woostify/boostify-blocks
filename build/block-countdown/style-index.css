@@ -41,19 +41,19 @@
 .wcb-countdown__content .wcb-countdown__box {
   justify-content: center;
 }
-.wcb-countdown__content .wcb-justify-center {
+.wcb-countdown__content.wcb-justify-center {
   justify-content: center;
 }
-.wcb-countdown__content .wcb-justify-end {
+.wcb-countdown__content.wcb-justify-end {
   justify-content: end;
 }
-.wcb-countdown__content .wcb-justify-start {
+.wcb-countdown__content.wcb-justify-start {
   justify-content: start;
 }
-.wcb-countdown__content .wcb-flex-col {
+.wcb-countdown__content.wcb-flex-col {
   flex-direction: column;
 }
-.wcb-countdown__content .wcb-flex-row {
+.wcb-countdown__content.wcb-flex-row {
   flex-direction: row;
 }
 

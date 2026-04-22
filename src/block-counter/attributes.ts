@@ -40,6 +40,10 @@ import {
 	WCB_ICON_BOX_PANEL_STYLE_DIMENSION,
 	WCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbIconBoxPanel_StyleDimension";
+import {
+	WCB_ICON_BOX_PANEL_STYLE_PROGRESS,
+	WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO,
+} from "./WcbIconBoxPanel_StyleProgress";
 
 import {
 	MY_MOTION_EFFECT_DEMO,
@@ -58,6 +62,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	style_desination: WCB_ICON_BOX_PANEL_STYLE_DESIGNATION;
 	style_description: WCB_ICON_BOX_PANEL_STYLE_DESCRIPTION;
 	style_Icon: WCB_ICON_BOX_PANEL_STYLE_ICON;
+	style_progress: WCB_ICON_BOX_PANEL_STYLE_PROGRESS;
 	style_dimension: WCB_ICON_BOX_PANEL_STYLE_DIMENSION;
 	//
 	advance_responsiveCondition: MyResponsiveConditionControlData;
@@ -117,6 +122,10 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 		default: WCB_ICON_BOX_PANEL_STYLE_ICON_DEMO,
 	},
 
+	style_progress: {
+		type: "object",
+		default: WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO,
+	},
 	style_dimension: {
 		type: "object",
 		default: WCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO,

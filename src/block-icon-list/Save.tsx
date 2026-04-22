@@ -64,6 +64,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			marginBottom: style_dimension.margin.Desktop.bottom || "",
 			marginLeft: style_dimension.margin.Desktop.left || "",
 		}),
+		...(style_dimension?.gapBetweenItems?.Desktop && {
+			gap: style_dimension.gapBetweenItems.Desktop,
+		}),
 	};
 
 	// Wrapper block props with className same as Edit component
