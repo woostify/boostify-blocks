@@ -179,4 +179,30 @@ figure.wp-block-image:not(.wp-block) {
 		width: inherit;
 		height: inherit;
 	}
+
+	&.aligncenter {
+		text-align: center;
+
+		.wcb-image__ResizableBox {
+			display: table;
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
+
+	&.alignright {
+		.wcb-image__ResizableBox {
+			display: table;
+			margin-left: auto;
+			margin-right: 0;
+		}
+	}
+
+	&.alignleft {
+		.wcb-image__ResizableBox {
+			display: table;
+			margin-left: 0;
+			margin-right: auto;
+		}
+	}
 }
