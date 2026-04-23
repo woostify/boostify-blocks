@@ -143,6 +143,18 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         'general_sortingAndFiltering' => array(
                             'type'      => 'object',
                         ),
+                        'general_postContent' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_postMeta' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_postFeaturedImage' => array(
+                            'type'      => 'object',
+                        ),
+                        'general_readmoreLink' => array(
+                            'type'      => 'object',
+                        ),
                         'general_layout' => array(
                             'type'      => 'object',
                         ),
