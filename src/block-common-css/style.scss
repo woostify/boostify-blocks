@@ -86,5 +86,8 @@
 		&.prev svg {
 			transform: rotate(180deg);
 		}
+		svg{
+			stroke: currentColor;
+		}
 	}
 }

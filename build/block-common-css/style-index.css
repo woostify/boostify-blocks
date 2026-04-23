@@ -351,6 +351,10 @@ video {
 .wcb-products__pagination .page-numbers.prev svg {
   transform: rotate(180deg);
 }
+.wcb-posts-grid__pagination .page-numbers svg,
+.wcb-products__pagination .page-numbers svg {
+  stroke: currentColor;
+}
 /*!*******************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./src/style.css ***!
   \*******************************************************************************************************************************************************************/
