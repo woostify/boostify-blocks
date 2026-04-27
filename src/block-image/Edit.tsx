@@ -337,7 +337,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		deviceType
 	);
 	const classes = classnames(className, {
-		// [`align${align}`]: align,
+		[`align${align}`]: align,
 		"is-transient": temporaryURL,
 		// "is-resized": !!width || !!height,
 		// [`size-${sizeSlug}`]: sizeSlug,
@@ -363,6 +363,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			advance_responsiveCondition,
 			advance_zIndex,
 			general_settings,
+			general_image,
 			style_image,
 			style_overlay,
 			style_caption
@@ -372,6 +373,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		advance_responsiveCondition,
 		advance_zIndex,
 		general_settings,
+		general_image,
 		style_image,
 		style_overlay,
 		style_caption,

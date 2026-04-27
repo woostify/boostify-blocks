@@ -582,9 +582,6 @@ const Edit: FC<EditProps<WcbBlockPostsGridAttrs>> = (props) => {
 				style_taxonomy,
 				advance_motionEffect,
 			};
-			if (Object.values(cs).some((item) => !item)) {
-				return null;
-			}
 
 			return cs as Required<WcbBlockPostsGridAttrs>;
 		}, [
