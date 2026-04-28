@@ -88,7 +88,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                             [TITLE_WRAP_CLASSNAME]: {
                                 display: "flex",
                                 flexDirection: "column",
-                                gap: "0.5rem",
+                                gap: style_title.rowGap.Desktop,
                                 justifyContent: getFlexAlignment(general_tabTitle.tabAlignment),
                             },
                         },
@@ -100,6 +100,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 padding: "0.5rem",
                                 boxSizing: "border-box",
                                 justifyContent: getFlexAlignment(general_tabTitle.textAlignment),
+                                gap: style_icon.colGap.Desktop,
                             },
                         },
                         {
@@ -119,8 +120,7 @@ const GlobalCss: FC<Props> = (attrs) => {
             )}
 
             {(general_general.layout === "accordion" ||
-                general_general.style === "horizontalStyle1" ||
-                general_general.style === "horizontalStyle3") && (
+                general_general.style === "horizontalStyle1") && (
                 <Global
                     styles={[
                         {
@@ -134,6 +134,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 display: "flex",
                                 flexDirection: "row",
                                 justifyContent: getFlexAlignment(general_tabTitle.textAlignment),
+                                gap: style_icon.colGap.Desktop,
                             },
                         },
                     ]}
@@ -188,6 +189,8 @@ const GlobalCss: FC<Props> = (attrs) => {
                 styles={[
                     getBackgroundColorGradientStyles({ className: BODY_CLASSNAME, background: style_container.background }),
                     getBorderStyles({ border: style_container.border, className: BODY_CLASSNAME, isWithRadius: true }),
+                    getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title.colunmGap, prefix: "columnGap" }),
+                    getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title.rowGap, prefix: "rowGap" }),
                     getTypographyStyles({ className: TITLE_CLASSNAME, typography: style_title.typography }),
                     getPaddingMarginStyles({ className: TITLE_CLASSNAME, padding: style_title.padding }),
                     {

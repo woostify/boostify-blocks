@@ -220,11 +220,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 					{
 						[`${IMAGE_FIGURE}.alignright`]: {
 							marginLeft: 'auto',
-    						marginRight: 0,
+							marginRight: 0,
 						},
 						[`${IMAGE_FIGURE}.alignleft`]: {
 							marginLeft: 0,
-    						marginRight: 'auto',
+							marginRight: 'auto',
+						},
+						[`${IMAGE_FIGURE}.aligncenter`]: {
+							marginLeft: 'auto',
+							marginRight: 'auto',
+							textAlign: 'center',
 						},
 					},
 				]}

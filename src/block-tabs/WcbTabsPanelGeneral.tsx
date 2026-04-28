@@ -1,14 +1,14 @@
-import { PanelBody, RangeControl, ToggleControl } from "@wordpress/components";
+import { PanelBody, /*RangeControl,*/ ToggleControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import React, { FC } from "react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import MyHeadingTagControl from "../components/controls/MyHeadingTagControl/MyHeadingTagControl";
-import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
+// import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
-import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
+// import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import MyTextAlignControl, { TextAlignment } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
-import useGetDeviceType from "../hooks/useGetDeviceType";
-import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
+// import useGetDeviceType from "../hooks/useGetDeviceType";
+// import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySelect from "../components/controls/MySelect";
 import { MySelectOption } from "../types";
 
@@ -21,7 +21,7 @@ export interface WCB_TAGS_PANEL_GENERAL {
     showMultiple: boolean;
     enableSchemaSupport: boolean;
     enableSeparator: boolean;
-    columns: HasResponsive<number>;
+    // columns: HasResponsive<number>;
     textAlignment: TextAlignment;
 }
 
@@ -30,7 +30,7 @@ export const WCB_TAGS_PANEL_GENERAL_DEMO: WCB_TAGS_PANEL_GENERAL = {
     style: "horizontalStyle1",
     headingTag: "div",
     collapseOtherItems: true,
-    columns: { Desktop: 2 },
+    // columns: { Desktop: 2 },
     enableSchemaSupport: true,
     enableSeparator: true,
     showMultiple: true,
@@ -50,11 +50,11 @@ const WcbTabsPanelGeneral: FC<Props> = ({
     onToggle,
     opened,
 }) => {
-    const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
+    // const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
     const {
         textAlignment,
         collapseOtherItems,
-        columns,
+        // columns,
         enableSchemaSupport,
         enableSeparator,
         showMultiple,
@@ -64,7 +64,7 @@ const WcbTabsPanelGeneral: FC<Props> = ({
         layout,
     } = panelData;
 
-    const { currentDeviceValue: COLUMNS } = getValueFromAttrsResponsives(columns, deviceType);
+    // const { currentDeviceValue: COLUMNS } = getValueFromAttrsResponsives(columns, deviceType);
 
     const PLANS_DEMO: MyRadioItem<WCB_TAGS_PANEL_GENERAL["layout"]>[] = [
         { icon: "Accordion", name: "accordion" },
@@ -147,7 +147,7 @@ const WcbTabsPanelGeneral: FC<Props> = ({
                     checked={enableSeparator}
                     onChange={(checked) => setAttr__({ ...panelData, enableSeparator: checked })}
                 />
-                {layout === "grid" && (
+                {/* {layout === "grid" && (
                     <RangeControl
                         label={<MyLabelControl hasResponsive>{__("Columns", "boostify-blocks")}</MyLabelControl>}
                         value={COLUMNS || 2}
@@ -155,7 +155,7 @@ const WcbTabsPanelGeneral: FC<Props> = ({
                         min={1}
                         max={6}
                     />
-                )}
+                )} */}
                 <MyHeadingTagControl
                     tag={headingTag}
                     onChange={(value) => setAttr__({ ...panelData, headingTag: value })}
