@@ -12,8 +12,19 @@ declare global {
 		reCAPTCHA_v2_site_key?: string;
 		reCAPTCHA_v2_secret_key?: string;
 		defaultContentWidth?: string;
+		containerPadding: string,
 		enableTemplatesButton?: "true" | "false";
 		enableCopyPasteStyles?: "true" | "false";
+		containerElementsGap?: string;
+		blocksEditorSpacing?: string;
+		buttonInheritFromTheme?: "true" | "false";
+		buttonTheme?: { 
+			backgroundColor: string;
+			backgroundColorHover: string;
+			textColor: string;
+			textColorHover: string;
+			borderRadius: string;
+		};
 		// containerElementsGap?: string;
 		customColorPallete?: { name: string; color: string }[];
 	};
@@ -34,8 +45,19 @@ const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks_global
 	reCAPTCHA_v2_secret_key: "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
 	// Used when picking a container for the first time, or when the container's contentWidth is not set.
 	defaultContentWidth: window?.boostify_blocks_layout_global_settings?.contentSize || "",
+	containerPadding: "10px",
 	enableTemplatesButton: "true",
 	enableCopyPasteStyles: "false",
+	containerElementsGap: "10px",
+	blocksEditorSpacing: "0px",
+	buttonInheritFromTheme: "false",
+	buttonTheme: {
+		backgroundColor: "#1346af",
+		backgroundColorHover: "#3a3a3a",
+		textColor: "#ffffff",
+		textColorHover: "#ffffff",
+		borderRadius: "50px",
+	}
 };
 
 export const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks_global_variables = {

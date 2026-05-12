@@ -61,6 +61,8 @@ function boostify_blocks_get_block_name_enable_init()
 //
 function boostify_blocks_get_default_blocks_settings()
 {
+    $options = woostify_options( false );
+
     return [
         'media_tablet'              => '768px',
         'media_desktop'             => '1024px',
@@ -68,10 +70,20 @@ function boostify_blocks_get_default_blocks_settings()
         'reCAPTCHA_v3_secret_key'   => '',
         'reCAPTCHA_v2_site_key'     => '',
         'reCAPTCHA_v2_secret_key'   => '',
-        'defaultContentWidth'       => '',
+        'defaultContentWidth'       => esc_attr( $options['container_width'] ) . 'px',
         'containerPadding'          => '10px',
         'enableTemplatesButton'     => 'true',
         'enableCopyPasteStyles'     => 'true',
+        'containerElementsGap'      => '10px',
+        'blocksEditorSpacing'       => '0px',
+        'buttonInheritFromTheme'    => 'false',
+        'buttonTheme'               => [
+            'backgroundColor' => esc_attr( $options['button_background_color'] ),
+            'backgroundColorHover' => esc_attr( $options['button_hover_background_color'] ),
+            'textColor' => esc_attr( $options['button_text_color'] ),
+            'textColorHover' => esc_attr( $options['button_hover_text_color'] ),
+            'borderRadius' => esc_attr( $options['buttons_border_radius'] ) . 'px',
+        ],
         // new 1
         'customColorPallete'        => [
             ["name" => "white", "color" => "#fff"],
