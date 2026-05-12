@@ -1155,6 +1155,9 @@ video {
 .mb-8 {
   margin-bottom: 2rem !important;
 }
+.ml-0 {
+  margin-left: 0px !important;
+}
 .ml-1 {
   margin-left: 0.25rem !important;
 }
@@ -1226,9 +1229,6 @@ video {
 }
 .mt-auto {
   margin-top: auto !important;
-}
-.ml-0 {
-  margin-left: 0px !important;
 }
 .box-border {
   box-sizing: border-box !important;

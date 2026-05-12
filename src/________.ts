@@ -1,5 +1,7 @@
 import "jquery";
 import { Wcb_theme_layout_global_settings } from "./types";
+// add editor styles for block spacing
+import styleEditor from "./styleEditor";
 
 declare global {
 	var wp: any | undefined;
@@ -67,5 +69,15 @@ export const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks
 		window.boostify_blocks_global_variables?.defaultContentWidth ||
 		window.boostify_blocks_layout_global_settings?.contentSize,
 };
+
+const onReady = (cb: () => void) => {
+  if (window.wp?.domReady) {
+    window.wp.domReady(cb);
+  }
+};
+
+onReady(() => {
+  styleEditor(DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES);
+});
 
 export const ___boostify_blocks_global = 1;
