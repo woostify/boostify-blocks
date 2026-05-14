@@ -1,5 +1,8 @@
 .wcb-image__wrap {
 	position: relative;
+	&.woostify-container{
+		margin: 0;
+	}
 	&.alignfull,
 	&.alignwide {
 		img {
