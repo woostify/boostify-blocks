@@ -9188,7 +9188,7 @@ const MyBorderControl = ({
     onChange: handleChangeBorder,
     value: mainSettingsProps,
     colors: [],
-    enableAlpha: false
+    enableAlpha: true
     // enableStyle={ showBorderStyle }
     ,
     popoverOffset: 40,
