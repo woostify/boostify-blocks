@@ -4794,11 +4794,11 @@ const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES = {
   blocksEditorSpacing: "0px",
   buttonInheritFromTheme: "false",
   buttonTheme: {
-    backgroundColor: "#1346af",
-    backgroundColorHover: "#3a3a3a",
-    textColor: "#ffffff",
-    textColorHover: "#ffffff",
-    borderRadius: "50px"
+    backgroundColor: window?.boostify_blocks_layout_global_settings?.buttonTheme?.backgroundColor || "#0073aa",
+    backgroundColorHover: window?.boostify_blocks_layout_global_settings?.buttonTheme?.backgroundColorHover || "#3a3a3a",
+    textColor: window?.boostify_blocks_layout_global_settings?.buttonTheme?.textColor || "#ffffff",
+    textColorHover: window?.boostify_blocks_layout_global_settings?.buttonTheme?.textColorHover || "#ffffff",
+    borderRadius: window?.boostify_blocks_layout_global_settings?.buttonTheme?.borderRadius || "50px"
   }
 };
 const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES = {

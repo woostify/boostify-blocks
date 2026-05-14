@@ -154,6 +154,26 @@ function boostify_blocks_get_layout_global_settings()
             $boostify_layout_global_settings['contentSize'] =  $options['container_width'] . "px";
             $boostify_layout_global_settings['contentSizeOfWoostify'] =  true;
         }
+        // button theme
+        $button_theme = [];
+        if (!empty($options['button_background_color'] ?? '')) {
+            $button_theme['backgroundColor'] = $options['button_background_color'];
+        }
+        if (!empty($options['button_hover_background_color'] ?? '')) {
+            $button_theme['backgroundColorHover'] = $options['button_hover_background_color'];
+        }
+        if (!empty($options['button_text_color'] ?? '')) {
+            $button_theme['textColor'] = $options['button_text_color'];
+        }
+        if (!empty($options['button_hover_text_color'] ?? '')) {
+            $button_theme['textColorHover'] = $options['button_hover_text_color'];
+        }
+        if (!empty($options['buttons_border_radius'] ?? '')) {
+            $button_theme['borderRadius'] = $options['buttons_border_radius']. "px";
+        }
+        if (!empty($button_theme)) {
+            $boostify_layout_global_settings['buttonTheme'] = $button_theme;
+        }
     }
 
     return $boostify_layout_global_settings;

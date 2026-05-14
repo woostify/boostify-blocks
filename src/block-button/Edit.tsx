@@ -55,6 +55,7 @@ import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 import { Popover, ToolbarButton } from "@wordpress/components";
 import { link, linkOff } from "@wordpress/icons";
 import { displayShortcut } from "@wordpress/keycodes";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________.ts";
 
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const { attributes, setAttributes, clientId, isSelected } = props;
@@ -73,6 +74,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_dimension,
 	} = attributes;
 	//  COMMON HOOKS
+
+	const wcb_global_variables = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const [popoverAnchor, setPopoverAnchor] = useState(null);
 	const [isEditingURL, setIsEditingURL] = useState(false);
@@ -242,6 +245,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							panelData={style_icon}
 						/>
 
+						{wcb_global_variables.buttonInheritFromTheme !== "true" && (
 						<WcbButtonPanel_StyleBackground
 							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBackground"}
@@ -255,7 +259,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							}}
 							panelData={style_background}
 						/>
+						)}
 
+						{wcb_global_variables.buttonInheritFromTheme !== "true" && (
 						<WcbButtonPanel_StyleBorder
 							onToggle={() => handleTogglePanel("Styles", "_StyleBorder")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBorder"}
@@ -269,6 +275,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							}}
 							panelData={style_border}
 						/>
+						)}
 
 						<WcbButtonPanel_StyleBoxshadow
 							onToggle={() => handleTogglePanel("Styles", "_StyleBoxshadow")}
