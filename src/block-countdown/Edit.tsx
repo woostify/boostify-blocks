@@ -15,6 +15,7 @@ import WcbCountdownPanelDate from "./WcbCountdownPanelDate";
 import WcbCountdownPanel_StyleTitle from "./WcbCountdownPanel_StyleTitle";
 import WcbCountdownPanel_StyleNumber from "./WcbCountdownPanel_StyleNumber";
 import WcbCountdownPanel_StyleDimension from "./WcbCountdownPanel_StyleDimension";
+import WcbCountdownPanelDimension from "./WcbCountdownPanelDimension";
 import WcbCountdownPanelPreset from "./WcbCountdownPanelPreset";
 import WcbButtonPanel_StyleBorder, {
 	WCB_BUTTON_PANEL_STYLE_BORDER_PRESET_1,
@@ -69,6 +70,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_border,
 		style_boxshadow,
 		style_dimension,
+		style_dimensions,
 		general_preset,
 		advance_motionEffect,
 	} = attributes;
@@ -254,6 +256,17 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							}}
 							panelData={style_boxshadow}
 						/>
+
+						<WcbCountdownPanelDimension
+							onToggle={() => handleTogglePanel("Styles", "_Dimension")}
+							initialOpen={tabStylesIsPanelOpen === "_Dimension"}
+							opened={tabStylesIsPanelOpen === "_Dimension" || undefined}
+							//
+							setAttr__={(data) => {
+								setAttributes({ style_dimensions: data });
+							}}
+							panelData={style_dimensions}
+						/>
 						
 					</>
 				);
@@ -288,6 +301,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			general_date,
 			style_background,
 			style_dimension,
+			style_dimensions,
 			style_label,
 			style_number,
 			style_border,
@@ -303,6 +317,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		general_date,
 		style_background,
 		style_dimension,
+		style_dimensions,
 		style_label,
 		style_number,
 		style_border,
