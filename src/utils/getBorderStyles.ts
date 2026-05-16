@@ -25,8 +25,9 @@ const getBorderStyles = ({
 	// MAIN BORDER
 	let CSSObject: CSSObject = { [`${className}`]: {} };
 	if (mainSettings) {
-		if ((mainSettings as BorderMain4Side)?.top) {
-			const { bottom, left, right, top } = mainSettings as BorderMain4Side;
+		const as4Side = mainSettings as BorderMain4Side;
+		if (as4Side?.top && as4Side?.right && as4Side?.bottom && as4Side?.left) {
+			const { bottom, left, right, top } = as4Side;
 			CSSObject = {
 				[`${className}`]: {
 					borderTop: `${top.width} ${top.style || "none"} ${top.color || ""}`,
