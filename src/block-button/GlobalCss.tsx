@@ -10,6 +10,7 @@ import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromRespons
 import getTypographyStyles from "../utils/getTypographyStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import { WcbAttrsForSave } from "./Save";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________.ts";
 
 interface Props extends WcbAttrsForSave {}
 
@@ -30,8 +31,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 	} = attrs;
 
+	const {
+		buttonInheritFromTheme,
+		buttonTheme,
+	} = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+	const themeLayoutGlobal = window.boostify_blocks_layout_global_settings;
+
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-button__main`;
+	const BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-button__main${buttonInheritFromTheme !== "true" ? "" : ".wcb-button__main--inherit-from-theme"}`;
 	const BUTTON_TEXT = `${WRAP_CLASSNAME} .wcb-button__text`;
 	const BUTTON_ICON = `${WRAP_CLASSNAME} .wcb-button__icon`;
 
@@ -47,7 +54,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 		Desktop: iconSize_desktop + "px",
 		Tablet: iconSize_tablet + "px",
 		Mobile: iconSize_mobile + "px",
-	};
+	};	
+	const background_color = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.backgroundColor : buttonTheme?.backgroundColor}`;
+	const background_color_hover = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.backgroundColorHover : buttonTheme?.backgroundColorHover}`;
+	const text_color = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.textColor : buttonTheme?.textColor}`;
+	const text_color_hover = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.textColorHover : buttonTheme?.textColorHover}`;
+	const border_radius = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.borderRadius : buttonTheme?.borderRadius}`;
 
 	if (!uniqueId) {
 		return null;
@@ -56,22 +68,40 @@ const GlobalCss: FC<Props> = (attrs) => {
 		<>
 			{/* <Global styles={getDivWrapStyles()} /> */}
 
-			{/* BACKGROUND  */}
-			<Global
-				styles={getBackgroundColorGradientStyles({
-					className: BUTTON_CLASSNAME,
-					background: style_background.normal,
-					backgroundHover: style_background.hover,
-				})}
-			/>
-			{/* BORDER  */}
-			<Global
-				styles={getBorderStyles({
-					className: BUTTON_CLASSNAME,
-					border: style_border,
-					isWithRadius: true,
-				})}
-			/>
+			{buttonInheritFromTheme == "true" ? (
+				// {/* Button Theme Styles  */}
+				<Global
+					styles={[
+						{
+							[BUTTON_CLASSNAME]: {
+								backgroundColor: background_color,
+								borderRadius: border_radius,
+								":hover": {
+									backgroundColor: background_color_hover,
+								},
+							},
+						},
+					]}
+				/>
+			) : (
+				<Global
+					styles={[
+						// BACKGROUND COLOR & GRADIENT
+						getBackgroundColorGradientStyles({
+							className: BUTTON_CLASSNAME,
+							background: style_background.normal,
+							backgroundHover: style_background.hover,
+						}),
+						// BORDER
+						getBorderStyles({
+							className: BUTTON_CLASSNAME,
+							border: style_border,
+							isWithRadius: true,
+						}),
+					]}
+				/>
+			)}
+
 			{/* DIMENSION  */}
 			<Global
 				styles={[
@@ -111,19 +141,19 @@ const GlobalCss: FC<Props> = (attrs) => {
 					}),
 					{
 						[BUTTON_TEXT]: {
-							color: style_text.color,
+							color: `${buttonInheritFromTheme == "true" ? text_color : style_text.color}`,
 						},
 						[BUTTON_ICON]: {
-							color: style_icon.color,
+							color: `${buttonInheritFromTheme == "true" ? text_color : style_icon.color}`,
 						},
 						// BUTTON HOVER
 						[BUTTON_CLASSNAME]: {
 							":hover": {
 								".wcb-button__text": {
-									color: style_text.hoverColor,
+									color: `${buttonInheritFromTheme == "true" ? text_color_hover : style_text.hoverColor}`,
 								},
 								".wcb-button__icon": {
-									color: style_icon.hoverColor,
+									color: `${buttonInheritFromTheme == "true" ? text_color_hover : style_icon.hoverColor}`,
 								},
 							},
 						},

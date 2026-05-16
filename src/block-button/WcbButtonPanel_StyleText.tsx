@@ -10,6 +10,7 @@ import {
 import MyTypographyControl from "../components/controls/MyTypographyControl/MyTypographyControl";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MyDisclosure from "../components/controls/MyDisclosure";
+import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________.ts";
 
 export interface WCB_BUTTON_PANEL_STYLE_TEXT {
 	typography: MyTypographyControlData;
@@ -58,6 +59,8 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	const { typography, color, hoverColor } = panelData;
+	const wcb_global_variables = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+		
 	return (
 		<PanelBody
 			initialOpen={initialOpen}
@@ -76,6 +79,7 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 					}}
 				/>
 
+				{wcb_global_variables.buttonInheritFromTheme !== "true" && (
 				<MyDisclosure defaultOpen label={__("Colors", "boostify-blocks")}>
 					<MyColorPicker
 						onChange={(color) => {
@@ -93,6 +97,7 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 						label={__("Hover color", "boostify-blocks")}
 					/>
 				</MyDisclosure>
+				)}
 			</div>
 		</PanelBody>
 	);

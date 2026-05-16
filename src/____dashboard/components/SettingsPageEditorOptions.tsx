@@ -51,7 +51,7 @@ const SettingsPageEditorOptions: FC<Props> = ({
 						subStr
 					}
 					id="InputNumber_DefaultContentWidth"
-					defaultValue={String(parseInt(allSettings.defaultContentWidth || ""))}
+					defaultValue={String(parseInt(allSettings.defaultContentWidth || `${themeLayoutGlobal?.contentSize}`))}
 					placeholder={`${parseInt(themeLayoutGlobal?.contentSize || "650")}`}
 					onChange={(e) => {
 						const newV = e ? e + "px" : "";
@@ -62,26 +62,56 @@ const SettingsPageEditorOptions: FC<Props> = ({
 					}}
 				/>
 			</div>
-			{/* <div className="py-8 wcb-field-disabled">
+			<div className="py-8">
+				<MyToggle
+					label="Button - Inherit From Theme"
+					desc='Enable the "Inherit From Theme" option to make all buttons in Spectra blocks across your website inherit their styles from the theme.'
+					id="MyToggle_ButtonInheritFromTheme"
+					checked={allSettings.buttonInheritFromTheme === "true"}
+					onChange={(checked) => {
+						debounce_fun({
+							...allSettings,
+							buttonInheritFromTheme: checked ? "true" : "false",
+						});
+					}}
+				/>
+			</div>
+			<div className="py-8">
 				<InputNumber
 					label="Container Padding"
 					desc="This setting will apply default padding in the Container Block."
 					id="InputNumber_ContainerPadding"
 					placeholder="10"
+					value={String(parseInt(allSettings.containerPadding || "10px"))}
+					onChange={(e) => {
+						onChange({ ...allSettings, containerPadding: e + "px" });
+					}}
 				/>
-			</div> */}
-			{/* <div className="py-8">
+			</div>
+			<div className="py-8">
 				<InputNumber
 					label="Container Elements Gap"
 					desc="This setting will apply default Row & Column Gaps in the Container Block."
 					id="InputNumber_ContainerElementsGap"
 					placeholder="10"
-					value={String(parseInt(allSettings.containerElementsGap || ""))}
+					value={String(parseInt(allSettings.containerElementsGap || "10px"))}
 					onChange={(e) => {
 						onChange({ ...allSettings, containerElementsGap: e + "px" });
 					}}
 				/>
-			</div> */}
+			</div>
+			<div className="py-8">
+				<InputNumber
+					label="Blocks Editor Spacing"
+					desc="This setting will apply spacing in between all blocks inside block editor."
+					id="InputNumber_BlocksEditorSpacing"
+					placeholder="0"
+					value={String(parseInt(allSettings.blocksEditorSpacing || "0px"))}
+					onChange={(e) => {
+						onChange({ ...allSettings, blocksEditorSpacing: e + "px" });
+					}}
+				/>
+			</div>
 			{/* <div className="py-8">
 				<MyToggle
 					checked
