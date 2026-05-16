@@ -16,6 +16,10 @@ declare global {
 		enableCopyPasteStyles?: "true" | "false";
 		// containerElementsGap?: string;
 		customColorPallete?: { name: string; color: string }[];
+		loadGoogleFontsLocally?: "true" | "false";
+		preloadLocalFonts?: "true" | "false";
+		allowOnlySelectedFonts?: "true" | "false";
+		selectedFonts?: string;
 	};
 	var boostify_blocks_frontend_ajax_object: {
 		ajaxurl: string;

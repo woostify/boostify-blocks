@@ -31,6 +31,7 @@ define('BOOSTIFY_BLOCKS_BUILD_PATH', __DIR__ . '/build');
 
 
 require plugin_dir_path(__FILE__) . 'includes/wcb-custom-funcs.php';
+require plugin_dir_path(__FILE__) . 'includes/wcb-local-fonts.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-hooks.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-all-patterns-data.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-enqueue-scripts.php';

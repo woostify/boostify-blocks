@@ -35,10 +35,22 @@ const WcbFontFamilyPicker: FC<Props> = ({
 		googleFontsList.push({ value: k, label: k });
 	});
 
+	const globalVars = window.boostify_blocks_global_variables;
+	const allowOnlySelected = globalVars?.allowOnlySelectedFonts === "true";
+	const selectedFontNames = (globalVars?.selectedFonts || "")
+		.split(",")
+		.map((f) => f.trim())
+		.filter(Boolean);
+
+	const filteredGoogleFontsList =
+		allowOnlySelected && selectedFontNames.length > 0
+			? googleFontsList.filter((f) => selectedFontNames.includes(f.value))
+			: googleFontsList;
+
 	const handleChangeFont = (newFont: string | null) => {
 		setFontFamily(newFont || "");
 		onChangeFontFamily(newFont || "");
-		googleFontsList.some((font) => {
+		filteredGoogleFontsList.some((font) => {
 			if (font.value === newFont) {
 				loadGoogleFont(newFont);
 				return true;
@@ -54,7 +66,7 @@ const WcbFontFamilyPicker: FC<Props> = ({
 			label: "Default",
 		},
 		...systemFonts,
-		...googleFontsList,
+		...filteredGoogleFontsList,
 	];
 	return (
 		<>

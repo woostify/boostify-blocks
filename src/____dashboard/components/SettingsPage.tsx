@@ -9,6 +9,7 @@ import SettingsPageEditorOptions from "./SettingsPageEditorOptions";
 import toast, { Toaster } from "react-hot-toast";
 import SettingsPageTemplates from "./SettingsPageTemplates";
 import SettingsPageBlockSettings from "./SettingsPageBlockSettings";
+import SettingsPagePerformance from "./SettingsPagePerformance";
 import { Wcb_theme_layout_global_settings } from "../../types";
 
 interface Tab {
@@ -152,6 +153,16 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 			case "block-settings":
 				return (
 					<SettingsPageBlockSettings
+						onChange={(data) => {
+							handleUpdateSettings(data);
+						}}
+						allSettings={allSettings}
+					/>
+				);
+
+			case "performance":
+				return (
+					<SettingsPagePerformance
 						onChange={(data) => {
 							handleUpdateSettings(data);
 						}}
