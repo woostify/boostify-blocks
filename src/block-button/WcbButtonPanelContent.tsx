@@ -26,6 +26,7 @@ export interface WCB_BUTTON_PANEL_CONTENT {
 	openInNewWindow: boolean;
 	isHiddenText: boolean;
 	addNofollowToLink: boolean;
+	isInheritFromTheme?: boolean;
 }
 
 export const WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON: WCB_BUTTON_PANEL_CONTENT =
@@ -95,7 +96,8 @@ const WcbButtonPanelContent: FC<Props> = ({
 		iconPosition,
 		isHiddenText,
 		link,
-		openInNewWindow
+		openInNewWindow,
+		isInheritFromTheme,
 	} = panelData;
 
 	const PLANS_DEMO: MyRadioItem<WCB_BUTTON_PANEL_CONTENT["iconPosition"]>[] = [
@@ -117,6 +119,14 @@ const WcbButtonPanelContent: FC<Props> = ({
 			className="WcbButtonPanelContent"
 		>
 			<div className={"space-y-5"}>
+				<ToggleControl
+						label={__("Inherit From Theme", "boostify-blocks")}
+						checked={isInheritFromTheme}
+						className="mb-0"
+						onChange={(checked) => {
+							setAttr__({ ...panelData, isInheritFromTheme: checked  });
+						}}
+				/>
 				<ToggleControl
 					label={__("Enable Icon", "boostify-blocks")}
 					checked={enableIcon}

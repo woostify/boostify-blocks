@@ -74,8 +74,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_dimension,
 	} = attributes;
 	//  COMMON HOOKS
-
+	const isInheritFromTheme = general_content.isInheritFromTheme;
 	const wcb_global_variables = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+	const buttonInheritFromTheme = wcb_global_variables.buttonInheritFromTheme === "true" ? true : false;
+	const finalIsInheritFromTheme = isInheritFromTheme === undefined ? buttonInheritFromTheme : isInheritFromTheme;
 
 	const [popoverAnchor, setPopoverAnchor] = useState(null);
 	const [isEditingURL, setIsEditingURL] = useState(false);
@@ -139,6 +141,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			case "General":
 				return (
 					<>
+						{isInheritFromTheme !== true && (
 						<WcbButtonPanelPreset
 							onToggle={() => handleTogglePanel("General", "Preset", true)}
 							initialOpen={
@@ -156,6 +159,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									preset === "circular"
 										? true
 										: false;
+								const newGeneralContent =
+									preset === "circular"
+										? WCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR
+										: preset === "with_leading_icon"
+										? WCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon
+										: preset === "with_trailing_icons"
+										? WCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons
+										: WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON;
 								setAttributes({
 									style_text:
 										preset === "white"
@@ -183,18 +194,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										preset === "circular"
 											? WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_CIRCULAR
 											: WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY,
-									general_content:
-										preset === "circular"
-											? WCB_BUTTON_PANEL_CONTENT_DEMO_CIRCULAR
-											: preset === "with_leading_icon"
-											? WCB_BUTTON_PANEL_CONTENT_DEMO_with_leading_icon
-											: preset === "with_trailing_icons"
-											? WCB_BUTTON_PANEL_CONTENT_DEMO_with_trailing_icons
-											: WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON,
+									general_content:{
+										...newGeneralContent,
+										isInheritFromTheme: general_content.isInheritFromTheme,
+									}
 								});
 							}}
 							panelData={general_preset}
 						/>
+						)}
 
 						<WcbButtonPanelContent
 							onToggle={() => handleTogglePanel("General", "Content")}
@@ -207,7 +215,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									general_preset: { ...general_preset, preset: "" },
 								});
 							}}
-							panelData={general_content}
+							panelData={{
+								...general_content,
+								isInheritFromTheme: finalIsInheritFromTheme,
+							}}
 						/>
 					</>
 				);
@@ -245,7 +256,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							panelData={style_icon}
 						/>
 
-						{wcb_global_variables.buttonInheritFromTheme !== "true" && (
+						{!finalIsInheritFromTheme && (
 						<WcbButtonPanel_StyleBackground
 							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBackground"}
@@ -261,7 +272,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						/>
 						)}
 
-						{wcb_global_variables.buttonInheritFromTheme !== "true" && (
+						{!finalIsInheritFromTheme && (
 						<WcbButtonPanel_StyleBorder
 							onToggle={() => handleTogglePanel("Styles", "_StyleBorder")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBorder"}

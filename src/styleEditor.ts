@@ -26,8 +26,18 @@ const generateEditorSpacingCSS = (spacing: string = '0px'): string => `
     margin-top: ${spacing} !important;
   }
 
+  .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block:not(p) > .block-editor-block-list__block,
+  .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block + .wp-block:not(p) {
+    margin-block-start: ${spacing} !important;
+    margin-top: ${spacing} !important;
+  }
+
   /* Tablet */
   @media (max-width: 768px) {
+    .editor-styles-wrapper 
+      > .block-editor-block-list__layout.is-root-container 
+      > .wp-block:not(p) 
+      > .block-editor-block-list__block,
     .editor-styles-wrapper
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
@@ -39,6 +49,10 @@ const generateEditorSpacingCSS = (spacing: string = '0px'): string => `
 
   /* Mobile */
   @media (max-width: 480px) {
+    .editor-styles-wrapper 
+      > .block-editor-block-list__layout.is-root-container 
+      > .wp-block:not(p) 
+      > .block-editor-block-list__block,
     .editor-styles-wrapper
       > .block-editor-block-list__layout.is-root-container
       > .wp-block

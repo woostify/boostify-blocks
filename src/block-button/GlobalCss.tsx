@@ -35,10 +35,19 @@ const GlobalCss: FC<Props> = (attrs) => {
 		buttonInheritFromTheme,
 		buttonTheme,
 	} = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+	const isInheritFromTheme = general_content.isInheritFromTheme;
 	const themeLayoutGlobal = window.boostify_blocks_layout_global_settings;
+	const inheritFromTheme = buttonInheritFromTheme === "true" ? true : false;
+	const finalIsInheritFromTheme = isInheritFromTheme === undefined ? inheritFromTheme : isInheritFromTheme;
+	// Button Theme Style
+	const background_color = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.backgroundColor : buttonTheme?.backgroundColor}`;
+	const background_color_hover = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.backgroundColorHover : buttonTheme?.backgroundColorHover}`;
+	const text_color = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.textColor : buttonTheme?.textColor}`;
+	const text_color_hover = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.textColorHover : buttonTheme?.textColorHover}`;
+	const border_radius = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.borderRadius : buttonTheme?.borderRadius}`;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-button__main${buttonInheritFromTheme !== "true" ? "" : ".wcb-button__main--inherit-from-theme"}`;
+	const BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-button__main`;
 	const BUTTON_TEXT = `${WRAP_CLASSNAME} .wcb-button__text`;
 	const BUTTON_ICON = `${WRAP_CLASSNAME} .wcb-button__icon`;
 
@@ -55,11 +64,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 		Tablet: iconSize_tablet + "px",
 		Mobile: iconSize_mobile + "px",
 	};	
-	const background_color = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.backgroundColor : buttonTheme?.backgroundColor}`;
-	const background_color_hover = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.backgroundColorHover : buttonTheme?.backgroundColorHover}`;
-	const text_color = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.textColor : buttonTheme?.textColor}`;
-	const text_color_hover = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.textColorHover : buttonTheme?.textColorHover}`;
-	const border_radius = `${buttonInheritFromTheme == "true" ? themeLayoutGlobal?.buttonTheme?.borderRadius : buttonTheme?.borderRadius}`;
 
 	if (!uniqueId) {
 		return null;
@@ -68,7 +72,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		<>
 			{/* <Global styles={getDivWrapStyles()} /> */}
 
-			{buttonInheritFromTheme == "true" ? (
+			{finalIsInheritFromTheme ? (
 				// {/* Button Theme Styles  */}
 				<Global
 					styles={[
@@ -141,19 +145,19 @@ const GlobalCss: FC<Props> = (attrs) => {
 					}),
 					{
 						[BUTTON_TEXT]: {
-							color: `${buttonInheritFromTheme == "true" ? text_color : style_text.color}`,
+							color: `${finalIsInheritFromTheme? text_color : style_text.color}`,
 						},
 						[BUTTON_ICON]: {
-							color: `${buttonInheritFromTheme == "true" ? text_color : style_icon.color}`,
+							color: `${finalIsInheritFromTheme ? text_color : style_icon.color}`,
 						},
 						// BUTTON HOVER
 						[BUTTON_CLASSNAME]: {
 							":hover": {
 								".wcb-button__text": {
-									color: `${buttonInheritFromTheme == "true" ? text_color_hover : style_text.hoverColor}`,
+									color: `${finalIsInheritFromTheme ? text_color_hover : style_text.hoverColor}`,
 								},
 								".wcb-button__icon": {
-									color: `${buttonInheritFromTheme == "true" ? text_color_hover : style_icon.hoverColor}`,
+									color: `${finalIsInheritFromTheme ? text_color_hover : style_icon.hoverColor}`,
 								},
 							},
 						},
