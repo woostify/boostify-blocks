@@ -56,6 +56,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 					}),
 				]}
 			/>
+			
+			<Global
+				styles={[
+					{
+						[WRAP_CLASSNAME]: {
+							flex: 1,
+						},
+					},
+				]}
+			/>
 
 			{/* ADVANCE  */}
 			<Global
