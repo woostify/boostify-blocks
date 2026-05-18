@@ -25,20 +25,15 @@ const getBorderStyles = ({
 	// MAIN BORDER
 	let CSSObject: CSSObject = { [`${className}`]: {} };
 	if (mainSettings) {
-		if ((mainSettings as BorderMain4Side)?.top) {
-			const { bottom, left, right, top } = mainSettings as BorderMain4Side;
+		const as4Side = mainSettings as BorderMain4Side;
+		if ("top" in as4Side || "right" in as4Side || "bottom" in as4Side || "left" in as4Side) {
+			const { bottom, left, right, top } = as4Side;
 			CSSObject = {
 				[`${className}`]: {
-					borderTop: `${top.width} ${top.style || "none"} ${top.color || ""}`,
-					borderLeft: `${left.width} ${left.style || "none"} ${
-						left.color || ""
-					}`,
-					borderRight: `${right.width} ${right.style || "none"} ${
-						right.color || ""
-					}`,
-					borderBottom: `${bottom.width} ${bottom.style || "none"} ${
-						bottom.color || ""
-					}`,
+					...(top ? { borderTop: `${top.width} ${top.style || "none"} ${top.color || ""}` } : {}),
+					...(left ? { borderLeft: `${left.width} ${left.style || "none"} ${left.color || ""}` } : {}),
+					...(right ? { borderRight: `${right.width} ${right.style || "none"} ${right.color || ""}` } : {}),
+					...(bottom ? { borderBottom: `${bottom.width} ${bottom.style || "none"} ${bottom.color || ""}` } : {}),
 					"&:hover": {
 						borderColor: `${hoverColor}`,
 					},

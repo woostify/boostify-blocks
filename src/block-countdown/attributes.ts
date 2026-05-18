@@ -28,6 +28,11 @@ import {
 } from "./WcbCountdownPanel_StyleDimension";
 
 import {
+    WCB_COUNTDOWN_PANEL_DIMENSION,
+    WCB_COUNTDOWN_PANEL_DIMENSION_DEMO,
+} from "./WcbCountdownPanelDimension";
+
+import {
     WCB_COUNTDOWN_PANEL_DATE,
     WCB_COUNTDOWN_PANEL_DATE_DEMO,
 } from "./WcbCountdownPanelDate";
@@ -74,6 +79,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
     style_border: WCB_BUTTON_PANEL_STYLE_BORDER;
     style_boxshadow: WCB_BUTTON_PANEL_STYLE_BOXSHADOW;
     style_dimension: WCB_COUNTDOWN_PANEL_STYLE_DIMENSION;
+    style_dimensions: WCB_COUNTDOWN_PANEL_DIMENSION;
     //
     advance_responsiveCondition: MyResponsiveConditionControlData;
     advance_zIndex: MyZIndexControlData;
@@ -153,6 +159,10 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
     style_dimension: {
         type: "object",
         default: WCB_COUNTDOWN_PANEL_STYLE_DIMENSION_DEMO,
+    },
+    style_dimensions: {
+        type: "object",
+        default: WCB_COUNTDOWN_PANEL_DIMENSION_DEMO,
     },
 
     // ADVANCE

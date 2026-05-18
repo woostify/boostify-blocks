@@ -6,6 +6,7 @@ import getBackgroundColorGradientStyles from "../utils/getBackgroundColorGradien
 import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import getFlexPropertiesStyles from "../utils/getFlexPropertiesStyles";
+import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
@@ -20,6 +21,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		// ATTRS OF BLOCK
 		general_layout,
 		style_dimension,
+		style_dimensions,
 		style_label,
 		style_background,
 		style_number,
@@ -243,6 +245,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 					prefix: "marginBottom",
 				})}
 			/>
+			{/* DIMENSION (padding/margin) */}
+			<Global
+				styles={getPaddingMarginStyles({
+					className: WRAP_CLASSNAME,
+					margin: style_dimensions.dimension.margin,
+					padding: style_dimensions.dimension.padding,
+				})}
+			/>
+
 			{/* ADVANCE  */}
 			<Global
 				styles={getAdvanveDivWrapStyles({
