@@ -61,6 +61,8 @@ function boostify_blocks_get_block_name_enable_init()
 //
 function boostify_blocks_get_default_blocks_settings()
 {
+    $options = woostify_options( false );
+
     return [
         'media_tablet'              => '768px',
         'media_desktop'             => '1024px',
@@ -68,7 +70,7 @@ function boostify_blocks_get_default_blocks_settings()
         'reCAPTCHA_v3_secret_key'   => '',
         'reCAPTCHA_v2_site_key'     => '',
         'reCAPTCHA_v2_secret_key'   => '',
-        'defaultContentWidth'       => '',
+        'defaultContentWidth'       => esc_attr( $options['container_width'] ) . 'px',
         'containerPadding'          => '10px',
         'enableTemplatesButton'     => 'true',
         'enableCopyPasteStyles'     => 'true',
@@ -76,6 +78,16 @@ function boostify_blocks_get_default_blocks_settings()
         'preloadLocalFonts'         => 'false',
         'allowOnlySelectedFonts'    => 'false',
         'selectedFonts'             => '',
+        'containerElementsGap'      => '10px',
+        'blocksEditorSpacing'       => '0px',
+        'buttonInheritFromTheme'    => 'false',
+        'buttonTheme'               => [
+            'backgroundColor' => esc_attr( $options['button_background_color'] ),
+            'backgroundColorHover' => esc_attr( $options['button_hover_background_color'] ),
+            'textColor' => esc_attr( $options['button_text_color'] ),
+            'textColorHover' => esc_attr( $options['button_hover_text_color'] ),
+            'borderRadius' => esc_attr( $options['buttons_border_radius'] ) . 'px',
+        ],
         // new 1
         'customColorPallete'        => [
             ["name" => "white", "color" => "#fff"],
@@ -145,6 +157,26 @@ function boostify_blocks_get_layout_global_settings()
         if (!empty($options['container_width'] ?? '')) {
             $boostify_layout_global_settings['contentSize'] =  $options['container_width'] . "px";
             $boostify_layout_global_settings['contentSizeOfWoostify'] =  true;
+        }
+        // button theme
+        $button_theme = [];
+        if (!empty($options['button_background_color'] ?? '')) {
+            $button_theme['backgroundColor'] = $options['button_background_color'];
+        }
+        if (!empty($options['button_hover_background_color'] ?? '')) {
+            $button_theme['backgroundColorHover'] = $options['button_hover_background_color'];
+        }
+        if (!empty($options['button_text_color'] ?? '')) {
+            $button_theme['textColor'] = $options['button_text_color'];
+        }
+        if (!empty($options['button_hover_text_color'] ?? '')) {
+            $button_theme['textColorHover'] = $options['button_hover_text_color'];
+        }
+        if (!empty($options['buttons_border_radius'] ?? '')) {
+            $button_theme['borderRadius'] = $options['buttons_border_radius']. "px";
+        }
+        if (!empty($button_theme)) {
+            $boostify_layout_global_settings['buttonTheme'] = $button_theme;
         }
     }
 

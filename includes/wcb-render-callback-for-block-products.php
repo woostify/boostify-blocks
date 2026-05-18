@@ -27,7 +27,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     // $block_overrides=false → Customizer wins (theme_val ?? block_val)
     // $block_overrides=true  → Block wins     (block_val ?? theme_val)
     $pick = function ($theme_val, $block_val) use ($block_overrides) {
-        return $block_overrides ? ($block_val ?? $theme_val) : ($theme_val ?? $block_val);
+        return $block_overrides ? ($theme_val ?? $block_val) : ($block_val ?? $theme_val);
     };
 
     $pick_bool = function ($theme_val, $block_val) use ($block_overrides, $to_bool) {
@@ -35,7 +35,6 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
             ? $to_bool($block_val, $theme_val)
             : $to_bool($theme_val, $block_val);
     };
-
     // Style layout
     $style_layout = $attributes['style_layout'] ?? [];
     $style_layout['numberOfColumn'] = [

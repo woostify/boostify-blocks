@@ -31,4 +31,11 @@ export interface Wcb_theme_layout_global_settings {
 	contentSize?: string;
 	wideSize?: string;
 	contentSizeOfWoostify?: boolean;
+	buttonTheme?: {
+		backgroundColor: string;
+		backgroundColorHover: string;
+		textColor: string;
+		textColorHover: string;
+		borderRadius: string;
+	};
 }
