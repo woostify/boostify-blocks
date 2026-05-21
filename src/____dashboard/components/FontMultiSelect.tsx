@@ -2,7 +2,9 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import googleFonts from "../../components/controls/WcbFontFamilyPicker/google-fonts.json";
 
-const ALL_FONTS: string[] = Object.keys(googleFonts);
+const ALL_FONTS: string[] = Object.keys(googleFonts).sort((a, b) =>
+	a.localeCompare(b)
+);
 
 interface Props {
 	value: string[];
@@ -136,7 +138,7 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 					onFocus={() => setIsOpen(true)}
 					onKeyDown={handleKeyDown}
 					placeholder={value.length === 0 ? "Search Google Fonts…" : ""}
-					className="flex-1 min-w-[140px] outline-none text-sm text-gray-700 bg-transparent placeholder-gray-400 py-0.5 hidden"
+					className="flex-1 min-w-[140px] outline-none text-sm text-gray-700 bg-transparent placeholder-gray-400 py-0.5"
 				/>
 				{/* Action buttons */}
 				<div className="flex items-center gap-0.5 ml-auto shrink-0">

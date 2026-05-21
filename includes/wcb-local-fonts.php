@@ -73,6 +73,32 @@ function boostify_blocks_collect_post_fonts( string $post_content ): array {
 }
 
 /**
+ * Extracts woff2 absolute URLs from a locally-cached font CSS file and
+ * appends them to $out. Handles both relative filenames (new format) and
+ * legacy absolute URLs written by older versions of this plugin.
+ *
+ * @param string   $css      Contents of the cached CSS file.
+ * @param string   $base_url Runtime base URL for the fonts directory (trailing-slash).
+ * @param string[] $out      Array to append discovered absolute woff2 URLs into.
+ */
+function boostify_blocks_extract_woff2_urls( string $css, string $base_url, array &$out ): void {
+    preg_match_all( '/url\(([^)]+\.woff2)\)/i', $css, $matches );
+    foreach ( array_unique( $matches[1] ) as $ref ) {
+        $ref = trim( $ref, "\"' \t" );
+        if ( '' === $ref ) {
+            continue;
+        }
+        // Relative filename → prepend the runtime base URL.
+        if ( ! preg_match( '#^https?://#i', $ref ) ) {
+            $out[] = $base_url . ltrim( $ref, '/' );
+        } else {
+            // Legacy absolute URL stored by an older version.
+            $out[] = $ref;
+        }
+    }
+}
+
+/**
  * Write $content to $path using WP_Filesystem (falls back to direct write on
  * direct-access hosts where uploads dir is always writable).
  */
@@ -128,13 +154,11 @@ function boostify_blocks_download_google_font( string $font_family ) {
     );
 
     if ( is_wp_error( $response ) ) {
-        error_log( '[boostify-fonts] wp_remote_get ERROR for "' . $font_family . '": ' . $response->get_error_message() );
         return false;
     }
 
     $code = (int) wp_remote_retrieve_response_code( $response );
     if ( 200 !== $code ) {
-        error_log( '[boostify-fonts] wp_remote_get returned HTTP ' . $code . ' for "' . $font_family . '"' );
         return false;
     }
 
@@ -146,7 +170,6 @@ function boostify_blocks_download_google_font( string $font_family ) {
     foreach ( array_unique( $matches[1] ) as $woff2_url ) {
         $filename   = sanitize_file_name( basename( (string) wp_parse_url( $woff2_url, PHP_URL_PATH ) ) );
         $local_path = $paths['dir'] . $filename;
-        $local_url  = $paths['url'] . $filename;
 
         if ( ! file_exists( $local_path ) ) {
             $font_resp = wp_remote_get( $woff2_url, [ 'timeout' => 30, 'sslverify' => true ] );
@@ -156,7 +179,8 @@ function boostify_blocks_download_google_font( string $font_family ) {
             }
         }
 
-        $css = str_replace( $woff2_url, $local_url, $css );
+        // Use relative filename so the CSS is portable across domains/servers.
+        $css = str_replace( $woff2_url, $filename, $css );
     }
 
     // Persist the rewritten CSS.
@@ -167,10 +191,247 @@ function boostify_blocks_download_google_font( string $font_family ) {
     return $css_url;
 }
 
+// ─── Theme / plugin Google Fonts interception ─────────────────────────────────
+
+/**
+ * Parses font family names from a Google Fonts URL.
+ *
+ * Handles CSS1 format: /css?family=Open+Sans:400|Roboto:700
+ * and CSS2 format: /css2?family=Open+Sans:ital,wght@0,400
+ *
+ * @param string $url Google Fonts URL.
+ * @return string[]   Unique font family names.
+ */
+function boostify_blocks_parse_font_families_from_url( string $url ): array {
+    $parsed = wp_parse_url( $url );
+    if ( empty( $parsed['query'] ) ) {
+        return [];
+    }
+
+    parse_str( $parsed['query'], $params );
+    $raw = $params['family'] ?? '';
+    if ( '' === $raw ) {
+        return [];
+    }
+
+    $families = [];
+    foreach ( preg_split( '/\|/', $raw ) as $part ) {
+        $name = preg_replace( '/[:\@].*$/', '', trim( $part ) );
+        $name = str_replace( '+', ' ', $name );
+        $name = trim( $name );
+        if ( '' !== $name ) {
+            $families[] = $name;
+        }
+    }
+
+    return array_values( array_unique( $families ) );
+}
+
+/**
+ * Intercepts any stylesheet loading from fonts.googleapis.com that has been
+ * enqueued by the theme or other plugins, downloads it locally, and replaces
+ * the remote URL with the local cached version.
+ *
+ * Runs at priority 999 so all enqueues are already registered before we scan.
+ */
+function boostify_blocks_intercept_enqueued_google_fonts(): void {
+    $settings = get_option( 'boostify_blocks_settings_options', [] );
+
+    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+        return;
+    }
+
+    global $wp_styles;
+
+    if ( empty( $wp_styles ) || empty( $wp_styles->queue ) ) {
+        return;
+    }
+
+    foreach ( $wp_styles->queue as $handle ) {
+        $style = $wp_styles->registered[ $handle ] ?? null;
+        if ( ! $style ) {
+            continue;
+        }
+
+        $src = is_string( $style->src ) ? $style->src : '';
+        if ( ! preg_match( '#^https?://fonts\.googleapis\.com/css#', $src ) ) {
+            continue;
+        }
+
+        $families = boostify_blocks_parse_font_families_from_url( $src );
+
+        if ( 1 === count( $families ) ) {
+            // Single family: replace the stylesheet src directly.
+            $local_url = boostify_blocks_download_google_font( $families[0] );
+            if ( $local_url ) {
+                $wp_styles->registered[ $handle ]->src = $local_url;
+            }
+        } elseif ( count( $families ) > 1 ) {
+            // Multiple families in one URL: dequeue original, enqueue each separately.
+            wp_dequeue_style( $handle );
+            foreach ( $families as $font_family ) {
+                if ( boostify_blocks_is_system_font( $font_family ) ) {
+                    continue;
+                }
+                $local_url = boostify_blocks_download_google_font( $font_family );
+                if ( $local_url ) {
+                    wp_enqueue_style(
+                        'boostify-local-font-' . sanitize_title( $font_family ),
+                        $local_url,
+                        [],
+                        null
+                    );
+                }
+            }
+        }
+    }
+}
+add_action( 'wp_enqueue_scripts', 'boostify_blocks_intercept_enqueued_google_fonts', 999 );
+
+/**
+ * Collects woff2 absolute URLs for fonts intercepted late (via style_loader_tag).
+ * Populated during style_loader_tag; consumed by boostify_blocks_output_late_preload().
+ *
+ * @var string[]
+ */
+$boostify_blocks_late_preload_urls = [];
+
+/**
+ * Filter: intercepts every Google Fonts <link> tag as WordPress prints it.
+ *
+ * This catches plugins like Elementor that enqueue fonts at wp_head priority 7,
+ * AFTER wp_enqueue_scripts has already finished. For those, the
+ * wp_enqueue_scripts interceptor above never gets a chance to see them.
+ *
+ * Flow for each <link> tag:
+ *   1. If href is not a Google Fonts URL → return unchanged.
+ *   2. Download font files locally (uses same cache as the early interceptor).
+ *   3. Replace the href in the HTML tag with the local URL.
+ *   4. Update $wp_styles->registered so downstream code sees the local src.
+ *   5. Stash woff2 URLs for the late preload hook (wp_head priority 99).
+ */
+function boostify_blocks_intercept_google_font_tag( string $html, string $handle, string $href ): string {
+    if ( ! preg_match( '#^https?://fonts\.googleapis\.com/css#', $href ) ) {
+        return $html;
+    }
+
+    $settings = get_option( 'boostify_blocks_settings_options', [] );
+    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+        return $html;
+    }
+
+    $families = boostify_blocks_parse_font_families_from_url( $href );
+    if ( empty( $families ) ) {
+        return $html;
+    }
+
+    global $boostify_blocks_late_preload_urls;
+    $paths     = boostify_blocks_fonts_upload_dir();
+    $local_url = null;
+
+    foreach ( $families as $font_family ) {
+        if ( boostify_blocks_is_system_font( $font_family ) ) {
+            continue;
+        }
+        $url = boostify_blocks_download_google_font( $font_family );
+        if ( ! $url ) {
+            continue;
+        }
+        if ( null === $local_url ) {
+            $local_url = $url;
+        }
+        // Stash woff2 URLs so the late preload hook can output <link rel="preload">.
+        $css_path = $paths['dir'] . sanitize_title( $font_family ) . '.css';
+        if ( file_exists( $css_path ) ) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+            boostify_blocks_extract_woff2_urls( file_get_contents( $css_path ), $paths['url'], $boostify_blocks_late_preload_urls );
+        }
+    }
+
+    if ( null === $local_url ) {
+        return $html;
+    }
+
+    // Replace the href attribute value in the <link> tag.
+    $new_html = preg_replace_callback(
+        '/\bhref=([\'"])([^\'"]+)\1/',
+        static function ( $m ) use ( $local_url ) {
+            return 'href=' . $m[1] . esc_url( $local_url ) . $m[1];
+        },
+        $html,
+        1
+    );
+
+    // Keep $wp_styles in sync so the early preload scan also sees local src.
+    global $wp_styles;
+    if ( isset( $wp_styles->registered[ $handle ] ) ) {
+        $wp_styles->registered[ $handle ]->src = $local_url;
+    }
+
+    return $new_html ?? $html;
+}
+add_filter( 'style_loader_tag', 'boostify_blocks_intercept_google_font_tag', 10, 3 );
+
+/**
+ * Outputs <link rel="preload"> tags for fonts that were intercepted late
+ * (i.e. by style_loader_tag, after the early preload at wp_head priority 2).
+ * Runs at priority 99 — after all stylesheets have been printed.
+ */
+function boostify_blocks_output_late_preload(): void {
+    global $boostify_blocks_late_preload_urls;
+
+    $settings = get_option( 'boostify_blocks_settings_options', [] );
+    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+        return;
+    }
+    if ( ( $settings['preloadLocalFonts'] ?? 'false' ) !== 'true' ) {
+        return;
+    }
+    if ( empty( $boostify_blocks_late_preload_urls ) ) {
+        return;
+    }
+
+    foreach ( array_unique( $boostify_blocks_late_preload_urls ) as $font_url ) {
+        printf(
+            '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin="anonymous">' . "\n",
+            esc_url( $font_url )
+        );
+    }
+}
+add_action( 'wp_head', 'boostify_blocks_output_late_preload', 99 );
+
 // ─── Frontend hooks ───────────────────────────────────────────────────────────
 
 /**
- * Enqueue locally cached Google Font stylesheets on the frontend.
+ * When allowOnlySelectedFonts is enabled, removes any font not in the
+ * selectedFonts list from the collected $fonts array.
+ * Comparison is case-insensitive and trims whitespace.
+ *
+ * @param string[] $fonts    Font family names collected from post content.
+ * @param array    $settings The boostify_blocks_settings_options option value.
+ * @return string[]
+ */
+function boostify_blocks_apply_font_allowlist( array $fonts, array $settings ): array {
+    if ( ( $settings['allowOnlySelectedFonts'] ?? 'false' ) !== 'true' ) {
+        return $fonts;
+    }
+
+    $raw = $settings['selectedFonts'] ?? '';
+    if ( '' === trim( $raw ) ) {
+        return $fonts;
+    }
+
+    $allowed = array_map( 'mb_strtolower', array_map( 'trim', explode( ',', $raw ) ) );
+    $allowed = array_filter( $allowed );
+
+    return array_values(
+        array_filter( $fonts, fn( $f ) => in_array( mb_strtolower( trim( $f ) ), $allowed, true ) )
+    );
+}
+
+/**
+ * Enqueue locally cached Google Font stylesheets on the frontend for fonts
+ * found in block attributes (fontFamily).
  * Hooked to wp_enqueue_scripts so fonts are downloaded (if needed) before
  * wp_head outputs the <link> tags.
  */
@@ -178,42 +439,30 @@ function boostify_blocks_enqueue_local_google_fonts(): void {
     $settings = get_option( 'boostify_blocks_settings_options', [] );
 
     if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
-        error_log( '[boostify-fonts] loadGoogleFontsLocally is OFF. Value: ' . var_export( $settings['loadGoogleFontsLocally'] ?? 'NOT SET', true ) );
         return;
     }
 
     if ( ! is_singular() ) {
-        error_log( '[boostify-fonts] Not singular page, skipping.' );
         return;
     }
 
     $post = get_post();
     if ( ! $post ) {
-        error_log( '[boostify-fonts] No post found.' );
         return;
     }
 
     $fonts = boostify_blocks_collect_post_fonts( $post->post_content );
-    error_log( '[boostify-fonts] Post ID: ' . $post->ID . ' | Fonts found: ' . implode( ', ', $fonts ) );
-    // DEBUG: dump raw block attrs to find how font is stored
-    if ( empty( $fonts ) && has_blocks( $post->post_content ) ) {
-        foreach ( parse_blocks( $post->post_content ) as $block ) {
-            if ( ! empty( $block['attrs'] ) ) {
-                error_log( '[boostify-fonts] Block "' . $block['blockName'] . '" attrs: ' . wp_json_encode( $block['attrs'] ) );
-            }
-        }
-    }
+    $fonts = boostify_blocks_apply_font_allowlist( $fonts, $settings );
 
     foreach ( $fonts as $font_family ) {
         $local_css_url = boostify_blocks_download_google_font( $font_family );
-        error_log( '[boostify-fonts] Download result for "' . $font_family . '": ' . var_export( $local_css_url, true ) );
 
         if ( $local_css_url ) {
             wp_enqueue_style(
                 'boostify-local-font-' . sanitize_title( $font_family ),
                 $local_css_url,
                 [],
-                null // no version — file content is the version
+                null
             );
         }
     }
@@ -224,6 +473,10 @@ add_action( 'wp_enqueue_scripts', 'boostify_blocks_enqueue_local_google_fonts' )
  * Output <link rel="preload"> tags for every woff2 file used on the current
  * page, so the browser can start fetching them before the CSS is parsed.
  * Only runs when both loadGoogleFontsLocally AND preloadLocalFonts are enabled.
+ *
+ * Covers two sources:
+ * 1. Fonts from boostify-blocks block attributes (fontFamily).
+ * 2. Fonts intercepted from theme/plugin Google Fonts stylesheets.
  */
 function boostify_blocks_output_preload_local_fonts(): void {
     $settings = get_option( 'boostify_blocks_settings_options', [] );
@@ -236,38 +489,56 @@ function boostify_blocks_output_preload_local_fonts(): void {
         return;
     }
 
-    if ( ! is_singular() ) {
-        return;
+    $paths      = boostify_blocks_fonts_upload_dir();
+    $woff2_urls = [];
+
+    // 1. Fonts from block content (singular pages only).
+    if ( is_singular() ) {
+        $post = get_post();
+        if ( $post ) {
+            $fonts = boostify_blocks_collect_post_fonts( $post->post_content );
+            $fonts = boostify_blocks_apply_font_allowlist( $fonts, $settings );
+
+            foreach ( $fonts as $font_family ) {
+                $css_path = $paths['dir'] . sanitize_title( $font_family ) . '.css';
+                if ( ! file_exists( $css_path ) ) {
+                    continue;
+                }
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+                $css = file_get_contents( $css_path );
+                boostify_blocks_extract_woff2_urls( $css, $paths['url'], $woff2_urls );
+            }
+        }
     }
 
-    $post = get_post();
-    if ( ! $post ) {
-        return;
+    // 2. Fonts from intercepted theme/plugin stylesheets (all page types).
+    global $wp_styles;
+    if ( ! empty( $wp_styles ) && ! empty( $wp_styles->queue ) ) {
+        foreach ( $wp_styles->queue as $handle ) {
+            $style = $wp_styles->registered[ $handle ] ?? null;
+            if ( ! $style ) {
+                continue;
+            }
+            $src = is_string( $style->src ) ? $style->src : '';
+            // After interception the src starts with our local fonts URL.
+            if ( 0 !== strpos( $src, $paths['url'] ) ) {
+                continue;
+            }
+            $css_path = $paths['dir'] . basename( $src );
+            if ( ! file_exists( $css_path ) ) {
+                continue;
+            }
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+            $css = file_get_contents( $css_path );
+            boostify_blocks_extract_woff2_urls( $css, $paths['url'], $woff2_urls );
+        }
     }
 
-    $paths = boostify_blocks_fonts_upload_dir();
-    $fonts = boostify_blocks_collect_post_fonts( $post->post_content );
-
-    foreach ( $fonts as $font_family ) {
-        $slug     = sanitize_title( $font_family );
-        $css_path = $paths['dir'] . $slug . '.css';
-
-        if ( ! file_exists( $css_path ) ) {
-            continue;
-        }
-
-        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-        $css = file_get_contents( $css_path );
-
-        // Extract local woff2 URLs that were rewritten during download.
-        preg_match_all( '/url\((' . preg_quote( $paths['url'], '/' ) . '[^)]+\.woff2)\)/i', $css, $matches );
-
-        foreach ( array_unique( $matches[1] ) as $font_url ) {
-            printf(
-                '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin="anonymous">' . "\n",
-                esc_url( $font_url )
-            );
-        }
+    foreach ( array_unique( $woff2_urls ) as $font_url ) {
+        printf(
+            '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin="anonymous">' . "\n",
+            esc_url( $font_url )
+        );
     }
 }
 add_action( 'wp_head', 'boostify_blocks_output_preload_local_fonts', 2 );

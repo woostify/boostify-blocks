@@ -15801,12 +15801,23 @@ const isWebFont = fontName => fontName && !fontName?.match(/^(sans[-+]serif|seri
 /**
  * Load the stylesheet of a Google Font.
  * Skipped when loadGoogleFontsLocally is enabled — PHP serves fonts locally in that case.
+ * Skipped when allowOnlySelectedFonts is enabled and the font is not in selectedFonts.
  *
  * @param {string} fontName The name of the font
  */
 const loadGoogleFont = fontName => {
   if (window.boostify_blocks_global_variables?.loadGoogleFontsLocally === "true") {
     return;
+  }
+  if (window.boostify_blocks_global_variables?.allowOnlySelectedFonts === "true") {
+    var _window$boostify_bloc;
+    const raw = (_window$boostify_bloc = window.boostify_blocks_global_variables?.selectedFonts) !== null && _window$boostify_bloc !== void 0 ? _window$boostify_bloc : "";
+    if (raw.trim() !== "") {
+      const allowed = raw.split(",").map(f => f.trim().toLowerCase()).filter(Boolean);
+      if (!allowed.includes(fontName.trim().toLowerCase())) {
+        return;
+      }
+    }
   }
   setTimeout(() => {
     const _loadGoogleFont = head => {

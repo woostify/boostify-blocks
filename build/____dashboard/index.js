@@ -1645,7 +1645,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const ALL_FONTS = Object.keys(_components_controls_WcbFontFamilyPicker_google_fonts_json__WEBPACK_IMPORTED_MODULE_1__);
+const ALL_FONTS = Object.keys(_components_controls_WcbFontFamilyPicker_google_fonts_json__WEBPACK_IMPORTED_MODULE_1__).sort((a, b) => a.localeCompare(b));
 const FontMultiSelect = ({
   value,
   onChange
@@ -1752,7 +1752,7 @@ const FontMultiSelect = ({
     onFocus: () => setIsOpen(true),
     onKeyDown: handleKeyDown,
     placeholder: value.length === 0 ? "Search Google Fonts…" : "",
-    className: "flex-1 min-w-[140px] outline-none text-sm text-gray-700 bg-transparent placeholder-gray-400 py-0.5 hidden"
+    className: "flex-1 min-w-[140px] outline-none text-sm text-gray-700 bg-transparent placeholder-gray-400 py-0.5"
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "flex items-center gap-0.5 ml-auto shrink-0"
   }, value.length > 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {

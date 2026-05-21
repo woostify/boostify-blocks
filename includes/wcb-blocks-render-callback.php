@@ -167,7 +167,9 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
     function boostify_blocks_enqueue_script_block_commoncss_frontend_styles($deps = ['wp-element', 'jquery'])
     {
         if (!is_admin()) {
-            wp_enqueue_script('boostify-blocks-commoncss-frontend', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/FrontendStyles.js', $deps, BOOSTIFY_BLOCKS_VERSION, true);
+            $asset     = require BOOSTIFY_BLOCKS_PATH . 'build/block-common-css/FrontendStyles.asset.php';
+            $asset_ver = $asset['version'] ?? BOOSTIFY_BLOCKS_VERSION;
+            wp_enqueue_script('boostify-blocks-commoncss-frontend', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/FrontendStyles.js', $deps, $asset_ver, true);
 
             // Expose theme defaults on the frontend so JS helpers can read them.
             static $boostify_blocks_theme_defaults_enqueued = false;

@@ -13,12 +13,23 @@ export const isWebFont = (fontName: string | null) =>
 /**
  * Load the stylesheet of a Google Font.
  * Skipped when loadGoogleFontsLocally is enabled — PHP serves fonts locally in that case.
+ * Skipped when allowOnlySelectedFonts is enabled and the font is not in selectedFonts.
  *
  * @param {string} fontName The name of the font
  */
 export const loadGoogleFont = (fontName: string) => {
 	if (window.boostify_blocks_global_variables?.loadGoogleFontsLocally === "true") {
 		return;
+	}
+
+	if (window.boostify_blocks_global_variables?.allowOnlySelectedFonts === "true") {
+		const raw = window.boostify_blocks_global_variables?.selectedFonts ?? "";
+		if (raw.trim() !== "") {
+			const allowed = raw.split(",").map((f) => f.trim().toLowerCase()).filter(Boolean);
+			if (!allowed.includes(fontName.trim().toLowerCase())) {
+				return;
+			}
+		}
 	}
 
 	setTimeout(() => {
