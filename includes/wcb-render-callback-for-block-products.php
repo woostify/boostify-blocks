@@ -203,6 +203,14 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     // Add to cart styles
     $atc = $theme['shop_archive_add_to_cart_btn'] ?? [];
     $existing_colors = $attributes['style_addToCardBtn']['colorAndBackgroundColor'] ?? [];
+
+    // When the Customizer has a non-zero border_radius, always apply it as a uniform string so
+    // getBorderRadiusStyles converts it to equal values for all 4 corners. This prevents a stored
+    // per-corner object (e.g. {topLeft:"10px",topRight:"0px",...}) from being used instead of the
+    // Customizer's intended uniform radius.
+    $atc_radius_val = (int)($atc['border_radius'] ?? 0);
+    $atc_radius_px  = $atc_radius_val > 0 ? $atc_radius_val . 'px' : null;
+
     $attributes['style_addToCardBtn'] = array_merge(
         $attributes['style_addToCardBtn'] ?? [],
         [
@@ -223,18 +231,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 $attributes['style_addToCardBtn']['border'] ?? [],
                 [
                     'radius' => [
-                        'Desktop' => $pick(
-                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
-                            $attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null
-                        ),
-                        'Tablet' => $pick(
-                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
-                            $attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null
-                        ),
-                        'Mobile' => $pick(
-                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
-                            $attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null
-                        ),
+                        'Desktop' => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null),
+                        'Tablet'  => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null),
+                        'Mobile'  => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null),
                     ],
                 ]
             ),
@@ -258,6 +257,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 ? $attributes['general_addToCartBtn']['position']
                 : $mapped_atc_position,
             'isShowQuantity' => $pick_bool($content['quantity_flag'] ?? null, $attributes['general_addToCartBtn']['isShowQuantity'] ?? null),
+            'isShowIcon' => isset($atc['show_icon'])
+                ? (bool)$atc['show_icon']
+                : ($attributes['general_addToCartBtn']['isShowIcon'] ?? true),
         ]
     );
 
@@ -1117,6 +1119,8 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         </style>
     ";
 
+    $show_icon = $attributesFromBlock['general_addToCartBtn']['isShowIcon'] ?? true;
+
     $btn_markup = sprintf(
         '<a
             href="%s"
@@ -1129,7 +1133,7 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         esc_attr($product->get_id()),
         esc_attr($product_class),
         esc_attr($ajax_class),
-        $icon_markup,
+        $show_icon ? $icon_markup : '',
         $label_markup
     );
 

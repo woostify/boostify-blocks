@@ -1,12 +1,13 @@
 import { PanelBody, ToggleControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import React, { FC, CSSProperties } from "react";
+import React, { FC } from "react";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 
 export interface WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN {
 	isShowButton: boolean;
 	position: "bottom" | "inside image" | "bottom visible" | "icon" | "none";
 	isShowQuantity: boolean;
+	isShowIcon: boolean;
 }
 
 export const WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN =
@@ -14,6 +15,7 @@ export const WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_ADD_TO_
 		isShowButton: true,
 		position: "bottom",
 		isShowQuantity: false,
+		isShowIcon: true,
 	};
 
 interface Props

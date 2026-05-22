@@ -744,6 +744,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						transform: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "translateY(0px)" : "unset",
 						transition: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "all 0.3s ease-in-out" : "unset",
 					},
+					".wcb-products__add-to-cart-icon": {
+						display: general_addToCartBtn?.isShowIcon === false ? "none !important" : undefined,
+					},
 					".wcb-products__product-price": {
 						// opacity: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? 1 : "unset",
 						transform:  (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "translateY(0px)" : "unset",
