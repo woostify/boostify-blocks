@@ -1,4 +1,4 @@
-import { PanelBody, ToggleControl } from "@wordpress/components";
+import { PanelBody, ToggleControl, RadioControl, RangeControl, TextControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import React, { FC } from "react";
 import WCBDateTimePicker, {
@@ -11,6 +11,12 @@ export interface WCB_COUNTDOWN_PANEL_DATE {
 	show_day: boolean;
 	show_hour: boolean;
 	show_minute: boolean;
+	timerType: 'fixed' | 'evergreen';
+	evergreenDays: number;
+	evergreenHrs: number;
+	evergreenMinutes: number;
+	resetDays: number;
+	campaignID: string;
 }
 
 export const WCB_COUNTDOWN_PANEL_DATE_DEMO: WCB_COUNTDOWN_PANEL_DATE = {
@@ -19,6 +25,12 @@ export const WCB_COUNTDOWN_PANEL_DATE_DEMO: WCB_COUNTDOWN_PANEL_DATE = {
 	show_day: true,
 	show_hour: true,
 	show_minute: true,
+	timerType: 'fixed',
+	evergreenDays: 1,
+	evergreenHrs: 0,
+	evergreenMinutes: 0,
+	resetDays: 30,
+	campaignID: '',
 };
 
 interface Props
@@ -34,7 +46,22 @@ const WcbCountdownPanelDate: FC<Props> = ({
 	onToggle,
 	opened,
 }) => {
-	const { enableLabel, date, show_day, show_hour, show_minute } = panelData;
+	const {
+		enableLabel,
+		date,
+		show_day,
+		show_hour,
+		show_minute,
+		timerType = 'fixed',
+		evergreenDays = 1,
+		evergreenHrs = 0,
+		evergreenMinutes = 0,
+		resetDays = 30,
+		campaignID = '',
+	} = panelData;
+
+	const isEvergreen = timerType === 'evergreen';
+
 	return (
 		<PanelBody
 			initialOpen={initialOpen}
@@ -51,15 +78,78 @@ const WcbCountdownPanelDate: FC<Props> = ({
 						setAttr__({ ...panelData, enableLabel: checked });
 					}}
 				/>
-				<WCBDateTimePicker
-					date={date}
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							date: value,
-						});
+
+				<RadioControl
+					label={__("Timer Type", "boostify-blocks")}
+					selected={timerType}
+					options={[
+						{ label: __("Fixed Date", "boostify-blocks"), value: "fixed" },
+						{ label: __("Evergreen", "boostify-blocks"), value: "evergreen" },
+					]}
+					onChange={(value: 'fixed' | 'evergreen') => {
+						setAttr__({ ...panelData, timerType: value });
 					}}
 				/>
+
+				{!isEvergreen && (
+					<WCBDateTimePicker
+						date={date}
+						onChange={(value) => {
+							setAttr__({ ...panelData, date: value as unknown as countdown_date });
+						}}
+					/>
+				)}
+
+				{isEvergreen && (
+					<>
+						<RangeControl
+							label={__("Days", "boostify-blocks")}
+							value={evergreenDays}
+							min={0}
+							max={365}
+							onChange={(value) => {
+								setAttr__({ ...panelData, evergreenDays: value ?? 0 });
+							}}
+						/>
+						<RangeControl
+							label={__("Hours", "boostify-blocks")}
+							value={evergreenHrs}
+							min={0}
+							max={23}
+							onChange={(value) => {
+								setAttr__({ ...panelData, evergreenHrs: value ?? 0 });
+							}}
+						/>
+						<RangeControl
+							label={__("Minutes", "boostify-blocks")}
+							value={evergreenMinutes}
+							min={0}
+							max={59}
+							onChange={(value) => {
+								setAttr__({ ...panelData, evergreenMinutes: value ?? 0 });
+							}}
+						/>
+						<RangeControl
+							label={__("Reset After (days)", "boostify-blocks")}
+							help={__("Number of days before the cookie expires and the timer resets for the visitor.", "boostify-blocks")}
+							value={resetDays}
+							min={1}
+							max={365}
+							onChange={(value) => {
+								setAttr__({ ...panelData, resetDays: value ?? 30 });
+							}}
+						/>
+						<TextControl
+							label={__("Campaign ID (optional)", "boostify-blocks")}
+							help={__("Unique ID to share the same evergreen timer across multiple blocks.", "boostify-blocks")}
+							value={campaignID}
+							onChange={(value) => {
+								setAttr__({ ...panelData, campaignID: value });
+							}}
+						/>
+					</>
+				)}
+
 				<ToggleControl
 					label={__("Show Days", "boostify-blocks")}
 					checked={show_day}

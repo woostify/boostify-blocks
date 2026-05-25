@@ -4,6 +4,7 @@ import { useBlockProps } from "@wordpress/block-editor";
 import { RichText } from "@wordpress/block-editor";
 import { WcbAttrs } from "./attributes";
 import SaveCommon from "../components/SaveCommon";
+// @ts-ignore
 import "./style.scss";
 
 export interface WcbAttrsForSave
@@ -12,6 +13,7 @@ export interface WcbAttrsForSave
 export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
 		uniqueId,
+		cover,
 		advance_responsiveCondition,
 		advance_zIndex,
 		general_layout,
@@ -33,6 +35,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	//
 
 	const newAttrForSave: WcbAttrsForSave = {
+		cover,
 		uniqueId,
 		advance_responsiveCondition,
 		advance_zIndex,
