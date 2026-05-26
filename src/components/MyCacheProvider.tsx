@@ -72,9 +72,9 @@ const useCreateEmotionCache = function (key = "wcb-custom-cache-key") {
 const MyCacheProvider: FC<Props> = ({ children, uniqueKey = "uniqueid" }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 
-	if (deviceType === "Desktop") {
-		return <>{children}</>;
-	}
+	// if (deviceType === "Desktop") {
+	// 	return <>{children}</>;
+	// }
 
 	const KEY = uniqueKey
 		.replace(/[0-9]/g, "")
@@ -90,7 +90,7 @@ const MyCacheProvider: FC<Props> = ({ children, uniqueKey = "uniqueid" }) => {
 
 	return (
 		<CacheProvider value={cache}>
-			<head hidden className="hidden" ref={ref}></head>
+			{/* <head hidden className="hidden" ref={ref}></head> */}
 			{children}
 		</CacheProvider>
 	);
