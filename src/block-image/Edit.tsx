@@ -19,6 +19,7 @@ import React, { useEffect, FC, useCallback } from "react";
 import { WcbAttrs } from "./attributes";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import MyCacheProvider from "../components/MyCacheProvider";
 import { WcbAttrsForSave } from "./Save";

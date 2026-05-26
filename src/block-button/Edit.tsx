@@ -12,6 +12,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
@@ -110,7 +111,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const url = general_content.link;
 	const opensInNewTab = general_content.openInNewWindow;
 
-	function startEditing(event) {
+	function startEditing(event: any) {
 		event.preventDefault();
 		setIsEditingURL(true);
 	}
