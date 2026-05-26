@@ -8338,9 +8338,11 @@ const MyCacheProvider = ({
   uniqueKey = "uniqueid"
 }) => {
   const deviceType = (0,_hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_3__["default"])() || "Desktop";
-  if (deviceType === "Desktop") {
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, children);
-  }
+
+  // if (deviceType === "Desktop") {
+  // 	return <>{children}</>;
+  // }
+
   const KEY = uniqueKey.replace(/[0-9]/g, "").replace(/ /g, "").toLocaleLowerCase();
   const {
     myCache,
@@ -8355,11 +8357,7 @@ const MyCacheProvider = ({
   }
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_4__.C, {
     value: cache
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("head", {
-    hidden: true,
-    className: "hidden",
-    ref: ref
-  }), children);
+  }, children);
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react__WEBPACK_IMPORTED_MODULE_0__.memo)(MyCacheProvider));
 

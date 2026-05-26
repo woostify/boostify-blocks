@@ -1,1 +1,60 @@
-.wcb-image__wrap{position:relative}.wcb-image__wrap.woostify-container{margin:0}.wcb-image__wrap.alignfull img,.wcb-image__wrap.alignwide img{height:auto;width:100%}.wcb-image__wrap .wp-element-caption{position:relative;z-index:1}.wcb-image__wrap--overlay .wp-element-caption{display:none}.wcb-image__overlay-wrap{position:absolute;top:0px;right:0px;bottom:0px;left:0px;display:flex;overflow:hidden}.wcb-image__overlay-bg{display:flex;flex:1 1 0%;flex-direction:column;background-color:rgb(255 255 255 / 0.5)}
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/block-image/style.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+.wcb-image__wrap {
+  position: relative;
+  flex-direction: column;
+}
+.wcb-image__wrap.woostify-container {
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+.wcb-image__wrap.alignfull img, .wcb-image__wrap.alignwide img {
+  height: auto;
+  width: 100%;
+}
+.wcb-image__wrap.alignleft {
+  align-items: flex-start;
+}
+.wcb-image__wrap.alignright {
+  align-items: flex-end;
+}
+.wcb-image__wrap.aligncenter {
+  align-items: center;
+}
+.wcb-image__wrap .wcb-image__wrap-figure {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+}
+.wcb-image__wrap .wp-element-caption {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+.wcb-image__wrap--overlay .wp-element-caption {
+  display: none;
+}
+
+.wcb-image__overlay-wrap {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  display: flex;
+  overflow: hidden;
+}
+
+.wcb-image__overlay-bg {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  background-color: rgb(255 255 255 / 0.5);
+}
+
+/*# sourceMappingURL=style-index.css.map*/

@@ -1,6 +1,9 @@
 .wcb-image__wrap {
 	position: relative;
+	flex-direction: column;
 	&.woostify-container{
+		max-width: 100%;
+		padding: 0;
 		margin: 0;
 	}
 	&.alignfull,
@@ -11,7 +14,27 @@
 		}
 	}
 
+	&.alignleft{
+		align-items: flex-start;
+	}
+	&.alignright{
+		align-items: flex-end;
+	}
+	&.aligncenter{
+		align-items: center;
+	}
+
+	.wcb-image__wrap-figure{
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		max-width: 100%;
+		height: auto;
+		margin: 0;
+	}
+
 	.wp-element-caption {
+		width: 100%;
 		position: relative;
 		z-index: 1;
 	}
