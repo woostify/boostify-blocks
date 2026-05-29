@@ -142,7 +142,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			case "General":
 				return (
 					<>
-						{isInheritFromTheme !== true && (
+						{ !finalIsInheritFromTheme && (
 						<WcbButtonPanelPreset
 							onToggle={() => handleTogglePanel("General", "Preset", true)}
 							initialOpen={
@@ -257,7 +257,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							panelData={style_icon}
 						/>
 
-						{!finalIsInheritFromTheme && (
+						{ !finalIsInheritFromTheme && (
 						<WcbButtonPanel_StyleBackground
 							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBackground"}
@@ -273,7 +273,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						/>
 						)}
 
-						{!finalIsInheritFromTheme && (
+						{ !finalIsInheritFromTheme && (
 						<WcbButtonPanel_StyleBorder
 							onToggle={() => handleTogglePanel("Styles", "_StyleBorder")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBorder"}
