@@ -758,6 +758,14 @@ const Edit: FC<Props> = (props) => {
 				className={`${
 					wrapBlockProps.className
 				} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX.toString()}`}
+				style={{
+					...wrapBlockProps.style,
+					'--wcb-editor-col-mobile': style_layout?.numberOfColumn?.Mobile ?? style_layout?.numberOfColumn?.Desktop ?? 2,
+					'--wcb-editor-col-tablet': style_layout?.numberOfColumn?.Tablet ?? style_layout?.numberOfColumn?.Desktop ?? 2,
+					'--wcb-editor-col-desktop': style_layout?.numberOfColumn?.Desktop ?? 2,
+					'--wcb-editor-row-gap': style_layout?.rowGap?.Desktop ?? '1rem',
+					'--wcb-editor-col-gap': style_layout?.colunmGap?.Desktop ?? '1rem',
+				} as React.CSSProperties}
 			>
 				{/* CONTROL SETTINGS */}
 				<HOCInspectorControls
