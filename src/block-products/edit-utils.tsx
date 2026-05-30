@@ -1,14 +1,15 @@
-/**
- * External dependencies
- */
-
-import React from "react";
 import { __ } from "@wordpress/i18n";
 import { Button, Placeholder } from "@wordpress/components";
+import type { ComponentProps } from "react";
 import { Icon, external } from "@wordpress/icons";
 import { ADMIN_URL } from "./constants";
 
-export const renderNoProductsPlaceholder = (blockTitle, blockIcon) => (
+type PlaceholderIconType = ComponentProps<typeof Placeholder>["icon"];
+
+export const renderNoProductsPlaceholder = (
+	blockTitle: string,
+	blockIcon: PlaceholderIconType
+) => (
 	<Placeholder
 		className="wc-block-products"
 		icon={blockIcon}
@@ -30,7 +31,7 @@ export const renderNoProductsPlaceholder = (blockTitle, blockIcon) => (
 		</Button>
 		<Button
 			className="wc-block-products__read_more_button"
-			isTertiary
+			variant="tertiary"
 			href="https://docs.woocommerce.com/document/managing-products/"
 		>
 			{__("Learn more", "woocommerce")}
@@ -38,7 +39,10 @@ export const renderNoProductsPlaceholder = (blockTitle, blockIcon) => (
 	</Placeholder>
 );
 
-export const renderHiddenContentPlaceholder = (blockTitle, blockIcon) => (
+export const renderHiddenContentPlaceholder = (
+	blockTitle: string,
+	blockIcon: PlaceholderIconType
+) => (
 	<Placeholder
 		className="wc-block-products"
 		icon={blockIcon}

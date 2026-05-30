@@ -476,7 +476,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     
     // Quantity input
     if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "") && $attributes['general_addToCartBtn']['position'] !== "none") {
-        $data->quantity_input = boostify_blocks_block_products_get_product_quantity($attributes);
+        $data->quantity_input = boostify_blocks_block_products_get_product_quantity();
     }
 
     $add_to_cart_position = $attributes['general_addToCartBtn']['position'] ?? '';
@@ -900,9 +900,9 @@ function boostify_blocks_block_products_get_rating_html($product, $attributes)
 
     if ($rating_count > 0) {
         $label = sprintf(__('Rated %s out of 5', 'woocommerce'), $average);
-        $html  = '<div class="wcb-products__product-rating-wrap" style="justify-content: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">
-                    <div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' 
-                        . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . 
+        $html  = '<div class="wcb-products__product-rating-wrap">
+                    <div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="'
+                        . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) .
                     '</div>
                 </div>';
         return $html;
@@ -1067,13 +1067,10 @@ function boostify_blocks_block_products_get_button_html($product, $attributes, $
         $isCheckBottom = true;
     }
     
-    return '<div 
-                class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart" 
-                style="
-                    align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';
-                    overflow: ' . ($isCheckBottom && ($badge_html == "")? 'hidden' : 'visible') . ';
-                ">' 
-                . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . 
+    return '<div
+                class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart"
+                style="overflow: ' . ($isCheckBottom && ($badge_html == "")? 'hidden' : 'visible') . ';">'
+                . boostify_blocks_block_products_get_add_to_cart($product, $attributes) .
             '</div>';
 }
 
@@ -1142,10 +1139,9 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
 
 /**
  * Generate the HTML for the product quantity input.
- * @param array $attributes The block attributes.
  * @return string The generated HTML for the product quantity input.
  */
-function boostify_blocks_block_products_get_product_quantity($attributes)
+function boostify_blocks_block_products_get_product_quantity()
 {   
     $quantity_input = '<div class="wcb-products__quantity">'
         . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
@@ -1162,7 +1158,7 @@ function boostify_blocks_block_products_get_product_quantity($attributes)
         . '>'
         . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
         . '</div>';
-    return '<div class="wcb-products__quantity-add-to-cart" style="align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">' . $quantity_input . '</div>';
+    return '<div class="wcb-products__quantity-add-to-cart">' . $quantity_input . '</div>';
 }
 
 if (!function_exists("boostify_blocks_block_products_parse_filter_attributes")) :

@@ -14,7 +14,7 @@ export const WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO: WCB_PRODUCTS_PANEL_ADD_TO_
 	{
 		isShowButton: true,
 		position: "bottom",
-		isShowQuantity: false,
+		isShowQuantity: true,
 		isShowIcon: true,
 	};
 
@@ -31,7 +31,7 @@ const WcbProductsPanelButton: FC<Props> = ({
 	onToggle,
 	opened,
 }) => {
-	const { position, isShowButton } = panelData;
+	const { position, isShowButton, isShowQuantity } = panelData;
 
 	const POSTION_PLANS: MyRadioItem<
 		WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN["position"]
@@ -58,19 +58,30 @@ const WcbProductsPanelButton: FC<Props> = ({
 				/>
 
 				{isShowButton ? (
-					<MyRadioGroup
-						label="Position"
-						onChange={(selected) =>
-							setAttr__({
-								...panelData,
-								position: selected as any,
-							})
-						}
-						value={position}
-						plans={POSTION_PLANS}
-						hasResponsive={false}
-						isWrap
-					/>
+					<>
+						<MyRadioGroup
+							label="Position"
+							onChange={(selected) =>
+								setAttr__({
+									...panelData,
+									position: selected as any,
+								})
+							}
+							value={position}
+							plans={POSTION_PLANS}
+							hasResponsive={false}
+							isWrap
+						/>
+						{position !== "icon" && (
+							<ToggleControl
+								label={__("Show quantity counter", "boostify-blocks")}
+								onChange={(checked) =>
+									setAttr__({ ...panelData, isShowQuantity: checked })
+								}
+								checked={!!isShowQuantity}
+							/>
+						)}
+					</>
 				) : null}
 			</div>
 		</PanelBody>

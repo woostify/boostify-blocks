@@ -10,6 +10,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import {
 	Dropdown,

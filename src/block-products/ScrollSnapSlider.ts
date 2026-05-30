@@ -14,22 +14,22 @@ export class ScrollSnapSlider {
 	/**
 	 * Base element of this slider
 	 */
-	public element: HTMLElement;
+	public element!: HTMLElement;
 
 	/**
 	 * additional behaviour
 	 */
-	public plugins: Map<string, ScrollSnapPlugin>;
+	public plugins!: Map<string, ScrollSnapPlugin>;
 
 	/**
 	 * @inheritDoc
 	 */
-	public removeEventListener: HTMLElement["removeEventListener"];
+	public removeEventListener!: HTMLElement["removeEventListener"];
 
 	/**
 	 * @inheritDoc
 	 */
-	public addEventListener: HTMLElement["addEventListener"];
+	public addEventListener!: HTMLElement["addEventListener"];
 
 	/**
 	 * Rounding method used to calculate the current slide (e.g. Math.floor, Math.round, Math.ceil, or totally custom.)
@@ -37,17 +37,17 @@ export class ScrollSnapSlider {
 	 * @param value - factor indicating th current position (e.g "0" for first slide, "2.5" for third slide and a half)
 	 * @return f(x) - integer factor indicating the currently 'active' slide.
 	 */
-	public roundingMethod: (value: number) => number;
+	public roundingMethod!: (value: number) => number;
 
 	/**
 	 * Timeout delay in milliseconds used to catch the end of scroll events
 	 */
-	public scrollTimeout: number;
+	public scrollTimeout!: number;
 
 	/**
 	 * Calculated size of a single item
 	 */
-	public itemSize: number;
+	public itemSize!: number;
 
 	/**
 	 * Computes a single number representing the slides widths.
@@ -58,7 +58,7 @@ export class ScrollSnapSlider {
 	 * @param entries resized entries
 	 * @return integer size of a slide in pixels
 	 */
-	public sizingMethod: (
+	public sizingMethod!: (
 		slider: ScrollSnapSlider,
 		entries?: ResizeObserverEntry[] | undefined
 	) => number;
@@ -66,21 +66,21 @@ export class ScrollSnapSlider {
 	/**
 	 * Active slide
 	 */
-	public slide: number;
+	public slide!: number;
 
 	/**
 	 * Resize observer used to update item size
 	 */
-	private resizeObserver: ResizeObserver;
+	private resizeObserver!: ResizeObserver;
 	/**
 	 * Timeout ID used to catch the end of scroll events
 	 */
-	private scrollTimeoutId: null | number;
+	private scrollTimeoutId: null | number = null;
 
 	/**
 	 * Active slide's scrollLeft in the containing element
 	 */
-	private slideScrollLeft: number;
+	private slideScrollLeft!: number;
 
 	/**
 	 * Bind methods and possibly attach listeners.

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase -- block attributes intentionally use snake_case names */
-import { Global, CSSObject, css } from "@emotion/react";
-import React, { FC, useMemo } from "react";
+import { Global, CSSObject } from "@emotion/react";
+import React, { FC } from "react";
 import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import getBorderStyles from "../utils/getBorderStyles";
 import getCssProperyHasResponsive from "../utils/getCssProperyHasResponsive";
@@ -244,7 +244,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		});
 		return {
 			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-				marginTop: marginTop_mobile_new,
+				marginTop: marginTop_mobile_new ?? undefined,
 				justifyContent: style_pagination?.justifyContent,
 				[`.page-numbers`]: {
 					color: style_pagination?.mainStyle?.Normal?.color,
@@ -287,7 +287,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		});
 		return {
 			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-				marginTop: marginTop_mobile_new,
+				marginTop: marginTop_mobile_new ?? undefined,
 				justifyContent: style_pagination?.justifyContent,
 				[`.page-numbers`]: {
 					color: style_pagination?.mainStyle?.Normal?.color,
@@ -392,11 +392,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			tablet_v: outofstockBadgeMarginBottom_tablet,
 			desktop_v: outofstockBadgeMarginBottom_desktop,
 		});
-		const {
-			mobile_v: featuredImageMarginBottom_mobile_new,
-			tablet_v: featuredImageMarginBottom_tablet_new,
-			desktop_v: featuredImageMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
+		checkResponsiveValueForOptimizeCSS({
 			mobile_v: featuredImageMarginBottom_mobile,
 			tablet_v: featuredImageMarginBottom_tablet,
 			desktop_v: featuredImageMarginBottom_desktop,
@@ -751,6 +747,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 						// opacity: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? 1 : "unset",
 						transform:  (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "translateY(0px)" : "unset",
 						transition: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "all 0.3s ease-in-out" : "unset",
+						marginBottom: priceMarginBottom_mobile_new ?? undefined,
+						color: style_price?.textColor,
 					},
 					".added_to_cart": {
 						transform: (general_addToCartBtn?.position === "bottom") ? "translateY(92px)" : "unset",
@@ -851,13 +849,23 @@ const GlobalCss: FC<Props> = (attrs) => {
 							backgroundColor: style_outOfStock?.backgroundColor,
 						},
 					},
-					".wcb-products__product-price": {
-						marginBottom: priceMarginBottom_mobile_new ?? undefined,
-						color: style_price?.textColor,
+					// Alignment for the rating stars row.
+					// Moved from PHP inline style to CSS class to prevent inline override.
+					".wcb-products__product-rating-wrap": {
+						justifyContent: style_layout?.textAlignment === "left" ? "flex-start"
+							: style_layout?.textAlignment === "right" ? "flex-end"
+							: "center",
 					},
 					".wcb-products__product-rating": {
 						marginBottom: ratingMarginBottom_mobile_new ?? undefined,
 						color: style_rating?.color,
+					},
+					// Alignment for the quantity counter wrapper.
+					// Moved from PHP inline style to CSS class to prevent inline override.
+					".wcb-products__quantity-add-to-cart": {
+						alignItems: style_layout?.textAlignment === "left" ? "flex-start"
+							: style_layout?.textAlignment === "right" ? "flex-end"
+							: "center",
 					},
 					[`@media (min-width: ${media_tablet})`]:
 						titleMarginBottom_tablet_new ||
@@ -978,12 +986,22 @@ const GlobalCss: FC<Props> = (attrs) => {
 			tablet_v: marginBottom_tablet,
 			desktop_v: marginBottom_desktop,
 		});
-		//
+		// Maps textAlignment setting to CSS align-items value for flex column containers.
+		// Replaces the old inline style approach (align-items set directly in PHP render)
+		// to avoid inline style overriding this CSS class rule.
+		const textAlignToAlignItems = (alignment?: string) => {
+			if (alignment === "left") return "flex-start";
+			if (alignment === "right") return "flex-end";
+			return "center";
+		};
+
 		return {
 			[ADD_TO_CART_BTN_BG]: {
 				display: "flex",
 				flexDirection: "column",
-				alignItems: "center",
+				// Use textAlignment from layout settings instead of hardcoded "center",
+				// so the button respects the user's alignment choice.
+				alignItems: textAlignToAlignItems(style_layout?.textAlignment),
 				justifyContent: "center",
 				":hover span": {
 					color: color_h ? color_h : "white",
