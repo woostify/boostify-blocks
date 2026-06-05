@@ -26,17 +26,18 @@
 		}
 	}
 
-	.slick-track {
-		min-width: 0px;
-		display: flex !important;
-    	align-items: center;
-	}
-
 	.wcb-slider__wrap-items {
         width: 100%;
         max-width: 100%;
         overflow: hidden;
     }
+
+	// Prevent any external CSS transition from interfering with Slick's
+	// instant repositioning (setCSS). Slick's own applyTransition() sets
+	// transition via inline style which overrides this stylesheet rule.
+	.slick-track {
+		transition: none;
+	}
 }
 
 .wcb-slider__item-inner {
@@ -77,8 +78,5 @@
 }
 
 .slick-list {
-    display: flex;
-	justify-content: center;
-    align-items: center; /* Center items vertically */
 	height: unset !important;
 }

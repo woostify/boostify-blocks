@@ -9,6 +9,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
@@ -24,7 +25,9 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyCacheProvider from "../components/MyCacheProvider";
 import { WcbAttrsForSave } from "./Save";
 import Slider, { Settings } from "react-slick";
+// @ts-ignore
 import "slick-carousel/slick/slick.css";
+// @ts-ignore
 import "slick-carousel/slick/slick-theme.css";
 import converUniqueIdToAnphaKey, { converClientIdToUniqueClass } from "../utils/converUniqueIdToAnphaKey";
 // Import child panel components using shared types to avoid circular dependency
@@ -167,6 +170,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 	const [deviceTypeState, setDeviceTypeState] = useState<ResponsiveDevices>("Desktop");
 	const [isChangeDeviceType, setIsChangeDeviceType] = useState<boolean>(false);
+	// isInitialized: false until slider has settled — controls CSS suppression of transition
+	const [isInitialized, setIsInitialized] = useState(false);
+	// Ref tracks the last-rendered block count (initialized before innerBlocks declaration;
+	// actual comparison happens after innerBlocks is in scope, see below)
+	const prevBlocksLengthRef = useRef(-1);
 	
 	// Persist selectedChildId across device type changes and UI reloads using localStorage
 	const getStoredSelectedChildId = (): string | null => {
@@ -201,6 +209,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			innerBlocks: getBlocks(clientId) || [],
 		};
 	}, [clientId]);
+
+	// Detect block count change DURING render (before effects run) so suppressTransition
+	// is applied on the exact render react-slick processes the new children.
+	const blocksLengthChanged = prevBlocksLengthRef.current !== innerBlocks.length;
+	prevBlocksLengthRef.current = innerBlocks.length;
+	// True from first render until slider settles; CSS !important disables .slick-track transition
+	const suppressTransition = !isInitialized || blocksLengthChanged;
 
 	useEffect(() => {
 		if (deviceTypeState !== deviceType) {
@@ -879,62 +894,29 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		});
 	});
 
-	// Force Slick recalc & reset after InnerBlocks render
+	// After each block count change (or on mount), re-enable transitions after slider settles
 	useEffect(() => {
-		if (sliderRef.current && innerBlocks.length > 0) {
-			const total = innerBlocks.length;
-
-			// Trick: go to external range then back to 0
-			sliderRef.current.slickGoTo(total + 1, true);
-
-			setTimeout(() => {
-				if (sliderRef.current) {
-					sliderRef.current.slickGoTo(0, true); // reset about slide 0
-					sliderRef.current.innerSlider.onWindowResized(); // force calc width/transform
-				}
-			}, 500); // delay for DOM keep render
-		}
+		setIsInitialized(false);
+		const timer = setTimeout(() => setIsInitialized(true), 400);
+		return () => clearTimeout(timer);
 	}, [innerBlocks.length]);
 
-	// 3. ✅ Thêm method để force recalc khi cần
-	const forceSliderRecalc = useCallback(() => {
-		if (sliderRef.current && innerBlocks.length > 0) {
-			// Force Slick to recalculate dimensions
-			// sliderRef.current.slick('setPosition');
-			
-			// Reset về slide đầu tiên với animation false
-			setTimeout(() => {
-				if (sliderRef.current) {
-					sliderRef.current.slickGoTo(0, false);
-				}
-			}, 100);
-		}
-	}, []);
-
-	// 4. ✅ Gọi forceSliderRecalc khi cần thiết
-	useEffect(() => {
-		if (sliderRef.current && innerBlocks.length > 0) {
-			// Thay thế logic cũ bằng cách đơn giản hơn
-			forceSliderRecalc();
-		}
-	}, [innerBlocks.length, forceSliderRecalc]);
-
-	// 5. ✅ Thêm resize handler để đảm bảo slider luôn căn giữa
+	// Resize handler - recalc dimensions without slide animation
 	useEffect(() => {
 		const handleResize = () => {
-			forceSliderRecalc();
+			if (sliderRef.current) {
+				sliderRef.current.innerSlider?.onWindowResized?.();
+			}
 		};
-		
 		window.addEventListener('resize', handleResize);
 		return () => window.removeEventListener('resize', handleResize);
-	}, [forceSliderRecalc]);
+	}, []);
 
 	const renderSliderContent = () => {
 		const {
 			animationDuration,
 			autoplaySpeed,
 			hoverpause,
-			isAutoPlay,
 			rewind,
 			showArrowsDots,
 			adaptiveHeight,
@@ -949,7 +931,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		const settings: Settings = {
 			infinite: rewind,
 			speed: animationDuration || 500,
-			autoplay: isAutoPlay,
+			autoplay: false, // disable autoplay in editor
 			autoplaySpeed,
 			slidesToShow: currentColumns,
 			slidesToScroll: 1,
@@ -962,7 +944,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			pauseOnFocus: true,
 			accessibility: false,
 			initialSlide: 0,
-			// Disable touch/swipe in editor mode to prevent accidental slide changes
 			swipe: true,
 			touchMove: true,
 			draggable: true,
@@ -1095,7 +1076,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-slider__wrap ${uniqueId} ${parentCssClass}`}
+				className={`${wrapBlockProps?.className} wcb-slider__wrap ${uniqueId} ${parentCssClass}${suppressTransition ? ' wcb-slider--no-transition' : ''}`}
 				data-uniqueid={uniqueId}
 				onClick={handleParentClick}
 			>

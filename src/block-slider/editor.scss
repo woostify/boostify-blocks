@@ -9,6 +9,17 @@
 	position: relative;
 }
 
+/* Suppress react-slick track transition during init and block-count changes.
+   !important is required because react-slick sets transition via inline style. */
+.wcb-slider--no-transition {
+	.slick-track,
+	.slick-list {
+		transition: none !important;
+		-webkit-transition: none !important;
+		animation: none !important;
+	}
+}
+
 /* Override any Gutenberg editor styles that might interfere */
 .wp-block[data-type="wcb/slider"] {
 	.wcb-slider__wrap {
