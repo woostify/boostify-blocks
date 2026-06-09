@@ -232,7 +232,7 @@ const GlobalCss = attrs => {
     });
     return {
       [`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-        marginTop: marginTop_mobile_new,
+        marginTop: marginTop_mobile_new !== null && marginTop_mobile_new !== void 0 ? marginTop_mobile_new : undefined,
         justifyContent: style_pagination?.justifyContent,
         [`.page-numbers`]: {
           color: style_pagination?.mainStyle?.Normal?.color,
@@ -270,7 +270,7 @@ const GlobalCss = attrs => {
     });
     return {
       [`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-        marginTop: marginTop_mobile_new,
+        marginTop: marginTop_mobile_new !== null && marginTop_mobile_new !== void 0 ? marginTop_mobile_new : undefined,
         justifyContent: style_pagination?.justifyContent,
         [`.page-numbers`]: {
           color: style_pagination?.mainStyle?.Normal?.color,
@@ -372,11 +372,7 @@ const GlobalCss = attrs => {
       tablet_v: outofstockBadgeMarginBottom_tablet,
       desktop_v: outofstockBadgeMarginBottom_desktop
     });
-    const {
-      mobile_v: featuredImageMarginBottom_mobile_new,
-      tablet_v: featuredImageMarginBottom_tablet_new,
-      desktop_v: featuredImageMarginBottom_desktop_new
-    } = (0,_utils_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_8__["default"])({
+    (0,_utils_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_8__["default"])({
       mobile_v: featuredImageMarginBottom_mobile,
       tablet_v: featuredImageMarginBottom_tablet,
       desktop_v: featuredImageMarginBottom_desktop
@@ -695,10 +691,15 @@ const GlobalCss = attrs => {
           transform: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "translateY(0px)" : "unset",
           transition: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "all 0.3s ease-in-out" : "unset"
         },
+        ".wcb-products__add-to-cart-icon": {
+          display: general_addToCartBtn?.isShowIcon === false ? "none !important" : undefined
+        },
         ".wcb-products__product-price": {
           // opacity: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? 1 : "unset",
           transform: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "translateY(0px)" : "unset",
-          transition: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "all 0.3s ease-in-out" : "unset"
+          transition: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "all 0.3s ease-in-out" : "unset",
+          marginBottom: priceMarginBottom_mobile_new !== null && priceMarginBottom_mobile_new !== void 0 ? priceMarginBottom_mobile_new : undefined,
+          color: style_price?.textColor
         },
         ".added_to_cart": {
           transform: general_addToCartBtn?.position === "bottom" ? "translateY(92px)" : "unset",
@@ -795,13 +796,19 @@ const GlobalCss = attrs => {
             backgroundColor: style_outOfStock?.backgroundColor
           }
         },
-        ".wcb-products__product-price": {
-          marginBottom: priceMarginBottom_mobile_new !== null && priceMarginBottom_mobile_new !== void 0 ? priceMarginBottom_mobile_new : undefined,
-          color: style_price?.textColor
+        // Alignment for the rating stars row.
+        // Moved from PHP inline style to CSS class to prevent inline override.
+        ".wcb-products__product-rating-wrap": {
+          justifyContent: style_layout?.textAlignment === "left" ? "flex-start" : style_layout?.textAlignment === "right" ? "flex-end" : "center"
         },
         ".wcb-products__product-rating": {
           marginBottom: ratingMarginBottom_mobile_new !== null && ratingMarginBottom_mobile_new !== void 0 ? ratingMarginBottom_mobile_new : undefined,
           color: style_rating?.color
+        },
+        // Alignment for the quantity counter wrapper.
+        // Moved from PHP inline style to CSS class to prevent inline override.
+        ".wcb-products__quantity-add-to-cart": {
+          alignItems: style_layout?.textAlignment === "left" ? "flex-start" : style_layout?.textAlignment === "right" ? "flex-end" : "center"
         },
         [`@media (min-width: ${media_tablet})`]: titleMarginBottom_tablet_new || saleBadgeMarginBottom_tablet_new || priceMarginBottom_tablet_new || ratingMarginBottom_tablet_new || outofstockBadgeMarginBottom_tablet_new ? {
           ".wcb-products__product-title": titleMarginBottom_tablet_new ? {
@@ -881,12 +888,21 @@ const GlobalCss = attrs => {
       tablet_v: marginBottom_tablet,
       desktop_v: marginBottom_desktop
     });
-    //
+    // Maps textAlignment setting to CSS align-items value for flex column containers.
+    // Replaces the old inline style approach (align-items set directly in PHP render)
+    // to avoid inline style overriding this CSS class rule.
+    const textAlignToAlignItems = alignment => {
+      if (alignment === "left") return "flex-start";
+      if (alignment === "right") return "flex-end";
+      return "center";
+    };
     return {
       [ADD_TO_CART_BTN_BG]: {
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        // Use textAlignment from layout settings instead of hardcoded "center",
+        // so the button respects the user's alignment choice.
+        alignItems: textAlignToAlignItems(style_layout?.textAlignment),
         justifyContent: "center",
         ":hover span": {
           color: color_h ? color_h : "white"

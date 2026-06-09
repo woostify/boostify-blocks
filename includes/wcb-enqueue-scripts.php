@@ -134,8 +134,10 @@ add_action('admin_enqueue_scripts', 'boostify_blocks_enqueue_lineicons');
 function boostify_blocks_enqueue_lineicons_for_gutenbeg_editor()
 {
     add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/lineicons-free-basic/icon-font/lineicons.css');
-    // for iframe 
+    // for iframe
     add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/lineicons2.css');
+    // Inject frontend styles into the iframed editor canvas
+    add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/frontend.css');
 }
 add_action('admin_init', 'boostify_blocks_enqueue_lineicons_for_gutenbeg_editor');
 

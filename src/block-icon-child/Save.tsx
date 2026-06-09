@@ -56,13 +56,15 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const renderIcon = () => {
 		return (
 			<>
-				{general_icon.enableIcon && (
-					<div className="wcb-icon-list__icon-wrap">
-						<div className="wcb-icon-list__icon">
-							<MyIconFull icon={general_icon.icon} />
-						</div>
+				<div className="wcb-icon-list__icon-wrap"
+					style={!general_icon.enableIcon ? { display: "none" } : undefined}
+				>
+					<div
+						className="wcb-icon-list__icon"
+					>
+						<MyIconFull icon={general_icon.icon} />
 					</div>
-				)}
+				</div>
 				{general_separator.position === "afterIcon" && renderSeparator()}
 			</>
 		);

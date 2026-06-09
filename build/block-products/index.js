@@ -5663,6 +5663,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 
 
@@ -5692,6 +5693,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const Edit = props => {
+  var _ref, _style_layout$numberO, _ref2, _style_layout$numberO2, _style_layout$numberO3, _style_layout$rowGap$, _style_layout$colunmG;
   const {
     attributes,
     setAttributes,
@@ -6213,7 +6215,15 @@ const Edit = props => {
     uniqueKey: clientId
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...wrapBlockProps,
-    className: `${wrapBlockProps.className} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX.toString()}`
+    className: `${wrapBlockProps.className} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX.toString()}`,
+    style: {
+      ...wrapBlockProps.style,
+      '--wcb-editor-col-mobile': (_ref = (_style_layout$numberO = style_layout?.numberOfColumn?.Mobile) !== null && _style_layout$numberO !== void 0 ? _style_layout$numberO : style_layout?.numberOfColumn?.Desktop) !== null && _ref !== void 0 ? _ref : 2,
+      '--wcb-editor-col-tablet': (_ref2 = (_style_layout$numberO2 = style_layout?.numberOfColumn?.Tablet) !== null && _style_layout$numberO2 !== void 0 ? _style_layout$numberO2 : style_layout?.numberOfColumn?.Desktop) !== null && _ref2 !== void 0 ? _ref2 : 2,
+      '--wcb-editor-col-desktop': (_style_layout$numberO3 = style_layout?.numberOfColumn?.Desktop) !== null && _style_layout$numberO3 !== void 0 ? _style_layout$numberO3 : 2,
+      '--wcb-editor-row-gap': (_style_layout$rowGap$ = style_layout?.rowGap?.Desktop) !== null && _style_layout$rowGap$ !== void 0 ? _style_layout$rowGap$ : '1rem',
+      '--wcb-editor-col-gap': (_style_layout$colunmG = style_layout?.colunmGap?.Desktop) !== null && _style_layout$colunmG !== void 0 ? _style_layout$colunmG : '1rem'
+    }
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_HOCInspectorControls__WEBPACK_IMPORTED_MODULE_4__["default"], {
     renderTabPanels: renderTabBodyPanels,
     uniqueId: uniqueId
@@ -6475,7 +6485,7 @@ const GlobalCss = attrs => {
     });
     return {
       [`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-        marginTop: marginTop_mobile_new,
+        marginTop: marginTop_mobile_new !== null && marginTop_mobile_new !== void 0 ? marginTop_mobile_new : undefined,
         justifyContent: style_pagination?.justifyContent,
         [`.page-numbers`]: {
           color: style_pagination?.mainStyle?.Normal?.color,
@@ -6513,7 +6523,7 @@ const GlobalCss = attrs => {
     });
     return {
       [`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-        marginTop: marginTop_mobile_new,
+        marginTop: marginTop_mobile_new !== null && marginTop_mobile_new !== void 0 ? marginTop_mobile_new : undefined,
         justifyContent: style_pagination?.justifyContent,
         [`.page-numbers`]: {
           color: style_pagination?.mainStyle?.Normal?.color,
@@ -6615,11 +6625,7 @@ const GlobalCss = attrs => {
       tablet_v: outofstockBadgeMarginBottom_tablet,
       desktop_v: outofstockBadgeMarginBottom_desktop
     });
-    const {
-      mobile_v: featuredImageMarginBottom_mobile_new,
-      tablet_v: featuredImageMarginBottom_tablet_new,
-      desktop_v: featuredImageMarginBottom_desktop_new
-    } = (0,_utils_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_8__["default"])({
+    (0,_utils_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_8__["default"])({
       mobile_v: featuredImageMarginBottom_mobile,
       tablet_v: featuredImageMarginBottom_tablet,
       desktop_v: featuredImageMarginBottom_desktop
@@ -6938,10 +6944,15 @@ const GlobalCss = attrs => {
           transform: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "translateY(0px)" : "unset",
           transition: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "all 0.3s ease-in-out" : "unset"
         },
+        ".wcb-products__add-to-cart-icon": {
+          display: general_addToCartBtn?.isShowIcon === false ? "none !important" : undefined
+        },
         ".wcb-products__product-price": {
           // opacity: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? 1 : "unset",
           transform: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "translateY(0px)" : "unset",
-          transition: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "all 0.3s ease-in-out" : "unset"
+          transition: general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon' ? "all 0.3s ease-in-out" : "unset",
+          marginBottom: priceMarginBottom_mobile_new !== null && priceMarginBottom_mobile_new !== void 0 ? priceMarginBottom_mobile_new : undefined,
+          color: style_price?.textColor
         },
         ".added_to_cart": {
           transform: general_addToCartBtn?.position === "bottom" ? "translateY(92px)" : "unset",
@@ -7038,13 +7049,19 @@ const GlobalCss = attrs => {
             backgroundColor: style_outOfStock?.backgroundColor
           }
         },
-        ".wcb-products__product-price": {
-          marginBottom: priceMarginBottom_mobile_new !== null && priceMarginBottom_mobile_new !== void 0 ? priceMarginBottom_mobile_new : undefined,
-          color: style_price?.textColor
+        // Alignment for the rating stars row.
+        // Moved from PHP inline style to CSS class to prevent inline override.
+        ".wcb-products__product-rating-wrap": {
+          justifyContent: style_layout?.textAlignment === "left" ? "flex-start" : style_layout?.textAlignment === "right" ? "flex-end" : "center"
         },
         ".wcb-products__product-rating": {
           marginBottom: ratingMarginBottom_mobile_new !== null && ratingMarginBottom_mobile_new !== void 0 ? ratingMarginBottom_mobile_new : undefined,
           color: style_rating?.color
+        },
+        // Alignment for the quantity counter wrapper.
+        // Moved from PHP inline style to CSS class to prevent inline override.
+        ".wcb-products__quantity-add-to-cart": {
+          alignItems: style_layout?.textAlignment === "left" ? "flex-start" : style_layout?.textAlignment === "right" ? "flex-end" : "center"
         },
         [`@media (min-width: ${media_tablet})`]: titleMarginBottom_tablet_new || saleBadgeMarginBottom_tablet_new || priceMarginBottom_tablet_new || ratingMarginBottom_tablet_new || outofstockBadgeMarginBottom_tablet_new ? {
           ".wcb-products__product-title": titleMarginBottom_tablet_new ? {
@@ -7124,12 +7141,21 @@ const GlobalCss = attrs => {
       tablet_v: marginBottom_tablet,
       desktop_v: marginBottom_desktop
     });
-    //
+    // Maps textAlignment setting to CSS align-items value for flex column containers.
+    // Replaces the old inline style approach (align-items set directly in PHP render)
+    // to avoid inline style overriding this CSS class rule.
+    const textAlignToAlignItems = alignment => {
+      if (alignment === "left") return "flex-start";
+      if (alignment === "right") return "flex-end";
+      return "center";
+    };
     return {
       [ADD_TO_CART_BTN_BG]: {
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        // Use textAlignment from layout settings instead of hardcoded "center",
+        // so the button respects the user's alignment choice.
+        alignItems: textAlignToAlignItems(style_layout?.textAlignment),
         justifyContent: "center",
         ":hover span": {
           color: color_h ? color_h : "white"
@@ -7312,6 +7338,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 function save({
   attributes
@@ -7454,6 +7481,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 function save({
   attributes
@@ -7536,6 +7564,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 function save({
   attributes
@@ -7614,6 +7643,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 function save({
   attributes
@@ -8004,7 +8034,8 @@ __webpack_require__.r(__webpack_exports__);
 const WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO = {
   isShowButton: true,
   position: "bottom",
-  isShowQuantity: false
+  isShowQuantity: true,
+  isShowIcon: true
 };
 const WcbProductsPanelButton = ({
   panelData = WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
@@ -8015,7 +8046,8 @@ const WcbProductsPanelButton = ({
 }) => {
   const {
     position,
-    isShowButton
+    isShowButton,
+    isShowQuantity
   } = panelData;
   const POSTION_PLANS = [{
     name: "inside image",
@@ -8044,7 +8076,7 @@ const WcbProductsPanelButton = ({
       isShowButton: checked
     }),
     checked: isShowButton
-  }), isShowButton ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyRadioGroup__WEBPACK_IMPORTED_MODULE_3__["default"], {
+  }), isShowButton ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyRadioGroup__WEBPACK_IMPORTED_MODULE_3__["default"], {
     label: "Position",
     onChange: selected => setAttr__({
       ...panelData,
@@ -8054,7 +8086,14 @@ const WcbProductsPanelButton = ({
     plans: POSTION_PLANS,
     hasResponsive: false,
     isWrap: true
-  }) : null));
+  }), position !== "icon" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Show quantity counter", "boostify-blocks"),
+    onChange: checked => setAttr__({
+      ...panelData,
+      isShowQuantity: checked
+    }),
+    checked: !!isShowQuantity
+  })) : null));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WcbProductsPanelButton);
 
@@ -10110,7 +10149,7 @@ function buildStylePriceDefault(_attr) {
  * Customizer attributes use the theme value; all others use demo defaults.
  */
 function buildStyleAddToCartBtnDefault(_attr) {
-  var _addToCartBtn$text_co, _addToCartBtn$bg_colo, _addToCartBtn$hover_t, _addToCartBtn$hover_b, _ref7, _ref8, _ref9;
+  var _addToCartBtn$text_co, _addToCartBtn$bg_colo, _addToCartBtn$hover_t, _addToCartBtn$hover_b;
   const theme = (0,_utils_themeDefaults__WEBPACK_IMPORTED_MODULE_2__.getThemeDefaults)();
   const addToCartBtn = theme.shop_archive_add_to_cart_btn;
   return {
@@ -10128,11 +10167,22 @@ function buildStyleAddToCartBtnDefault(_attr) {
     },
     border: {
       ..._WcbProductsPanel_StyleAddToCartBtn__WEBPACK_IMPORTED_MODULE_10__.WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border,
-      radius: {
-        Desktop: (_ref7 = addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) !== null && _ref7 !== void 0 ? _ref7 : _WcbProductsPanel_StyleAddToCartBtn__WEBPACK_IMPORTED_MODULE_10__.WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Desktop,
-        Tablet: (_ref8 = addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) !== null && _ref8 !== void 0 ? _ref8 : _WcbProductsPanel_StyleAddToCartBtn__WEBPACK_IMPORTED_MODULE_10__.WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Tablet,
-        Mobile: (_ref9 = addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) !== null && _ref9 !== void 0 ? _ref9 : _WcbProductsPanel_StyleAddToCartBtn__WEBPACK_IMPORTED_MODULE_10__.WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Mobile
-      }
+      radius: (() => {
+        // Store as a uniform 4-corner object so BorderRadiusControl displays all corners correctly.
+        // A plain string like "10px" can be misinterpreted by the control as only the topLeft value.
+        const radiusPx = addToCartBtn?.border_radius != null && addToCartBtn.border_radius > 0 ? `${addToCartBtn.border_radius}px` : undefined;
+        const uniformRadius = radiusPx ? {
+          topLeft: radiusPx,
+          topRight: radiusPx,
+          bottomRight: radiusPx,
+          bottomLeft: radiusPx
+        } : _WcbProductsPanel_StyleAddToCartBtn__WEBPACK_IMPORTED_MODULE_10__.WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Desktop;
+        return {
+          Desktop: uniformRadius,
+          Tablet: uniformRadius,
+          Mobile: uniformRadius
+        };
+      })()
     }
   };
 }
@@ -10149,7 +10199,8 @@ function buildGeneralAddToCartBtnDefault(_attr) {
     ..._WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_11__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
     isShowButton: addToCartBtn?.position === 'none' ? false : _WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_11__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowButton,
     position: addToCartBtn?.position === 'bottom-visible' ? 'bottom visible' : addToCartBtn?.position === 'image' ? 'inside image' : addToCartBtn?.position === 'icon' ? 'icon' : addToCartBtn?.position === 'bottom' ? 'bottom' : (_addToCartBtn$positio = addToCartBtn?.position) !== null && _addToCartBtn$positio !== void 0 ? _addToCartBtn$positio : _WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_11__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.position,
-    isShowQuantity: addToCartBtn?.position === 'none' ? false : _WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_11__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowQuantity
+    isShowQuantity: addToCartBtn?.position === 'none' ? false : _WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_11__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowQuantity,
+    isShowIcon: addToCartBtn?.show_icon !== undefined ? addToCartBtn.show_icon : _WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_11__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowIcon
   };
 }
 
@@ -12386,9 +12437,11 @@ const MyCacheProvider = ({
   uniqueKey = "uniqueid"
 }) => {
   const deviceType = (0,_hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_3__["default"])() || "Desktop";
-  if (deviceType === "Desktop") {
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, children);
-  }
+
+  // if (deviceType === "Desktop") {
+  // 	return <>{children}</>;
+  // }
+
   const KEY = uniqueKey.replace(/[0-9]/g, "").replace(/ /g, "").toLocaleLowerCase();
   const {
     myCache,
@@ -12403,11 +12456,7 @@ const MyCacheProvider = ({
   }
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_4__.C, {
     value: cache
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("head", {
-    hidden: true,
-    className: "hidden",
-    ref: ref
-  }), children);
+  }, children);
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,react__WEBPACK_IMPORTED_MODULE_0__.memo)(MyCacheProvider));
 
@@ -15384,7 +15433,6 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)(
       default:
         return state;
     }
-    return state;
   },
   actions,
   selectors: {
@@ -15395,7 +15443,15 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)(
   controls: {},
   resolvers: {}
 });
-(0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.register)(store);
+
+// Guard against duplicate registration: each block is a separate webpack bundle,
+// but all bundles share the same browser window. Only register once.
+
+const _win = window;
+if (!_win.__boostifyPanelsStoreRegistered) {
+  _win.__boostifyPanelsStoreRegistered = true;
+  (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.register)(store);
+}
 
 
 /***/ }),
@@ -15592,7 +15648,6 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
     margin-top: ${spacing} !important;
   }
 
-  .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block:not(p) > .block-editor-block-list__block,
   .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block + .wp-block:not(p) {
     margin-block-start: ${spacing} !important;
     margin-top: ${spacing} !important;

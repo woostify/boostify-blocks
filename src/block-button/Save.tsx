@@ -3,6 +3,7 @@ import { __ } from "@wordpress/i18n";
 import { useBlockProps } from "@wordpress/block-editor";
 import { WcbAttrs } from "./attributes";
 import SaveCommon from "../components/SaveCommon";
+// @ts-ignore
 import "./style.scss";
 import Button from "./Button";
 

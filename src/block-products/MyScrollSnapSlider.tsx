@@ -5,8 +5,8 @@ export class CustomPlugin extends ScrollSnapSlider {
 	 * Pass any config here
 	 * @param {*} config
 	 */
-	constructor(element: ScrollSnapSliderOptions, enabled = true, plugins = []) {
-		super(element, enabled, plugins);
+	constructor(element: ScrollSnapSliderOptions) {
+		super(element);
 	}
 
 	/**

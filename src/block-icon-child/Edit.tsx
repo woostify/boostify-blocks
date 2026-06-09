@@ -286,9 +286,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const renderIcon = () => {
 		return (
-			<div className="wcb-icon-list__icon-wrap">
-				<div className="wcb-icon-list__icon">
-					<MyIconFull icon={attributes.general_icon.icon} />
+			<div className="wcb-icon-list__icon-wrap"
+				style={!general_icon.enableIcon ? { display: "none" } : undefined}
+			>
+				<div
+					className="wcb-icon-list__icon"
+				>
+					<MyIconFull icon={general_icon.icon} />
 				</div>
 			</div>
 		);

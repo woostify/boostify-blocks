@@ -7,6 +7,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
@@ -35,6 +36,8 @@ import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 import '../../public/js/countdown/boostify-blocks-countdown.js';
 
+declare const WCBCountdown: any;
+
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	if (props.attributes.cover) {
 		return (
@@ -55,6 +58,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	}
 	const { attributes, setAttributes, clientId } = props;
 	const {
+		cover,
 		advance_responsiveCondition,
 		advance_zIndex,
 		daylabel,
@@ -92,18 +96,30 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			uniqueId: converUniqueIdToAnphaKey(UNIQUE_ID),
 		});
 
-		var cd_date = general_date.date.split("T");
-		const data = {
+		const baseData = {
 			'block_id': UNIQUE_ID,
-			'endDateTime': cd_date[0],
 			'showDays': general_date.show_day,
 			'showHours': general_date.show_hour,
 			'showMinutes': general_date.show_minute,
-			'isFrontend': true,
-			'timerEndAction': cd_date[1],
-			'redirectURL': ''
+			'isFrontend': false,
+			'timerEndAction': '',
+			'redirectURL': '',
+			'endDateTime': '',
+		};
+
+		if ( general_date.timerType === 'evergreen' ) {
+			baseData.endDateTime = WCBCountdown.getEvergreenEndDate(
+				general_date.evergreenDays ?? 0,
+				general_date.evergreenHrs ?? 0,
+				general_date.evergreenMinutes ?? 0
+			);
+		} else {
+			const cd_date = (general_date.date as unknown as string).split("T");
+			baseData.endDateTime = cd_date[0];
+			baseData.timerEndAction = cd_date[1] || '';
 		}
-		WCBCountdown.changeEndTime(`#${UNIQUE_ID} .wcb-countdown__content`, data);
+
+		WCBCountdown.changeEndTime(`#${UNIQUE_ID} .wcb-countdown__content`, baseData);
 
 	}, [UNIQUE_ID, attributes]);
 	//
@@ -293,7 +309,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const WcbAttrsForSave = useCallback((): WcbAttrsForSave => {
 		return {
+			cover,
 			uniqueId,
+			daylabel,
+			hrslabel,
+			minlabel,
+			seclabel,
 			advance_responsiveCondition,
 			advance_zIndex,
 			general_layout,
@@ -309,7 +330,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			advance_motionEffect,
 		};
 	}, [
+		cover,
 		uniqueId,
+		daylabel,
+		hrslabel,
+		minlabel,
+		seclabel,
 		advance_responsiveCondition,
 		advance_zIndex,
 		general_layout,

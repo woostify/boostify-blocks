@@ -1,6 +1,6 @@
 import { PanelBody, ToggleControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import React, { FC } from "react";
+import { FC } from "react";
 import MySelect from "../components/controls/MySelect";
 import SelecIcon, {
 	DEFAULT_MY_ICON,
@@ -56,29 +56,41 @@ const WcbIconListPanelIcon: FC<Props> = ({
 			title={__("Icon", "boostify-blocks")}
 		>
 			<div className={"space-y-5"}>
-				<SelecIcon
-					iconData={icon}
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							icon: value,
-						});
+				<ToggleControl
+					label={__("Show Icon", "boostify-blocks")}
+					checked={enableIcon}
+					onChange={(checked) => {
+						setAttr__({ ...panelData, enableIcon: checked });
 					}}
 				/>
 
-				<MySelect
-					label={__("Position", "boostify-blocks")}
-					options={PLANS_DEMO}
-					value={iconPosition}
-					onChange={(value) => {
-						let newData: WCB_ICON_LIST_PANEL_ICON = {
-							...panelData,
-							iconPosition:
-								value as WCB_ICON_LIST_PANEL_ICON["iconPosition"],
-						};
-						setAttr__(newData);
-					}}
-				/>	
+				{enableIcon && (
+					<>
+						<SelecIcon
+							iconData={icon}
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									icon: value,
+								});
+							}}
+						/>
+
+						<MySelect
+							label={__("Position", "boostify-blocks")}
+							options={PLANS_DEMO}
+							value={iconPosition}
+							onChange={(value) => {
+								let newData: WCB_ICON_LIST_PANEL_ICON = {
+									...panelData,
+									iconPosition:
+										value as WCB_ICON_LIST_PANEL_ICON["iconPosition"],
+								};
+								setAttr__(newData);
+							}}
+						/>
+					</>
+				)}
 			</div>
 		</PanelBody>
 	);

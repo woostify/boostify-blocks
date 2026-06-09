@@ -25,6 +25,10 @@ WCBCountdown = {
 		}, 1000 );
 	},
 
+	deleteCookie( name ) {
+		document.cookie = this.cookie_slug + '-' + name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+	},
+
 	createCookie( name, value, expire_days, unit ) {
 		let expires = '';
 		if ( expire_days ) {
@@ -53,6 +57,11 @@ WCBCountdown = {
 
 	init( mainSelector, data = {} ) {
 		this.elements[ mainSelector ] = this.getElement( mainSelector );
+
+		// Clear any previously running interval to prevent duplicates on re-init.
+		if ( this.countdownInterval[ mainSelector ] ) {
+			clearInterval( this.countdownInterval[ mainSelector ] );
+		}
 
 		// If global flag variable does not exists, create it.
 		// This is used like a signal for usage in Pro code.
@@ -224,6 +233,12 @@ WCBCountdown = {
 		// If it's overtime, stop updating the markup and clear the interval.
 		if ( isOvertime ) {
 			clearInterval( this.countdownInterval[ mainSelector ] );
+
+			// For evergreen timers, delete the cookie so the next visit starts a fresh countdown.
+			if ( 'evergreen' === data?.timerType ) {
+				const CampaignID = '' !== data?.campaignID && null !== data?.campaignID ? data.campaignID : data.block_id;
+				this.deleteCookie( CampaignID );
+			}
 
 			// Set flag variable to true, for usage in Countdown Pro code (like a signal).
 			if( ( 'redirect' === data?.timerEndAction || 'hide' === data?.timerEndAction ) && data?.isFrontend ) {

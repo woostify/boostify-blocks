@@ -4300,18 +4300,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   initCountDown: () => (/* binding */ initCountDown)
 /* harmony export */ });
 function initCountDown(elem, props) {
-  var cd_date = props.general_date.date.split("T");
-  const data = {
+  const baseData = {
     'block_id': props.uniqueId,
-    'endDateTime': cd_date[0],
     'showDays': props.general_date.show_day,
     'showHours': props.general_date.show_hour,
     'showMinutes': props.general_date.show_minute,
     'isFrontend': true,
-    'timerEndAction': cd_date[1],
-    'redirectURL': ''
+    'redirectURL': '',
+    'endDateTime': '',
+    'timerEndAction': ''
   };
-  WCBCountdown.changeEndTime(`.${props.uniqueId} .wcb-countdown__content`, data);
+  if (props.general_date.timerType === 'evergreen') {
+    var _props$general_date$e, _props$general_date$e2, _props$general_date$e3, _props$general_date$r, _props$general_date$c;
+    baseData.timerType = 'evergreen';
+    baseData.evergreenDays = (_props$general_date$e = props.general_date.evergreenDays) !== null && _props$general_date$e !== void 0 ? _props$general_date$e : 0;
+    baseData.evergreenHrs = (_props$general_date$e2 = props.general_date.evergreenHrs) !== null && _props$general_date$e2 !== void 0 ? _props$general_date$e2 : 0;
+    baseData.evergreenMinutes = (_props$general_date$e3 = props.general_date.evergreenMinutes) !== null && _props$general_date$e3 !== void 0 ? _props$general_date$e3 : 0;
+    baseData.resetDays = (_props$general_date$r = props.general_date.resetDays) !== null && _props$general_date$r !== void 0 ? _props$general_date$r : 30;
+    baseData.campaignID = (_props$general_date$c = props.general_date.campaignID) !== null && _props$general_date$c !== void 0 ? _props$general_date$c : '';
+    WCBCountdown.init(`.${props.uniqueId} .wcb-countdown__content`, baseData);
+  } else {
+    const cd_date = props.general_date.date.split("T");
+    baseData.endDateTime = cd_date[0];
+    baseData.timerEndAction = cd_date[1] || '';
+    WCBCountdown.changeEndTime(`.${props.uniqueId} .wcb-countdown__content`, baseData);
+  }
 }
 
 /***/ }),
@@ -5121,8 +5134,8 @@ class CustomPlugin extends _ScrollSnapSlider__WEBPACK_IMPORTED_MODULE_0__.Scroll
    * Pass any config here
    * @param {*} config
    */
-  constructor(element, enabled = true, plugins = []) {
-    super(element, enabled, plugins);
+  constructor(element) {
+    super(element);
   }
 
   /**
@@ -5233,6 +5246,7 @@ class ScrollSnapSlider {
   /**
    * Timeout ID used to catch the end of scroll events
    */
+  scrollTimeoutId = null;
 
   /**
    * Active slide's scrollLeft in the containing element
@@ -5709,7 +5723,6 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
     margin-top: ${spacing} !important;
   }
 
-  .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block:not(p) > .block-editor-block-list__block,
   .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block + .wp-block:not(p) {
     margin-block-start: ${spacing} !important;
     margin-top: ${spacing} !important;

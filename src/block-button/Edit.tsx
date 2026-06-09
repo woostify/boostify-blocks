@@ -12,6 +12,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
@@ -110,7 +111,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const url = general_content.link;
 	const opensInNewTab = general_content.openInNewWindow;
 
-	function startEditing(event) {
+	function startEditing(event: any) {
 		event.preventDefault();
 		setIsEditingURL(true);
 	}
@@ -141,7 +142,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			case "General":
 				return (
 					<>
-						{isInheritFromTheme !== true && (
+						{ !finalIsInheritFromTheme && (
 						<WcbButtonPanelPreset
 							onToggle={() => handleTogglePanel("General", "Preset", true)}
 							initialOpen={
@@ -256,7 +257,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							panelData={style_icon}
 						/>
 
-						{!finalIsInheritFromTheme && (
+						{ !finalIsInheritFromTheme && (
 						<WcbButtonPanel_StyleBackground
 							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBackground"}
@@ -272,7 +273,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						/>
 						)}
 
-						{!finalIsInheritFromTheme && (
+						{ !finalIsInheritFromTheme && (
 						<WcbButtonPanel_StyleBorder
 							onToggle={() => handleTogglePanel("Styles", "_StyleBorder")}
 							initialOpen={tabStylesIsPanelOpen === "_StyleBorder"}

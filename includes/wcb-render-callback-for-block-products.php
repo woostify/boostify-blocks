@@ -27,7 +27,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     // $block_overrides=false → Customizer wins (theme_val ?? block_val)
     // $block_overrides=true  → Block wins     (block_val ?? theme_val)
     $pick = function ($theme_val, $block_val) use ($block_overrides) {
-        return $block_overrides ? ($theme_val ?? $block_val) : ($block_val ?? $theme_val);
+        return $block_overrides ? ($block_val ?? $theme_val) : ($theme_val ?? $block_val);
     };
 
     $pick_bool = function ($theme_val, $block_val) use ($block_overrides, $to_bool) {
@@ -203,6 +203,14 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     // Add to cart styles
     $atc = $theme['shop_archive_add_to_cart_btn'] ?? [];
     $existing_colors = $attributes['style_addToCardBtn']['colorAndBackgroundColor'] ?? [];
+
+    // When the Customizer has a non-zero border_radius, always apply it as a uniform string so
+    // getBorderRadiusStyles converts it to equal values for all 4 corners. This prevents a stored
+    // per-corner object (e.g. {topLeft:"10px",topRight:"0px",...}) from being used instead of the
+    // Customizer's intended uniform radius.
+    $atc_radius_val = (int)($atc['border_radius'] ?? 0);
+    $atc_radius_px  = $atc_radius_val > 0 ? $atc_radius_val . 'px' : null;
+
     $attributes['style_addToCardBtn'] = array_merge(
         $attributes['style_addToCardBtn'] ?? [],
         [
@@ -223,18 +231,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 $attributes['style_addToCardBtn']['border'] ?? [],
                 [
                     'radius' => [
-                        'Desktop' => $pick(
-                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
-                            $attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null
-                        ),
-                        'Tablet' => $pick(
-                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
-                            $attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null
-                        ),
-                        'Mobile' => $pick(
-                            isset($atc['border_radius']) ? $atc['border_radius'] . 'px' : null,
-                            $attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null
-                        ),
+                        'Desktop' => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null),
+                        'Tablet'  => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null),
+                        'Mobile'  => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null),
                     ],
                 ]
             ),
@@ -258,6 +257,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 ? $attributes['general_addToCartBtn']['position']
                 : $mapped_atc_position,
             'isShowQuantity' => $pick_bool($content['quantity_flag'] ?? null, $attributes['general_addToCartBtn']['isShowQuantity'] ?? null),
+            'isShowIcon' => isset($atc['show_icon'])
+                ? (bool)$atc['show_icon']
+                : ($attributes['general_addToCartBtn']['isShowIcon'] ?? true),
         ]
     );
 
@@ -474,7 +476,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     
     // Quantity input
     if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "") && $attributes['general_addToCartBtn']['position'] !== "none") {
-        $data->quantity_input = boostify_blocks_block_products_get_product_quantity($attributes);
+        $data->quantity_input = boostify_blocks_block_products_get_product_quantity();
     }
 
     $add_to_cart_position = $attributes['general_addToCartBtn']['position'] ?? '';
@@ -898,9 +900,9 @@ function boostify_blocks_block_products_get_rating_html($product, $attributes)
 
     if ($rating_count > 0) {
         $label = sprintf(__('Rated %s out of 5', 'woocommerce'), $average);
-        $html  = '<div class="wcb-products__product-rating-wrap" style="justify-content: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">
-                    <div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="' 
-                        . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) . 
+        $html  = '<div class="wcb-products__product-rating-wrap">
+                    <div class="wcb-products__product-rating wc-block-components-product-rating__stars wc-block-grid__product-rating__stars" role="img" aria-label="'
+                        . esc_attr($label) . '">' . wc_get_star_rating_html($average, $rating_count) .
                     '</div>
                 </div>';
         return $html;
@@ -1065,13 +1067,10 @@ function boostify_blocks_block_products_get_button_html($product, $attributes, $
         $isCheckBottom = true;
     }
     
-    return '<div 
-                class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart" 
-                style="
-                    align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';
-                    overflow: ' . ($isCheckBottom && ($badge_html == "")? 'hidden' : 'visible') . ';
-                ">' 
-                . boostify_blocks_block_products_get_add_to_cart($product, $attributes) . 
+    return '<div
+                class="wcb-products__product-add-to-cart wp-block-button wc-block-grid__product-add-to-cart"
+                style="overflow: ' . ($isCheckBottom && ($badge_html == "")? 'hidden' : 'visible') . ';">'
+                . boostify_blocks_block_products_get_add_to_cart($product, $attributes) .
             '</div>';
 }
 
@@ -1117,6 +1116,8 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         </style>
     ";
 
+    $show_icon = $attributesFromBlock['general_addToCartBtn']['isShowIcon'] ?? true;
+
     $btn_markup = sprintf(
         '<a
             href="%s"
@@ -1129,7 +1130,7 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         esc_attr($product->get_id()),
         esc_attr($product_class),
         esc_attr($ajax_class),
-        $icon_markup,
+        $show_icon ? $icon_markup : '',
         $label_markup
     );
 
@@ -1138,10 +1139,9 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
 
 /**
  * Generate the HTML for the product quantity input.
- * @param array $attributes The block attributes.
  * @return string The generated HTML for the product quantity input.
  */
-function boostify_blocks_block_products_get_product_quantity($attributes)
+function boostify_blocks_block_products_get_product_quantity()
 {   
     $quantity_input = '<div class="wcb-products__quantity">'
         . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
@@ -1158,7 +1158,7 @@ function boostify_blocks_block_products_get_product_quantity($attributes)
         . '>'
         . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
         . '</div>';
-    return '<div class="wcb-products__quantity-add-to-cart" style="align-items: ' . esc_attr(convert_to_alignment_style($attributes['style_layout']['textAlignment'])) . ';">' . $quantity_input . '</div>';
+    return '<div class="wcb-products__quantity-add-to-cart">' . $quantity_input . '</div>';
 }
 
 if (!function_exists("boostify_blocks_block_products_parse_filter_attributes")) :

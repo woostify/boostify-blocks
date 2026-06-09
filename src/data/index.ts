@@ -49,14 +49,12 @@ const store = createReduxStore(WCB_STORE_PANELS, {
 			default:
 				return state;
 		}
-
-		return state;
 	},
 
 	actions,
 
 	selectors: {
-		getBlockPanelInfo(state) {
+		getBlockPanelInfo(state: WcbPanelStoreState) {
 			return state;
 		},
 	},
@@ -66,6 +64,13 @@ const store = createReduxStore(WCB_STORE_PANELS, {
 	resolvers: {},
 });
 
-register(store);
+// Guard against duplicate registration: each block is a separate webpack bundle,
+// but all bundles share the same browser window. Only register once.
+type WinWithStoreFlag = Window & { __boostifyPanelsStoreRegistered?: boolean };
+const _win = window as WinWithStoreFlag;
+if (!_win.__boostifyPanelsStoreRegistered) {
+	_win.__boostifyPanelsStoreRegistered = true;
+	register(store);
+}
 
 export { WCB_STORE_PANELS };
