@@ -13,8 +13,20 @@ const InputNumber: FC<Props> = ({
 	unit = "px",
 	id,
 	onChange,
+	value,
+	defaultValue,
 	...props
 }) => {
+	const [localValue, setLocalValue] = useState<string>(
+		String(value ?? defaultValue ?? "")
+	);
+
+	useEffect(() => {
+		if (value !== undefined) {
+			setLocalValue(String(value));
+		}
+	}, [value]);
+
 	return (
 		<div className="gap-4 flex lg:flex-row flex-col lg:items-center items-start justify-between">
 			<div className="flex-1 max-w-2xl">
@@ -40,8 +52,12 @@ const InputNumber: FC<Props> = ({
 				{/* @ts-ignore */}
 				<input
 					{...props}
+					value={localValue}
 					onChange={(e) => {
-						onChange && onChange(parseInt(e.currentTarget.value));
+						setLocalValue(e.currentTarget.value);
+					}}
+					onBlur={() => {
+						onChange && onChange(parseInt(localValue));
 					}}
 					id={id}
 					type="number"

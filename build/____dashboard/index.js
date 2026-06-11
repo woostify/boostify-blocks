@@ -1598,8 +1598,17 @@ const InputNumber = ({
   unit = "px",
   id,
   onChange,
+  value,
+  defaultValue,
   ...props
 }) => {
+  var _ref;
+  const [localValue, setLocalValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(String((_ref = value !== null && value !== void 0 ? value : defaultValue) !== null && _ref !== void 0 ? _ref : ""));
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (value !== undefined) {
+      setLocalValue(String(value));
+    }
+  }, [value]);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "gap-4 flex lg:flex-row flex-col lg:items-center items-start justify-between"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -1620,8 +1629,12 @@ const InputNumber = ({
     className: "text-gray-500 sm:text-sm"
   }, unit)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("input", {
     ...props,
+    value: localValue,
     onChange: e => {
-      onChange && onChange(parseInt(e.currentTarget.value));
+      setLocalValue(e.currentTarget.value);
+    },
+    onBlur: () => {
+      onChange && onChange(parseInt(localValue));
     },
     id: id,
     type: "number",
