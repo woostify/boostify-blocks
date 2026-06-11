@@ -129,6 +129,7 @@ function boostify_blocks_enqueue_lineicons()
 }
 add_action('wp_enqueue_scripts', 'boostify_blocks_enqueue_lineicons');
 add_action('admin_enqueue_scripts', 'boostify_blocks_enqueue_lineicons');
+add_action('enqueue_block_assets', 'boostify_blocks_enqueue_lineicons');
 // 
 
 function boostify_blocks_enqueue_lineicons_for_gutenbeg_editor()
