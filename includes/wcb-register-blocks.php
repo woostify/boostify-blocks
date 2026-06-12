@@ -430,7 +430,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-icon',
             [
                 "render_callback"     => "boostify_blocks_block_icon_render_callback",
-                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/icon'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/boostify-icon'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
                 "view_script_handles" => []
             ]
         );
