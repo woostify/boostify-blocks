@@ -90,6 +90,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 					maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
 					// width: cWidthMobile_new,
 					minHeight: minHeightMobile_new,
+					"&.alignfull": {
+						marginLeft: `calc(-50vw + 50%)`,
+						marginRight: `calc(-50vw + 50%)`,
+					},
 					"&.is_wcb_container_child": {
 						width: cWidthMobile_new,
 					},
