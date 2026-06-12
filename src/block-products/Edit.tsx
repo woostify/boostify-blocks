@@ -73,9 +73,10 @@ import WcbProducstPanelGeneralLayout, {
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO
 } from "./WcbProducstPanel_GeneralLayout";	
 import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock";
-import { 
-	buildStyleBorderDefault, 
-	buildStyleLayoutDefault, 
+import { getThemeDefaults } from "../utils/themeDefaults";
+import {
+	buildStyleBorderDefault,
+	buildStyleLayoutDefault,
 	buildGeneralContractDefault,
 	buildSortingAndFilteringDefault,
 	buildGeneralFeaturedImageDefault,
@@ -247,7 +248,45 @@ const Edit: FC<Props> = (props) => {
 			});
 		}
 	}, [style_quickViewBtn]);
-	//
+
+	// Detect if Customizer "Products Per Row" changed since last sync.
+	// If so, reset numberOfColumn to the new Customizer value and clear the edit flag.
+	useEffect(() => {
+		if (!style_layout) return;
+
+		const theme = getThemeDefaults();
+		const customizerDesktop = theme?.product_per_row?.desktop ?? null;
+		const customizerTablet = theme?.product_per_row?.tablet ?? null;
+		const customizerMobile = theme?.product_per_row?.mobile ?? null;
+
+		const stored = style_layout.numberOfColumnFromCustomizer;
+		if (!stored) return;
+
+		const customizerChanged =
+			stored.Desktop !== customizerDesktop ||
+			stored.Tablet !== customizerTablet ||
+			stored.Mobile !== customizerMobile;
+
+		if (!customizerChanged) return;
+
+		setAttributes({
+			style_layout: {
+				...style_layout,
+				numberOfColumn: {
+					Desktop: customizerDesktop ?? style_layout.numberOfColumn.Desktop,
+					Tablet: customizerTablet ?? style_layout.numberOfColumn.Tablet,
+					Mobile: customizerMobile ?? style_layout.numberOfColumn.Mobile,
+				},
+				numberOfColumnFromCustomizer: {
+					Desktop: customizerDesktop ?? style_layout.numberOfColumn.Desktop,
+					Tablet: customizerTablet ?? undefined,
+					Mobile: customizerMobile ?? undefined,
+				},
+				isNumberOfColumnEdited: false,
+			},
+		});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [!!style_layout]);
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
 		switch (tab.name) {
@@ -608,6 +647,7 @@ const Edit: FC<Props> = (props) => {
 													...style_layout.numberOfColumn,
 													Desktop: Number(value || 1),
 												},
+												isNumberOfColumnEdited: true,
 											},
 										});
 									}}

@@ -23,19 +23,22 @@ import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO } from "./WcbProductsPa
  */
 export function buildStyleLayoutDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO>) {
     const theme = getThemeDefaults();
+    const numberOfColumn = {
+        Desktop:
+            theme.product_per_row?.desktop ??
+            WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Desktop,
+        Tablet:
+            theme.product_per_row?.tablet ??
+            WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Tablet,
+        Mobile:
+            theme.product_per_row?.mobile ??
+            WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Mobile,
+    };
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
-        numberOfColumn: {
-            Desktop:
-                theme.product_per_row?.desktop ??
-                WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Desktop,
-            Tablet:
-                theme.product_per_row?.tablet ??
-                WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Tablet,
-            Mobile:
-                theme.product_per_row?.mobile ??
-                WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Mobile,
-        },
+        numberOfColumn,
+        numberOfColumnFromCustomizer: { ...numberOfColumn },
+        isNumberOfColumnEdited: false,
         textAlignment:
             theme.shop_archive_product_content?.align ??
             WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.textAlignment,
