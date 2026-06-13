@@ -50,12 +50,26 @@ const GlobalCss = attrs => {
     advance_motionEffect
   } = attrs;
   const {
+    margin,
+    padding
+  } = styles_dimensions;
+  const {
+    value_Desktop: margin_Desktop,
+    value_Tablet: margin_Tablet,
+    value_Mobile: margin_Mobile
+  } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__["default"])(margin);
+  const hasValue = val => val !== undefined && val !== null && val !== "";
+  const hasSpacing = val => hasValue(val) && val !== "";
+  const hasMarginTopDesktop = hasSpacing(margin_Desktop?.top);
+  const hasMarginBottomDesktop = hasSpacing(margin_Desktop?.bottom);
+  const {
     media_desktop,
     media_tablet,
     defaultContentWidth,
     containerPadding,
     containerElementsGap
   } = ___WEBPACK_IMPORTED_MODULE_7__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+  const WP_BLOCK_CLASSNAME = `.wp-block`;
   const WRAP_CLASSNAME = `.wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
   const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-container__inner`;
 
@@ -105,6 +119,27 @@ const GlobalCss = attrs => {
     //
 
     return [{
+      [`${WP_BLOCK_CLASSNAME}:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        marginTop: hasMarginTopDesktop ? "0px" + " !important" : "",
+        marginBottom: hasMarginBottomDesktop ? "0px" + " !important" : ""
+      }
+    }, {
+      [`${WP_BLOCK_CLASSNAME}[data-align="full"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        [WRAP_CLASSNAME]: {
+          "marginLeft": `auto`,
+          "marginRight": `auto`
+        }
+      }
+    }, {
+      [`${WP_BLOCK_CLASSNAME}[data-align="wide"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        "marginLeft": `-8px`,
+        "marginRight": `-8px`,
+        [WRAP_CLASSNAME]: {
+          "marginLeft": `auto`,
+          "marginRight": `auto`
+        }
+      }
+    }, {
       [WRAP_CLASSNAME]: {
         padding: containerPadding || "",
         color: styles_color,

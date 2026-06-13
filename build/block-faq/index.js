@@ -13882,8 +13882,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   .edit-post-visual-editor .editor-styles-wrapper
     .block-editor-block-list__layout.is-root-container
     > * + *:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   body.block-editor-iframe__body.editor-styles-wrapper
@@ -13893,13 +13893,13 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   body.block-editor-iframe__body.editor-styles-wrapper
     .is-layout-constrained
     > * + * {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block + .wp-block:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   /* Tablet */
@@ -13912,8 +13912,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 
@@ -13927,8 +13927,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 `;
