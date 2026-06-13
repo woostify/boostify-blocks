@@ -58,7 +58,6 @@ const GlobalCss = attrs => {
   } = ___WEBPACK_IMPORTED_MODULE_7__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
   const WRAP_CLASSNAME = `.wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
   const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-container__inner`;
-  const INNER_CLASSNAME_CHILD = `${WRAP_CLASSNAME} .wcb-container__inner .is_wcb_container_child`;
 
   // ------------------- WRAP DIV
   const getDivWrapStyles = () => {
@@ -74,9 +73,9 @@ const GlobalCss = attrs => {
       value_Mobile: cWidthMobile
     } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__["default"])(customWidth);
     if (containerWidthType !== "Custom") {
-      cWidthDesktop = undefined;
-      cWidthTablet = undefined;
-      cWidthMobile = undefined;
+      cWidthDesktop = null;
+      cWidthTablet = null;
+      cWidthMobile = null;
     }
     const {
       value_Desktop: minHeightDesktop,
@@ -113,28 +112,28 @@ const GlobalCss = attrs => {
         //
         maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
         // width: cWidthMobile_new,
-        minHeight: minHeightMobile_new,
+        minHeight: minHeightMobile_new !== null && minHeightMobile_new !== void 0 ? minHeightMobile_new : undefined,
         "&.alignfull": {
           marginLeft: `calc(-50vw + 50%)`,
           marginRight: `calc(-50vw + 50%)`
         },
         "&.is_wcb_container_child": {
-          width: cWidthMobile_new
+          width: cWidthMobile_new !== null && cWidthMobile_new !== void 0 ? cWidthMobile_new : undefined
         },
         [`@media (min-width: ${media_tablet})`]: {
           maxWidth: cWidthTablet_new ? cWidthTablet_new + " !important" : "",
           // width: cWidthTablet_new,
-          minHeight: minHeightTablet_new,
+          minHeight: minHeightTablet_new !== null && minHeightTablet_new !== void 0 ? minHeightTablet_new : undefined,
           "&.is_wcb_container_child": {
-            width: cWidthTablet_new
+            width: cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : undefined
           }
         },
         [`@media (min-width: ${media_desktop})`]: {
           maxWidth: cWidthDesktop_new ? cWidthDesktop_new + " !important" : "",
           // width: cWidthDesktop_new,
-          minHeight: minHeightDesktop_new,
+          minHeight: minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : undefined,
           "&.is_wcb_container_child": {
-            width: cWidthDesktop_new
+            width: cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : undefined
           }
         }
       }
@@ -209,7 +208,6 @@ const GlobalCss = attrs => {
 
   const getInner__contentCustomWidth = () => {
     let {
-      containerWidthType,
       contentWidthType,
       contentBoxWidth
     } = general_container;
@@ -250,7 +248,7 @@ const GlobalCss = attrs => {
       [INNER_CLASSNAME]: {
         rowGap: containerElementsGap || "",
         columnGap: containerElementsGap || "",
-        maxWidth: contentBoxWidthMobile_new,
+        maxWidth: contentBoxWidthMobile_new !== null && contentBoxWidthMobile_new !== void 0 ? contentBoxWidthMobile_new : undefined,
         [`@media (min-width: ${media_tablet})`]: contentBoxWidthTablet_new ? {
           maxWidth: contentBoxWidthTablet_new
         } : undefined,
@@ -261,7 +259,6 @@ const GlobalCss = attrs => {
     };
   };
   const getInner__flexProperties = () => {
-    const {} = general_flexProperties;
     const {
       colunmGap,
       rowGap

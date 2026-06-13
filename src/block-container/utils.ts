@@ -11,7 +11,7 @@ import { merge, mapValues } from "lodash";
  *
  * @return {number} Value rounded to standard precision.
  */
-export const toWidthPrecision = (value) => {
+export const toWidthPrecision = (value: any) => {
 	const unitlessValue = parseFloat(value);
 	return Number.isFinite(unitlessValue)
 		? parseFloat(unitlessValue.toFixed(2))
@@ -26,7 +26,7 @@ export const toWidthPrecision = (value) => {
  *
  * @return {number} Effective column width.
  */
-export function getEffectiveColumnWidth(block, totalBlockCount) {
+export function getEffectiveColumnWidth(block: any, totalBlockCount: number) {
 	const { width = 100 / totalBlockCount } = block.attributes;
 	return toWidthPrecision(width);
 }
@@ -40,7 +40,7 @@ export function getEffectiveColumnWidth(block, totalBlockCount) {
  *
  * @return {number} Total width occupied by blocks.
  */
-export function getTotalColumnsWidth(blocks, totalBlockCount = blocks.length) {
+export function getTotalColumnsWidth(blocks: any[], totalBlockCount: number = blocks.length) {
 	return blocks.reduce(
 		(sum, block) => sum + getEffectiveColumnWidth(block, totalBlockCount),
 		0
@@ -56,7 +56,7 @@ export function getTotalColumnsWidth(blocks, totalBlockCount = blocks.length) {
  *
  * @return {Object<string,number>} Column widths.
  */
-export function getColumnWidths(blocks, totalBlockCount = blocks.length) {
+export function getColumnWidths(blocks: any[], totalBlockCount: number = blocks.length) {
 	return blocks.reduce((accumulator, block) => {
 		const width = getEffectiveColumnWidth(block, totalBlockCount);
 		return Object.assign(accumulator, { [block.clientId]: width });
@@ -76,9 +76,9 @@ export function getColumnWidths(blocks, totalBlockCount = blocks.length) {
  * @return {Object<string,number>} Redistributed column widths.
  */
 export function getRedistributedColumnWidths(
-	blocks,
-	availableWidth,
-	totalBlockCount = blocks.length
+	blocks: any[],
+	availableWidth: number,
+	totalBlockCount: number = blocks.length
 ) {
 	const totalWidth = getTotalColumnsWidth(blocks, totalBlockCount);
 
@@ -96,7 +96,7 @@ export function getRedistributedColumnWidths(
  *
  * @return {boolean} Whether columns have explicit widths.
  */
-export function hasExplicitPercentColumnWidths(blocks) {
+export function hasExplicitPercentColumnWidths(blocks: any[]) {
 	return blocks.every((block) => {
 		const blockWidth = block.attributes.width;
 		return Number.isFinite(
@@ -114,7 +114,7 @@ export function hasExplicitPercentColumnWidths(blocks) {
  *
  * @return {WPBlock[]} blocks Mapped block objects.
  */
-export function getMappedColumnWidths(blocks, widths) {
+export function getMappedColumnWidths(blocks: any[], widths: Record<string, number>) {
 	return blocks.map((block) =>
 		merge({}, block, {
 			attributes: {
@@ -132,7 +132,7 @@ export function getMappedColumnWidths(blocks, widths) {
  *
  * @return {Array<number,string>} Column widths.
  */
-export function getWidths(blocks, withParsing = true) {
+export function getWidths(blocks: any[], withParsing: boolean = true) {
 	return blocks.map((innerColumn) => {
 		const innerColumnWidth =
 			innerColumn.attributes.width || 100 / blocks.length;
@@ -149,7 +149,7 @@ export function getWidths(blocks, withParsing = true) {
  *
  * @return {string} Column width with unit.
  */
-export function getWidthWithUnit(width, unit) {
+export function getWidthWithUnit(width: any, unit: string) {
 	width = 0 > parseFloat(width) ? "0" : width;
 
 	if (isPercentageUnit(unit)) {
@@ -166,6 +166,6 @@ export function getWidthWithUnit(width, unit) {
  *
  * @return {boolean} 	Whether unit is '%'.
  */
-export function isPercentageUnit(unit) {
+export function isPercentageUnit(unit: string) {
 	return unit === "%";
 }
