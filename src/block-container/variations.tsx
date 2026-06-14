@@ -32,11 +32,11 @@ const getContainerAttrsByFlexWrap = (
 	alignItems: React.CSSProperties["alignItems"] = "stretch",
 	justifyContent: React.CSSProperties["justifyContent"] = "center"
 ): BlockWCBContainerAttrs => {
-	const attrsDefault = Object.keys(blokcContainerAttrs).reduce(
-		(previousValue, currentValue, currentIndex: number) => {
+	const attrsDefault = (Object.keys(blokcContainerAttrs) as (keyof typeof blokcContainerAttrs)[]).reduce(
+		(previousValue, currentValue) => {
 			return {
 				...previousValue,
-				[currentValue]: blokcContainerAttrs[currentValue].default,
+				[currentValue]: blokcContainerAttrs[currentValue]?.default,
 			};
 		},
 		{}
