@@ -5341,12 +5341,26 @@ const GlobalCss = attrs => {
     advance_motionEffect
   } = attrs;
   const {
+    margin,
+    padding
+  } = styles_dimensions;
+  const {
+    value_Desktop: margin_Desktop,
+    value_Tablet: margin_Tablet,
+    value_Mobile: margin_Mobile
+  } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__["default"])(margin);
+  const hasValue = val => val !== undefined && val !== null && val !== "";
+  const hasSpacing = val => hasValue(val) && val !== "";
+  const hasMarginTopDesktop = hasSpacing(margin_Desktop?.top);
+  const hasMarginBottomDesktop = hasSpacing(margin_Desktop?.bottom);
+  const {
     media_desktop,
     media_tablet,
     defaultContentWidth,
     containerPadding,
     containerElementsGap
   } = ___WEBPACK_IMPORTED_MODULE_7__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+  const WP_BLOCK_CLASSNAME = `.wp-block`;
   const WRAP_CLASSNAME = `.wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
   const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-container__inner`;
 
@@ -5396,6 +5410,27 @@ const GlobalCss = attrs => {
     //
 
     return [{
+      [`${WP_BLOCK_CLASSNAME}:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        marginTop: hasMarginTopDesktop ? "0px" + " !important" : "",
+        marginBottom: hasMarginBottomDesktop ? "0px" + " !important" : ""
+      }
+    }, {
+      [`${WP_BLOCK_CLASSNAME}[data-align="full"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        [WRAP_CLASSNAME]: {
+          "marginLeft": `auto`,
+          "marginRight": `auto`
+        }
+      }
+    }, {
+      [`${WP_BLOCK_CLASSNAME}[data-align="wide"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        "marginLeft": `-8px`,
+        "marginRight": `-8px`,
+        [WRAP_CLASSNAME]: {
+          "marginLeft": `auto`,
+          "marginRight": `auto`
+        }
+      }
+    }, {
       [WRAP_CLASSNAME]: {
         padding: containerPadding || "",
         color: styles_color,
@@ -10759,8 +10794,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   .edit-post-visual-editor .editor-styles-wrapper
     .block-editor-block-list__layout.is-root-container
     > * + *:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   body.block-editor-iframe__body.editor-styles-wrapper
@@ -10770,13 +10805,13 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   body.block-editor-iframe__body.editor-styles-wrapper
     .is-layout-constrained
     > * + * {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block + .wp-block:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   /* Tablet */
@@ -10789,8 +10824,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 
@@ -10804,8 +10839,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 `;
