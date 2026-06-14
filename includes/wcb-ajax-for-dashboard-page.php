@@ -72,9 +72,15 @@ function boostify_blocks_ajax_dashboard_update_settings()
         }
     }
 
+    $old_settings = get_option( 'boostify_blocks_settings_options', [] );
     $settings = array_merge($defaultSettings, $validSettings);
 
     update_option('boostify_blocks_settings_options', $settings);
+
+    if ( function_exists( 'boostify_blocks_maybe_clear_font_cache' ) ) {
+        boostify_blocks_maybe_clear_font_cache( $old_settings, $settings );
+    }
+
     $array_result = array(
         'data' => $settings,
         'message' => 'your message'
