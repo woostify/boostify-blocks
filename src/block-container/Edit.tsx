@@ -8,6 +8,7 @@ import {
 import { get } from "lodash";
 import React, { FC, useEffect, useState, useMemo } from "react";
 import { BlockWCBContainerAttrs } from "./attributes";
+// @ts-ignore
 import "./editor.scss";
 import {
 	// @ts-ignore
