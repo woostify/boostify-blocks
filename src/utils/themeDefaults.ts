@@ -51,6 +51,7 @@ export type ThemeDefaults = {
         hover_bg_color?: string;
         border_radius?: number;
         position?: string;
+        show_icon?: boolean;
     };
     shop_archive_wishlist_btn?: {
         position?: 'top-right' | 'bottom-right' | 'none';

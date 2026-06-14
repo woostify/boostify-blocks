@@ -19,6 +19,7 @@ import React, { useEffect, FC, useCallback } from "react";
 import { WcbAttrs } from "./attributes";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import MyCacheProvider from "../components/MyCacheProvider";
 import { WcbAttrsForSave } from "./Save";
@@ -429,62 +430,69 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
-			<figure
+			<div 
 				{...wrapBlockProps}
 				className={`${wrapBlockProps?.className} wcb-image__wrap wcb-image__wrap--${general_settings.layout} ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
-				{/* CSS IN JS */}
-				<GlobalCss {...WcbAttrsForSave()} />
+				<figure
+					className={`wcb-image__wrap-figure is-selected`}
+					// {...wrapBlockProps}
+					// className={`${wrapBlockProps?.className} wcb-image__wrap wcb-image__wrap--${general_settings.layout} ${uniqueId}`}
+					// data-uniqueid={uniqueId}
+				>
+					{/* CSS IN JS */}
+					<GlobalCss {...WcbAttrsForSave()} />
 
-				{/* CHILD CONTENT  */}
-				<>
-					{(temporaryURL || url) && (
-						<>
-							<Image
-								className="wcb-image__image"
-								temporaryURL={temporaryURL || ""}
-								attributes={attributes}
-								setAttributes={setAttributes}
-								isSelected={isSelected}
-								insertBlocksAfter={insertBlocksAfter}
-								onReplace={onReplace}
-								onSelectImage={onSelectImage}
-								onSelectURL={onSelectURL}
-								onUploadError={onUploadError}
-								containerRef={ref}
-								context={context}
-								clientId={clientId}
-								isContentLocked={isContentLocked}
-							/>
-							{general_settings.layout === "overlay" && renderOverlay()}
-						</>
-					)}
-					{/* {!url && !isContentLocked && (
-						// @ts-ignore
-						<BlockControls group="block">
-							<BlockAlignmentToolbar
-								value={align as any}
-								onChange={updateAlignment}
-							/>
-						</BlockControls>
-					)} */}
+					{/* CHILD CONTENT  */}
+					<>
+						{(temporaryURL || url) && (
+							<>
+								<Image
+									className="wcb-image__image"
+									temporaryURL={temporaryURL || ""}
+									attributes={attributes}
+									setAttributes={setAttributes}
+									isSelected={isSelected}
+									insertBlocksAfter={insertBlocksAfter}
+									onReplace={onReplace}
+									onSelectImage={onSelectImage}
+									onSelectURL={onSelectURL}
+									onUploadError={onUploadError}
+									containerRef={ref}
+									context={context}
+									clientId={clientId}
+									isContentLocked={isContentLocked}
+								/>
+								{general_settings.layout === "overlay" && renderOverlay()}
+							</>
+						)}
+						{/* {!url && !isContentLocked && (
+							// @ts-ignore
+							<BlockControls group="block">
+								<BlockAlignmentToolbar
+									value={align as any}
+									onChange={updateAlignment}
+								/>
+							</BlockControls>
+						)} */}
 
-					<MediaPlaceholder
-						icon={<BlockIcon icon={icon} />}
-						onSelect={onSelectImage}
-						onSelectURL={onSelectURL}
-						onError={onUploadError}
-						// @ts-ignore
-						placeholder={placeholder}
-						accept="image/*"
-						allowedTypes={ALLOWED_MEDIA_TYPES}
-						value={{ id, src } as any}
-						mediaPreview={mediaPreview || undefined}
-						disableMediaButtons={temporaryURL || url}
-					/>
-				</>
-			</figure>
+						<MediaPlaceholder
+							icon={<BlockIcon icon={icon} />}
+							onSelect={onSelectImage}
+							onSelectURL={onSelectURL}
+							onError={onUploadError}
+							// @ts-ignore
+							placeholder={placeholder}
+							accept="image/*"
+							allowedTypes={ALLOWED_MEDIA_TYPES}
+							value={{ id, src } as any}
+							mediaPreview={mediaPreview || undefined}
+							disableMediaButtons={temporaryURL || url}
+						/>
+					</>
+				</figure>
+			</div>
 		</MyCacheProvider>
 	);
 };

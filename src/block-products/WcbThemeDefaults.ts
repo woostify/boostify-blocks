@@ -282,17 +282,17 @@ export function buildStyleAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCT
         },
         border: {
             ...WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border,
-            radius: {
-                Desktop:
-                    (addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Desktop,
-                Tablet:
-                    (addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Tablet,
-                Mobile:
-                    (addToCartBtn?.border_radius != null ? `${addToCartBtn.border_radius}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Mobile,
-            },
+            radius: (() => {
+                // Store as a uniform 4-corner object so BorderRadiusControl displays all corners correctly.
+                // A plain string like "10px" can be misinterpreted by the control as only the topLeft value.
+                const radiusPx = addToCartBtn?.border_radius != null && addToCartBtn.border_radius > 0
+                    ? `${addToCartBtn.border_radius}px`
+                    : undefined;
+                const uniformRadius = radiusPx
+                    ? { topLeft: radiusPx, topRight: radiusPx, bottomRight: radiusPx, bottomLeft: radiusPx }
+                    : WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Desktop;
+                return { Desktop: uniformRadius, Tablet: uniformRadius, Mobile: uniformRadius };
+            })(),
         },
     };
 }
@@ -319,6 +319,10 @@ export function buildGeneralAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODU
         isShowQuantity:
             addToCartBtn?.position === 'none' ? false :
             WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowQuantity,
+        isShowIcon:
+            addToCartBtn?.show_icon !== undefined
+                ? addToCartBtn.show_icon
+                : WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowIcon,
     };
 }
 

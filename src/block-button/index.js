@@ -19,6 +19,7 @@ import "./style.scss";
  */
 import Edit from "./Edit";
 import save from "./Save";
+import Save_290526 from "./Save_290526";
 import Save_240823 from "./Save_240823";
 import metadata from "./block.json";
 const { Fragment } = wp.element;
@@ -34,6 +35,10 @@ registerBlockType(metadata.name, {
 	attributes,
 	example: convertObjectAttrToPreview(attributes),
 	deprecated: [
+		{
+			attributes,
+			save: Save_290526,
+		},
 		{
 			attributes,
 			save: Save_240823,

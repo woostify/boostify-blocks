@@ -19,13 +19,13 @@ const divsToUpdateCTA = document.querySelectorAll(
 	".wcb-cta__wrap.wcb-update-div"
 );
 
-xxxxxxxxxxxxxx(divsToUpdateButton, GlobalCssButton);
-xxxxxxxxxxxxxx(divsToUpdateCTA, GlobalCssCTALazy);
+renderBlockGlobalStyles(divsToUpdateButton, GlobalCssButton);
+renderBlockGlobalStyles(divsToUpdateCTA, GlobalCssCTALazy);
 
-function xxxxxxxxxxxxxx(divsToUpdate, GlobalCss) {
+function renderBlockGlobalStyles(divsToUpdate: NodeListOf<Element>, GlobalCss: React.ComponentType<any>) {
 	console.log(111);
 
-	divsToUpdate.forEach((div) => {
+	divsToUpdate.forEach((div: any) => {
 		const preEl = div.querySelector(
 			`pre[data-wcb-block-attrs=${div.id}]`
 		) as HTMLElement | null;

@@ -116,35 +116,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			title={title}
 		/>
 	);
-
-	const figure = (
-		<>
-			{href ? (
-				<a className={linkClass} href={href} target={linkTarget} rel={newRel}>
-					{image}
-				</a>
-			) : (
-				image
-			)}
-			{/ * Always render figure to avoid authentication errors */}
-				<RichText.Content
-					className={__experimentalGetElementClassName("caption")}
-					tagName="figcaption"
-				value={caption || ""}
-				/>
-		</>
-	);
-	
-	const wrapBlockProps = useBlockProps.save({
-		className: `woostify-container wcb-image__wrap wcb-image__wrap--${general_settings.layout} ${classes}`.trim(),
-		style: {
-			display: "flex",
-			justifyContent: attributes.general_settings?.alignment?.Desktop
-		},
-	});
-
-	//
-
+	// Render overlay content if layout is overlay
 	const renderOverlay = () => {
 		return (
 			<div className="wcb-image__overlay-wrap">
@@ -156,16 +128,44 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			</div>
 		);
 	};
+	// Always render figure
+	const figure = (
+		<>
+			<figure className={`wcb-image__wrap-figure`}>
+				{href ? (
+					<a className={linkClass} href={href} target={linkTarget} rel={newRel}>
+						{image}
+					</a>
+				) : (
+					image
+				)}
+				{/* Always render figure to avoid authentication errors */}
+				<RichText.Content
+					className={__experimentalGetElementClassName("caption")}
+					tagName="figcaption"
+				value={caption || ""}
+				/>
+				{general_settings.layout === "overlay" && renderOverlay()}
+			</figure>
+		</>
+	);
+	
+	const wrapBlockProps = useBlockProps.save({
+		className: `woostify-container wcb-image__wrap wcb-image__wrap--${general_settings.layout} ${classes}`.trim(),
+		style: {
+			display: "flex",
+			justifyContent: attributes.general_settings?.alignment?.Desktop
+		},
+	});
 
 	return (
 		<SaveCommon
 			{...wrapBlockProps}
 			attributes={newAttrForSave}
 			uniqueId={uniqueId}
-			HtmlTag="figure"
+			HtmlTag="div"
 		>
 			{figure}
-			{general_settings.layout === "overlay" && renderOverlay()}
 		</SaveCommon>
 	);
 }
