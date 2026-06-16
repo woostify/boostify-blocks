@@ -73,6 +73,7 @@ import WcbProducstPanelGeneralLayout, {
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO
 } from "./WcbProducstPanel_GeneralLayout";	
 import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock";
+import { getThemeDefaults } from "../utils/themeDefaults";
 import {
 	buildStyleBorderDefault,
 	buildStyleLayoutDefault,
@@ -248,6 +249,44 @@ const Edit: FC<Props> = (props) => {
 		}
 	}, [style_quickViewBtn]);
 
+	// Sync Customizer "Products Per Row" to block when not manually overridden by user.
+	useEffect(() => {
+		if (!style_layout) return;
+		// User explicitly set column → don't override with Customizer value.
+		if (style_layout.isNumberOfColumnEdited) return;
+
+		const theme = getThemeDefaults();
+		const customizerDesktop = theme?.product_per_row?.desktop ?? null;
+		const customizerTablet = theme?.product_per_row?.tablet ?? null;
+		const customizerMobile = theme?.product_per_row?.mobile ?? null;
+
+		const stored = style_layout.numberOfColumnFromCustomizer;
+		if (!stored) return;
+
+		const customizerChanged =
+			stored.Desktop !== customizerDesktop ||
+			stored.Tablet !== customizerTablet ||
+			stored.Mobile !== customizerMobile;
+
+		if (!customizerChanged) return;
+
+		setAttributes({
+			style_layout: {
+				...style_layout,
+				numberOfColumn: {
+					Desktop: customizerDesktop ?? style_layout.numberOfColumn.Desktop,
+					Tablet: customizerTablet ?? style_layout.numberOfColumn.Tablet,
+					Mobile: customizerMobile ?? style_layout.numberOfColumn.Mobile,
+				},
+				numberOfColumnFromCustomizer: {
+					Desktop: customizerDesktop ?? style_layout.numberOfColumn.Desktop,
+					Tablet: customizerTablet ?? undefined,
+					Mobile: customizerMobile ?? undefined,
+				},
+			},
+		});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [!!style_layout]);
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
 		switch (tab.name) {
