@@ -249,10 +249,11 @@ const Edit: FC<Props> = (props) => {
 		}
 	}, [style_quickViewBtn]);
 
-	// Detect if Customizer "Products Per Row" changed since last sync.
-	// If so, reset numberOfColumn to the new Customizer value and clear the edit flag.
+	// Sync Customizer "Products Per Row" to block when not manually overridden by user.
 	useEffect(() => {
 		if (!style_layout) return;
+		// User explicitly set column → don't override with Customizer value.
+		if (style_layout.isNumberOfColumnEdited) return;
 
 		const theme = getThemeDefaults();
 		const customizerDesktop = theme?.product_per_row?.desktop ?? null;
@@ -282,7 +283,6 @@ const Edit: FC<Props> = (props) => {
 					Tablet: customizerTablet ?? undefined,
 					Mobile: customizerMobile ?? undefined,
 				},
-				isNumberOfColumnEdited: false,
 			},
 		});
 	// eslint-disable-next-line react-hooks/exhaustive-deps

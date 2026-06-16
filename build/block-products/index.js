@@ -5845,11 +5845,12 @@ const Edit = props => {
     }
   }, [style_quickViewBtn]);
 
-  // Detect if Customizer "Products Per Row" changed since last sync.
-  // If so, reset numberOfColumn to the new Customizer value and clear the edit flag.
+  // Sync Customizer "Products Per Row" to block when not manually overridden by user.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     var _theme$product_per_ro, _theme$product_per_ro2, _theme$product_per_ro3;
     if (!style_layout) return;
+    // User explicitly set column → don't override with Customizer value.
+    if (style_layout.isNumberOfColumnEdited) return;
     const theme = (0,_utils_themeDefaults__WEBPACK_IMPORTED_MODULE_32__.getThemeDefaults)();
     const customizerDesktop = (_theme$product_per_ro = theme?.product_per_row?.desktop) !== null && _theme$product_per_ro !== void 0 ? _theme$product_per_ro : null;
     const customizerTablet = (_theme$product_per_ro2 = theme?.product_per_row?.tablet) !== null && _theme$product_per_ro2 !== void 0 ? _theme$product_per_ro2 : null;
@@ -5870,8 +5871,7 @@ const Edit = props => {
           Desktop: customizerDesktop !== null && customizerDesktop !== void 0 ? customizerDesktop : style_layout.numberOfColumn.Desktop,
           Tablet: customizerTablet !== null && customizerTablet !== void 0 ? customizerTablet : undefined,
           Mobile: customizerMobile !== null && customizerMobile !== void 0 ? customizerMobile : undefined
-        },
-        isNumberOfColumnEdited: false
+        }
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

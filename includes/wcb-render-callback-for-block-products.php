@@ -41,15 +41,8 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     $curr_col_tablet  = $theme['product_per_row']['tablet'] ?? null;
     $curr_col_mobile  = $theme['product_per_row']['mobile'] ?? null;
     $is_col_edited    = !empty($style_layout['isNumberOfColumnEdited']);
-    $stored_customizer = $style_layout['numberOfColumnFromCustomizer'] ?? null;
-    // Customizer changed if stored snapshot differs from current theme values.
-    $customizer_col_changed = $stored_customizer !== null && (
-        ($stored_customizer['Desktop'] ?? null) != $curr_col_desktop ||
-        ($stored_customizer['Tablet']  ?? null) != $curr_col_tablet  ||
-        ($stored_customizer['Mobile']  ?? null) != $curr_col_mobile
-    );
-    // Use block value only when user explicitly edited AND Customizer hasn't changed since.
-    if ($is_col_edited && !$customizer_col_changed) {
+    // Use block value when user explicitly edited; otherwise follow Customizer.
+    if ($is_col_edited) {
         $style_layout['numberOfColumn'] = [
             'Desktop' => $style_layout['numberOfColumn']['Desktop'] ?? $curr_col_desktop,
             'Tablet'  => $style_layout['numberOfColumn']['Tablet']  ?? $curr_col_tablet,

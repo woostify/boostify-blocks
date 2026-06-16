@@ -6577,10 +6577,10 @@ const RenderIcon = props => {
   }, props.children));
 };
 const getContainerAttrsByFlexWrap = (flexWrap = "nowrap", flexDirection = "column", alignItems = "stretch", justifyContent = "center") => {
-  const attrsDefault = Object.keys(_attributes__WEBPACK_IMPORTED_MODULE_3__["default"]).reduce((previousValue, currentValue, currentIndex) => {
+  const attrsDefault = Object.keys(_attributes__WEBPACK_IMPORTED_MODULE_3__["default"]).reduce((previousValue, currentValue) => {
     return {
       ...previousValue,
-      [currentValue]: _attributes__WEBPACK_IMPORTED_MODULE_3__["default"][currentValue].default
+      [currentValue]: _attributes__WEBPACK_IMPORTED_MODULE_3__["default"][currentValue]?.default
     };
   }, {});
   return {
