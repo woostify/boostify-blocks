@@ -9,6 +9,7 @@ import { addFilter, applyFilters } from '@wordpress/hooks';
 import SettingsIcons from './icons.js';
 import editorStyles from './../editor.scss';
 
+// get data from local store by key
 const getWCBEditorStateLocalStorage = ( key = false ) => {
 	if ( ! window.localStorage ) {
 		return null;
@@ -26,7 +27,7 @@ const getWCBEditorStateLocalStorage = ( key = false ) => {
 
 	return null;
 };
-
+ 
 const WCBCopyPasteStyles = () => {
 	// Registering the shortcuts
 	const { registerShortcut } = useDispatch( keyboardShortcutsStore );
@@ -135,10 +136,112 @@ const WCBCopyPasteStyles = () => {
 		wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( {} ) );
 
 		const { attributes, name, innerBlocks } = blockData;
+
+		if ( wcbCopyPasteStyles ) {
+			wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( {} ) );
+		}
+
+		let styles = {};
+		const parentStyle = {};
+
+		// Only allow your blocks
+		if ( name.includes( 'boostify-blocks/' ) ) {
+			const blockType = select('core/blocks').getBlockType(name);
+			let blockAttributes = blockType?.attributes;
+			const blockName = name.replace( 'boostify-blocks/', '' );
+
+			wcbCopyPasteStyles[ `${ blockName }-styles` ] = {};
+			wcbCopyPasteStyles[ `global-style` ] = {};
+			
+			if ( blockAttributes && wcbCopyPasteStyles ) {
+				Object.keys( blockAttributes ).map( ( attribute ) => {
+					if ( blockAttributes[ attribute ].default ) {
+						if ( undefined !== attributes[ attribute ] && null !== attributes[ attribute ] ) {
+							styles[ attribute ] = attributes[ attribute ];
+							parentStyle[ attribute ] = attributes[ attribute ];
+						}
+					}
+
+					return attribute;
+				} );
+			}
+	
+			if ( innerBlocks ) {
+				parentStyle.innerblocks = innerBlocks;
+			}
+
+			styles.stylesSavedTimeStamp = Date.now();
+
+			wcbCopyPasteStyles[ `${ blockName }-styles` ] = parentStyle;
+			wcbCopyPasteStyles[ `global-style` ] = styles;
+
+			wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( wcbCopyPasteStyles ) );
+		}
 	}
 
 	const pasteBlockStyles = ( blockData ) => {
 		const { name, clientId, innerBlocks } = blockData;
+
+		let styles;
+		let pasteStyle;
+		const parentAttr = {};
+
+		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );
+
+		if ( name.includes( 'boostify-blocks/' ) ) {
+			styles = wcbCopyPasteStyles[ `global-style` ];
+
+			const blockType = select('core/blocks').getBlockType(name);
+			let blockAttributes = blockType?.attributes;
+			const blockName = name.replace( 'boostify-blocks/', '' );
+
+			pasteStyle = wcbCopyPasteStyles[ `${ blockName }-styles` ];
+
+			if ( blockAttributes && pasteStyle ) {
+				updateBlockStyles( clientId, pasteStyle );
+
+				if ( innerBlocks ) {
+					const childAttr = {};
+
+					innerBlocks.map( ( childBlock, index ) => {
+						const childName = childBlock.name.replace( 'boostify-blocks/', '' );
+						// eslint-disable-next-line no-shadow
+						const blockAttributes = blockAttributes[ childName ];
+
+						if ( pasteStyle.innerblocks[ index ].name === 'boostify-blocks/' + childName ) {
+							Object.keys( blockAttributes ).map( ( attribute ) => {
+								if ( blockAttributes[ attribute ].default ) {
+									childAttr[ attribute ] = pasteStyle.innerblocks[ index ].attributes[ attribute ];
+								}
+								return childAttr;
+							} );
+						}
+						updateBlockStyles( childBlock.clientId, childAttr );
+
+						return childBlock;
+					} );
+				}
+
+			}else if ( blockAttributes && styles ) {
+				Object.keys( blockAttributes ).map( ( attribute ) => {
+					if ( blockAttributes[ attribute ].default ) {
+						const key = attribute;
+
+						Object.keys( styles ).map( ( item ) => {
+							if ( item === key ) {
+								parentAttr[ attribute ] = styles[ key ];
+							}
+							return parentAttr;
+						} );
+					}
+					return parentAttr;
+				} );
+
+				updateBlockStyles( clientId, parentAttr );
+			}
+
+		}
+
 	};
 
 	const updateBlockStyles = ( clientId, styles ) => {
@@ -156,7 +259,7 @@ const WCBCopyPasteStyles = () => {
 	} );
 
     const openPopup = () => {
-		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );
+		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' ) || {};
 
 		setshowPopup( ! showPopup );
 
