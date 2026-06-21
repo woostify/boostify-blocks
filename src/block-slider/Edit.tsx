@@ -194,11 +194,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	 */
 	const { insertBlock, removeBlock, selectBlock } = useDispatch("core/block-editor");
 
-	// Get inner blocks and selected block
-	const { innerBlocks } = useSelect((select: any) => {
-		const { getBlocks } = select("core/block-editor");
+	// Step 1: Get inner blocks + track which block is currently selected in the editor store.
+	// selectedBlockClientId updates whenever the user clicks a block — including via List View.
+	const { innerBlocks, selectedBlockClientId } = useSelect((select: any) => {
+		const { getBlocks, getSelectedBlockClientId } = select("core/block-editor");
 		return {
 			innerBlocks: getBlocks(clientId) || [],
+			selectedBlockClientId: getSelectedBlockClientId(),
 		};
 	}, [clientId]);
 
@@ -252,18 +254,48 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	}, [general_general.numberofTestimonials, innerBlocks.length]);
 
-	// Handle child selection
+	// Navigate the slider carousel to the slide that corresponds to a given child clientId.
+	const goToChildSlide = (childClientId: string) => {
+		const index = innerBlocks.findIndex(
+			(block: any) => block.clientId === childClientId
+		);
+		if (index >= 0 && sliderRef.current) {
+			sliderRef.current.slickGoTo(index, false);
+		}
+	};
+
+	// Handle child selection (triggered by clicking a child on the canvas)
 	const handleChildSelect = (childClientId: string) => {
 		setIsParentSelected(false);
 		setSelectedChildId(childClientId);
-		// Persist the selection in localStorage for device type changes and UI reloads
 		setStoredSelectedChildId(childClientId);
-		
-		// // Reset slider to first slide when child is selected (similar to Spectra)
-		// if (sliderRef.current && innerBlocks.length > 0) {
-		// 	sliderRef.current.slickGoTo(0, false);
-		// }
+		// Navigate to the corresponding slide so canvas and panel stay in sync
+		goToChildSlide(childClientId);
 	};
+
+	// Step 2: Detect when a child block is selected via the List View.
+	// When the user clicks a "Slider child" in the List View, WordPress selects that
+	// child's clientId in the store — bypassing handleChildSelect entirely.
+	// This effect catches that case: if the newly selected block is one of our inner
+	// blocks, we update the child-selection state, re-select the parent so that its
+	// HOCInspectorControls stays visible, and navigate the slider to the right slide.
+	useEffect(() => {
+		if (!selectedBlockClientId) return;
+
+		const isChildOfThisSlider = innerBlocks.some(
+			(block: any) => block.clientId === selectedBlockClientId
+		);
+
+		if (isChildOfThisSlider) {
+			setSelectedChildId(selectedBlockClientId);
+			setStoredSelectedChildId(selectedBlockClientId);
+			setIsParentSelected(false);
+			// Re-select the parent so its Inspector Controls remain visible
+			selectBlock(clientId);
+			// Navigate the slider to the slide matching the selected child
+			goToChildSlide(selectedBlockClientId);
+		}
+	}, [selectedBlockClientId]);
 
 	// Add useEffect to monitor numberofTestimonials changes and update inner blocks accordingly
 	useEffect(() => {
