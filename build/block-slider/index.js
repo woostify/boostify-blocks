@@ -15907,6 +15907,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 
 
@@ -15920,7 +15921,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
+// @ts-ignore
 
 
 // Import child panel components using shared types to avoid circular dependency
@@ -16018,6 +16021,12 @@ const Edit = props => {
     ref
   });
   const sliderRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+  // Debounce timer: prevents multiple rapid slickGoTo calls
+  // (canvas click triggers both handleChildSelect AND the useEffect simultaneously)
+  const slideNavTimer = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+  // Flag to distinguish user manually clicking the parent vs our code calling selectBlock(parent)
+  // after a child is selected. Without this, the useEffect would immediately undo child selection.
+  const isProgrammaticSelect = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(false);
   const {
     tabIsOpen,
     tabAdvancesIsPanelOpen,
@@ -16133,12 +16142,17 @@ const Edit = props => {
     }
   }, [general_general.numberofTestimonials, innerBlocks.length]);
 
-  // Navigate the slider carousel to the slide that corresponds to a given child clientId.
+  // Navigate the slider carousel to the slide matching the given child clientId.
+  // Debounced: multiple calls within 100ms are collapsed into one slickGoTo,
+  // preventing the slider from sliding continuously when canvas click + useEffect
+  // both fire goToChildSlide in rapid succession.
   const goToChildSlide = childClientId => {
     const index = innerBlocks.findIndex(block => block.clientId === childClientId);
-    if (index >= 0 && sliderRef.current) {
-      sliderRef.current.slickGoTo(index, false);
-    }
+    if (index < 0 || !sliderRef.current) return;
+    if (slideNavTimer.current) clearTimeout(slideNavTimer.current);
+    slideNavTimer.current = setTimeout(() => {
+      sliderRef.current?.slickGoTo(index, false);
+    }, 100);
   };
 
   // Handle child selection (triggered by clicking a child on the canvas)
@@ -16150,22 +16164,36 @@ const Edit = props => {
     goToChildSlide(childClientId);
   };
 
-  // Step 2: Detect when a child block is selected via the List View.
-  // When the user clicks a "Slider child" in the List View, WordPress selects that
-  // child's clientId in the store — bypassing handleChildSelect entirely.
-  // This effect catches that case: if the newly selected block is one of our inner
-  // blocks, we update the child-selection state, re-select the parent so that its
-  // HOCInspectorControls stays visible, and navigate the slider to the right slide.
+  // Step 2: Sync panel view with whatever block is selected in the editor store.
+  // Handles both List View clicks on children AND List View clicks on the parent itself.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     if (!selectedBlockClientId) return;
+
+    // Case A: The parent Slider block was selected (user clicked parent in List View).
+    // But skip if WE were the ones who called selectBlock(parent) after a child selection —
+    // in that case isProgrammaticSelect is true and we must NOT reset to parent view.
+    if (selectedBlockClientId === clientId) {
+      if (isProgrammaticSelect.current) {
+        isProgrammaticSelect.current = false; // clear flag, keep child view
+      } else {
+        // Genuine user action — show parent settings
+        setIsParentSelected(true);
+        setSelectedChildId(null);
+        setStoredSelectedChildId(null);
+      }
+      return;
+    }
+
+    // Case B: A child of this slider was selected (e.g., List View click on Slider child).
     const isChildOfThisSlider = innerBlocks.some(block => block.clientId === selectedBlockClientId);
     if (isChildOfThisSlider) {
       setSelectedChildId(selectedBlockClientId);
       setStoredSelectedChildId(selectedBlockClientId);
       setIsParentSelected(false);
-      // Re-select the parent so its Inspector Controls remain visible
+      // Mark as programmatic so the next firing (when selectBlock changes the store
+      // to parentId) does not accidentally reset back to parent view.
+      isProgrammaticSelect.current = true;
       selectBlock(clientId);
-      // Navigate the slider to the slide matching the selected child
       goToChildSlide(selectedBlockClientId);
     }
   }, [selectedBlockClientId]);
