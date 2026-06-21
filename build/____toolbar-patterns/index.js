@@ -16662,7 +16662,7 @@ const App = () => {
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_HeaderToolBarPatterns__WEBPACK_IMPORTED_MODULE_2__["default"], null));
 };
 const domObserver = new MutationObserver(() => {
-  const modalRoot = document.querySelector(".edit-post-header__toolbar .edit-post-header-toolbar");
+  const modalRoot = document.querySelector(".editor-header__toolbar .edit-post-header-toolbar");
   if (modalRoot) {
     // Do not disconnect — toolbar may re-render, which would remove our button.
     // domObserver.disconnect();

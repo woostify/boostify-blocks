@@ -190,6 +190,8 @@ const WCBCopyPasteStyles = () => {
       pasteBlockStyles(selectedBlockData);
     }
   };
+
+  // Copy styles blocks
   const storeBlockStyles = blockData => {
     const wcbCopyPasteStyles = getWCBEditorStateLocalStorage('wcbCopyPasteStyles');
     wcbCopyPasteStylesSetter.setItem('wcbCopyPasteStyles', JSON.stringify({}));
@@ -230,7 +232,18 @@ const WCBCopyPasteStyles = () => {
       wcbCopyPasteStyles[`global-style`] = styles;
       wcbCopyPasteStylesSetter.setItem('wcbCopyPasteStyles', JSON.stringify(wcbCopyPasteStyles));
     }
+
+    // Core blocks
+    if (name.includes('core/')) {
+      const blockName = name.replace('core/', '');
+      styles = attributes;
+      styles.stylesSavedTimeStamp = Date.now();
+      wcbCopyPasteStyles[`core-${blockName}-styles`] = styles;
+      wcbCopyPasteStylesSetter.setItem('wcbCopyPasteStyles', JSON.stringify(wcbCopyPasteStyles));
+    }
   };
+
+  // Paste styles blocks
   const pasteBlockStyles = blockData => {
     const {
       name,
@@ -241,6 +254,8 @@ const WCBCopyPasteStyles = () => {
     let pasteStyle;
     const parentAttr = {};
     const wcbCopyPasteStyles = getWCBEditorStateLocalStorage('wcbCopyPasteStyles');
+
+    // Includes your custom blocks
     if (name.includes('boostify-blocks/')) {
       styles = wcbCopyPasteStyles[`global-style`];
       const blockType = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.select)('core/blocks').getBlockType(name);
@@ -283,6 +298,20 @@ const WCBCopyPasteStyles = () => {
         updateBlockStyles(clientId, parentAttr);
       }
     }
+
+    // Includes core blocks default
+    if (name.includes('core/')) {
+      const selectedBlockName = name.replace('core/', '');
+      const unwantedAttributes = ['content', 'values', 'value', 'citation', 'body', 'caption', 'foot', 'head', 'url', 'alt', 'id', 'linkDestination'];
+      pasteStyle = wcbCopyPasteStyles[`core-${selectedBlockName}-styles`];
+      unwantedAttributes.map(attr => {
+        if (pasteStyle[attr]) {
+          delete pasteStyle[attr];
+        }
+        return attr;
+      });
+      updateBlockStyles(clientId, pasteStyle);
+    }
   };
   const updateBlockStyles = (clientId, styles) => {
     (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.dispatch)('core/block-editor').updateBlockAttributes(clientId, styles);
@@ -298,7 +327,7 @@ const WCBCopyPasteStyles = () => {
   const openPopup = () => {
     const wcbCopyPasteStyles = getWCBEditorStateLocalStorage('wcbCopyPasteStyles') || {};
     setshowPopup(!showPopup);
-    if (0 === Object.keys(wcbCopyPasteStyles).length) {
+    if (!wcbCopyPasteStyles || 0 === Object.keys(wcbCopyPasteStyles).length) {
       setdisablePaste(true);
       return;
     }
@@ -339,20 +368,21 @@ const displayWCBCopyPasteSettingConditionally = (0,_wordpress_compose__WEBPACK_I
       getSelectedBlock,
       getMultiSelectedBlocks
     } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.select)('core/block-editor');
+    const excludeBlocks = ['core/missing'];
     const selectedBlock = getSelectedBlock();
     const multiSelectedBlock = getMultiSelectedBlocks();
     let singleSelectBlockFlag = false;
     let multiSelectBlockFlag = false;
     if (selectedBlock) {
       const singleSelectedBlockName = selectedBlock.name;
-      if (singleSelectedBlockName.includes('boostify-blocks/')) {
+      if ((singleSelectedBlockName.includes('boostify-blocks/') || singleSelectedBlockName.includes('core/')) && !excludeBlocks.includes(singleSelectedBlockName)) {
         singleSelectBlockFlag = true;
       }
     }
     if (multiSelectedBlock && 0 !== multiSelectedBlock.length) {
       multiSelectedBlock.map(value => {
         const singleSelectedBlockName = value.name;
-        if (singleSelectedBlockName.includes('boostify-blocks/')) {
+        if ((singleSelectedBlockName.includes('boostify-blocks/') || singleSelectedBlockName.includes('core/')) && !excludeBlocks.includes(singleSelectedBlockName)) {
           multiSelectBlockFlag = true;
         }
         return value;

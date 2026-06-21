@@ -23,7 +23,7 @@ const App = () => {
 
 const domObserver = new MutationObserver(() => {
 	const modalRoot = document.querySelector(
-		".edit-post-header__toolbar .edit-post-header-toolbar"
+		".editor-header__toolbar .edit-post-header-toolbar"
 	);
 
 	if (modalRoot) {

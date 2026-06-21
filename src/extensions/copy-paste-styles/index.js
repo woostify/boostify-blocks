@@ -38,7 +38,7 @@ const WCBCopyPasteStyles = () => {
 	const wcbCopyPasteStylesSetter = getWCBEditorStateLocalStorage();
 
 	useEffect( () => {
-		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );
+		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );	
 
 		if ( ! wcbCopyPasteStyles ) {
 			wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( {} ) );
@@ -131,6 +131,7 @@ const WCBCopyPasteStyles = () => {
 		}
 	};
 
+	// Copy styles blocks
 	const storeBlockStyles = ( blockData ) => {
 		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );
 		wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( {} ) );
@@ -177,8 +178,21 @@ const WCBCopyPasteStyles = () => {
 
 			wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( wcbCopyPasteStyles ) );
 		}
+
+		// Core blocks
+		if ( name.includes( 'core/' ) ) {
+			const blockName = name.replace( 'core/', '' );
+			styles = attributes;
+
+			styles.stylesSavedTimeStamp = Date.now();
+
+			wcbCopyPasteStyles[ `core-${ blockName }-styles` ] = styles;
+
+			wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( wcbCopyPasteStyles ) );
+		}
 	}
 
+	// Paste styles blocks
 	const pasteBlockStyles = ( blockData ) => {
 		const { name, clientId, innerBlocks } = blockData;
 
@@ -188,6 +202,7 @@ const WCBCopyPasteStyles = () => {
 
 		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );
 
+		// Includes your custom blocks
 		if ( name.includes( 'boostify-blocks/' ) ) {
 			styles = wcbCopyPasteStyles[ `global-style` ];
 
@@ -242,6 +257,36 @@ const WCBCopyPasteStyles = () => {
 
 		}
 
+		// Includes core blocks default
+		if ( name.includes( 'core/' ) ) {
+			const selectedBlockName = name.replace( 'core/', '' );
+
+			const unwantedAttributes = [
+				'content',
+				'values',
+				'value',
+				'citation',
+				'body',
+				'caption',
+				'foot',
+				'head',
+				'url',
+				'alt',
+				'id',
+				'linkDestination',
+			];
+
+			pasteStyle = wcbCopyPasteStyles[ `core-${ selectedBlockName }-styles` ];
+
+			unwantedAttributes.map( ( attr ) => {
+				if ( pasteStyle[ attr ] ) {
+					delete pasteStyle[ attr ];
+				}
+				return attr;
+			} );
+			updateBlockStyles( clientId, pasteStyle );
+		}
+
 	};
 
 	const updateBlockStyles = ( clientId, styles ) => {
@@ -263,7 +308,7 @@ const WCBCopyPasteStyles = () => {
 
 		setshowPopup( ! showPopup );
 
-		if ( 0 === Object.keys( wcbCopyPasteStyles ).length ) {
+		if ( ! wcbCopyPasteStyles || 0 === Object.keys( wcbCopyPasteStyles ).length ) {
 			setdisablePaste( true );
 			return;
 		}
@@ -319,8 +364,10 @@ const WCBCopyPasteStyles = () => {
 
 const displayWCBCopyPasteSettingConditionally = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
-
         const { getSelectedBlock, getMultiSelectedBlocks } = select( 'core/block-editor' );
+		const excludeBlocks = [
+			'core/missing'
+		];
 		const selectedBlock = getSelectedBlock();
 		const multiSelectedBlock = getMultiSelectedBlocks();
 		let singleSelectBlockFlag = false;
@@ -329,7 +376,10 @@ const displayWCBCopyPasteSettingConditionally = createHigherOrderComponent( ( Bl
         if ( selectedBlock ) {
 			const singleSelectedBlockName = selectedBlock.name;
 
-			if ( singleSelectedBlockName.includes( 'boostify-blocks/' )) {
+			if ( 
+				(singleSelectedBlockName.includes( 'boostify-blocks/' ) || singleSelectedBlockName.includes( 'core/' )) &&
+				! excludeBlocks.includes( singleSelectedBlockName )
+			) {
 				singleSelectBlockFlag = true;
 			}
 		}
@@ -338,7 +388,10 @@ const displayWCBCopyPasteSettingConditionally = createHigherOrderComponent( ( Bl
 			multiSelectedBlock.map( ( value ) => {
 				const singleSelectedBlockName = value.name;
 
-				if ( singleSelectedBlockName.includes( 'boostify-blocks/' ) ) {
+				if (
+					(singleSelectedBlockName.includes( 'boostify-blocks/' ) || singleSelectedBlockName.includes( 'core/' )) &&
+					! excludeBlocks.includes( singleSelectedBlockName )
+				) {
 					multiSelectBlockFlag = true;
 				}
 
