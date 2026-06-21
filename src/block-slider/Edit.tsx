@@ -1,12 +1,15 @@
 import { __ } from "@wordpress/i18n";
 import { useBlockProps, InnerBlocks, // @ts-ignore
-	useInnerBlocksProps } from "@wordpress/block-editor";
+	useInnerBlocksProps, BlockEdit as WPBlockEdit } from "@wordpress/block-editor";
 import { use, useDispatch, useSelect } from "@wordpress/data";
 import React, { useEffect, FC, useCallback, useRef, useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { WcbAttrs } from "./attributes";
 import HOCInspectorControls, {
 	InspectorControlsTabs,
+	INSPECTOR_CONTROLS_TABS,
 } from "../components/HOCInspectorControls";
+import { TabPanel } from "@wordpress/components";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
 // @ts-ignore
@@ -149,10 +152,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	// Debounce timer: prevents multiple rapid slickGoTo calls
 	// (canvas click triggers both handleChildSelect AND the useEffect simultaneously)
 	const slideNavTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-	// Flag to distinguish user manually clicking the parent vs our code calling selectBlock(parent)
-	// after a child is selected. Without this, the useEffect would immediately undo child selection.
-	const isProgrammaticSelect = useRef(false);
-
 	const {
 		tabIsOpen,
 		tabAdvancesIsPanelOpen,
@@ -294,17 +293,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		if (!selectedBlockClientId) return;
 
 		// Case A: The parent Slider block was selected (user clicked parent in List View).
-		// But skip if WE were the ones who called selectBlock(parent) after a child selection —
-		// in that case isProgrammaticSelect is true and we must NOT reset to parent view.
 		if (selectedBlockClientId === clientId) {
-			if (isProgrammaticSelect.current) {
-				isProgrammaticSelect.current = false; // clear flag, keep child view
-			} else {
-				// Genuine user action — show parent settings
-				setIsParentSelected(true);
-				setSelectedChildId(null);
-				setStoredSelectedChildId(null);
-			}
+			setIsParentSelected(true);
+			setSelectedChildId(null);
+			setStoredSelectedChildId(null);
 			return;
 		}
 
@@ -317,10 +309,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			setSelectedChildId(selectedBlockClientId);
 			setStoredSelectedChildId(selectedBlockClientId);
 			setIsParentSelected(false);
-			// Mark as programmatic so the next firing (when selectBlock changes the store
-			// to parentId) does not accidentally reset back to parent view.
-			isProgrammaticSelect.current = true;
-			selectBlock(clientId);
 			goToChildSlide(selectedBlockClientId);
 		}
 	}, [selectedBlockClientId]);
@@ -824,36 +812,30 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	// Memoized child component to prevent multiple renders
 	const MemoizedChildBlock = useMemo(() => {
 		return React.memo(({ block, isSelected, onSelect, index}: any) => {
-				const blockType = wp.blocks?.getBlockType?.(block.name);
-				const BlockEdit = blockType?.edit;
-
 				return (
-				<div 
-					// className="wcb-slider__item" 
-					key={index + "-"} 
+				<div
+					key={index + "-"}
 						onClick={(e) => {
 							e.stopPropagation();
 							onSelect(block.clientId);
 						}}
 					>
-						{/* <div className="wcb-slider__item-background">
-							<div className="wcb-slider__item-wrap-inner">
-								<div className="wcb-slider__item-inner"> */}
-								{/* <div className={`wcb-slider-child__wrap ${block.attributes?.uniqueId || ''}`}> */}
-										<BlockEdit
-									        className={`${block.attributes?.uniqueId || ''}`}
-											attributes={block.attributes}
-											setAttributes={(newAttributes: any) => {
-											wp.data.dispatch("core/block-editor").updateBlockAttributes(
-														block.clientId,
-														newAttributes
-													);
-											}}
-											clientId={block.clientId}
-											isSelected={isSelected}
-											index={index} // Pass index to child for unique identification
-										/>
-									</div>
+						{/* WPBlockEdit sets up BlockEditContextProvider so child's InspectorControls
+						    gets its own isSelected context, independent of the parent's context */}
+						<WPBlockEdit
+							name={block.name}
+							attributes={block.attributes}
+							setAttributes={(newAttributes: any) => {
+								wp.data.dispatch("core/block-editor").updateBlockAttributes(
+									block.clientId,
+									newAttributes
+								);
+							}}
+							clientId={block.clientId}
+							isSelected={isSelected}
+							index={index}
+						/>
+					</div>
 								// </div>
 					// 		</div>
 					// 	</div>
@@ -1159,13 +1141,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				data-uniqueid={uniqueId}
 				onClick={handleParentClick}
 			>
-				{/* CONTROL SETTINGS - Show when parent is selected OR when child is selected */}
-				{(isParentSelected || selectedChildBlock) && (
-					<HOCInspectorControls
-						renderTabPanels={renderTabBodyPanels}
-						uniqueId={selectedChildBlock ? selectedChildBlock.attributes.uniqueId : uniqueId}
-					/>
-				)}
+				{/* CONTROL SETTINGS - Always rendered; InspectorControls internally filters by
+				    block selection (isSelected OR hasSelectedInnerBlock in WP 6.3+) */}
+				<HOCInspectorControls
+					renderTabPanels={renderTabBodyPanels}
+					uniqueId={selectedChildBlock ? selectedChildBlock.attributes.uniqueId : uniqueId}
+				/>
 				
 				{/* CSS IN JS */}
 				<GlobalCss {...WcbAttrsForSave()} />
@@ -1173,6 +1154,30 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				{/* CHILD CONTENT */}
 				{renderSliderContent()}
 			</div>
+
+			{/* Portal child settings directly into sidebar when child is selected.
+			    Bypasses Gutenberg's InspectorControls fill/slot filtering because
+			    child blocks are rendered manually (not via standard InnerBlocks). */}
+			{!isParentSelected && selectedChildBlock && (() => {
+				const sidebarEl = document.querySelector(".block-editor-block-inspector");
+				if (!sidebarEl) return null;
+				return createPortal(
+					<TabPanel
+						className={`wcb-inspectorControls__panel ${selectedChildBlock.attributes.uniqueId}`}
+						activeClass="HOCInspectorControls__ative-tab active-tab"
+						tabs={INSPECTOR_CONTROLS_TABS}
+						onSelect={() => {}}
+						initialTabName="General"
+					>
+						{(tab: InspectorControlsTabs[number]) => (
+							<div key={tab.name} className={tab.name}>
+								{renderTabBodyPanels(tab)}
+							</div>
+						)}
+					</TabPanel>,
+					sidebarEl
+				);
+			})()}
 		</MyCacheProvider>
 	);
 };
