@@ -198,6 +198,7 @@ const WCBCopyPasteStyles = () => {
     const {
       attributes,
       name,
+      clientId,
       innerBlocks
     } = blockData;
     if (wcbCopyPasteStyles) {
@@ -325,9 +326,9 @@ const WCBCopyPasteStyles = () => {
     event.preventDefault();
   });
   const openPopup = () => {
-    const wcbCopyPasteStyles = getWCBEditorStateLocalStorage('wcbCopyPasteStyles') || {};
+    const wcbCopyPasteStyles = getWCBEditorStateLocalStorage('wcbCopyPasteStyles');
     setshowPopup(!showPopup);
-    if (!wcbCopyPasteStyles || 0 === Object.keys(wcbCopyPasteStyles).length) {
+    if (0 === Object.keys(wcbCopyPasteStyles).length) {
       setdisablePaste(true);
       return;
     }

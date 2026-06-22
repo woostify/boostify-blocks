@@ -8982,6 +8982,42 @@ module.exports = ForwardRef;
 
 /***/ }),
 
+/***/ "./node_modules/@heroicons/react/24/outline/XMarkIcon.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@heroicons/react/24/outline/XMarkIcon.js ***!
+  \***************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const React = __webpack_require__(/*! react */ "react");
+
+function XMarkIcon({
+  title,
+  titleId,
+  ...props
+}, svgRef) {
+  return /*#__PURE__*/React.createElement("svg", Object.assign({
+    xmlns: "http://www.w3.org/2000/svg",
+    fill: "none",
+    viewBox: "0 0 24 24",
+    strokeWidth: 1.5,
+    stroke: "currentColor",
+    "aria-hidden": "true",
+    ref: svgRef,
+    "aria-labelledby": titleId
+  }, props), title ? /*#__PURE__*/React.createElement("title", {
+    id: titleId
+  }, title) : null, /*#__PURE__*/React.createElement("path", {
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    d: "M6 18L18 6M6 6l12 12"
+  }));
+}
+
+const ForwardRef = React.forwardRef(XMarkIcon);
+module.exports = ForwardRef;
+
+/***/ }),
+
 /***/ "./node_modules/@wry/context/lib/context.esm.js":
 /*!******************************************************!*\
   !*** ./node_modules/@wry/context/lib/context.esm.js ***!
@@ -16652,7 +16688,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const client = new _apollo_client__WEBPACK_IMPORTED_MODULE_4__.ApolloClient({
-  uri: "https://woostifyblocks.com/graphql",
+  uri: "https://boostifyblocks.com/graphql",
   cache: new _apollo_client__WEBPACK_IMPORTED_MODULE_5__.InMemoryCache()
 });
 const App = () => {
@@ -16717,6 +16753,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_15__);
 /* harmony import */ var _heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @heroicons/react/24/outline */ "./node_modules/@heroicons/react/24/outline/ArrowTopRightOnSquareIcon.js");
 /* harmony import */ var _heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(_heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var _heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @heroicons/react/24/outline */ "./node_modules/@heroicons/react/24/outline/XMarkIcon.js");
+/* harmony import */ var _heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_17__);
 /* harmony import */ var _apollo_client__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @apollo/client */ "./node_modules/@apollo/client/react/hooks/useLazyQuery.js");
 /* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant */ "./src/____toolbar-patterns/constant.ts");
 /* harmony import */ var copy_to_clipboard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! copy-to-clipboard */ "./node_modules/copy-to-clipboard/index.js");
@@ -16986,11 +17024,18 @@ const HeaderToolBarPatterns = () => {
     }, renderFreeProTab(), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "ml-6 mr-3 h-5 w-px bg-slate-900/10 block"
     }), renderSelectCategories(), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-      href: "https://woostifyblocks.com/wcb-blocks/",
+      href: "https://boostifyblocks.com/",
       target: "_blank",
       rel: "noopener noreferrer",
       className: "relative ml-2 h-9 w-9 items-center justify-center flex"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_16__, {
+      className: "w-4 h-4"
+    })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("button", {
+      type: "button",
+      onClick: closeModal,
+      className: "relative ml-2 h-9 w-9 items-center justify-center flex hover:bg-gray-200 rounded-md transition-colors",
+      "aria-label": "Close modal"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_heroicons_react_24_outline__WEBPACK_IMPORTED_MODULE_17__, {
       className: "w-4 h-4"
     }))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "col-span-2 min-w-0"
@@ -17007,7 +17052,7 @@ const HeaderToolBarPatterns = () => {
     className: "w-4 h-4 text-white"
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
     className: "ml-2"
-  }, "Woostify patterns")), isOpen && renderModal());
+  }, "Woostify Patterns")), isOpen && renderModal());
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderToolBarPatterns);
 

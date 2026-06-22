@@ -136,7 +136,7 @@ const WCBCopyPasteStyles = () => {
 		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );
 		wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( {} ) );
 
-		const { attributes, name, innerBlocks } = blockData;
+		const { attributes, name, clientId, innerBlocks } = blockData;
 
 		if ( wcbCopyPasteStyles ) {
 			wcbCopyPasteStylesSetter.setItem( 'wcbCopyPasteStyles', JSON.stringify( {} ) );
@@ -284,6 +284,7 @@ const WCBCopyPasteStyles = () => {
 				}
 				return attr;
 			} );
+
 			updateBlockStyles( clientId, pasteStyle );
 		}
 
@@ -304,11 +305,11 @@ const WCBCopyPasteStyles = () => {
 	} );
 
     const openPopup = () => {
-		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' ) || {};
+		const wcbCopyPasteStyles = getWCBEditorStateLocalStorage( 'wcbCopyPasteStyles' );
 
 		setshowPopup( ! showPopup );
 
-		if ( ! wcbCopyPasteStyles || 0 === Object.keys( wcbCopyPasteStyles ).length ) {
+		if ( 0 === Object.keys( wcbCopyPasteStyles ).length ) {
 			setdisablePaste( true );
 			return;
 		}

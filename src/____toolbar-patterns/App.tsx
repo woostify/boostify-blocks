@@ -5,7 +5,7 @@ import HeaderToolBarPatterns from "./HeaderToolBarPatterns";
 import "./editor.scss";
 
 const client = new ApolloClient({
-	uri: "https://woostifyblocks.com/graphql",
+	uri: "https://boostifyblocks.com/graphql",
 	cache: new InMemoryCache(),
 });
 

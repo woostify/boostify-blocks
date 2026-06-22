@@ -10,6 +10,7 @@ import {
 	KeyIcon,
 	LightBulbIcon,
 	LinkIcon,
+	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { gql, useLazyQuery } from "@apollo/client";
 import { GET_WCB_BLOCKS } from "./constant";
@@ -351,13 +352,21 @@ const HeaderToolBarPatterns = () => {
 						<div className="ml-6 mr-3 h-5 w-px bg-slate-900/10 block"></div>
 						{renderSelectCategories()}
 						<a
-							href="https://woostifyblocks.com/wcb-blocks/"
+							href="https://boostifyblocks.com/"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="relative ml-2 h-9 w-9 items-center justify-center flex"
 						>
 							<ArrowTopRightOnSquareIcon className="w-4 h-4" />
 						</a>
+						<button
+							type="button"
+							onClick={closeModal}
+							className="relative ml-2 h-9 w-9 items-center justify-center flex hover:bg-gray-200 rounded-md transition-colors"
+							aria-label="Close modal"
+						>
+							<XMarkIcon className="w-4 h-4" />
+						</button>
 					</div>
 
 					<div className="col-span-2 min-w-0">
@@ -378,7 +387,7 @@ const HeaderToolBarPatterns = () => {
 				onClick={openModal}
 			>
 				<Logo className="w-4 h-4 text-white" />
-				<span className="ml-2">Woostify patterns</span>
+				<span className="ml-2">Woostify Patterns</span>
 			</Button>
 
 			{isOpen && renderModal()}
