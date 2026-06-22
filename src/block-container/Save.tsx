@@ -4,6 +4,7 @@ import _ from "lodash";
 // @ts-ignore
 import { useInnerBlocksProps, useBlockProps } from "@wordpress/block-editor";
 import { BlockWCBContainerAttrs } from "./attributes";
+// @ts-ignore
 import "./style.scss";
 import VideoBackgroundByBgControl from "../components/VideoBackgroundByBgControl";
 import OverlayBackgroundByBgControl from "../components/OverlayBackgroundByBgControl";

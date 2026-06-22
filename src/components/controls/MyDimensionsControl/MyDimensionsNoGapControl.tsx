@@ -1,8 +1,4 @@
 import React, { FC } from "react";
-import {
-	// @ts-ignore
-	__experimentalBoxControl as BoxControl,
-} from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import MyLabelControl from "../MyLabelControl/MyLabelControl";
 import { ResponsiveDevices } from "../MyResponsiveToggle/MyResponsiveToggle";
@@ -13,6 +9,7 @@ import {
 	MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 } from "./types";
 import getValueFromAttrsResponsives from "../../../utils/getValueFromAttrsResponsives";
+import MyDimensionsBoxControl from "./MyDimensionsUnitControl";
 
 interface Props {
 	className?: string;
@@ -41,61 +38,47 @@ const MyDimensionsNoGapControl: FC<Props> = ({
 
 	//
 
-	const addUnitIfMissing = (value: string | number): string => {
-		if (!value) return "";
-		return isNaN(Number(value)) ? value.toString() : `${value}px`;
-	};
-	
 	const handleChangeMargin = (value: DimensionSettings) => {
 		setAttrs__dimensions({
 			...dimensionControl,
 			margin: {
 				...marginProps,
-				[deviceType]: {
-					top: addUnitIfMissing(value.top),
-					left: addUnitIfMissing(value.left),
-					right: addUnitIfMissing(value.right),
-					bottom: addUnitIfMissing(value.bottom),
-				},
+				[deviceType]: value,
 			},
 		});
 	};
-	
+
 	const handleChangePadding = (value: DimensionSettings) => {
 		setAttrs__dimensions({
 			...dimensionControl,
 			padding: {
 				...paddingProps,
-				[deviceType]: {
-					top: addUnitIfMissing(value.top),
-					left: addUnitIfMissing(value.left),
-					right: addUnitIfMissing(value.right),
-					bottom: addUnitIfMissing(value.bottom),
-				},
+				[deviceType]: value,
 			},
 		});
 	};
 
 	return (
 		<div className={className}>
-			<BoxControl
+			<MyDimensionsBoxControl
 				label={
 					<MyLabelControl hasResponsive className="">
 						{__("Padding", "boostify-blocks")}
 					</MyLabelControl>
 				}
-				values={padding}
+				values={padding || {}}
 				onChange={handleChangePadding}
+				min={0}
 			/>
-			<BoxControl
+			<MyDimensionsBoxControl
 				label={
 					<MyLabelControl className="" hasResponsive>
 						{__("Margin", "boostify-blocks")}
 					</MyLabelControl>
 				}
-				values={margin}
+				values={margin || {}}
 				onChange={handleChangeMargin}
-				inputProps={{ min: -2000 }}
+				min={0}
 			/>
 		</div>
 	);
