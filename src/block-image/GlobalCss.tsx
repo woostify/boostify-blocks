@@ -21,6 +21,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_caption,
 		style_image,
 		style_overlay,
+		style_dimension,
 	} = attrs;
 	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
@@ -100,6 +101,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 					getBoxShadowStyles({
 						className: IMAGE_CLASSNAME,
 						boxShadow: style_image.boxShadow,
+					}),
+					getPaddingMarginStyles({
+						className: IMAGE_CLASSNAME,
+						margin: style_dimension?.margin,
+						padding: style_dimension?.padding,
 					}),
 				]}
 			/>

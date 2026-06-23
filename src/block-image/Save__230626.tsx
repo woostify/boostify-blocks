@@ -55,7 +55,6 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_image,
 		style_overlay,
 		style_caption,
-		style_dimension,
 	} = attributes;
 	//
 
@@ -76,8 +75,6 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_image,
 		style_overlay,
 		style_caption,
-		style_dimension,
-		general_image
 	};
 
 	const { currentDeviceValue: align } = getValueFromAttrsResponsives(
