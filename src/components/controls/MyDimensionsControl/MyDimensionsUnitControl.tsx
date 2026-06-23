@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import styled from "@emotion/styled";
 import {
 	// @ts-ignore
 	__experimentalUnitControl as UnitControl,
@@ -9,65 +8,15 @@ import {
 import { link, linkOff } from "@wordpress/icons";
 import { __ } from "@wordpress/i18n";
 import { DimensionSettings } from "./types";
+import * as styles from "./style";
+import { getAllValue, isMixedValues, isValuesDefined, parseValue, getMaxForUnit, getStepForUnit } from "./helpers";
 
-// Helpers
-
-function getAllValue(values: Partial<DimensionSettings>): string {
-	const { top, right, bottom, left } = values;
-	if (top === right && right === bottom && bottom === left) return top || "";
-	return "";
-}
-
-function isMixedValues(values: Partial<DimensionSettings>): boolean {
-	const { top, right, bottom, left } = values;
-	return !(top === right && right === bottom && bottom === left);
-}
-
-function isValuesDefined(values?: Partial<DimensionSettings>): boolean {
-	if (!values) return false;
-	return Object.values(values).some((v) => !!v && /\d/.test(v as string));
-}
-
-function parseValue(v: string): { num: number; unit: string } {
-	if (!v) return { num: 0, unit: "px" };
-	const match = v.match(/^([\d.]+)([a-z%]*)$/i);
-	if (!match) return { num: 0, unit: "px" };
-	return { num: parseFloat(match[1]) || 0, unit: match[2] || "px" };
-}
-
-function getSliderMax(unit: string): number {
-	switch (unit.toLowerCase()) {
-		case "rem":
-		case "em":
-			return 20;
-		case "%":
-		case "vw":
-		case "vh":
-			return 100;
-		default:
-			return 1000;
-	}
-}
-
-function getSliderStep(unit: string): number {
-	switch (unit.toLowerCase()) {
-		case "rem":
-		case "em":
-			return 0.1;
-		default:
-			return 1;
-	}
-}
-
-const DEFAULT_VALUES: DimensionSettings = {
-	top: "",
-	right: "",
-	bottom: "",
-	left: "",
-};
+// Constants
 
 type Side = keyof DimensionSettings;
 type ActiveSide = "all" | Side;
+
+const DEFAULT_VALUES: DimensionSettings = { top: "", right: "", bottom: "", left: "" };
 
 const SIDES: Array<{ key: Side }> = [
 	{ key: "top" },
@@ -84,141 +33,42 @@ const LABELS: Record<Side | "mixed", string> = {
 	mixed: __("Mixed", "boostify-blocks"),
 };
 
-// BoxControlIcon
-const IconRoot = styled.span`
-	box-sizing: border-box;
-	display: block;
-	flex: 0 0 24px;
-	width: 24px;
-	height: 24px;
-	position: relative;
-	padding: 4px;
-`;
-
-const IconViewbox = styled.span`
-	box-sizing: border-box;
-	display: block;
-	position: relative;
-	width: 100%;
-	height: 100%;
-`;
-
-const Stroke = styled.span<{ isFocused: boolean }>`
-	box-sizing: border-box;
-	display: block;
-	pointer-events: none;
-	position: absolute;
-	background-color: currentColor;
-	opacity: ${({ isFocused }) => (isFocused ? 1 : 0.3)};
-`;
-
-const TopStroke = styled(Stroke)`
-	height: 2px;
-	left: 3px;
-	right: 3px;
-	top: 0;
-`;
-
-const RightStroke = styled(Stroke)`
-	bottom: 3px;
-	top: 3px;
-	width: 2px;
-	right: 0;
-`;
-
-const BottomStroke = styled(Stroke)`
-	height: 2px;
-	left: 3px;
-	right: 3px;
-	bottom: 0;
-`;
-
-const LeftStroke = styled(Stroke)`
-	bottom: 3px;
-	top: 3px;
-	width: 2px;
-	left: 0;
-`;
-
+// BoxIcon
 const BoxIcon: FC<{ side: ActiveSide }> = ({ side }) => {
-	const isFocused = (s: Side) => side === "all" || side === s;
+	const focused = (s: Side) => side === "all" || side === s;
 	return (
-		<IconRoot>
-			<IconViewbox>
-				<TopStroke isFocused={isFocused("top")} />
-				<RightStroke isFocused={isFocused("right")} />
-				<BottomStroke isFocused={isFocused("bottom")} />
-				<LeftStroke isFocused={isFocused("left")} />
-			</IconViewbox>
-		</IconRoot>
+		<span style={styles.iconRoot}>
+			<span style={styles.iconViewbox}>
+				<span style={styles.stroke(focused("top"),    { height: 2, left: 3, right: 3, top: 0 })} />
+				<span style={styles.stroke(focused("right"),  { bottom: 3, top: 3, width: 2, right: 0 })} />
+				<span style={styles.stroke(focused("bottom"), { height: 2, left: 3, right: 3, bottom: 0 })} />
+				<span style={styles.stroke(focused("left"),   { bottom: 3, top: 3, width: 2, left: 0 })} />
+			</span>
+		</span>
 	);
 };
 
-// Slider
-
-const StyledSlider = styled.input`
-	display: block;
-	width: 100%;
-	height: 4px;
-	appearance: none;
-	-webkit-appearance: none;
-	border-radius: 2px;
-	outline: none;
-	cursor: pointer;
-
-	&::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		appearance: none;
-		width: 14px;
-		height: 14px;
-		border-radius: 50%;
-		background: #0073aa;
-		cursor: pointer;
-		margin-top: -5px;
-	}
-
-	&::-moz-range-thumb {
-		width: 14px;
-		height: 14px;
-		border-radius: 50%;
-		background: #0073aa;
-		border: none;
-		cursor: pointer;
-	}
-
-	&::-webkit-slider-runnable-track {
-		height: 4px;
-		border-radius: 2px;
-	}
-
-	&::-moz-range-track {
-		height: 4px;
-		border-radius: 2px;
-		background: #ddd;
-	}
-`;
-
+// SideSlider
 const SideSlider: FC<{
 	value: string;
 	min: number;
 	onChange: (newValue: string) => void;
 }> = ({ value, min, onChange }) => {
 	const { num, unit } = parseValue(value);
-	const max = getSliderMax(unit);
-	const step = getSliderStep(unit);
+	const max = getMaxForUnit(unit);
+	const step = getStepForUnit(unit);
 	const clamped = Math.max(min, Math.min(max, num));
 	const pct = max > min ? ((clamped - min) / (max - min)) * 100 : 0;
 
 	return (
-		<StyledSlider
+		<input
+			className="wcb-dimensions-unit-control__range"
 			type="range"
 			value={clamped}
 			min={min}
 			max={max}
 			step={step}
-			style={{
-				background: `linear-gradient(to right, #0073aa ${pct}%, #ddd ${pct}%)`,
-			}}
+			style={{ background: `linear-gradient(to right, #0073aa ${pct}%, #ddd ${pct}%)` }}
 			onChange={(e) => {
 				const newNum = parseFloat(e.target.value);
 				onChange(unit ? `${newNum}${unit}` : `${newNum}`);
@@ -228,51 +78,7 @@ const SideSlider: FC<{
 	);
 };
 
-// Layout
-
-const Root = styled.div`
-	box-sizing: border-box;
-	width: 100%;
-	padding-bottom: 12px;
-`;
-
-const Header = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 8px;
-`;
-
-const HeaderActions = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 4px;
-`;
-
-const SideRow = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-bottom: 8px;
-
-	&:last-child {
-		margin-bottom: 0;
-	}
-`;
-
-const SideUnitControl = styled(UnitControl as any)`
-	flex: 0 0 110px;
-	width: 110px;
-`;
-
-const SliderWrapper = styled.div`
-	flex: 1;
-	display: flex;
-	align-items: center;
-`;
-
-// Component
-
+// MyDimensionsUnitControl
 interface Props {
 	label?: React.ReactNode;
 	values: Partial<DimensionSettings>;
@@ -288,10 +94,10 @@ const MyDimensionsUnitControl: FC<Props> = ({
 	min = -99999,
 	allowReset = true,
 }) => {
+	styles.useInjectStyles();
+
 	const hasInitialValue = isValuesDefined(values);
-	const [isLinked, setIsLinked] = useState(
-		!hasInitialValue || !isMixedValues(values)
-	);
+	const [isLinked, setIsLinked] = useState(!hasInitialValue || !isMixedValues(values));
 	const [isDirty, setIsDirty] = useState(hasInitialValue);
 
 	const merged: DimensionSettings = {
@@ -325,10 +131,10 @@ const MyDimensionsUnitControl: FC<Props> = ({
 		: __("Link sides", "boostify-blocks");
 
 	return (
-		<Root>
-			<Header>
+		<div style={styles.root}>
+			<div style={styles.header}>
 				<div>{label}</div>
-				<HeaderActions>
+				<div style={styles.headerActions}>
 					{allowReset && (
 						<Button
 							className="component-box-control__reset-button"
@@ -350,52 +156,53 @@ const MyDimensionsUnitControl: FC<Props> = ({
 							onClick={() => setIsLinked((prev) => !prev)}
 						/>
 					</Tooltip>
-				</HeaderActions>
-			</Header>
+				</div>
+			</div>
 
 			{isLinked ? (
-				<SideRow>
+				<div style={styles.sideRow}>
 					<BoxIcon side="all" />
-					<SideUnitControl
+					<UnitControl
 						aria-label={typeof label === "string" ? label : undefined}
 						className="component-box-control__unit-control"
+						style={styles.unitControl}
 						value={allValue}
 						onChange={(v: string) => handleAllChange(v)}
 						min={min}
 						placeholder={isMixed ? LABELS.mixed : undefined}
 						isResetValueOnUnitChange={false}
 					/>
-					<SliderWrapper>
-						<SideSlider
-							value={allValue || merged.top}
-							min={min}
-							onChange={handleAllChange}
-						/>
-					</SliderWrapper>
-				</SideRow>
+					<div style={styles.sliderWrapper}>
+						<SideSlider value={allValue || merged.top} min={min} onChange={handleAllChange} />
+					</div>
+				</div>
 			) : (
-				SIDES.map(({ key }) => (
-					<SideRow key={key}>
+				SIDES.map(({ key }, index) => (
+					<div
+						key={key}
+						style={index === SIDES.length - 1 ? styles.sideRowLast : styles.sideRow}
+					>
 						<BoxIcon side={key} />
-						<SideUnitControl
+						<UnitControl
 							aria-label={LABELS[key]}
 							className="component-box-control__unit-control"
+							style={styles.unitControl}
 							value={merged[key]}
 							onChange={(v: string) => handleSideChange(key, v)}
 							min={min}
 							isResetValueOnUnitChange={false}
 						/>
-						<SliderWrapper>
+						<div style={styles.sliderWrapper}>
 							<SideSlider
 								value={merged[key]}
 								min={min}
 								onChange={(v) => handleSideChange(key, v)}
 							/>
-						</SliderWrapper>
-					</SideRow>
+						</div>
+					</div>
 				))
 			)}
-		</Root>
+		</div>
 	);
 };
 
