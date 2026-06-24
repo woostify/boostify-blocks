@@ -56,7 +56,11 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 		if (uniqueId) {
 			return;
 		}
-		setAttributes({ align: "full" });
+		const { containerWidthType } = general_container;
+		if (containerWidthType === "Custom") {
+			return;
+		}
+		setAttributes({ align: containerWidthType === "Boxed" ? "wide" : "full" });
 	}, [uniqueId]);
 
 	//

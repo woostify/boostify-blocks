@@ -31,6 +31,8 @@ export interface WCB_PRODUCTS_PANEL_STYLE_LAYOUT
 	textAlignment: TextAlignment;
 	backgroundColor: string;
 	numberOfColumn: HasResponsive<number>;
+	isNumberOfColumnEdited?: boolean;
+	numberOfColumnFromCustomizer?: HasResponsive<number>;
 	// peekAfter - The value of the future viewports which have to be visible in the current view
 	peekAfter: HasResponsive<string>;
 	isEqualHeight: boolean;
@@ -139,6 +141,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 								...panelData.numberOfColumn,
 								[deviceType]: number || 2,
 							},
+							isNumberOfColumnEdited: true,
 						});
 					}}
 					min={1}

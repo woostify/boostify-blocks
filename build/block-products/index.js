@@ -5623,7 +5623,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_server_side_render__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/server-side-render */ "@wordpress/server-side-render");
 /* harmony import */ var _wordpress_server_side_render__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_server_side_render__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/settings.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/settings.js");
 /* harmony import */ var _components_HOCInspectorControls__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/HOCInspectorControls */ "./src/components/HOCInspectorControls.tsx");
 /* harmony import */ var _GlobalCss__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./GlobalCss */ "./src/block-products/GlobalCss.tsx");
 /* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./editor.scss */ "./src/block-products/editor.scss");
@@ -5653,7 +5653,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ../components/controls/MyMotionEffectControl/MyMotionEffectControl */ "./src/components/controls/MyMotionEffectControl/MyMotionEffectControl.tsx");
 /* harmony import */ var _WcbProducstPanel_GeneralLayout__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./WcbProducstPanel_GeneralLayout */ "./src/block-products/WcbProducstPanel_GeneralLayout.tsx");
 /* harmony import */ var _WcbProductsPanel_StyleOutOfStock__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./WcbProductsPanel_StyleOutOfStock */ "./src/block-products/WcbProductsPanel_StyleOutOfStock.tsx");
-/* harmony import */ var _WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./WcbThemeDefaults */ "./src/block-products/WcbThemeDefaults.ts");
+/* harmony import */ var _utils_themeDefaults__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ../utils/themeDefaults */ "./src/utils/themeDefaults.ts");
+/* harmony import */ var _WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./WcbThemeDefaults */ "./src/block-products/WcbThemeDefaults.ts");
 
 
 
@@ -5664,6 +5665,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // @ts-ignore
+
 
 
 
@@ -5748,25 +5750,25 @@ const Edit = props => {
     // If already initialized, do nothing
     if (attributes.style_layout) return;
     const DEFAULT = {
-      style_addToCardBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleAddToCartBtnDefault)(_WcbProductsPanel_StyleAddToCartBtn__WEBPACK_IMPORTED_MODULE_19__.WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO),
-      style_border: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleBorderDefault)(attributes.style_layout),
-      style_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleFeaturedImageDefault)(_WcbProductsPanel_StyleFeaturedImage__WEBPACK_IMPORTED_MODULE_17__.WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO),
-      style_layout: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleLayoutDefault)(attributes.style_border),
+      style_addToCardBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleAddToCartBtnDefault)(_WcbProductsPanel_StyleAddToCartBtn__WEBPACK_IMPORTED_MODULE_19__.WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO),
+      style_border: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleBorderDefault)(attributes.style_layout),
+      style_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleFeaturedImageDefault)(_WcbProductsPanel_StyleFeaturedImage__WEBPACK_IMPORTED_MODULE_17__.WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO),
+      style_layout: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleLayoutDefault)(attributes.style_border),
       style_pagination: _WcbProductsPanel_StylePagination__WEBPACK_IMPORTED_MODULE_20__.WCB_PRODUCTS_PANEL_STYLE_PAGINATION_DEMO,
-      style_price: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStylePriceDefault)(_WcbProductsPanel_StylePrice__WEBPACK_IMPORTED_MODULE_23__.WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO),
+      style_price: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStylePriceDefault)(_WcbProductsPanel_StylePrice__WEBPACK_IMPORTED_MODULE_23__.WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO),
       style_rating: _WcbProductsPanel_StyleRating__WEBPACK_IMPORTED_MODULE_24__.WCB_PRODUCTS_PANEL_STYLE_RATING_DEMO,
-      style_saleBadge: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleSaleBadgeDefault)(style_saleBadge),
-      style_outOfStock: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleOutOfStockDefault)(style_outOfStock),
+      style_saleBadge: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleSaleBadgeDefault)(style_saleBadge),
+      style_outOfStock: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleOutOfStockDefault)(style_outOfStock),
       style_category: _WcbProductsPanel_StyleCategory__WEBPACK_IMPORTED_MODULE_26__.WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO,
-      style_title: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleTitleDefault)(_WcbProductsPanel_StyleTitle__WEBPACK_IMPORTED_MODULE_16__.WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO),
-      style_wishlistBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleWishlistButtonDefault)(attributes.style_wishlistBtn),
-      style_quickViewBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleQuickViewButtonDefault)(attributes.style_quickViewBtn),
-      style_countdownUrgency: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleCountdownUrgencyDefault)(attributes.style_countdownUrgency),
-      general_sortingAndFiltering: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildSortingAndFilteringDefault)(general_sortingAndFiltering),
-      general_content: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildGeneralContractDefault)(general_content),
+      style_title: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleTitleDefault)(_WcbProductsPanel_StyleTitle__WEBPACK_IMPORTED_MODULE_16__.WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO),
+      style_wishlistBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleWishlistButtonDefault)(attributes.style_wishlistBtn),
+      style_quickViewBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleQuickViewButtonDefault)(attributes.style_quickViewBtn),
+      style_countdownUrgency: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleCountdownUrgencyDefault)(attributes.style_countdownUrgency),
+      general_sortingAndFiltering: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildSortingAndFilteringDefault)(general_sortingAndFiltering),
+      general_content: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildGeneralContractDefault)(general_content),
       general_layout: _WcbProducstPanel_GeneralLayout__WEBPACK_IMPORTED_MODULE_30__.WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO,
-      general_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildGeneralFeaturedImageDefault)(_WcbProductsPanelFeaturedImage__WEBPACK_IMPORTED_MODULE_13__.WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO),
-      general_addToCartBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildGeneralAddToCartBtnDefault)(_WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_14__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO),
+      general_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildGeneralFeaturedImageDefault)(_WcbProductsPanelFeaturedImage__WEBPACK_IMPORTED_MODULE_13__.WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO),
+      general_addToCartBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildGeneralAddToCartBtnDefault)(_WcbProductsPanelButton__WEBPACK_IMPORTED_MODULE_14__.WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO),
       general_pagination: _WcbProductsPanelPagination__WEBPACK_IMPORTED_MODULE_15__.WCB_PRODUCTS_PANEL_PAGINATION_DEMO,
       advance_responsiveCondition: _components_controls_MyResponsiveConditionControl_MyResponsiveConditionControl__WEBPACK_IMPORTED_MODULE_27__.RESPONSIVE_CONDITON_DEMO,
       advance_zIndex: _components_controls_MyZIndexControl_MyZIndexControl__WEBPACK_IMPORTED_MODULE_28__.Z_INDEX_DEMO,
@@ -5785,18 +5787,18 @@ const Edit = props => {
     prevIsCustomizerGeneralLayout.current = curr;
     if (prev === true && curr === false) {
       setAttributes({
-        general_content: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildGeneralContractDefault)(undefined),
-        general_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildGeneralFeaturedImageDefault)(undefined),
-        general_addToCartBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildGeneralAddToCartBtnDefault)(undefined),
-        general_sortingAndFiltering: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildSortingAndFilteringDefault)(undefined),
-        style_layout: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleLayoutDefault)(undefined),
-        style_border: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleBorderDefault)(undefined),
-        style_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleFeaturedImageDefault)(undefined),
-        style_saleBadge: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleSaleBadgeDefault)(undefined),
-        style_outOfStock: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleOutOfStockDefault)(undefined),
-        style_title: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleTitleDefault)(undefined),
-        style_price: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStylePriceDefault)(undefined),
-        style_addToCardBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleAddToCartBtnDefault)(undefined)
+        general_content: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildGeneralContractDefault)(undefined),
+        general_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildGeneralFeaturedImageDefault)(undefined),
+        general_addToCartBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildGeneralAddToCartBtnDefault)(undefined),
+        general_sortingAndFiltering: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildSortingAndFilteringDefault)(undefined),
+        style_layout: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleLayoutDefault)(undefined),
+        style_border: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleBorderDefault)(undefined),
+        style_featuredImage: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleFeaturedImageDefault)(undefined),
+        style_saleBadge: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleSaleBadgeDefault)(undefined),
+        style_outOfStock: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleOutOfStockDefault)(undefined),
+        style_title: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleTitleDefault)(undefined),
+        style_price: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStylePriceDefault)(undefined),
+        style_addToCardBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleAddToCartBtnDefault)(undefined)
       });
     }
   }, [general_layout?.isCustomizerGeneralLayout]);
@@ -5820,7 +5822,7 @@ const Edit = props => {
     const hasWishlistConfig = style_wishlistBtn && Object.keys(style_wishlistBtn).length > 0;
     if (!hasWishlistConfig) {
       setAttributes({
-        style_wishlistBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleWishlistButtonDefault)(attributes.style_wishlistBtn)
+        style_wishlistBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleWishlistButtonDefault)(attributes.style_wishlistBtn)
       });
     }
   }, [style_wishlistBtn]);
@@ -5830,7 +5832,7 @@ const Edit = props => {
     const hasCountdownUrgencyConfig = style_countdownUrgency && Object.keys(style_countdownUrgency).length > 0;
     if (!hasCountdownUrgencyConfig) {
       setAttributes({
-        style_countdownUrgency: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleCountdownUrgencyDefault)(attributes.style_countdownUrgency)
+        style_countdownUrgency: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleCountdownUrgencyDefault)(attributes.style_countdownUrgency)
       });
     }
   }, [style_countdownUrgency]);
@@ -5838,12 +5840,42 @@ const Edit = props => {
     const hasQuickViewConfig = style_quickViewBtn && Object.keys(style_quickViewBtn).length > 0;
     if (!hasQuickViewConfig) {
       setAttributes({
-        style_quickViewBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_32__.buildStyleQuickViewButtonDefault)(attributes.style_quickViewBtn)
+        style_quickViewBtn: (0,_WcbThemeDefaults__WEBPACK_IMPORTED_MODULE_33__.buildStyleQuickViewButtonDefault)(attributes.style_quickViewBtn)
       });
     }
   }, [style_quickViewBtn]);
-  //
 
+  // Sync Customizer "Products Per Row" to block when not manually overridden by user.
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    var _theme$product_per_ro, _theme$product_per_ro2, _theme$product_per_ro3;
+    if (!style_layout) return;
+    // User explicitly set column → don't override with Customizer value.
+    if (style_layout.isNumberOfColumnEdited) return;
+    const theme = (0,_utils_themeDefaults__WEBPACK_IMPORTED_MODULE_32__.getThemeDefaults)();
+    const customizerDesktop = (_theme$product_per_ro = theme?.product_per_row?.desktop) !== null && _theme$product_per_ro !== void 0 ? _theme$product_per_ro : null;
+    const customizerTablet = (_theme$product_per_ro2 = theme?.product_per_row?.tablet) !== null && _theme$product_per_ro2 !== void 0 ? _theme$product_per_ro2 : null;
+    const customizerMobile = (_theme$product_per_ro3 = theme?.product_per_row?.mobile) !== null && _theme$product_per_ro3 !== void 0 ? _theme$product_per_ro3 : null;
+    const stored = style_layout.numberOfColumnFromCustomizer;
+    if (!stored) return;
+    const customizerChanged = stored.Desktop !== customizerDesktop || stored.Tablet !== customizerTablet || stored.Mobile !== customizerMobile;
+    if (!customizerChanged) return;
+    setAttributes({
+      style_layout: {
+        ...style_layout,
+        numberOfColumn: {
+          Desktop: customizerDesktop !== null && customizerDesktop !== void 0 ? customizerDesktop : style_layout.numberOfColumn.Desktop,
+          Tablet: customizerTablet !== null && customizerTablet !== void 0 ? customizerTablet : style_layout.numberOfColumn.Tablet,
+          Mobile: customizerMobile !== null && customizerMobile !== void 0 ? customizerMobile : style_layout.numberOfColumn.Mobile
+        },
+        numberOfColumnFromCustomizer: {
+          Desktop: customizerDesktop !== null && customizerDesktop !== void 0 ? customizerDesktop : style_layout.numberOfColumn.Desktop,
+          Tablet: customizerTablet !== null && customizerTablet !== void 0 ? customizerTablet : undefined,
+          Mobile: customizerMobile !== null && customizerMobile !== void 0 ? customizerMobile : undefined
+        }
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!style_layout]);
   const renderTabBodyPanels = tab => {
     switch (tab.name) {
       case "General":
@@ -6079,7 +6111,7 @@ const Edit = props => {
       renderToggle: ({
         onToggle
       }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.ToolbarButton, {
-        icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_33__["default"],
+        icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_34__["default"],
         label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Display settings"),
         onClick: onToggle
       }),
@@ -6123,7 +6155,8 @@ const Edit = props => {
               numberOfColumn: {
                 ...style_layout.numberOfColumn,
                 Desktop: Number(value || 1)
-              }
+              },
+              isNumberOfColumnEdited: true
             }
           });
         },
@@ -9027,7 +9060,8 @@ const WcbProductsPanel_StyleLayout = ({
         numberOfColumn: {
           ...panelData.numberOfColumn,
           [deviceType]: number || 2
-        }
+        },
+        isNumberOfColumnEdited: true
       });
     },
     min: 1,
@@ -9965,13 +9999,18 @@ __webpack_require__.r(__webpack_exports__);
 function buildStyleLayoutDefault(_attr) {
   var _theme$product_per_ro, _theme$product_per_ro2, _theme$product_per_ro3, _theme$shop_archive_p;
   const theme = (0,_utils_themeDefaults__WEBPACK_IMPORTED_MODULE_2__.getThemeDefaults)();
+  const numberOfColumn = {
+    Desktop: (_theme$product_per_ro = theme.product_per_row?.desktop) !== null && _theme$product_per_ro !== void 0 ? _theme$product_per_ro : _block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Desktop,
+    Tablet: (_theme$product_per_ro2 = theme.product_per_row?.tablet) !== null && _theme$product_per_ro2 !== void 0 ? _theme$product_per_ro2 : _block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Tablet,
+    Mobile: (_theme$product_per_ro3 = theme.product_per_row?.mobile) !== null && _theme$product_per_ro3 !== void 0 ? _theme$product_per_ro3 : _block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Mobile
+  };
   return {
     ..._block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
-    numberOfColumn: {
-      Desktop: (_theme$product_per_ro = theme.product_per_row?.desktop) !== null && _theme$product_per_ro !== void 0 ? _theme$product_per_ro : _block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Desktop,
-      Tablet: (_theme$product_per_ro2 = theme.product_per_row?.tablet) !== null && _theme$product_per_ro2 !== void 0 ? _theme$product_per_ro2 : _block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Tablet,
-      Mobile: (_theme$product_per_ro3 = theme.product_per_row?.mobile) !== null && _theme$product_per_ro3 !== void 0 ? _theme$product_per_ro3 : _block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Mobile
+    numberOfColumn,
+    numberOfColumnFromCustomizer: {
+      ...numberOfColumn
     },
+    isNumberOfColumnEdited: false,
     textAlignment: (_theme$shop_archive_p = theme.shop_archive_product_content?.align) !== null && _theme$shop_archive_p !== void 0 ? _theme$shop_archive_p : _block_products_WcbProductsPanel_StyleLayout__WEBPACK_IMPORTED_MODULE_0__.WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.textAlignment
   };
 }
@@ -15633,8 +15672,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   .edit-post-visual-editor .editor-styles-wrapper
     .block-editor-block-list__layout.is-root-container
     > * + *:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   body.block-editor-iframe__body.editor-styles-wrapper
@@ -15644,13 +15683,13 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   body.block-editor-iframe__body.editor-styles-wrapper
     .is-layout-constrained
     > * + * {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block + .wp-block:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   /* Tablet */
@@ -15663,8 +15702,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 
@@ -15678,8 +15717,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 `;
@@ -16270,18 +16309,18 @@ const getPaddingMarginStyles = ({
 			padding-bottom: ${padding_Mobile_bottom} !important;
 			padding-left: ${padding_Mobile_left} !important;
 			margin-top: ${margin_Mobile_top} !important;
-			margin-right: ${margin_Mobile_right} !important;
+			margin-right: ${margin_Mobile_right};
 			margin-bottom: ${margin_Mobile_bottom} !important;
-			margin-left: ${margin_Mobile_left} !important;
+			margin-left: ${margin_Mobile_left};
 			@media (min-width: ${media_tablet}) {
 				padding-top: ${padding_Tablet_top} !important;
 				padding-right: ${padding_Tablet_right} !important;
 				padding-bottom: ${padding_Tablet_bottom} !important;
 				padding-left: ${padding_Tablet_left} !important;
 				margin-top: ${margin_Tablet_top} !important;
-				margin-right: ${margin_Tablet_right} !important;
+				margin-right: ${margin_Tablet_right};
 				margin-bottom: ${margin_Tablet_bottom} !important;
-				margin-left: ${margin_Tablet_left} !important;
+				margin-left: ${margin_Tablet_left};
 			}
 			@media (min-width: ${media_desktop}) {
 				padding-top: ${padding_Desktop_top} !important;
@@ -16289,9 +16328,9 @@ const getPaddingMarginStyles = ({
 				padding-bottom: ${padding_Desktop_bottom} !important;
 				padding-left: ${padding_Desktop_left} !important;
 				margin-top: ${margin_Desktop_top} !important;
-				margin-right: ${margin_Desktop_right} !important;
+				margin-right: ${margin_Desktop_right};
 				margin-bottom: ${margin_Desktop_bottom} !important;
-				margin-left: ${margin_Desktop_left} !important;
+				margin-left: ${margin_Desktop_left};
 			}
 		}
 	`;

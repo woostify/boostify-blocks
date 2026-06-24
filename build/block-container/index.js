@@ -4902,8 +4902,14 @@ const ContainerEdit = props => {
     if (uniqueId) {
       return;
     }
+    const {
+      containerWidthType
+    } = general_container;
+    if (containerWidthType === "Custom") {
+      return;
+    }
     setAttributes({
-      align: "full"
+      align: containerWidthType === "Boxed" ? "wide" : "full"
     });
   }, [uniqueId]);
 
@@ -5187,6 +5193,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 
 
@@ -5334,15 +5341,28 @@ const GlobalCss = attrs => {
     advance_motionEffect
   } = attrs;
   const {
+    margin,
+    padding
+  } = styles_dimensions;
+  const {
+    value_Desktop: margin_Desktop,
+    value_Tablet: margin_Tablet,
+    value_Mobile: margin_Mobile
+  } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__["default"])(margin);
+  const hasValue = val => val !== undefined && val !== null && val !== "";
+  const hasSpacing = val => hasValue(val) && val !== "";
+  const hasMarginTopDesktop = hasSpacing(margin_Desktop?.top);
+  const hasMarginBottomDesktop = hasSpacing(margin_Desktop?.bottom);
+  const {
     media_desktop,
     media_tablet,
     defaultContentWidth,
     containerPadding,
     containerElementsGap
   } = ___WEBPACK_IMPORTED_MODULE_7__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+  const WP_BLOCK_CLASSNAME = `.wp-block`;
   const WRAP_CLASSNAME = `.wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
   const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-container__inner`;
-  const INNER_CLASSNAME_CHILD = `${WRAP_CLASSNAME} .wcb-container__inner .is_wcb_container_child`;
 
   // ------------------- WRAP DIV
   const getDivWrapStyles = () => {
@@ -5358,9 +5378,9 @@ const GlobalCss = attrs => {
       value_Mobile: cWidthMobile
     } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__["default"])(customWidth);
     if (containerWidthType !== "Custom") {
-      cWidthDesktop = undefined;
-      cWidthTablet = undefined;
-      cWidthMobile = undefined;
+      cWidthDesktop = null;
+      cWidthTablet = null;
+      cWidthMobile = null;
     }
     const {
       value_Desktop: minHeightDesktop,
@@ -5390,6 +5410,27 @@ const GlobalCss = attrs => {
     //
 
     return [{
+      [`${WP_BLOCK_CLASSNAME}:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        marginTop: hasMarginTopDesktop ? "0px" + " !important" : "",
+        marginBottom: hasMarginBottomDesktop ? "0px" + " !important" : ""
+      }
+    }, {
+      [`${WP_BLOCK_CLASSNAME}[data-align="full"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        [WRAP_CLASSNAME]: {
+          "marginLeft": `auto`,
+          "marginRight": `auto`
+        }
+      }
+    }, {
+      [`${WP_BLOCK_CLASSNAME}[data-align="wide"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+        "marginLeft": `-8px`,
+        "marginRight": `-8px`,
+        [WRAP_CLASSNAME]: {
+          "marginLeft": `auto`,
+          "marginRight": `auto`
+        }
+      }
+    }, {
       [WRAP_CLASSNAME]: {
         padding: containerPadding || "",
         color: styles_color,
@@ -5397,24 +5438,28 @@ const GlobalCss = attrs => {
         //
         maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
         // width: cWidthMobile_new,
-        minHeight: minHeightMobile_new,
+        minHeight: minHeightMobile_new !== null && minHeightMobile_new !== void 0 ? minHeightMobile_new : undefined,
+        "&.alignfull": {
+          marginLeft: `calc(-50vw + 50%)`,
+          marginRight: `calc(-50vw + 50%)`
+        },
         "&.is_wcb_container_child": {
-          width: cWidthMobile_new
+          width: cWidthMobile_new !== null && cWidthMobile_new !== void 0 ? cWidthMobile_new : undefined
         },
         [`@media (min-width: ${media_tablet})`]: {
           maxWidth: cWidthTablet_new ? cWidthTablet_new + " !important" : "",
           // width: cWidthTablet_new,
-          minHeight: minHeightTablet_new,
+          minHeight: minHeightTablet_new !== null && minHeightTablet_new !== void 0 ? minHeightTablet_new : undefined,
           "&.is_wcb_container_child": {
-            width: cWidthTablet_new
+            width: cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : undefined
           }
         },
         [`@media (min-width: ${media_desktop})`]: {
           maxWidth: cWidthDesktop_new ? cWidthDesktop_new + " !important" : "",
           // width: cWidthDesktop_new,
-          minHeight: minHeightDesktop_new,
+          minHeight: minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : undefined,
           "&.is_wcb_container_child": {
-            width: cWidthDesktop_new
+            width: cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : undefined
           }
         }
       }
@@ -5489,7 +5534,6 @@ const GlobalCss = attrs => {
 
   const getInner__contentCustomWidth = () => {
     let {
-      containerWidthType,
       contentWidthType,
       contentBoxWidth
     } = general_container;
@@ -5530,7 +5574,7 @@ const GlobalCss = attrs => {
       [INNER_CLASSNAME]: {
         rowGap: containerElementsGap || "",
         columnGap: containerElementsGap || "",
-        maxWidth: contentBoxWidthMobile_new,
+        maxWidth: contentBoxWidthMobile_new !== null && contentBoxWidthMobile_new !== void 0 ? contentBoxWidthMobile_new : undefined,
         [`@media (min-width: ${media_tablet})`]: contentBoxWidthTablet_new ? {
           maxWidth: contentBoxWidthTablet_new
         } : undefined,
@@ -5541,7 +5585,6 @@ const GlobalCss = attrs => {
     };
   };
   const getInner__flexProperties = () => {
-    const {} = general_flexProperties;
     const {
       colunmGap,
       rowGap
@@ -5896,6 +5939,7 @@ __webpack_require__.r(__webpack_exports__);
 
 // @ts-ignore
 
+// @ts-ignore
 
 
 
@@ -5989,6 +6033,7 @@ __webpack_require__.r(__webpack_exports__);
 
 // @ts-ignore
 
+// @ts-ignore
 
 
 
@@ -6007,7 +6052,8 @@ function save({
     styles_border,
     styles_boxShadow,
     styles_color,
-    containerClassName
+    containerClassName,
+    advance_motionEffect
   } = attributes;
   const {
     htmlTag: HtmlTag = "div"
@@ -6027,7 +6073,8 @@ function save({
     styles_border,
     styles_boxShadow,
     styles_color,
-    containerClassName
+    containerClassName,
+    advance_motionEffect
   };
 
   //
@@ -6530,10 +6577,10 @@ const RenderIcon = props => {
   }, props.children));
 };
 const getContainerAttrsByFlexWrap = (flexWrap = "nowrap", flexDirection = "column", alignItems = "stretch", justifyContent = "center") => {
-  const attrsDefault = Object.keys(_attributes__WEBPACK_IMPORTED_MODULE_3__["default"]).reduce((previousValue, currentValue, currentIndex) => {
+  const attrsDefault = Object.keys(_attributes__WEBPACK_IMPORTED_MODULE_3__["default"]).reduce((previousValue, currentValue) => {
     return {
       ...previousValue,
-      [currentValue]: _attributes__WEBPACK_IMPORTED_MODULE_3__["default"][currentValue].default
+      [currentValue]: _attributes__WEBPACK_IMPORTED_MODULE_3__["default"][currentValue]?.default
     };
   }, {});
   return {
@@ -10747,8 +10794,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   .edit-post-visual-editor .editor-styles-wrapper
     .block-editor-block-list__layout.is-root-container
     > * + *:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   body.block-editor-iframe__body.editor-styles-wrapper
@@ -10758,13 +10805,13 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
   body.block-editor-iframe__body.editor-styles-wrapper
     .is-layout-constrained
     > * + * {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   .editor-styles-wrapper > .block-editor-block-list__layout.is-root-container > .wp-block + .wp-block:not(p) {
-    margin-block-start: ${spacing} !important;
-    margin-top: ${spacing} !important;
+    margin-block-start: ${spacing};
+    margin-top: ${spacing};
   }
 
   /* Tablet */
@@ -10777,8 +10824,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 
@@ -10792,8 +10839,8 @@ const generateEditorSpacingCSS = (spacing = '0px') => `
       > .block-editor-block-list__layout.is-root-container
       > .wp-block
       + .wp-block:not(p) {
-      margin-block-start: ${spacing} !important;
-      margin-top: ${spacing} !important;
+      margin-block-start: ${spacing};
+      margin-top: ${spacing};
     }
   }
 `;
@@ -11445,18 +11492,18 @@ const getPaddingMarginStyles = ({
 			padding-bottom: ${padding_Mobile_bottom} !important;
 			padding-left: ${padding_Mobile_left} !important;
 			margin-top: ${margin_Mobile_top} !important;
-			margin-right: ${margin_Mobile_right} !important;
+			margin-right: ${margin_Mobile_right};
 			margin-bottom: ${margin_Mobile_bottom} !important;
-			margin-left: ${margin_Mobile_left} !important;
+			margin-left: ${margin_Mobile_left};
 			@media (min-width: ${media_tablet}) {
 				padding-top: ${padding_Tablet_top} !important;
 				padding-right: ${padding_Tablet_right} !important;
 				padding-bottom: ${padding_Tablet_bottom} !important;
 				padding-left: ${padding_Tablet_left} !important;
 				margin-top: ${margin_Tablet_top} !important;
-				margin-right: ${margin_Tablet_right} !important;
+				margin-right: ${margin_Tablet_right};
 				margin-bottom: ${margin_Tablet_bottom} !important;
-				margin-left: ${margin_Tablet_left} !important;
+				margin-left: ${margin_Tablet_left};
 			}
 			@media (min-width: ${media_desktop}) {
 				padding-top: ${padding_Desktop_top} !important;
@@ -11464,9 +11511,9 @@ const getPaddingMarginStyles = ({
 				padding-bottom: ${padding_Desktop_bottom} !important;
 				padding-left: ${padding_Desktop_left} !important;
 				margin-top: ${margin_Desktop_top} !important;
-				margin-right: ${margin_Desktop_right} !important;
+				margin-right: ${margin_Desktop_right};
 				margin-bottom: ${margin_Desktop_bottom} !important;
-				margin-left: ${margin_Desktop_left} !important;
+				margin-left: ${margin_Desktop_left};
 			}
 		}
 	`;

@@ -6,6 +6,7 @@ import {
 import React, { useEffect, FC, memo } from "react";
 import { WcbAttrs } from "./attributes";
 import { EditProps } from "../block-container/Edit";
+// @ts-ignore
 import "./editor.scss";
 import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey, { converClientIdToUniqueClass } from "../utils/converUniqueIdToAnphaKey";
