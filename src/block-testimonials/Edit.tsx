@@ -7,6 +7,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
@@ -34,7 +35,9 @@ import useGetDeviceType from "../hooks/useGetDeviceType";
 import MyCacheProvider from "../components/MyCacheProvider";
 import { WcbAttrsForSave } from "./Save";
 import Slider, { Settings } from "react-slick";
+// @ts-ignore
 import "slick-carousel/slick/slick.css";
+// @ts-ignore
 import "slick-carousel/slick/slick-theme.css";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 
@@ -45,7 +48,7 @@ export const TESTIMONIAL_ITEM_DEMO: TestimonialItem = {
 		"I have been working with these guys for years now! With lots of hard work and timely communication, they made sure they delivered the best to me. Highly recommended!",
 };
 
-function SampleNextArrow(props) {
+function SampleNextArrow(props: any) {
 	const { className, style, onClick } = props;
 	return (
 		<div
@@ -69,7 +72,7 @@ function SampleNextArrow(props) {
 	);
 }
 
-function SamplePrevArrow(props) {
+function SamplePrevArrow(props: any) {
 	const { className, style, onClick } = props;
 	return (
 		<div
@@ -568,6 +571,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			style_rating,
 			style_name,
 			advance_motionEffect,
+			general_rating
 		};
 	}, [
 		uniqueId,
@@ -585,6 +589,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_rating,
 		style_name,
 		advance_motionEffect,
+		general_rating
 	]);
 
 	return (

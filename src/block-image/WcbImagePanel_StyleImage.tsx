@@ -112,7 +112,7 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 						</MyLabelControl>
 					}
 					values={currentMargin}
-					onChange={(data) => {
+					onChange={(data: any) => {
 						setAttr__({
 							...panelData,
 							margin: {
@@ -129,7 +129,7 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 						</MyLabelControl>
 					}
 					values={currentPadding}
-					onChange={(data) => {
+					onChange={(data: any) => {
 						setAttr__({
 							...panelData,
 							padding: {
