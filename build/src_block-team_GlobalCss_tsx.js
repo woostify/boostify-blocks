@@ -41,6 +41,7 @@ const GlobalCss = attrs => {
     style_image,
     style_socialIcons,
     style_title,
+    style_dimension,
     //
     advance_responsiveCondition,
     advance_zIndex,
@@ -71,6 +72,12 @@ const GlobalCss = attrs => {
   }
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
     styles: getDivWrapStyles()
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+    styles: [(0,_utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
+      className: WRAP_CLASSNAME,
+      padding: style_dimension.padding,
+      margin: style_dimension.margin
+    })]
   }), general_image.isShowImage && general_image?.image?.mediaId && isImageBeSide ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
     styles: [{
       [`${WRAP_CLASSNAME}`]: {
