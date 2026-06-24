@@ -46,6 +46,7 @@ import {
 	MY_MOTION_EFFECT_DEMO,
 	MyMotionEffectData,
 } from "../components/controls/MyMotionEffectControl/MyMotionEffectControl";
+import { WCB_TEAM_PANEL_STYLE_DIMENSION, WCB_TEAM_PANEL_STYLE_DIMENSION_DEMO } from "./WcbTeamPanel_StyleDimension";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	heading: string;
@@ -60,6 +61,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	style_description: WCB_TEAM_PANEL_STYLE_DESCRIPTION;
 	style_socialIcons: WCB_TEAM_PANEL_STYLE_SOCIALICONS;
 	style_image: WCB_TEAM_PANEL_STYLE_IMAGE;
+	style_dimension: WCB_TEAM_PANEL_STYLE_DIMENSION;
 	//
 	advance_responsiveCondition: MyResponsiveConditionControlData;
 	advance_zIndex: MyZIndexControlData;
@@ -125,6 +127,10 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	style_image: {
 		type: "object",
 		default: WCB_TEAM_PANEL_STYLE_IMAGE_DEMO,
+	},
+	style_dimension: {
+		type: "object",
+		default: WCB_TEAM_PANEL_STYLE_DIMENSION_DEMO,
 	},
 
 	// ADVANCE

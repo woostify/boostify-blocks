@@ -54,6 +54,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					getPaddingMarginStyles({
 						className: WRAP_CLASSNAME,
 						padding: style_image.padding,
+						margin: style_image.margin,
 					}),
 					getPaddingMarginStyles({
 						className: `${WRAP_CLASSNAME} .wcb-image__overlay-wrap`,
@@ -65,10 +66,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{/* -------- IMAGE img ----------  */}
 			<Global
 				styles={[
-					getPaddingMarginStyles({
-						className: IMAGE_CLASSNAME,
-						margin: style_image.margin,
-					}),
 					getStyleObjectFromResponsiveAttr({
 						className: IMAGE_CLASSNAME,
 						value: general_settings.width,
