@@ -11998,10 +11998,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   DEFAULT_DIMENSION: () => (/* binding */ DEFAULT_DIMENSION),
 /* harmony export */   MY_DIMENSIONS_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_CONTROL_DEMO),
+/* harmony export */   MY_DIMENSIONS_GAP_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_GAP_CONTROL_DEMO),
+/* harmony export */   MY_DIMENSIONS_MARGIN_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_MARGIN_CONTROL_DEMO),
 /* harmony export */   MY_DIMENSIONS_NO_GAP_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_NO_GAP_CONTROL_DEMO),
 /* harmony export */   MY_DIMENSIONS_NO_GAP_DEMO__EMPTY: () => (/* binding */ MY_DIMENSIONS_NO_GAP_DEMO__EMPTY),
 /* harmony export */   MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO),
-/* harmony export */   MY_DIMENSIONS_NO_PADDING_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_NO_PADDING_CONTROL_DEMO)
+/* harmony export */   MY_DIMENSIONS_NO_PADDING_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_NO_PADDING_CONTROL_DEMO),
+/* harmony export */   MY_DIMENSIONS_PADDING_CONTROL_DEMO: () => (/* binding */ MY_DIMENSIONS_PADDING_CONTROL_DEMO)
 /* harmony export */ });
 const DEFAULT_DIMENSION = {
   top: "12px",
@@ -12030,6 +12033,26 @@ const MY_DIMENSIONS_CONTROL_DEMO = {
       left: "1rem",
       right: "1rem",
       bottom: "1rem"
+    }
+  }
+};
+const MY_DIMENSIONS_PADDING_CONTROL_DEMO = {
+  padding: {
+    Desktop: {
+      top: "1rem",
+      left: "1rem",
+      right: "1rem",
+      bottom: "1rem"
+    }
+  }
+};
+const MY_DIMENSIONS_MARGIN_CONTROL_DEMO = {
+  margin: {
+    Desktop: {
+      top: "",
+      left: "",
+      right: "",
+      bottom: ""
     }
   }
 };
@@ -12067,6 +12090,14 @@ const MY_DIMENSIONS_NO_GAP_DEMO__EMPTY = {
       right: "",
       bottom: ""
     }
+  }
+};
+const MY_DIMENSIONS_GAP_CONTROL_DEMO = {
+  colunmGap: {
+    Desktop: "1.5rem"
+  },
+  rowGap: {
+    Desktop: "1.5rem"
   }
 };
 const MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO = {
