@@ -19,7 +19,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_backgroundAndBorder,
 		style_dimension,
 		style_boxshadow,
-		style_verticalAlignment,
 		//
 		advance_responsiveCondition,
 		advance_zIndex,
@@ -70,6 +69,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					getPaddingMarginStyles({
 						className: `${WRAP_CLASSNAME}`,
 						padding: style_dimension.padding,
+						margin: style_dimension.margin,
 					}),
 					getStyleBackground({
 						className: ITEM_CLASSNAME,

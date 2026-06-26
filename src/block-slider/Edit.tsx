@@ -59,7 +59,6 @@ import {
 } from "../block-slider-child/WcbSliderPanel_StyleCallToActionButton";
 
 // Import separator demo constant
-import { WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "../block-slider-child/WcbSliderPanel_StyleSeparator";
 import { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "../block-slider-child/WcbSliderPanel_LayoutPreset";
 
 // Import demo constants from shared types
@@ -1141,12 +1140,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				data-uniqueid={uniqueId}
 				onClick={handleParentClick}
 			>
-				{/* CONTROL SETTINGS - Always rendered; InspectorControls internally filters by
-				    block selection (isSelected OR hasSelectedInnerBlock in WP 6.3+) */}
-				<HOCInspectorControls
-					renderTabPanels={renderTabBodyPanels}
-					uniqueId={selectedChildBlock ? selectedChildBlock.attributes.uniqueId : uniqueId}
-				/>
+				{/* CONTROL SETTINGS - Only renders when parent is selected.
+				    When a child is selected, the portal below handles rendering child panels.
+				    Conditionally rendering prevents duplicate TabPanel from HOCInspectorControls + portal. */}
+				{isParentSelected && (
+					<HOCInspectorControls
+						renderTabPanels={renderTabBodyPanels}
+						uniqueId={uniqueId}
+					/>
+				)}
 				
 				{/* CSS IN JS */}
 				<GlobalCss {...WcbAttrsForSave()} />
