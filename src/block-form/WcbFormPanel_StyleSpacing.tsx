@@ -15,11 +15,13 @@ import { DimensionSettings } from "../components/controls/MyDimensionsControl/ty
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
+import MyDimensionsNoGapControl from "../components/controls/MyDimensionsControl/MyDimensionsNoGapControl";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
 export interface WCB_FORM_PANEL_STYLE_SPACING {
 	padding: HasResponsive<DimensionSettings>;
+	margin: HasResponsive<DimensionSettings>;
 	border: MyBorderControlData;
 	rowGap: HasResponsive<string>;
 	labelBottomMargin: HasResponsive<string>;
@@ -32,6 +34,14 @@ export const WCB_FORM_PANEL_STYLE_SPACING_DEMO: WCB_FORM_PANEL_STYLE_SPACING = {
 			left: "1.75rem",
 			right: "1.75rem",
 			bottom: "1.75rem",
+		},
+	},
+	margin: {
+		Desktop: {
+			top: "",
+			left: "",
+			right: "",
+			bottom: "",
 		},
 	},
 	border: {
@@ -84,22 +94,10 @@ const WcbFormPanel_StyleSpacing: FC<Props> = ({
 			title={__("Spacing", "boostify-blocks")}
 		>
 			<div className={"space-y-5"}>
-				<BoxControl
-					label={
-						<MyLabelControl className="" hasResponsive>
-							{__("Form padding", "boostify-blocks")}
-						</MyLabelControl>
-					}
-					values={padding}
-					onChange={(value: DimensionSettings) => {
-						setAttr__({
-							...panelData,
-							padding: {
-								...paddingProps,
-								[deviceType]: value,
-							},
-						});
-					}}
+
+				<MyDimensionsNoGapControl
+					dimensionControl={panelData}
+					setAttrs__dimensions={(data) => setAttr__({ ...panelData, ...data })}
 				/>
 
 				<MyBorderControl
