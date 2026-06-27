@@ -33,6 +33,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		advance_motionEffect,
 		style_category,
 		style_countdownUrgency,
+		style_dimension,
 	} = attributes;
 	//
 
@@ -114,6 +115,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		} : undefined,
 		style_wishlistBtn: ensureObjectStructure(style_wishlistBtn),
 		style_countdownUrgency: ensureObjectStructure(style_countdownUrgency),
+		style_dimension: ensureObjectStructure(style_dimension),
 	};
 	//
 	const blockProps = useBlockProps.save({

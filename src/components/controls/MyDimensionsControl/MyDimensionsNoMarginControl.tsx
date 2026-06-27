@@ -1,8 +1,4 @@
 import React, { FC } from "react";
-import {
-	// @ts-ignore
-	__experimentalBoxControl as BoxControl,
-} from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import MyLabelControl from "../MyLabelControl/MyLabelControl";
 import { ResponsiveDevices } from "../MyResponsiveToggle/MyResponsiveToggle";
@@ -12,9 +8,9 @@ import {
 	MyDimensionsNoMarginControlData,
 	MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO,
 } from "./types";
-import MyUnitControl from "../MyUnitControl";
 import MySpacingSizesControl from "../MySpacingSizesControl/MySpacingSizesControl";
 import getValueFromAttrsResponsives from "../../../utils/getValueFromAttrsResponsives";
+import MyDimensionsUnitControl from "./MyDimensionsUnitControl";
 
 interface Props {
 	className?: string;
@@ -100,14 +96,15 @@ const MyDimensionsNoMarginControl: FC<Props> = ({
 				label={__("Column Gap", "boostify-blocks")}
 			/>
 
-			<BoxControl
+			<MyDimensionsUnitControl
 				label={
 					<MyLabelControl className="" hasResponsive>
 						{paddingLabel}
 					</MyLabelControl>
 				}
-				values={padding}
+				values={padding || {}}
 				onChange={handleChangePadding}
+				min={0}
 			/>
 		</div>
 	);
