@@ -27,6 +27,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_zIndex,
 		advance_motionEffect,
 	} = attrs;
+
+	const { margin, padding } = styles_dimensions;
+	const {
+		value_Desktop: margin_Desktop,
+		value_Tablet: margin_Tablet,
+		value_Mobile: margin_Mobile,
+	} = getValueFromAttrsResponsives(margin);
+
+	const hasValue = (val?: string) => val !== undefined && val !== null && val !== "";
+	const hasSpacing = (val?: string) => hasValue(val) && val !== "";
+
+	const hasMarginTopDesktop = hasSpacing(margin_Desktop?.top);
+	const hasMarginBottomDesktop = hasSpacing(margin_Desktop?.bottom);
+
 	const { 
 		media_desktop, 
 		media_tablet,
@@ -34,9 +48,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 		containerPadding,
 		containerElementsGap, 
 	} = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+	const WP_BLOCK_CLASSNAME = `.wp-block`;
 	const WRAP_CLASSNAME = `.wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-container__inner`;
-	const INNER_CLASSNAME_CHILD = `${WRAP_CLASSNAME} .wcb-container__inner .is_wcb_container_child`;
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject[] => {
@@ -49,9 +63,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_Mobile: cWidthMobile,
 		} = getValueFromAttrsResponsives(customWidth);
 		if (containerWidthType !== "Custom") {
-			cWidthDesktop = undefined;
-			cWidthTablet = undefined;
-			cWidthMobile = undefined;
+			cWidthDesktop = null;
+			cWidthTablet = null;
+			cWidthMobile = null;
 		}
 		const {
 			value_Desktop: minHeightDesktop,
@@ -82,6 +96,30 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 		return [
 			{
+				[`${WP_BLOCK_CLASSNAME}:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+					marginTop: hasMarginTopDesktop ? "0px" + " !important" : "",
+					marginBottom: hasMarginBottomDesktop ? "0px" + " !important" : "",
+				}
+			},
+			{
+				[`${WP_BLOCK_CLASSNAME}[data-align="full"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+					[WRAP_CLASSNAME]: {
+						"marginLeft": `auto`,
+						"marginRight": `auto`,
+					}
+				}
+			},
+			{
+				[`${WP_BLOCK_CLASSNAME}[data-align="wide"]:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
+					"marginLeft": `-8px`,
+					"marginRight": `-8px`,
+					[WRAP_CLASSNAME]: {
+						"marginLeft": `auto`,
+						"marginRight": `auto`,
+					}
+				}
+			},
+			{
 				[WRAP_CLASSNAME]: {
 					padding: containerPadding || "",
 					color: styles_color,
@@ -89,16 +127,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 					//
 					maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
 					// width: cWidthMobile_new,
-					minHeight: minHeightMobile_new,
+					minHeight: minHeightMobile_new ?? undefined,
+					"&.alignfull": {
+						marginLeft: `calc(-50vw + 50%)`,
+						marginRight: `calc(-50vw + 50%)`,
+					},
 					"&.is_wcb_container_child": {
-						width: cWidthMobile_new,
+						width: cWidthMobile_new ?? undefined,
 					},
 					[`@media (min-width: ${media_tablet})`]: {
 						maxWidth: cWidthTablet_new ? cWidthTablet_new + " !important" : "",
 						// width: cWidthTablet_new,
-						minHeight: minHeightTablet_new,
+						minHeight: minHeightTablet_new ?? undefined,
 						"&.is_wcb_container_child": {
-							width: cWidthTablet_new,
+							width: cWidthTablet_new ?? undefined,
 						},
 					},
 					[`@media (min-width: ${media_desktop})`]: {
@@ -106,9 +148,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 							? cWidthDesktop_new + " !important"
 							: "",
 						// width: cWidthDesktop_new,
-						minHeight: minHeightDesktop_new,
+						minHeight: minHeightDesktop_new ?? undefined,
 						"&.is_wcb_container_child": {
-							width: cWidthDesktop_new,
+							width: cWidthDesktop_new ?? undefined,
 						},
 					},
 				},
@@ -178,7 +220,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 	// ------------------- END WRAP DIV
 
 	const getInner__contentCustomWidth = (): CSSObject => {
-		let { containerWidthType, contentWidthType, contentBoxWidth } =
+		let { contentWidthType, contentBoxWidth } =
 			general_container;
 
 		// when container widtd = custom-width
@@ -224,7 +266,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			[INNER_CLASSNAME]: {
 				rowGap: containerElementsGap || "",
 				columnGap: containerElementsGap || "",
-				maxWidth: contentBoxWidthMobile_new,
+				maxWidth: contentBoxWidthMobile_new ?? undefined,
 				[`@media (min-width: ${media_tablet})`]: contentBoxWidthTablet_new
 					? {
 							maxWidth: contentBoxWidthTablet_new,
@@ -240,7 +282,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 	};
 
 	const getInner__flexProperties = () => {
-		const {} = general_flexProperties;
 		const { colunmGap, rowGap } = styles_dimensions;
 		return getFlexPropertiesStyles({
 			flexProperties: {

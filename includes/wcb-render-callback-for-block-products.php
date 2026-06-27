@@ -37,11 +37,24 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     };
     // Style layout
     $style_layout = $attributes['style_layout'] ?? [];
-    $style_layout['numberOfColumn'] = [
-        'Desktop' => $pick($theme['product_per_row']['desktop'] ?? null, $style_layout['numberOfColumn']['Desktop'] ?? null),
-        'Tablet'  => $pick($theme['product_per_row']['tablet'] ?? null, $style_layout['numberOfColumn']['Tablet'] ?? null),
-        'Mobile'  => $pick($theme['product_per_row']['mobile'] ?? null, $style_layout['numberOfColumn']['Mobile'] ?? null),
-    ];
+    $curr_col_desktop = $theme['product_per_row']['desktop'] ?? null;
+    $curr_col_tablet  = $theme['product_per_row']['tablet'] ?? null;
+    $curr_col_mobile  = $theme['product_per_row']['mobile'] ?? null;
+    $is_col_edited    = !empty($style_layout['isNumberOfColumnEdited']);
+    // Use block value when user explicitly edited; otherwise follow Customizer.
+    if ($is_col_edited) {
+        $style_layout['numberOfColumn'] = [
+            'Desktop' => $style_layout['numberOfColumn']['Desktop'] ?? $curr_col_desktop,
+            'Tablet'  => $style_layout['numberOfColumn']['Tablet']  ?? $curr_col_tablet,
+            'Mobile'  => $style_layout['numberOfColumn']['Mobile']  ?? $curr_col_mobile,
+        ];
+    } else {
+        $style_layout['numberOfColumn'] = [
+            'Desktop' => $curr_col_desktop ?? ($style_layout['numberOfColumn']['Desktop'] ?? null),
+            'Tablet'  => $curr_col_tablet  ?? ($style_layout['numberOfColumn']['Tablet']  ?? null),
+            'Mobile'  => $curr_col_mobile  ?? ($style_layout['numberOfColumn']['Mobile']  ?? null),
+        ];
+    }
     $theme_align = $theme['shop_archive_product_content']['align'] ?? null;
     if ($block_overrides) {
         // Block's textAlignment takes priority; only use Customizer if block has none.
