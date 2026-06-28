@@ -16768,6 +16768,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// @ts-ignore
 
 function save({
   attributes
@@ -17451,7 +17452,9 @@ const WcbTestimonialsPanel_StyleCompany = ({
         textColor: value
       });
     },
-    color: textColor,
+    color: textColor
+    // @ts-ignore
+    ,
     disableAlpha: true
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyTypographyControl_MyTypographyControl__WEBPACK_IMPORTED_MODULE_3__["default"], {
     typographyControl: typography,
@@ -17545,7 +17548,9 @@ const WcbTestimonialsPanel_StyleContent = ({
         textColor: value
       });
     },
-    color: textColor,
+    color: textColor
+    // @ts-ignore
+    ,
     disableAlpha: true
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyTypographyControl_MyTypographyControl__WEBPACK_IMPORTED_MODULE_3__["default"], {
     typographyControl: typography,
