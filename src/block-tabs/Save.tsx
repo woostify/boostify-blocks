@@ -21,6 +21,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_container,
         style_title,
         style_body,
+        style_dimension,
         advance_motionEffect,
         general_general,
     } = attributes;
@@ -37,6 +38,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_container,
         style_title,
         style_body,
+        style_dimension,
         advance_motionEffect,
         general_general,
     };

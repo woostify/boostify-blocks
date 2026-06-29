@@ -21,6 +21,7 @@ import WcbTeamPanel_StyleDesignation from "./WcbTeamPanel_StyleDesignation";
 import WcbTeamPanel_StyleDescription from "./WcbTeamPanel_StyleDescription";
 import WcbTeamPanel_StyleSocialIcons from "./WcbTeamPanel_StyleSocialIcons";
 import WcbTeamPanel_StyleImage from "./WcbTeamPanel_StyleImage";
+import WcbTeamPanel_StyleDimension from "./WcbTeamPanel_StyleDimension";
 import MyIconFull from "../components/controls/MyIconFull";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 
@@ -41,6 +42,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_description,
 		style_socialIcons,
 		style_image,
+		style_dimension,
 		advance_motionEffect,
 	} = attributes;
 	//  COMMON HOOKS
@@ -170,6 +172,16 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								panelData={style_socialIcons}
 							/>
 						)}
+						<WcbTeamPanel_StyleDimension
+							onToggle={() => handleTogglePanel("Styles", "_StyleDimension")}
+							initialOpen={tabStylesIsPanelOpen === "_StyleDimension"}
+							opened={tabStylesIsPanelOpen === "_StyleDimension" || undefined}
+							//
+							setAttr__={(data) => {
+								setAttributes({ style_dimension: data });
+							}}
+							panelData={style_dimension}
+						/>
 					</>
 				);
 			case "Advances":
@@ -206,6 +218,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			style_description,
 			style_socialIcons,
 			style_image,
+			style_dimension,
 			advance_motionEffect,
 		};
 	}, [
@@ -220,6 +233,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_description,
 		style_socialIcons,
 		style_image,
+		style_dimension,
 		advance_motionEffect,
 	]);
 

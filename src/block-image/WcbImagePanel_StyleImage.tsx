@@ -7,6 +7,7 @@ import { __ } from "@wordpress/i18n";
 import React, { FC, CSSProperties } from "react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
+import MyDimensionsNoGapControl from "../components/controls/MyDimensionsControl/MyDimensionsNoGapControl";
 import {
 	MyBorderControlData,
 	MY_BORDER_CONTROL_DEMO,
@@ -74,6 +75,7 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 		margin,
 		deviceType
 	);
+
 	return (
 		<PanelBody
 			initialOpen={initialOpen}
@@ -104,40 +106,9 @@ const WcbImagePanel_StyleImage: FC<Props> = ({
 						}}
 					/>
 				</MyDisclosure>
-
-				<BoxControl
-					label={
-						<MyLabelControl hasResponsive className="">
-							{__("Margin", "boostify-blocks")}
-						</MyLabelControl>
-					}
-					values={currentMargin}
-					onChange={(data) => {
-						setAttr__({
-							...panelData,
-							margin: {
-								...margin,
-								[deviceType]: data,
-							},
-						});
-					}}
-				/>
-				<BoxControl
-					label={
-						<MyLabelControl hasResponsive className="">
-							{__("Padding", "boostify-blocks")}
-						</MyLabelControl>
-					}
-					values={currentPadding}
-					onChange={(data) => {
-						setAttr__({
-							...panelData,
-							padding: {
-								...padding,
-								[deviceType]: data,
-							},
-						});
-					}}
+				<MyDimensionsNoGapControl
+					dimensionControl={panelData}
+					setAttrs__dimensions={(data) => setAttr__({ ...panelData, ...data })}
 				/>
 			</div>
 		</PanelBody>

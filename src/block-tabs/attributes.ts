@@ -45,6 +45,10 @@ import {
 	WCB_TABS_PANEL_STYLE_CONTAINER,
 	WCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
 } from "./WcbTabsPanel_StyleContainer";
+import {
+	WCB_TABS_PANEL_STYLE_DIMENSION,
+	WCB_TABS_PANEL_STYLE_DIMENSION_DEMO,
+} from "./WcbTabsPanel_StyleDimension";
 
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
@@ -55,6 +59,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	style_container: WCB_TABS_PANEL_STYLE_CONTAINER;
 	style_title: WCB_TABS_PANEL_STYLE_TITLE;
 	style_body: WCB_TABS_PANEL_STYLE_BODY;
+	style_dimension: WCB_TABS_PANEL_STYLE_DIMENSION;
 	general_preset: WCB_FAQ_PANEL_PRESET;
 	style_icon: WCB_TABS_PANEL_STYLE_ICON;
 	//
@@ -100,6 +105,10 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	style_body: {
 		type: "object",
 		default: WCB_TABS_PANEL_STYLE_BODY_DEMO,
+	},
+	style_dimension: {
+		type: "object",
+		default: WCB_TABS_PANEL_STYLE_DIMENSION_DEMO,
 	},
 	// THE ATTRS OF BLOCK HERE
 	general_preset: {

@@ -42,6 +42,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_category,
 		style_wishlistBtn,
 		style_quickViewBtn,
+		style_dimension,
 		//
 		advance_responsiveCondition,
 		advance_zIndex,
@@ -1223,6 +1224,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 					/>
 				)
 			}
+
+			{/* DIMENSION */}
+			<Global
+				styles={getPaddingMarginStyles({
+					className: WRAP_CLASSNAME,
+					margin: style_dimension?.margin,
+					padding: style_dimension?.padding,
+				})}
+			/>
 
 			{/* ADVANCE  */}
 			<Global

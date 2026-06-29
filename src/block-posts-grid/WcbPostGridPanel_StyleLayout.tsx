@@ -12,6 +12,8 @@ import MyTextAlignControl, {
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
 import MyUnitControl from "../components/controls/MyUnitControl";
 import useGetDeviceType from "../hooks/useGetDeviceType";
+import MyDimensionsGapControl from "../components/controls/MyDimensionsControl/MyDimensionsGapControl";
+import MyDimensionsPaddingControl from "../components/controls/MyDimensionsControl/MyDimensionsPaddingControl";
 import MyDimensionsNoMarginControl from "../components/controls/MyDimensionsControl/MyDimensionsNoMarginControl";
 import {
 	MyDimensionsNoMarginControlData,
@@ -54,10 +56,8 @@ const WcbPostGridPanel_StyleLayout: FC<Props> = ({
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 
-	const { textAlignment, backgroundColor, colunmGap, padding, rowGap } =
-		panelData;
+	const { textAlignment, backgroundColor, colunmGap, padding, rowGap } = panelData;
 
-	//
 	const handleChangeTextAlignment = (selected: CSSProperties["textAlign"]) => {
 		setAttr__({
 			...panelData,
@@ -71,7 +71,6 @@ const WcbPostGridPanel_StyleLayout: FC<Props> = ({
 			backgroundColor: color,
 		});
 	};
-	//
 
 	return (
 		<PanelBody
@@ -93,8 +92,18 @@ const WcbPostGridPanel_StyleLayout: FC<Props> = ({
 					color={backgroundColor}
 				/>
 
-				<MyDimensionsNoMarginControl
-					dimensionControl={{ colunmGap, padding, rowGap }}
+				<MyDimensionsGapControl
+					dimensionControl= {{ colunmGap, rowGap }}
+					setAttrs__dimensions={(data) => {
+						setAttr__({
+							...panelData,
+							...data,
+						});
+					}}
+				/>
+
+				<MyDimensionsPaddingControl
+					dimensionControl={{ padding }}
 					setAttrs__dimensions={(data) => {
 						setAttr__({
 							...panelData,
@@ -103,6 +112,7 @@ const WcbPostGridPanel_StyleLayout: FC<Props> = ({
 					}}
 					paddingLabel={__("Padding content", "boostify-blocks")}
 				/>
+
 			</div>
 		</PanelBody>
 	);

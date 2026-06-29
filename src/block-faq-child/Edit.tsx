@@ -59,7 +59,7 @@ const Edit: FC<
 	//
 
 	useEffect(() => {
-		console.log(12, "------ FAQ CHILD setAttributes ON useEffect --------");
+		// console.log(12, "------ FAQ CHILD setAttributes ON useEffect --------");
 
 		setAttributes({
 			layout: context["boostify-blocks/faq_general"]?.layout,

@@ -22,6 +22,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_image,
 		style_socialIcons,
 		style_title,
+		style_dimension,
 		//
 		advance_responsiveCondition,
 		advance_zIndex,
@@ -58,6 +59,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 	return (
 		<>
 			<Global styles={getDivWrapStyles()} />
+
+			<Global
+				styles={[
+					getPaddingMarginStyles({
+						className: WRAP_CLASSNAME,
+						padding: style_dimension.padding,
+						margin: style_dimension.margin,
+					})
+				]}
+			/>
 
 			{/* --------- CONTENT WRAP --------- */}
 			{general_image.isShowImage &&
