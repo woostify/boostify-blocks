@@ -71,44 +71,29 @@ const getFlexPropertiesStyles = ({
 
 	return {
 		[`${className}`]: {
-			flexDirection: flexDirection_Mobile,
-			alignItems: alignItems_Mobile,
-			flexWrap: flexWrap_Mobile,
-			justifyContent: justifyContent_Mobile,
-			columnGap: colunmGap_Mobile,
-			rowGap: rowGap_Mobile,
-			[`@media (min-width: ${media_tablet})`]:
-				flexDirection_Tablet ||
-				alignItems_Tablet ||
-				flexWrap_Tablet ||
-				justifyContent_Tablet ||
-				colunmGap_Tablet ||
-				rowGap_Tablet
-					? {
-							flexDirection: flexDirection_Tablet,
-							alignItems: alignItems_Tablet,
-							flexWrap: flexWrap_Tablet,
-							justifyContent: justifyContent_Tablet,
-							columnGap: colunmGap_Tablet,
-							rowGap: rowGap_Tablet,
-					  }
-					: undefined,
-			[`@media (min-width: ${media_desktop})`]:
-				flexDirection_Desktop ||
-				alignItems_Desktop ||
-				flexWrap_Desktop ||
-				justifyContent_Desktop ||
-				colunmGap_Desktop ||
-				rowGap_Desktop
-					? {
-							flexDirection: flexDirection_Desktop,
-							alignItems: alignItems_Desktop,
-							flexWrap: flexWrap_Desktop,
-							justifyContent: justifyContent_Desktop,
-							columnGap: colunmGap_Desktop,
-							rowGap: rowGap_Desktop,
-					  }
-					: undefined,
+			display: "flex !important",
+			flexDirection: flexDirection_Mobile ?? "row",
+			alignItems: alignItems_Mobile ?? "stretch",
+			flexWrap: flexWrap_Mobile ?? "nowrap",
+			justifyContent: justifyContent_Mobile ?? "flex-start",
+			columnGap: colunmGap_Mobile ?? "0px",
+			rowGap: rowGap_Mobile ?? "0px",
+			[`@media (min-width: ${media_tablet})`]: {
+				flexDirection: flexDirection_Tablet ?? flexDirection_Mobile ?? "row",
+				alignItems: alignItems_Tablet ?? alignItems_Mobile ?? "stretch",
+				flexWrap: flexWrap_Tablet ?? flexWrap_Mobile ?? "nowrap",
+				justifyContent: justifyContent_Tablet ?? justifyContent_Mobile ?? "flex-start",
+				columnGap: colunmGap_Tablet ?? colunmGap_Mobile ?? "0px",
+				rowGap: rowGap_Tablet ?? rowGap_Mobile ?? "0px",
+			},
+			[`@media (min-width: ${media_desktop})`]: {
+				flexDirection: flexDirection_Desktop ?? flexDirection_Tablet ?? flexDirection_Mobile ?? "row",
+				alignItems: alignItems_Desktop ?? alignItems_Tablet ?? alignItems_Mobile ?? "stretch",
+				flexWrap: flexWrap_Desktop ?? flexWrap_Tablet ?? flexWrap_Mobile ?? "nowrap",
+				justifyContent: justifyContent_Desktop ?? justifyContent_Tablet ?? justifyContent_Mobile ?? "flex-start",
+				columnGap: colunmGap_Desktop ?? colunmGap_Tablet ?? colunmGap_Mobile ?? "0px",
+				rowGap: rowGap_Desktop ?? rowGap_Tablet ?? rowGap_Mobile ?? "0px",
+			},
 		},
 	};
 };

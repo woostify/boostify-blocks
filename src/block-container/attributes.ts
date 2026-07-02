@@ -77,7 +77,7 @@ export const blokcContainerAttrs: AttrsGenericType<BlockWCBContainerAttrs> = {
 		default: "",
 	},
 	isShowVariations: {
-		type: "bool",
+		type: "boolean",
 		default: true,
 	},
 
