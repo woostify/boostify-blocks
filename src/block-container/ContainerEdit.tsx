@@ -51,29 +51,6 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 		advance_motionEffect,
 	} = attributes;
 
-	//
-	useEffect(() => {
-		if (uniqueId) {
-			return;
-		}
-		const { containerWidthType } = general_container;
-		if (containerWidthType === "Custom") {
-			return;
-		}
-		setAttributes({ align: containerWidthType === "Boxed" ? "wide" : "full" });
-	}, [uniqueId]);
-
-	//
-
-	const ref = useRef<HTMLDivElement>(null);
-	const {
-		tabIsOpen,
-		tabAdvancesIsPanelOpen,
-		tabGeneralIsPanelOpen,
-		tabStylesIsPanelOpen,
-		handleTogglePanel,
-	} = useSetBlockPanelInfo(uniqueId);
-
 	const { hasInnerBlocks, hasParent } = useSelect(
 		(select) => {
 			return {
@@ -87,6 +64,35 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 		[clientId]
 	);
 
+	//
+	useEffect(() => {
+		if (uniqueId) {
+			return;
+		}
+		// Only set align on root containers, not on child containers
+		if (hasParent) {
+			// Remove align attribute from child containers to prevent alignment wrapper
+			setAttributes({ align: "" });
+			return;
+		}
+		const { containerWidthType } = general_container;
+		if (containerWidthType === "Custom") {
+			return;
+		}
+		setAttributes({ align: containerWidthType === "Boxed" ? "wide" : "full" });
+	}, [uniqueId, general_container, setAttributes, hasParent]);
+
+	//
+
+	const ref = useRef<HTMLDivElement>(null);
+	const {
+		tabIsOpen,
+		tabAdvancesIsPanelOpen,
+		tabGeneralIsPanelOpen,
+		tabStylesIsPanelOpen,
+		handleTogglePanel,
+	} = useSetBlockPanelInfo(uniqueId);
+
 	const { containerWidthType } = general_container;
 	useEffect(() => {
 		let cl = "";
@@ -94,7 +100,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 			cl = "is_wcb_container_child";
 		}
 		setAttributes({ containerClassName: cl });
-	}, [hasParent, containerWidthType]);
+	}, [hasParent, containerWidthType, setAttributes]);
 	//
 
 	const renderPanelBackground = () => {
