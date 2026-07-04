@@ -119,12 +119,12 @@ const MyDimensionsControl: FC<Props> = ({
 		<div className={className}>
 			<MySpacingSizesControl
 				onChange={setRowGrap}
-				value={rowGap || "0"}
+				value={rowGap || ""}
 				label={__("Row Gap", "boostify-blocks")}
 			/>
 			<MySpacingSizesControl
 				onChange={setColumnGap}
-				value={colunmGap || "0"}
+				value={colunmGap || ""}
 				label={__("Column Gap", "boostify-blocks")}
 			/>
 

@@ -75,7 +75,7 @@ const GlobalCss = attrs => {
 
   // ------------------- WRAP DIV
   const getDivWrapStyles = () => {
-    var _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
+    var _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
     const {
       containerWidthType,
       customWidth,
@@ -119,6 +119,22 @@ const GlobalCss = attrs => {
     });
     //
 
+    const getResponsiveWidthValue = value => {
+      if (value === undefined || value === null || value === "") {
+        return undefined;
+      }
+      return value;
+    };
+    const getResponsiveMaxWidthValue = value => {
+      const responsiveValue = getResponsiveWidthValue(value);
+      if (responsiveValue === undefined) {
+        return undefined;
+      }
+      return `${responsiveValue} !important`;
+    };
+    const cWidthDesktop_new_child = (_ref = (_ref2 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthTablet_new) !== null && _ref2 !== void 0 ? _ref2 : cWidthMobile_new) !== null && _ref !== void 0 ? _ref : undefined;
+    const cWidthTablet_new_child = (_ref3 = cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : cWidthMobile_new) !== null && _ref3 !== void 0 ? _ref3 : undefined;
+    const cWidthMobile_new_child = getResponsiveWidthValue(cWidthMobile_new);
     return [{
       [`${WP_BLOCK_CLASSNAME}:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
         marginTop: hasMarginTopDesktop ? "0px" + " !important" : "",
@@ -145,32 +161,34 @@ const GlobalCss = attrs => {
         padding: containerPadding || "",
         color: styles_color,
         overflow: overflow,
-        //
-        maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
-        // width: cWidthMobile_new,
+        maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new),
+        width: cWidthMobile_new_child,
         minHeight: minHeightMobile_new !== null && minHeightMobile_new !== void 0 ? minHeightMobile_new : undefined,
         "&.alignfull": {
           marginLeft: `calc(-50vw + 50%)`,
           marginRight: `calc(-50vw + 50%)`
         },
         "&.is_wcb_container_child": {
-          width: cWidthMobile_new !== null && cWidthMobile_new !== void 0 ? cWidthMobile_new : undefined
+          width: cWidthMobile_new_child,
+          maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new)
         },
         [`@media (min-width: ${media_tablet})`]: {
           maxWidth: (cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : cWidthMobile_new) ? (cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : cWidthMobile_new) + " !important" : "",
           // width: cWidthTablet_new,
-          minHeight: (_ref = minHeightTablet_new !== null && minHeightTablet_new !== void 0 ? minHeightTablet_new : minHeightMobile_new) !== null && _ref !== void 0 ? _ref : undefined,
-          "&.is_wcb_container_child": {// If tablet is optimized away (null) but equals mobile, use mobile value							width: (cWidthTablet_new ?? cWidthMobile_new) ?? undefined,
+          minHeight: (_ref4 = minHeightTablet_new !== null && minHeightTablet_new !== void 0 ? minHeightTablet_new : minHeightMobile_new) !== null && _ref4 !== void 0 ? _ref4 : undefined,
+          "&.is_wcb_container_child": {
+            // If tablet is optimized away (null) but equals mobile, use mobile value							
+            width: cWidthTablet_new_child
           }
         },
         [`@media (min-width: ${media_desktop})`]: {
-          maxWidth: ((_ref2 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthMobile_new) !== null && _ref2 !== void 0 ? _ref2 : cWidthTablet_new) ? ((_ref3 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthMobile_new) !== null && _ref3 !== void 0 ? _ref3 : cWidthTablet_new) + " !important" : "",
+          maxWidth: ((_ref5 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthMobile_new) !== null && _ref5 !== void 0 ? _ref5 : cWidthTablet_new) ? ((_ref6 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthMobile_new) !== null && _ref6 !== void 0 ? _ref6 : cWidthTablet_new) + " !important" : "",
           // width: cWidthDesktop_new,
-          minHeight: (_ref4 = (_ref5 = minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : minHeightTablet_new) !== null && _ref5 !== void 0 ? _ref5 : minHeightMobile_new) !== null && _ref4 !== void 0 ? _ref4 : undefined,
+          minHeight: (_ref7 = (_ref8 = minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : minHeightTablet_new) !== null && _ref8 !== void 0 ? _ref8 : minHeightMobile_new) !== null && _ref7 !== void 0 ? _ref7 : undefined,
           "&.is_wcb_container_child": {
             // If desktop is optimized away (null) but equals mobile, use mobile value
             // This prevents old tablet values from interfering when user changes desktop
-            width: (_ref6 = (_ref7 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthMobile_new) !== null && _ref7 !== void 0 ? _ref7 : cWidthTablet_new) !== null && _ref6 !== void 0 ? _ref6 : undefined
+            width: cWidthDesktop_new_child
           }
         }
       }
