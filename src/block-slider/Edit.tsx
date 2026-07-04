@@ -201,6 +201,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	 */
 	const { insertBlock, removeBlock, selectBlock } = useDispatch("core/block-editor");
 
+	// Last time a Slider setting (columns, carousel...) changed. These values go
+	// into the react-slick `settings` object. When they change, react-slick moves
+	// slide DOM nodes around, and this can move a child's RichText (contenteditable)
+	// node too. Some browsers fire a real `focusin` for that move. Gutenberg's
+	// useFocusHandler (from useBlockProps() in the child) then calls
+	// selectBlock(childId), even though the user did not click anything. We use
+	// this timestamp to detect and ignore that fake selection.
+	const lastSliderSettingsChangeRef = useRef<number>(0);
+	useEffect(() => {
+		lastSliderSettingsChangeRef.current = Date.now();
+	}, [general_general, general_carousel]);
+
 	// Step 1: Get inner blocks + track which block is currently selected in the editor store.
 	// selectedBlockClientId updates whenever the user clicks a block — including via List View.
 	const { innerBlocks, selectedBlockClientId } = useSelect((select: any) => {
@@ -238,7 +250,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			const timeoutId = setTimeout(() => {
 				for (let i = 0; i < targetNumber; i++) {
 					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-					insertBlock(newBlock, i, clientId);
+					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+					insertBlock(newBlock, i, clientId, false);
 				}
 			}, 100);
 			return () => clearTimeout(timeoutId);
@@ -282,6 +295,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		setIsParentSelected(false);
 		setSelectedChildId(childClientId);
 		setStoredSelectedChildId(childClientId);
+		// Also select the block in the editor store, so Gutenberg's own
+		// sidebar BlockCard (icon + title + description) shows "Slider child"
+		// too, not just the tabs we portal in below it. Without this, the
+		// store still thinks the parent Slider is selected, and the sidebar
+		// header and our tabs show different blocks.
+		selectBlock(childClientId);
 		// Navigate to the corresponding slide so canvas and panel stay in sync
 		goToChildSlide(childClientId);
 	};
@@ -305,6 +324,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		);
 
 		if (isChildOfThisSlider) {
+			// If we are on the parent panel and a Slider setting changed a moment
+			// ago, this "child selected" event is most likely the fake focusin
+			// described above, not a real click. Ignore it and put the store
+			// selection back on the parent.
+			const justChangedSliderSettings =
+				Date.now() - lastSliderSettingsChangeRef.current < 800;
+
+			if (isParentSelected && justChangedSliderSettings) {
+				selectBlock(clientId);
+				return;
+			}
+
 			setSelectedChildId(selectedBlockClientId);
 			setStoredSelectedChildId(selectedBlockClientId);
 			setIsParentSelected(false);
@@ -341,7 +372,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				const blocksToAdd = targetNumber - currentNumber;
 				for (let i = 0; i < blocksToAdd; i++) {
 					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-					insertBlock(newBlock, currentNumber + i, clientId);
+					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+					insertBlock(newBlock, currentNumber + i, clientId, false);
 				}
 			} else if (currentNumber > targetNumber) {
 				// Remove blocks from the end
@@ -1128,7 +1160,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	]);
 
 	const handleParentClick = useCallback((e: React.MouseEvent) => {
-		console.log('handleParentClick', e.target, e.currentTarget, isParentSelected);
 		if (e.target === e.currentTarget && !isParentSelected) {
 			selectBlock(clientId);
 			setIsParentSelected(true);
