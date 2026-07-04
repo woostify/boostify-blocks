@@ -94,6 +94,25 @@ const GlobalCss: FC<Props> = (attrs) => {
 		});
 		//
 
+		const getResponsiveWidthValue = (value?: string | number | null) => {
+			if (value === undefined || value === null || value === "") {
+				return undefined;
+			}
+			return value;
+		};
+
+		const getResponsiveMaxWidthValue = (value?: string | number | null) => {
+			const responsiveValue = getResponsiveWidthValue(value);
+			if (responsiveValue === undefined) {
+				return undefined;
+			}
+			return `${responsiveValue} !important`;
+		};
+
+		const cWidthDesktop_new_child = (cWidthDesktop_new ?? cWidthTablet_new ?? cWidthMobile_new) ?? undefined;
+		const cWidthTablet_new_child = (cWidthTablet_new ?? cWidthMobile_new) ?? undefined;
+		const cWidthMobile_new_child = getResponsiveWidthValue(cWidthMobile_new);
+
 		return [
 			{
 				[`${WP_BLOCK_CLASSNAME}:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
@@ -124,33 +143,34 @@ const GlobalCss: FC<Props> = (attrs) => {
 					padding: containerPadding || "",
 					color: styles_color,
 					overflow: overflow,
-					//
-					maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
-					// width: cWidthMobile_new,
+					maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new),
+					width: cWidthMobile_new_child,
 					minHeight: minHeightMobile_new ?? undefined,
 					"&.alignfull": {
 						marginLeft: `calc(-50vw + 50%)`,
 						marginRight: `calc(-50vw + 50%)`,
 					},
 					"&.is_wcb_container_child": {
-						width: cWidthMobile_new ?? undefined,
+						width: cWidthMobile_new_child,
+						maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new),
 					},
 					[`@media (min-width: ${media_tablet})`]: {
-						maxWidth: cWidthTablet_new ? cWidthTablet_new + " !important" : "",
+						maxWidth: (cWidthTablet_new ?? cWidthMobile_new) ? (cWidthTablet_new ?? cWidthMobile_new) + " !important" : "",
 						// width: cWidthTablet_new,
-						minHeight: minHeightTablet_new ?? undefined,
+						minHeight: (minHeightTablet_new ?? minHeightMobile_new) ?? undefined,
 						"&.is_wcb_container_child": {
-							width: cWidthTablet_new ?? undefined,
+							// If tablet is optimized away (null) but equals mobile, use mobile value							
+							width: cWidthTablet_new_child,
 						},
 					},
 					[`@media (min-width: ${media_desktop})`]: {
-						maxWidth: cWidthDesktop_new
-							? cWidthDesktop_new + " !important"
-							: "",
+						maxWidth: (cWidthDesktop_new ?? cWidthMobile_new ?? cWidthTablet_new) ? (cWidthDesktop_new ?? cWidthMobile_new ?? cWidthTablet_new) + " !important" : "",
 						// width: cWidthDesktop_new,
 						minHeight: minHeightDesktop_new ?? undefined,
 						"&.is_wcb_container_child": {
-							width: cWidthDesktop_new ?? undefined,
+							// If desktop is optimized away (null) but equals mobile, use mobile value
+							// This prevents old tablet values from interfering when user changes desktop
+							width: cWidthDesktop_new_child,
 						},
 					},
 				},

@@ -52,12 +52,14 @@ const SpacingInputControl: FC<SpacingInputControlProps> = ({
 		useMemo(() => parseQuantityAndUnitFromRawValue(value), [value])[1] ||
 		units[0].value;
 
-	const customRangeValue = parseFloat(value ?? "10");
+	const customRangeValue = value && !Number.isNaN(parseFloat(value)) ? parseFloat(value) : 10;
 
 	const handleCustomValueSliderChange = (next: number) => {
 		const newValue = [next, selectedUnit].join("");
 		onChange(newValue);
 	};
+
+	const placeholder = value && !Number.isNaN(parseFloat(value)) ? `${parseFloat(value)}` : "";
 
 	return (
 		<div className={`${className} flex items-center space-x-2.5`}>
@@ -86,7 +88,7 @@ const SpacingInputControl: FC<SpacingInputControlProps> = ({
 					onChange={(newSize: string, ...props) => {
 						onChange(newSize);
 					}}
-					placeholder={`${parseInt(value || "")}`}
+					placeholder={placeholder}
 					value={value}
 					units={units}
 					min={minCustomValue}
