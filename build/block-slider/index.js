@@ -15819,7 +15819,8 @@ const Edit = props => {
       const timeoutId = setTimeout(() => {
         for (let i = 0; i < targetNumber; i++) {
           const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-          insertBlock(newBlock, i, clientId);
+          // updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+          insertBlock(newBlock, i, clientId, false);
         }
       }, 100);
       return () => clearTimeout(timeoutId);
@@ -15914,7 +15915,8 @@ const Edit = props => {
         const blocksToAdd = targetNumber - currentNumber;
         for (let i = 0; i < blocksToAdd; i++) {
           const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-          insertBlock(newBlock, currentNumber + i, clientId);
+          // updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+          insertBlock(newBlock, currentNumber + i, clientId, false);
         }
       } else if (currentNumber > targetNumber) {
         // Remove blocks from the end
