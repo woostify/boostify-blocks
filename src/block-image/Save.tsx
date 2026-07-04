@@ -2,6 +2,7 @@ import React from "react";
 import { __ } from "@wordpress/i18n";
 import { WcbAttrs } from "./attributes";
 import SaveCommon from "../components/SaveCommon";
+// @ts-ignore
 import "./style.scss";
 import classnames from "classnames";
 import { isEmpty } from "lodash";
@@ -54,6 +55,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_image,
 		style_overlay,
 		style_caption,
+		style_dimension,
 	} = attributes;
 	//
 
@@ -74,6 +76,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_image,
 		style_overlay,
 		style_caption,
+		style_dimension,
+		general_image
 	};
 
 	const { currentDeviceValue: align } = getValueFromAttrsResponsives(

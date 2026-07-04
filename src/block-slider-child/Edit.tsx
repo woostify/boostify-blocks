@@ -20,7 +20,7 @@ import WcbSlidersPanel_StyleImage, {
 	DEFAULT_MY_TOP_ICON
 } from "./WcbSliderPanel_StyleImage";
 import WcbSlidersPanel_StyleBackground, { WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO } from "./WcbSliderPanel_StyleBackground";
-import WcbSlidersPanel_StyleDimension, { WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "./WcbSliderPanel_StyleDimension";
+import WcbSlidersPanel_StyleDimension from "./WcbSliderPanel_StyleDimension";
 import WcbSliderButtonPanelPreset, { WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO } from "./WcbSliderPanel_ButtonPreset";
 import WcbSliderLayoutPanelPreset, { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "./WcbSliderPanel_LayoutPreset";
 import WcbSlidersPanel_StyleSeparator, { WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "./WcbSliderPanel_StyleSeparator";
@@ -43,7 +43,6 @@ export {
 	WcbSlidersPanel_StyleBackground,
 	WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
 	WcbSlidersPanel_StyleDimension,
-	WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
 	WcbSliderButtonPanelPreset,
 	WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
 	WcbSliderLayoutPanelPreset,

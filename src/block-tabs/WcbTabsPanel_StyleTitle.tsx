@@ -12,11 +12,8 @@ import {
 } from "../components/controls/MyTypographyControl/types";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import {
-	// @ts-ignore
-	__experimentalBoxControl as BoxControl,
-} from "@wordpress/components";
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
+import MyDimensionsUnitControl from "../components/controls/MyDimensionsControl/MyDimensionsUnitControl";
 import MyTabPanel from "../components/controls/MyTabPanel/MyTabPanel";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
@@ -211,14 +208,14 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 				}
 
 				<MyDisclosure label={__("Dimension", "boostify-blocks")}>
-					<BoxControl
+					<MyDimensionsUnitControl
 						label={
 							<MyLabelControl className="" hasResponsive>
 								{__("Padding", "boostify-blocks")}
 							</MyLabelControl>
 						}
-						values={currentPadding}
-						onChange={(value: any) => {
+						values={currentPadding ?? {}}
+						onChange={(value) => {
 							setAttr__({
 								...panelData,
 								padding: {
@@ -227,6 +224,7 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 								},
 							});
 						}}
+						min={0}
 					/>
 
 					<MySpacingSizesControl

@@ -34,6 +34,7 @@ const GlobalCss: FC<Props> = (attrs) => {
         style_container,
         style_body,
         style_title,
+        style_dimension,
         advance_responsiveCondition,
         advance_zIndex,
         advance_motionEffect,
@@ -240,6 +241,13 @@ const GlobalCss: FC<Props> = (attrs) => {
                         [ICON_CLASSNAME_SELECTED]: { color: style_icon.activeColor },
                     },
                 ]}
+            />
+            <Global
+                styles={getPaddingMarginStyles({
+                    className: WRAP_CLASSNAME,
+                    padding: style_dimension.padding,
+                    margin: style_dimension.margin,
+                })}
             />
             <Global
                 styles={getAdvanveDivWrapStyles({

@@ -161,6 +161,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					}),
 					getPaddingMarginStyles({
 						className: `${WRAP_CLASSNAME} .wcb-testimonials__item-inner`,
+						margin: style_dimension.margin,
 						padding: style_dimension.padding,
 					}),
 					getStyleBackground({

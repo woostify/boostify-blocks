@@ -59,7 +59,6 @@ import {
 } from "../block-slider-child/WcbSliderPanel_StyleCallToActionButton";
 
 // Import separator demo constant
-import { WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "../block-slider-child/WcbSliderPanel_StyleSeparator";
 import { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "../block-slider-child/WcbSliderPanel_LayoutPreset";
 
 // Import demo constants from shared types
@@ -310,7 +309,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			setStoredSelectedChildId(selectedBlockClientId);
 			setIsParentSelected(false);
 			goToChildSlide(selectedBlockClientId);
+			return;
 		}
+
+		// Case C: An unrelated block outside this slider was selected.
+		// Clear selectedChildId so the portal stops rendering stale slider settings.
+		setSelectedChildId(null);
+		setIsParentSelected(false);
 	}, [selectedBlockClientId]);
 
 	// Add useEffect to monitor numberofTestimonials changes and update inner blocks accordingly
@@ -938,13 +943,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	}, [innerBlocks.length]);
 
-	// 3. ✅ Thêm method để force recalc khi cần
+	// 3. Add method to force recalc when needed (e.g., after adding/removing blocks)
 	const forceSliderRecalc = useCallback(() => {
 		if (sliderRef.current && innerBlocks.length > 0) {
 			// Force Slick to recalculate dimensions
 			// sliderRef.current.slick('setPosition');
 			
-			// Reset về slide đầu tiên với animation false
+			// Reset about slide first with animation false
 			setTimeout(() => {
 				if (sliderRef.current) {
 					sliderRef.current.slickGoTo(0, false);
@@ -953,15 +958,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	}, []);
 
-	// 4. ✅ Gọi forceSliderRecalc khi cần thiết
+	// 4. Call forceSliderRecalc when needed
 	useEffect(() => {
 		if (sliderRef.current && innerBlocks.length > 0) {
-			// Thay thế logic cũ bằng cách đơn giản hơn
+			// Replace logic old = logic simple more reliable
 			forceSliderRecalc();
 		}
 	}, [innerBlocks.length, forceSliderRecalc]);
 
-	// 5. ✅ Thêm resize handler để đảm bảo slider luôn căn giữa
+	// 5. Add resize handler to ensure slider always centers
 	useEffect(() => {
 		const handleResize = () => {
 			forceSliderRecalc();
@@ -1141,12 +1146,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				data-uniqueid={uniqueId}
 				onClick={handleParentClick}
 			>
-				{/* CONTROL SETTINGS - Always rendered; InspectorControls internally filters by
-				    block selection (isSelected OR hasSelectedInnerBlock in WP 6.3+) */}
-				<HOCInspectorControls
-					renderTabPanels={renderTabBodyPanels}
-					uniqueId={selectedChildBlock ? selectedChildBlock.attributes.uniqueId : uniqueId}
-				/>
+				{/* CONTROL SETTINGS - Only renders when parent is selected.
+				    When a child is selected, the portal below handles rendering child panels.
+				    Conditionally rendering prevents duplicate TabPanel from HOCInspectorControls + portal. */}
+				{isParentSelected && (
+					<HOCInspectorControls
+						renderTabPanels={renderTabBodyPanels}
+						uniqueId={uniqueId}
+					/>
+				)}
 				
 				{/* CSS IN JS */}
 				<GlobalCss {...WcbAttrsForSave()} />

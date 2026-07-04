@@ -20,8 +20,6 @@ import {
 	MediaReplaceFlow,
 	store as blockEditorStore,
 	// @ts-ignore
-	BlockAlignmentControl,
-	// @ts-ignore
 	__experimentalImageEditor as ImageEditor,
 	// @ts-ignore
 	__experimentalGetElementClassName,
@@ -60,6 +58,7 @@ import WcbImagePanel_StyleImage from "./WcbImagePanel_StyleImage";
 import WcbImagePanel_StyleOverlay from "./WcbImagePanel_StyleOverlay";
 import WcbImagePanel_StyleCaption from "./WcbImagePanel_StyleCaption";
 import WcbImagePanelImages from "./WcbImagePanelImages";
+import WcbImagePanel_StyleDimension from "./WcbImagePanel_StyleDimension";
 
 type ImageProps = EditProps<WcbAttrs> & {
 	temporaryURL: string;
@@ -105,6 +104,7 @@ const Image: FC<ImageProps> = ({
 		style_image,
 		style_overlay,
 		style_caption,
+		style_dimension,
 	} = attributes;
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	const imageRef = useRef<HTMLImageElement>(null);
@@ -140,7 +140,7 @@ const Image: FC<ImageProps> = ({
 				multiImageSelection:
 					multiSelectedClientIds.length &&
 					multiSelectedClientIds.every(
-						(_clientId) => getBlockName(_clientId) === "core/image"
+						(_clientId: string) => getBlockName(_clientId) === "core/image"
 					),
 			};
 		},
@@ -183,10 +183,10 @@ const Image: FC<ImageProps> = ({
 	const isResizable =
 		allowResize && !isContentLocked && !(isWideAligned && isLargeViewport);
 	const imageSizeOptions = map(
-		imageSizes.filter(({ slug }) =>
+		imageSizes.filter(({ slug }: { slug: string }) =>
 			get(image, ["media_details", "sizes", slug, "source_url"])
 		),
-		({ name, slug }) => ({ value: slug, label: name })
+		({ name, slug }: { name: string; slug: string }) => ({ value: slug, label: name })
 	);
 
 	useEffect(() => {
@@ -213,7 +213,7 @@ const Image: FC<ImageProps> = ({
 
 	// Focus the caption when we click to add one.
 	const captionRef = useCallback(
-		(node) => {
+		(node: HTMLTextAreaElement | null) => {
 			if (node && !caption) {
 				node.focus();
 			}
@@ -243,21 +243,21 @@ const Image: FC<ImageProps> = ({
 		// See: https://github.com/WordPress/gutenberg/pull/11472
 	}
 
-	function onSetHref(props) {
+	function onSetHref(props: Partial<WcbAttrs>) {
 		setAttributes(props);
 	}
 
-	function onSetTitle(value) {
+	function onSetTitle(value: string) {
 		// This is the HTML title attribute, separate from the media object
 		// title.
 		setAttributes({ title: value });
 	}
 
-	function updateAlt(newAlt) {
+	function updateAlt(newAlt: string) {
 		setAttributes({ alt: newAlt });
 	}
 
-	function updateImage(newSizeSlug) {
+	function updateImage(newSizeSlug: string) {
 		const newUrl = get(image, [
 			"media_details",
 			"sizes",
@@ -293,7 +293,7 @@ const Image: FC<ImageProps> = ({
 	function uploadExternal() {
 		mediaUpload({
 			filesList: [externalBlob],
-			onFileChange([img]) {
+			onFileChange([img]: any) {
 				onSelectImage(img);
 
 				if (isBlobURL(img.url)) {
@@ -307,14 +307,14 @@ const Image: FC<ImageProps> = ({
 				});
 			},
 			allowedTypes: ALLOWED_MEDIA_TYPES,
-			onError(message) {
+			onError(message: string) {
 				// @ts-ignore
 				createErrorNotice(message, { type: "snackbar" });
 			},
 		});
 	}
 
-	function updateAlignment(nextAlign) {
+	function updateAlignment(nextAlign: string) {
 		const extraUpdatedAttributes: Partial<WcbAttrs> = ["wide", "full"].includes(
 			nextAlign
 		)
@@ -407,7 +407,7 @@ const Image: FC<ImageProps> = ({
 							updateImage={updateImage}
 							alt={alt}
 							enableCaption={showCaption}
-							toggleEnableCaption={(checked) => {
+							toggleEnableCaption={(checked: boolean) => {
 								setShowCaption(checked);
 							}}
 						/>
@@ -453,6 +453,16 @@ const Image: FC<ImageProps> = ({
 								panelData={style_caption}
 							/>
 						)}
+						<WcbImagePanel_StyleDimension
+							onToggle={() => handleTogglePanel("Styles", "_StyleDimension")}
+							initialOpen={tabStylesIsPanelOpen === "_StyleDimension"}
+							opened={tabStylesIsPanelOpen === "_StyleDimension" || undefined}
+							//
+							setAttr__={(data) => {
+								setAttributes({ style_dimension: data });
+							}}
+							panelData={style_dimension}
+						/>
 					</>
 				);
 			case "Advances":
@@ -755,6 +765,7 @@ const Image: FC<ImageProps> = ({
 				<RichText
 					identifier="caption"
 					className={__experimentalGetElementClassName("caption")}
+					// @ts-ignore
 					ref={captionRef}
 					tagName="figcaption"
 					aria-label={__("Image caption text")}

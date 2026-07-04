@@ -3,8 +3,6 @@ import {
     InnerBlocks,
     RichText,
     useBlockProps,
-	// @ts-ignore
-    useInnerBlocksProps,
     store as blockEditorStore,
 } from "@wordpress/block-editor";
 import React, { useEffect, FC, useRef, useCallback, useState } from "react";
@@ -12,6 +10,7 @@ import { WcbAttrs } from "./attributes";
 import HOCInspectorControls, { InspectorControlsTabs } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+// @ts-ignore
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
@@ -30,6 +29,7 @@ import WcbTabsPanel_StyleBody, { WCB_TABS_PANEL_STYLE_BODY_DEMO } from "./WcbTab
 import MyIconFull from "../components/controls/MyIconFull";
 import { WCB_TABS_PANEL_STYLE_CONTAINER_DEMO, WCB_TABS_PANEL_STYLE_CONTAINER_DEMO_SOLID } from "./WcbTabsPanel_StyleContainer";
 import WcbTabsPanelGeneral from "./WcbTabsPanelGeneral";
+import WcbTabsPanel_StyleDimension from "./WcbTabsPanel_StyleDimension";
 
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
     const { attributes, setAttributes, clientId, isSelected } = props;
@@ -46,6 +46,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
         style_title,
         style_body,
         style_icon,
+        style_dimension,
         general_preset,
         general_general,
     } = attributes;
@@ -220,6 +221,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
                             setAttr__={(data) => setAttributes({ style_body: data, general_preset: { ...general_preset, preset: "" } })}
                             panelData={style_body}
                         />
+                        <WcbTabsPanel_StyleDimension
+                            onToggle={() => handleTogglePanel("Styles", "_StyleDimension")}
+                            initialOpen={tabStylesIsPanelOpen === "_StyleDimension"}
+                            opened={tabStylesIsPanelOpen === "_StyleDimension" || undefined}
+                            setAttr__={(data) => setAttributes({ style_dimension: data, general_preset: { ...general_preset, preset: "" } })}
+                            panelData={style_dimension}
+                        />
                     </>
                 );
             case "Advances":
@@ -252,6 +260,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
         style_icon,
         style_title,
         style_body,
+        style_dimension,
     }), [
         advance_responsiveCondition,
         advance_zIndex,
@@ -266,6 +275,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
         tabContents,
         activeTabIndex,
         style_body,
+        style_dimension,
     ]);
 
     const renderAddnewButton = () => (

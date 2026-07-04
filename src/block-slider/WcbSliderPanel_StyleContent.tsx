@@ -57,6 +57,7 @@ const WcbTestimonialsPanel_StyleContent: FC<Props> = ({
 						});
 					}}
 					color={textColor}
+					// @ts-ignore
 					disableAlpha={true}
 				/>
 

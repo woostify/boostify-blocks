@@ -51,8 +51,8 @@ interface Props
 	panelData: WCB_IMAGE_PANEL_SETTINGS;
 	setAttr__: (data: WCB_IMAGE_PANEL_SETTINGS) => void;
 	//
-	updateImage: (data) => void;
-	setAttributes: (data) => void;
+	updateImage: (data: any) => void;
+	setAttributes: (data: any	) => void;
 	alt: string;
 	naturalWidth: number;
 	naturalHeight: number;
@@ -231,7 +231,7 @@ const WcbImagePanelSettings: FC<Props> = ({
 				>
 					<ImageSizeControl
 						onChangeImage={updateImage}
-						onChange={({ width, height }) => {
+						onChange={({ width, height }: { width: number | undefined; height: number | undefined }) => {
 							if (
 								typeof width === "undefined" &&
 								typeof height === "undefined"

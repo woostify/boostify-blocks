@@ -5,26 +5,28 @@ import {
 	__experimentalBoxControl as BoxControl,
 } from "@wordpress/components";
 import React, { FC } from "react";
-import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
-import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
-import { DimensionSettings } from "../components/controls/MyDimensionsControl/types";
-import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
-import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
-import useGetDeviceType from "../hooks/useGetDeviceType";
-import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
+import { MY_DIMENSIONS_NO_GAP_CONTROL_DEMO, MyDimensionsNoGapControlData } from "../components/controls/MyDimensionsControl/types";
+import MyDimensionsNoGapControl from "../components/controls/MyDimensionsControl/MyDimensionsNoGapControl";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION {
-	padding: HasResponsive<DimensionSettings>;
-}
+export interface WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION extends MyDimensionsNoGapControlData {}
+
 export const WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION =
 	{
+		...MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 		padding: {
 			Desktop: {
-				top: "1rem",
-				left: "1rem",
-				right: "1rem",
-				bottom: "1rem",
+				top: "",
+				left: "",
+				right: "",
+				bottom: "",
+			},
+		},
+		margin: {
+			Desktop: {
+				top: "",
+				left: "",
+				right: "",
+				bottom: "",
 			},
 		},
 	};
@@ -42,12 +44,6 @@ const WcbTestimonialsPanel_StyleDimension: FC<Props> = ({
 	onToggle,
 	opened,
 }) => {
-	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-	const { padding } = panelData;
-	const { currentDeviceValue: currentPadding } = getValueFromAttrsResponsives(
-		padding,
-		deviceType
-	);
 
 	//
 	return (
@@ -55,25 +51,12 @@ const WcbTestimonialsPanel_StyleDimension: FC<Props> = ({
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Dimension", "boostify-blocks")}
+			title={__("Dimension", "wcb")}
 		>
 			<div className="space-y-5">
-				<BoxControl
-					label={
-						<MyLabelControl className="" hasResponsive>
-							{__("Padding", "boostify-blocks")}
-						</MyLabelControl>
-					}
-					values={currentPadding}
-					onChange={(value: DimensionSettings) => {
-						setAttr__({
-							...panelData,
-							padding: {
-								...padding,
-								[deviceType]: value,
-							},
-						});
-					}}
+				<MyDimensionsNoGapControl
+					dimensionControl={panelData}
+					setAttrs__dimensions={(data) => setAttr__({ ...panelData, ...data })}
 				/>
 			</div>
 		</PanelBody>
