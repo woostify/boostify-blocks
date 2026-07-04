@@ -15778,6 +15778,18 @@ const Edit = props => {
     selectBlock
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)("core/block-editor");
 
+  // Last time a Slider setting (columns, carousel...) changed. These values go
+  // into the react-slick `settings` object. When they change, react-slick moves
+  // slide DOM nodes around, and this can move a child's RichText (contenteditable)
+  // node too. Some browsers fire a real `focusin` for that move. Gutenberg's
+  // useFocusHandler (from useBlockProps() in the child) then calls
+  // selectBlock(childId), even though the user did not click anything. We use
+  // this timestamp to detect and ignore that fake selection.
+  const lastSliderSettingsChangeRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(0);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    lastSliderSettingsChangeRef.current = Date.now();
+  }, [general_general, general_carousel]);
+
   // Step 1: Get inner blocks + track which block is currently selected in the editor store.
   // selectedBlockClientId updates whenever the user clicks a block — including via List View.
   const {
@@ -15860,6 +15872,12 @@ const Edit = props => {
     setIsParentSelected(false);
     setSelectedChildId(childClientId);
     setStoredSelectedChildId(childClientId);
+    // Also select the block in the editor store, so Gutenberg's own
+    // sidebar BlockCard (icon + title + description) shows "Slider child"
+    // too, not just the tabs we portal in below it. Without this, the
+    // store still thinks the parent Slider is selected, and the sidebar
+    // header and our tabs show different blocks.
+    selectBlock(childClientId);
     // Navigate to the corresponding slide so canvas and panel stay in sync
     goToChildSlide(childClientId);
   };
@@ -15880,6 +15898,15 @@ const Edit = props => {
     // Case B: A child of this slider was selected (e.g., List View click on Slider child).
     const isChildOfThisSlider = innerBlocks.some(block => block.clientId === selectedBlockClientId);
     if (isChildOfThisSlider) {
+      // If we are on the parent panel and a Slider setting changed a moment
+      // ago, this "child selected" event is most likely the fake focusin
+      // described above, not a real click. Ignore it and put the store
+      // selection back on the parent.
+      const justChangedSliderSettings = Date.now() - lastSliderSettingsChangeRef.current < 800;
+      if (isParentSelected && justChangedSliderSettings) {
+        selectBlock(clientId);
+        return;
+      }
       setSelectedChildId(selectedBlockClientId);
       setStoredSelectedChildId(selectedBlockClientId);
       setIsParentSelected(false);
@@ -16546,7 +16573,6 @@ const Edit = props => {
     };
   }, [uniqueId, sliders, advance_responsiveCondition, advance_zIndex, general_general, style_dimension, general_carousel, style_verticalAlignment, style_arrowAndDots, style_backgroundAndBorder, style_company, style_content, style_name, style_boxshadow, advance_motionEffect]);
   const handleParentClick = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(e => {
-    console.log('handleParentClick', e.target, e.currentTarget, isParentSelected);
     if (e.target === e.currentTarget && !isParentSelected) {
       selectBlock(clientId);
       setIsParentSelected(true);
@@ -18269,7 +18295,7 @@ __webpack_require__.r(__webpack_exports__);
     height: "26",
     viewBox: "0 0 26 24",
     fill: "none",
-    class: "wcb-editor-block-icons fill-nones",
+    className: "wcb-editor-block-icons fill-nones",
     "aria-hidden": "true",
     focusable: "false"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("rect", {
