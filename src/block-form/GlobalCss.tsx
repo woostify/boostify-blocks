@@ -264,6 +264,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={getPaddingMarginStyles({
 					className: `${WRAP_CLASSNAME}`,
 					padding: style_spacing.padding,
+					margin: style_spacing.margin,
 				})}
 			/>
 			{renderDivInnerSpacingGap()}

@@ -45,7 +45,7 @@ import {
 } from "../components/controls/MyMediaUploadCheck";
 
 // Much of this description is duplicated from MediaPlaceholder.
-const placeholder = (content) => {
+const placeholder = (content: any) => {
 	return (
 		<Placeholder
 			className="block-editor-media-placeholder"
@@ -62,7 +62,7 @@ const placeholder = (content) => {
 	);
 };
 
-export const pickRelevantMediaFiles = (image, size) => {
+export const pickRelevantMediaFiles = (image: any, size: any) => {
 	const imageProps = Object.fromEntries(
 		Object.entries(image ?? {}).filter(([key]) =>
 			["alt", "id", "link", "caption"].includes(key)
@@ -76,11 +76,11 @@ export const pickRelevantMediaFiles = (image, size) => {
 	return imageProps;
 };
 
-const isTemporaryImage = (id, url) => !id && isBlobURL(url);
+const isTemporaryImage = (id: any, url: any) => !id && isBlobURL(url);
 
-export const isExternalImage = (id, url) => url && !id && !isBlobURL(url);
+export const isExternalImage = (id: any, url: any) => url && !id && !isBlobURL(url);
 
-function hasDefaultSize(image, defaultSize) {
+function hasDefaultSize(image: any, defaultSize: any) {
 	return (
 		"url" in (image?.sizes?.[defaultSize] ?? {}) ||
 		"source_url" in (image?.media_details?.sizes?.[defaultSize] ?? {})
@@ -118,6 +118,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_image,
 		style_overlay,
 		style_caption,
+		style_dimension,
 	} = attributes;
 
 	const [temporaryURL, setTemporaryURL] = useState<string>();
@@ -153,7 +154,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const { createErrorNotice } = useDispatch(noticesStore);
 
-	function onUploadError(message) {
+	function onUploadError(message: any) {
 		// @ts-ignore
 		createErrorNotice(message, { type: "snackbar" });
 		setAttributes({
@@ -165,7 +166,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		setTemporaryURL(undefined);
 	}
 
-	function onSelectImage(media) {
+	function onSelectImage(media: any) {
 		if (!media || !media.url) {
 			setAttributes({
 				url: undefined,
@@ -278,7 +279,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		});
 	}
 
-	function onSelectURL(newURL) {
+	function onSelectURL(newURL: any) {
 		if (newURL !== url) {
 			setAttributes({
 				url: newURL,
@@ -300,11 +301,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		if (file) {
 			mediaUpload({
 				filesList: [file],
-				onFileChange: ([img]) => {
+				onFileChange: ([img]: any) => {
 					onSelectImage(img);
 				},
 				allowedTypes: ALLOWED_MEDIA_TYPES,
-				onError: (message) => {
+				onError: (message: any) => {
 					isTemp = false;
 					onUploadError(message);
 				},
@@ -367,7 +368,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			general_image,
 			style_image,
 			style_overlay,
-			style_caption
+			style_caption,
+			style_dimension,
 		};
 	}, [
 		uniqueId,
@@ -378,6 +380,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_image,
 		style_overlay,
 		style_caption,
+		style_dimension,
 	]);
 
 	const renderOverlay = () => {

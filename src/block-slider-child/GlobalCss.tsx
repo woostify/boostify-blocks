@@ -366,13 +366,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 				/>
 			)}
 
-			{/* PADDING STYLES */}
+			{/* DIMENSION STYLES */}
 			{style_dimension && (
 				<Global
 					styles={[
 						getPaddingMarginStyles({
 							className: createRobustSelector('.wcb-slider-child__item-inner'),
 							padding: style_dimension.padding,
+							margin: style_dimension.margin,
 						}),
 					]}
 				/>

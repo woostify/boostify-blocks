@@ -39,6 +39,8 @@ import {
 	WCB_FAQ_PANEL_STYLE_QUESTION,
 	WCB_FAQ_PANEL_STYLE_QUESTION_DEMO,
 } from "./WcbFaqPanel_StyleQuestion";
+import { WCB_FAQ_PANEL_STYLE_DIMENSION, WCB_FAQ_PANEL_STYLE_DIMENSION_DEMO } from "./WcbFaqPanel_StyleDimension";
+
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	general_preset: WCB_FAQ_PANEL_PRESET;
@@ -48,6 +50,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	style_question: WCB_FAQ_PANEL_STYLE_QUESTION;
 	style_icon: WCB_FAQ_PANEL_STYLE_ICON;
 	style_answer: WCB_FAQ_PANEL_STYLE_ANSWER;
+	style_dimension: WCB_FAQ_PANEL_STYLE_DIMENSION;
 	//
 	advance_responsiveCondition: MyResponsiveConditionControlData;
 	advance_zIndex: MyZIndexControlData;
@@ -88,6 +91,10 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	style_answer: {
 		type: "object",
 		default: WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
+	},
+	style_dimension: {
+		type: "object",
+		default: WCB_FAQ_PANEL_STYLE_DIMENSION_DEMO,
 	},
 
 	// ADVANCE

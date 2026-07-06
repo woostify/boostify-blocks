@@ -7,12 +7,18 @@ export interface MyDimensionsControlData {
 	margin: HasResponsive<DimensionSettings>;
 }
 
+export interface MyDimensionsPaddingControlData
+	extends Pick<MyDimensionsControlData, "padding"> {}
+	export interface MyDimensionsMarginControlData
+	extends Pick<MyDimensionsControlData, "margin"> {}
 export interface MyDimensionsNoGapControlData
 	extends Pick<MyDimensionsControlData, "padding" | "margin"> {}
 export interface MyDimensionsNoMarginControlData
 	extends Omit<MyDimensionsControlData, "margin"> {}
 export interface MyDimensionsNoPaddingControlData
 	extends Omit<MyDimensionsControlData, "padding"> {}
+export interface MyDimensionsGapControlData
+	extends Omit<MyDimensionsControlData, "padding" | "margin"> {}
 export interface DimensionSettings {
 	top: string;
 	left: string;
@@ -44,6 +50,28 @@ export const MY_DIMENSIONS_CONTROL_DEMO: MyDimensionsControlData = {
 			left: "1rem",
 			right: "1rem",
 			bottom: "1rem",
+		},
+	},
+};
+
+export const MY_DIMENSIONS_PADDING_CONTROL_DEMO: MyDimensionsPaddingControlData = {
+	padding: {
+		Desktop: {
+			top: "1rem",
+			left: "1rem",
+			right: "1rem",
+			bottom: "1rem",
+		},
+	},
+};
+
+export const MY_DIMENSIONS_MARGIN_CONTROL_DEMO: MyDimensionsMarginControlData = {
+	margin: {
+		Desktop: {
+			top: "",
+			left: "",
+			right: "",
+			bottom: "",
 		},
 	},
 };
@@ -85,30 +113,31 @@ export const MY_DIMENSIONS_NO_GAP_DEMO__EMPTY: MyDimensionsNoGapControlData = {
 		},
 	},
 };
-
-export const MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO: MyDimensionsNoMarginControlData =
-	{
-		colunmGap: { Desktop: "1.5rem" },
-		rowGap: { Desktop: "1.5rem" },
-		padding: {
-			Desktop: {
-				top: "1rem",
-				left: "1rem",
-				right: "1rem",
-				bottom: "1rem",
-			},
+export const MY_DIMENSIONS_GAP_CONTROL_DEMO: MyDimensionsGapControlData = {
+	colunmGap: { Desktop: "1.5rem" },
+	rowGap: { Desktop: "1.5rem" },
+};
+export const MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO: MyDimensionsNoMarginControlData = {
+	colunmGap: { Desktop: "1.5rem" },
+	rowGap: { Desktop: "1.5rem" },
+	padding: {
+		Desktop: {
+			top: "1rem",
+			left: "1rem",
+			right: "1rem",
+			bottom: "1rem",
 		},
-	};
-export const MY_DIMENSIONS_NO_PADDING_CONTROL_DEMO: MyDimensionsNoPaddingControlData =
-	{
-		colunmGap: { Desktop: "1.5rem" },
-		rowGap: { Desktop: "1.5rem" },
-		margin: {
-			Desktop: {
-				top: "",
-				left: "",
-				right: "",
-				bottom: "",
-			},
+	},
+};
+export const MY_DIMENSIONS_NO_PADDING_CONTROL_DEMO: MyDimensionsNoPaddingControlData = {
+	colunmGap: { Desktop: "1.5rem" },
+	rowGap: { Desktop: "1.5rem" },
+	margin: {
+		Desktop: {
+			top: "",
+			left: "",
+			right: "",
+			bottom: "",
 		},
-	};
+	},
+};

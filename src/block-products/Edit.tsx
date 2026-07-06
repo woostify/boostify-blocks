@@ -73,6 +73,9 @@ import WcbProducstPanelGeneralLayout, {
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO
 } from "./WcbProducstPanel_GeneralLayout";	
 import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock";
+import WcbProductsPanel_StyleDimension, {
+	WCB_PRODUCTS_PANEL_STYLE_DIMENSION_DEMO,
+} from "./WcbProductsPanel_StyleDimension";
 import { getThemeDefaults } from "../utils/themeDefaults";
 import {
 	buildStyleBorderDefault,
@@ -120,6 +123,7 @@ const Edit: FC<Props> = (props) => {
 		style_wishlistBtn,
 		style_quickViewBtn,
 		style_countdownUrgency,
+		style_dimension,
 		advance_motionEffect,
 		style_category,
 	} = attributes;
@@ -558,6 +562,15 @@ const Edit: FC<Props> = (props) => {
 								</>
 							)
 						}
+						<WcbProductsPanel_StyleDimension
+							onToggle={() => handleTogglePanel("Styles", "_StyleDimension")}
+							initialOpen={tabStylesIsPanelOpen === "_StyleDimension"}
+							opened={tabStylesIsPanelOpen === "_StyleDimension" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_dimension: data });
+							}}
+							panelData={style_dimension || WCB_PRODUCTS_PANEL_STYLE_DIMENSION_DEMO}
+						/>
 					</>
 				);
 			case "Advances":
@@ -735,6 +748,7 @@ const Edit: FC<Props> = (props) => {
 			style_quickViewBtn,
 			advance_motionEffect,
 			style_category,
+			style_dimension,
 		};
 		return cs;
 	}, [
@@ -761,6 +775,7 @@ const Edit: FC<Props> = (props) => {
 		style_quickViewBtn,
 		advance_motionEffect,
 		style_category,
+		style_dimension,
 	]);
 
 	const WcbAttrsForServerSide = useMemo(() => {

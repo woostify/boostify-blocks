@@ -30,6 +30,7 @@ import {
 	WCB_IMAGE_PANEL_IMAGES,
 	WCB_IMAGE_PANEL_IMAGES_DEMO,
 } from "./WcbImagePanelImages";
+import { WCB_IMAGE_PANEL_STYLE_DIMENSION, WCB_IMAGE_PANEL_STYLE_DIMENSION_DEMO } from "./WcbImagePanel_StyleDimension";
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
 	//
@@ -38,6 +39,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	style_image: WCB_IMAGE_PANEL_STYLE_IMAGE;
 	style_overlay: WCB_IMAGE_PANEL_STYLE_OVERLAY;
 	style_caption: WCB_IMAGE_PANEL_STYLE_CAPTION;
+	style_dimension: WCB_IMAGE_PANEL_STYLE_DIMENSION;
 	//
 	//
 	url: string;
@@ -81,6 +83,10 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	style_caption: {
 		type: "object",
 		default: WCB_IMAGE_PANEL_STYLE_CAPTION_DEMO,
+	},
+	style_dimension: {
+		type: "object",
+		default: WCB_IMAGE_PANEL_STYLE_DIMENSION_DEMO,
 	},
 	//
 

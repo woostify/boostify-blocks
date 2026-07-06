@@ -17,6 +17,7 @@ import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import WcbFaqPanelGeneral from "./WcbFaqPanelGeneral";
 import WcbFaqPanelIcon from "./WcbFaqPanelIcon";
+
 import WcbFaqPanel_StyleContainer, {
 	WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
 	WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
@@ -30,6 +31,7 @@ import WcbFaqPanel_StyleAnswer, {
 import WcbFaqPanel_StyleIcon, {
 	WCB_FAQ_PANEL_STYLE_ICON_DEMO,
 } from "./WcbFaqPanel_StyleIcon";
+import WcbFaqPanel_StyleDimension from "./WcbFaqPanel_StyleDimension";
 import WcbFaqPanelPreset from "./WcbFaqPanelPreset";
 import MyCacheProvider from "../components/MyCacheProvider";
 import { WcbAttrsForSave } from "./Save";
@@ -47,9 +49,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_question,
 		style_icon,
 		style_answer,
+		style_dimension,
 		general_preset,
 		advance_motionEffect,
 	} = attributes;
+	
 	//  COMMON HOOKS
 	const ref = useRef<HTMLDivElement>(null);
 	// const { myCache, ref } = useCreateCacheEmotion();
@@ -237,6 +241,17 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							}}
 							panelData={style_answer}
 						/>
+
+						<WcbFaqPanel_StyleDimension
+							onToggle={() => handleTogglePanel("Styles", "_StyleDimension")}
+							initialOpen={tabStylesIsPanelOpen === "_StyleDimension"}
+							opened={tabStylesIsPanelOpen === "_StyleDimension" || undefined}
+							//
+							setAttr__={(data) => {
+								setAttributes({ style_dimension: data });
+							}}
+							panelData={style_dimension}
+						/>
 					</>
 				);
 			case "Advances":
@@ -286,6 +301,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			style_container,
 			style_icon,
 			style_question,
+			style_dimension,
 			uniqueId,
 			advance_motionEffect,
 		};
@@ -298,6 +314,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_container,
 		style_icon,
 		style_question,
+		style_dimension,
 		uniqueId,
 		advance_motionEffect,
 	]);

@@ -23,6 +23,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_container,
 		style_question,
 		style_icon,
+		style_dimension,
 		//
 		advance_responsiveCondition,
 		advance_zIndex,
@@ -87,6 +88,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	return (
 		<>
+			{/* ------- WRAP -------   */}
+			<Global
+				styles={[
+					getPaddingMarginStyles({
+						className: WRAP_CLASSNAME,
+						padding: style_dimension.padding,
+						margin: style_dimension.margin,
+					})
+				]}
+			/>
+
 			{/* ------- INNER -------   */}
 			<Global
 				styles={[

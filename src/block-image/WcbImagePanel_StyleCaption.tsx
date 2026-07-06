@@ -87,7 +87,6 @@ const WcbImagePanel_StyleCaption: FC<Props> = ({
 							textColor,
 						});
 					}}
-					disableAlpha
 				/>
 
 				<BoxControl

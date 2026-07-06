@@ -12,19 +12,35 @@ import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey, { converClientIdToUniqueClass } from "../utils/converUniqueIdToAnphaKey";
 import GlobalCss from "./GlobalCss";
 import useGetDeviceType from "../hooks/useGetDeviceType";
+import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
+import HOCInspectorControls, {
+	InspectorControlsTabs,
+} from "../components/HOCInspectorControls";
 // Import style panels
 import WcbSlidersPanel_StyleName, { WCB_SLIDER_PANEL_STYLE_NAME_DEMO } from "./WcbSliderPanel_StyleName";
 import WcbSlidersPanel_StyleContent, { WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO } from "./WcbSliderPanel_StyleContent";
-import WcbSlidersPanel_StyleImage, { 
-	WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO, 
+import WcbSlidersPanel_StyleImage, {
+	WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO,
 	DEFAULT_MY_TOP_ICON
 } from "./WcbSliderPanel_StyleImage";
 import WcbSlidersPanel_StyleBackground, { WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO } from "./WcbSliderPanel_StyleBackground";
-import WcbSlidersPanel_StyleDimension, { WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "./WcbSliderPanel_StyleDimension";
+import WcbSlidersPanel_StyleDimension from "./WcbSliderPanel_StyleDimension";
+// The child's dimension panel demo data intentionally reuses the parent block's
+// dimension demo constant (matches the original manual-portal implementation).
+import { WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "../block-slider/types";
 import WcbSliderButtonPanelPreset, { WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO } from "./WcbSliderPanel_ButtonPreset";
 import WcbSliderLayoutPanelPreset, { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "./WcbSliderPanel_LayoutPreset";
 import WcbSlidersPanel_StyleSeparator, { WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO } from "./WcbSliderPanel_StyleSeparator";
-import WcbSliderPanel_StyleCallToActionButton, { WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO } from "./WcbSliderPanel_StyleCallToActionButton"
+import WcbSliderPanel_StyleCallToActionButton, {
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO,
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2,
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3,
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4,
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5,
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6,
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7,
+	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8,
+} from "./WcbSliderPanel_StyleCallToActionButton"
 import MyIcon from "../components/controls/MyIcon";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
 import MyIconFull from "../components/controls/MyIconFull";
@@ -43,7 +59,6 @@ export {
 	WcbSlidersPanel_StyleBackground,
 	WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
 	WcbSlidersPanel_StyleDimension,
-	WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
 	WcbSliderButtonPanelPreset,
 	WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO,
 	WcbSliderLayoutPanelPreset,
@@ -65,8 +80,235 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 		style_image,
 		style_buttonPreset,
 		style_layoutPreset,
+		style_name,
+		style_backgroundAndBorder,
+		style_dimension,
+		style_callToActionButton,
+		advance_motionEffect,
+		advance_responsiveCondition,
+		advance_zIndex,
 		clientID, // Get existing clientID from attributes
 	} = attributes;
+
+	const childPanelInfo = useSetBlockPanelInfo(uniqueId || "");
+
+	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
+		switch (tab.name) {
+			case "General":
+				return (
+					<>
+						<WcbSlidersPanel_StyleImage
+							onToggle={() => childPanelInfo.handleTogglePanel("General", "PanelImages")}
+							initialOpen={
+								childPanelInfo.tabGeneralIsPanelOpen === "PanelImages" ||
+								childPanelInfo.tabGeneralIsPanelOpen === "first"
+							}
+							opened={childPanelInfo.tabGeneralIsPanelOpen === "PanelImages" || undefined}
+							setAttr__={(data) => {
+								// Always update image/icon data
+								setAttributes({ style_image: data });
+
+								// If icon is disabled, reset layout preset to demo
+								if (data && (data.enableIcon === false || data.enableIcon === true)) {
+									setAttributes({ style_layoutPreset: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO });
+								}
+							}}
+							panelData={style_image || WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO}
+						/>
+
+						<WcbSlidersPanel_StyleContent
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleContent")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_content: data });
+
+								// If textAlignment, reset layout preset to demo
+								if (data && (data.textAlignment)) {
+									setAttributes({ style_layoutPreset: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO });
+								}
+							}}
+							panelData={style_content || WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
+						/>
+
+						<WcbSliderButtonPanelPreset
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleButtonPreset")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleButtonPreset"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleButtonPreset" || undefined}
+							setAttr__={(data) => {
+								// Update button preset
+								setAttributes({ style_buttonPreset: data });
+
+								// Auto-update style_callToActionButton based on preset
+								const getCallToActionStyleFromPreset = (preset: string) => {
+									switch (preset) {
+										case "wcb-button-1":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
+										case "wcb-button-2":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2;
+										case "wcb-button-3":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3;
+										case "wcb-button-4":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4;
+										case "wcb-button-5":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5;
+										case "wcb-button-6":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6;
+										case "wcb-button-7":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7;
+										case "wcb-button-8":
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8;
+										default:
+											return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
+									}
+								};
+
+								setAttributes({
+									style_callToActionButton: getCallToActionStyleFromPreset(data.preset),
+								});
+							}}
+							panelData={style_buttonPreset || WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO}
+						/>
+
+						<WcbSliderLayoutPanelPreset
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleLayoutPreset")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleLayoutPreset"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleLayoutPreset" || undefined}
+							setAttr__={(data) => {
+								switch (data.preset) {
+									case "wcb-layout-1":
+										wp.data.dispatch("core/block-editor").updateBlockAttributes(clientId, {
+											style_image: { ...style_image, enableIcon: true },
+											style_content: {
+												...style_content,
+												textAlignment: { [deviceType]: "center" },
+											},
+										});
+										break;
+									case "wcb-layout-2":
+										wp.data.dispatch("core/block-editor").updateBlockAttributes(clientId, {
+											style_image: { ...style_image, enableIcon: true },
+											style_content: {
+												...style_content,
+												textAlignment: { [deviceType]: "left" },
+											},
+										});
+										break;
+									case "wcb-layout-3":
+										wp.data.dispatch("core/block-editor").updateBlockAttributes(clientId, {
+											style_image: { ...style_image, enableIcon: true },
+											style_content: {
+												...style_content,
+												textAlignment: { [deviceType]: "left" },
+											},
+										});
+										break;
+									case "wcb-layout-4":
+										wp.data.dispatch("core/block-editor").updateBlockAttributes(clientId, {
+											style_image: { ...style_image, enableIcon: false },
+											style_content: {
+												...style_content,
+												textAlignment: { [deviceType]: "center" },
+											},
+										});
+										break;
+									case "wcb-layout-5":
+										wp.data.dispatch("core/block-editor").updateBlockAttributes(clientId, {
+											style_image: { ...style_image, enableIcon: false },
+											style_content: {
+												...style_content,
+												textAlignment: { [deviceType]: "left" },
+											},
+										});
+										break;
+									default:
+										wp.data.dispatch("core/block-editor").updateBlockAttributes(clientId, {
+											style_image: { ...style_image },
+											style_content: { ...style_content },
+										});
+										break;
+								}
+								// Update layout preset
+								setAttributes({ style_layoutPreset: data });
+							}}
+							panelData={style_layoutPreset || WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO}
+						/>
+					</>
+				);
+			case "Styles":
+				return (
+					<>
+						<WcbSlidersPanel_StyleName
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleName", true)}
+							initialOpen={
+								childPanelInfo.tabStylesIsPanelOpen === "_StyleName" ||
+								childPanelInfo.tabStylesIsPanelOpen === "first"
+							}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleName" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_name: data });
+							}}
+							panelData={style_name || WCB_SLIDER_PANEL_STYLE_NAME_DEMO}
+						/>
+
+						<WcbSlidersPanel_StyleContent
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleContent")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_content: data });
+							}}
+							panelData={style_content || WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
+						/>
+
+						<WcbSliderPanel_StyleCallToActionButton
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleCallToActionButton")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleCallToActionButton"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleCallToActionButton" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_callToActionButton: data });
+							}}
+							panelData={style_callToActionButton || WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO}
+						/>
+
+						<WcbSlidersPanel_StyleBackground
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleBackground")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_backgroundAndBorder: data });
+							}}
+							panelData={style_backgroundAndBorder || WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO}
+						/>
+
+						<WcbSlidersPanel_StyleDimension
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleDimension")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleDimension"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleDimension" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_dimension: data });
+							}}
+							panelData={style_dimension || WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO}
+						/>
+					</>
+				);
+			case "Advances":
+				return (
+					<>
+						<AdvancePanelCommon
+							advance_motionEffect={advance_motionEffect}
+							advance_responsiveCondition={advance_responsiveCondition}
+							advance_zIndex={advance_zIndex}
+							handleTogglePanel={childPanelInfo.handleTogglePanel}
+							setAttributes={setAttributes}
+							tabAdvancesIsPanelOpen={childPanelInfo.tabAdvancesIsPanelOpen}
+						/>
+					</>
+				);
+			default:
+				return <div></div>;
+		}
+	};
 	
 	//  COMMON HOOKS
 	const wrapBlockProps = useBlockProps();
@@ -158,6 +400,18 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 				data-uniqueid={uniqueId}
 				data-clientid={clientId}
 			>
+				{/* CONTROL SETTINGS - only rendered while this slide is the block actually
+				    selected in the editor store. WPBlockEdit (see block-slider/Edit.tsx) sets
+				    up this component's own BlockEditContext, so the Fill's clientId correctly
+				    matches and Gutenberg shows it in the sidebar - unlike a Fill rendered from
+				    the parent's own Edit function. */}
+				{isSelected && (
+					<HOCInspectorControls
+						renderTabPanels={renderTabBodyPanels}
+						uniqueId={uniqueId}
+					/>
+				)}
+
 
 				{/* CSS in JS - Use clientID for unique styling */}
 				<GlobalCss {...attributes} clientID={clientId} deviceType={deviceType}/>
