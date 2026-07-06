@@ -3,13 +3,10 @@ import { useBlockProps, InnerBlocks, // @ts-ignore
 	useInnerBlocksProps, BlockEdit as WPBlockEdit } from "@wordpress/block-editor";
 import { use, useDispatch, useSelect } from "@wordpress/data";
 import React, { useEffect, FC, useCallback, useRef, useState, useMemo } from "react";
-import { createPortal } from "react-dom";
 import { WcbAttrs } from "./attributes";
 import HOCInspectorControls, {
 	InspectorControlsTabs,
-	INSPECTOR_CONTROLS_TABS,
 } from "../components/HOCInspectorControls";
-import { TabPanel } from "@wordpress/components";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
 // @ts-ignore
@@ -33,46 +30,6 @@ import "slick-carousel/slick/slick.css";
 // @ts-ignore
 import "slick-carousel/slick/slick-theme.css";
 import converUniqueIdToAnphaKey, { converClientIdToUniqueClass } from "../utils/converUniqueIdToAnphaKey";
-// Import child panel components using shared types to avoid circular dependency
-import {
-	WcbSlidersPanel_StyleName as ChildStyleName,
-	WcbSlidersPanel_StyleContent as ChildStyleContent,
-	WcbSliderPanel_StyleCallToActionButton as ChildStyleCallToActionButton,
-	WcbSlidersPanel_StyleImage as ChildStyleImage,
-	WcbSlidersPanel_StyleBackground as ChildStyleBackground,
-	WcbSlidersPanel_StyleDimension as ChildStyleDimension,
-	WcbSliderButtonPanelPreset as ChildStyleButtonPreset,
-	WcbSliderLayoutPanelPreset as ChildStyleLayoutPreset,
-	// WcbSlidersPanel_StyleSeparator as ChildStyleSparator,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO
-} from "../block-slider-child/Edit";
-
-// Import CallToAction presets
-import {
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7,
-	WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8,
-} from "../block-slider-child/WcbSliderPanel_StyleCallToActionButton";
-
-// Import separator demo constant
-import { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "../block-slider-child/WcbSliderPanel_LayoutPreset";
-
-// Import demo constants from shared types
-import {
-	WCB_SLIDER_PANEL_STYLE_NAME_DEMO,
-	WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO,
-	WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
-	WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO,
-} from "./types";
-import { WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO } from "../block-slider-child/WcbSliderPanel_StyleImage";
-import {
-	WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO
-} from "../block-slider-child/WcbSliderPanel_ButtonPreset";
-
 export const SLIDER_ITEM_DEMO: string[] = ["boostify-blocks/slider-child"];
 
 // Arrow components for slider
@@ -201,6 +158,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	 */
 	const { insertBlock, removeBlock, selectBlock } = useDispatch("core/block-editor");
 
+	// Last time a Slider setting (columns, carousel...) changed. These values go
+	// into the react-slick `settings` object. When they change, react-slick moves
+	// slide DOM nodes around, and this can move a child's RichText (contenteditable)
+	// node too. Some browsers fire a real `focusin` for that move. Gutenberg's
+	// useFocusHandler (from useBlockProps() in the child) then calls
+	// selectBlock(childId), even though the user did not click anything. We use
+	// this timestamp to detect and ignore that fake selection.
+	const lastSliderSettingsChangeRef = useRef<number>(0);
+	useEffect(() => {
+		lastSliderSettingsChangeRef.current = Date.now();
+	}, [general_general, general_carousel]);
+
 	// Step 1: Get inner blocks + track which block is currently selected in the editor store.
 	// selectedBlockClientId updates whenever the user clicks a block — including via List View.
 	const { innerBlocks, selectedBlockClientId } = useSelect((select: any) => {
@@ -238,7 +207,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			const timeoutId = setTimeout(() => {
 				for (let i = 0; i < targetNumber; i++) {
 					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-					insertBlock(newBlock, i, clientId);
+					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+					insertBlock(newBlock, i, clientId, false);
 				}
 			}, 100);
 			return () => clearTimeout(timeoutId);
@@ -282,6 +252,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		setIsParentSelected(false);
 		setSelectedChildId(childClientId);
 		setStoredSelectedChildId(childClientId);
+		// Also select the block in the editor store, so Gutenberg's own
+		// sidebar BlockCard (icon + title + description) shows "Slider child"
+		// too, not just the tabs we portal in below it. Without this, the
+		// store still thinks the parent Slider is selected, and the sidebar
+		// header and our tabs show different blocks.
+		selectBlock(childClientId);
 		// Navigate to the corresponding slide so canvas and panel stay in sync
 		goToChildSlide(childClientId);
 	};
@@ -305,6 +281,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		);
 
 		if (isChildOfThisSlider) {
+			// If we are on the parent panel and a Slider setting changed a moment
+			// ago, this "child selected" event is most likely the fake focusin
+			// described above, not a real click. Ignore it and put the store
+			// selection back on the parent.
+			const justChangedSliderSettings =
+				Date.now() - lastSliderSettingsChangeRef.current < 800;
+
+			if (isParentSelected && justChangedSliderSettings) {
+				selectBlock(clientId);
+				return;
+			}
+
 			setSelectedChildId(selectedBlockClientId);
 			setStoredSelectedChildId(selectedBlockClientId);
 			setIsParentSelected(false);
@@ -341,7 +329,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				const blocksToAdd = targetNumber - currentNumber;
 				for (let i = 0; i < blocksToAdd; i++) {
 					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-					insertBlock(newBlock, currentNumber + i, clientId);
+					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+					insertBlock(newBlock, currentNumber + i, clientId, false);
 				}
 			} else if (currentNumber > targetNumber) {
 				// Remove blocks from the end
@@ -364,331 +353,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return () => clearTimeout(timeoutId);
 	}, [general_general.numberofTestimonials, innerBlocks.length]); // Simplified dependency array
 
-	// Get selected child block if any
-	const selectedChildBlock = !isParentSelected && selectedChildId 
-		? innerBlocks.find((block: { clientId: string; }) => block.clientId === selectedChildId)
-		: null;
-
-	// Hook for child panel state management
-	const childPanelInfo = useSetBlockPanelInfo(selectedChildBlock?.attributes?.uniqueId || '');
-
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
-		// If child block is selected, render child panels
-		if (selectedChildBlock) {
-			const childAttrs = selectedChildBlock.attributes;
-			wp.data.dispatch("core/block-editor").updateBlockAttributes(
-				selectedChildBlock.clientId,
-				childAttrs
-			);
-			
-			switch (tab.name) {
-				case "General":
-					return (
-						<>
-							<ChildStyleImage
-								onToggle={() => handleTogglePanel("General", "PanelImages")}
-								initialOpen={tabGeneralIsPanelOpen === "PanelImages" ||
-									childPanelInfo.tabStylesIsPanelOpen === "first"
-								}
-								opened={tabGeneralIsPanelOpen === "PanelImages" || undefined}
-								//
-								setAttr__={(data) => {
-									// Always update image/icon data
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_image: data }
-									);
-
-									// If icon is disabled, reset layout preset to demo
-									if (data && (data.enableIcon === false || data.enableIcon === true)) {
-										wp.data.dispatch("core/block-editor").updateBlockAttributes(
-											selectedChildBlock.clientId,
-											{ style_layoutPreset: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO }
-										);
-									}
-								}}
-								panelData={childAttrs.style_image || WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO}
-							/>
-							
-							<ChildStyleContent
-								onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleContent")}
-								initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent"}
-								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent" || undefined}
-								setAttr__={(data) => {
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_content: data }
-									);
-
-									// If textAlignment, reset layout preset to demo
-									if (data && (data.textAlignment)) {
-										wp.data.dispatch("core/block-editor").updateBlockAttributes(
-											selectedChildBlock.clientId,
-											{ style_layoutPreset: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO }
-										);
-									}
-								}}
-								panelData={childAttrs.style_content || WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
-							/>
-
-							<ChildStyleButtonPreset
-								onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleButtonPreset")}
-								initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleButtonPreset"}
-								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleButtonPreset" || undefined}
-								setAttr__={(data) => {
-									// Update button preset
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(										
-										selectedChildBlock.clientId,
-										{ 
-											style_buttonPreset: data 
-										}
-									);
-									
-									// Auto-update style_callToActionButton based on preset
-									const getCallToActionStyleFromPreset = (preset: string) => {
-										switch (preset) {
-											case "wcb-button-1":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
-											case "wcb-button-2":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_2;
-											case "wcb-button-3":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_3;
-											case "wcb-button-4":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_4;
-											case "wcb-button-5":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_5;
-											case "wcb-button-6":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_6;
-											case "wcb-button-7":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_7;
-											case "wcb-button-8":
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_PRESET_8;
-											default:
-												return WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO;
-										}
-									};
-									
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ 
-											style_callToActionButton: getCallToActionStyleFromPreset(data.preset)
-										}
-									);
-								}}
-								panelData={childAttrs.style_buttonPreset || WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO}
-							/>
-
-							<ChildStyleLayoutPreset
-								onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleLayoutPreset")}
-								initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleLayoutPreset"}
-								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleLayoutPreset" || undefined}
-								setAttr__={(data) => {
-									switch (data.preset) {
-										case "wcb-layout-1":
-											wp.data.dispatch("core/block-editor").updateBlockAttributes(
-												selectedChildBlock.clientId,
-												{ 
-													style_image: {
-														...childAttrs.style_image,
-														enableIcon: true,
-													},
-													style_content: {
-														...childAttrs.style_content,
-														textAlignment: {
-															[deviceType]: "center",
-														}
-													}
-												}
-											);
-											break;
-										case "wcb-layout-2":
-											wp.data.dispatch("core/block-editor").updateBlockAttributes(
-												selectedChildBlock.clientId,
-												{ 
-													style_image: {
-														...childAttrs.style_image,
-														enableIcon: true,
-													},
-													style_content: {
-														...childAttrs.style_content,
-														textAlignment: {
-															[deviceType]: "left",
-														}
-													}
-												}
-											);
-											break;
-										case "wcb-layout-3":
-											wp.data.dispatch("core/block-editor").updateBlockAttributes(
-												selectedChildBlock.clientId,
-												{
-													style_image: {
-														...childAttrs.style_image,
-														enableIcon: true,
-													},
-													style_content: {
-														...childAttrs.style_content,
-														textAlignment: {
-															[deviceType]: "left",
-														}
-													}
-												}
-											);
-											break;
-										case "wcb-layout-4":
-											wp.data.dispatch("core/block-editor").updateBlockAttributes(
-												selectedChildBlock.clientId,
-												{
-													style_image: {
-														...childAttrs.style_image,
-														enableIcon: false,
-													},
-													style_content: {
-														...childAttrs.style_content,
-														textAlignment: {
-															[deviceType]: "center",
-														}
-													}
-												}
-											);
-											break;
-										case "wcb-layout-5":
-											wp.data.dispatch("core/block-editor").updateBlockAttributes(
-												selectedChildBlock.clientId,
-												{
-													style_image: {
-														...childAttrs.style_image,
-														enableIcon: false,
-													},
-													style_content: {
-														...childAttrs.style_content,
-														textAlignment: {
-															[deviceType]: "left",
-														}
-													}
-												}
-											);
-											break;
-										default:
-											wp.data.dispatch("core/block-editor").updateBlockAttributes(
-												selectedChildBlock.clientId,
-												{
-													style_image: {
-														...childAttrs.style_image,
-													},
-													style_content: {
-														...childAttrs.style_content,
-													}
-												}
-											);
-											break;
-									}
-									// Update layout preset
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_layoutPreset: data }
-									);
-								}}
-								panelData={childAttrs.style_layoutPreset || WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO}
-							/>
-						</>
-					);
-				case "Styles":
-					return (
-						<>
-							<ChildStyleName
-								onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleName", true)}
-								initialOpen={
-									childPanelInfo.tabStylesIsPanelOpen === "_StyleName" ||
-									childPanelInfo.tabStylesIsPanelOpen === "first"
-								}
-								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleName" || undefined}
-								setAttr__={(data) => {
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_name: data }
-									);
-								}}
-								panelData={childAttrs.style_name || WCB_SLIDER_PANEL_STYLE_NAME_DEMO}
-							/>
-							
-							<ChildStyleContent
-								onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleContent")}
-								initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent"}
-								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent" || undefined}
-								setAttr__={(data) => {
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_content: data }
-									);
-								}}
-								panelData={childAttrs.style_content || WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO}
-							/>
-
-							<ChildStyleCallToActionButton 
-								onToggle={() => handleTogglePanel("Styles", "_StyleCallToActionButton")}
-								initialOpen={tabGeneralIsPanelOpen === "_StyleCallToActionButton"}
-								opened={tabGeneralIsPanelOpen === "_StyleCallToActionButton" || undefined}
-								//
-								setAttr__={(data) => {
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_callToActionButton: data }
-									);
-								}}
-								panelData={childAttrs.style_callToActionButton || WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO}
-							/>
-							
-							<ChildStyleBackground
-								onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleBackground")}
-								initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground"}
-								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground" || undefined}
-								setAttr__={(data) => {
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_backgroundAndBorder: data }
-									);
-								}}
-								panelData={childAttrs.style_backgroundAndBorder || WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO}
-							/>
-							
-							<ChildStyleDimension
-								onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleDimension")}
-								initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleDimension"}
-								opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleDimension" || undefined}
-								setAttr__={(data) => {
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										{ style_dimension: data }
-									);
-								}}
-								panelData={childAttrs.style_dimension || WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO}
-							/>
-						</>
-					);
-				case "Advances":
-					return (
-						<>
-							<AdvancePanelCommon
-								advance_motionEffect={childAttrs.advance_motionEffect}
-								advance_responsiveCondition={childAttrs.advance_responsiveCondition}
-								advance_zIndex={childAttrs.advance_zIndex}
-								handleTogglePanel={childPanelInfo.handleTogglePanel}
-								setAttributes={(newAttrs) => {
-									wp.data.dispatch("core/block-editor").updateBlockAttributes(
-										selectedChildBlock.clientId,
-										newAttrs
-									);
-								}}
-								tabAdvancesIsPanelOpen={childPanelInfo.tabAdvancesIsPanelOpen}
-							/>
-						</>
-					);
-				default:
-					return <div></div>;
-			}
-		}
-		
 		// Parent panel rendering (original logic)
 		switch (tab.name) {
 			case "General":
@@ -826,7 +491,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						}}
 					>
 						{/* WPBlockEdit sets up BlockEditContextProvider so child's InspectorControls
-						    gets its own isSelected context, independent of the parent's context */}
+						    gets its own isSelected context, independent of the parent's context.
+						    mayDisplayControls must ALSO be passed explicitly: since WP 7.0,
+						    BlockEdit's InspectorControls Fill visibility is gated on this prop
+						    (normally computed and passed down by BlockListBlockProvider), not on
+						    isSelected alone. Because these children are mounted manually here
+						    instead of through the standard <BlockListBlock> pipeline, that
+						    computation never happens unless we provide it ourselves. */}
 						<WPBlockEdit
 							name={block.name}
 							attributes={block.attributes}
@@ -838,6 +509,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							}}
 							clientId={block.clientId}
 							isSelected={isSelected}
+							mayDisplayControls={isSelected}
 							index={index}
 						/>
 					</div>
@@ -982,7 +654,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			autoplaySpeed,
 			hoverpause,
 			isAutoPlay,
-			rewind,
 			showArrowsDots,
 			adaptiveHeight,
 		} = general_carousel;
@@ -994,7 +665,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		);
 
 		const settings: Settings = {
-			infinite: rewind,
+			// Forced false in the editor (regardless of the "rewind" attribute, which
+			// still controls the real frontend carousel via view.js): react-slick
+			// clones slides for infinite+centerMode looping, which would mount
+			// <WPBlockEdit> more than once for the same child slide, duplicating its
+			// InspectorControls panel in the sidebar whenever it's selected.
+			infinite: false,
 			speed: animationDuration || 500,
 			autoplay: isAutoPlay,
 			autoplaySpeed,
@@ -1077,15 +753,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					ref={ sliderRef } 
 					{...settings}
 				>
-					{innerBlocks.map((block: any, index: number) =>
-						<MemoizedChildBlock
-							key={block.clientId}
-							block={block}
-							isSelected={!isParentSelected && (selectedChildId != null && selectedChildId === block.clientId)}
-							onSelect={handleChildSelect}
-							index={index + 1} // Pass index to child for unique identification
-						/>
-					)}
+					{innerBlocks.map((block: any, index: number) => {
+						const isChildSelected = !isParentSelected && (selectedChildId != null && selectedChildId === block.clientId);
+						return (
+							<MemoizedChildBlock
+								key={block.clientId}
+								block={block}
+								isSelected={isChildSelected}
+								onSelect={handleChildSelect}
+								index={index + 1} // Pass index to child for unique identification
+							/>
+						);
+					})}
 				</Slider>
 			</div>
 		);
@@ -1128,7 +807,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	]);
 
 	const handleParentClick = useCallback((e: React.MouseEvent) => {
-		console.log('handleParentClick', e.target, e.currentTarget, isParentSelected);
 		if (e.target === e.currentTarget && !isParentSelected) {
 			selectBlock(clientId);
 			setIsParentSelected(true);
@@ -1146,46 +824,25 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				data-uniqueid={uniqueId}
 				onClick={handleParentClick}
 			>
-				{/* CONTROL SETTINGS - Only renders when parent is selected.
-				    When a child is selected, the portal below handles rendering child panels.
-				    Conditionally rendering prevents duplicate TabPanel from HOCInspectorControls + portal. */}
+				{/* CONTROL SETTINGS - only the parent's own settings. When a child slide
+				    is selected, that child's own Edit component (block-slider-child/Edit.tsx,
+				    mounted via WPBlockEdit below) renders its own <InspectorControls> directly,
+				    since only a Fill whose BlockEditContext clientId matches the truly selected
+				    block is shown by Gutenberg - a Fill rendered from here (the parent) would be
+				    filtered out whenever a child is the actual selected block. */}
 				{isParentSelected && (
 					<HOCInspectorControls
 						renderTabPanels={renderTabBodyPanels}
 						uniqueId={uniqueId}
 					/>
 				)}
-				
+
 				{/* CSS IN JS */}
 				<GlobalCss {...WcbAttrsForSave()} />
 
 				{/* CHILD CONTENT */}
 				{renderSliderContent()}
 			</div>
-
-			{/* Portal child settings directly into sidebar when child is selected.
-			    Bypasses Gutenberg's InspectorControls fill/slot filtering because
-			    child blocks are rendered manually (not via standard InnerBlocks). */}
-			{!isParentSelected && selectedChildBlock && (() => {
-				const sidebarEl = document.querySelector(".block-editor-block-inspector");
-				if (!sidebarEl) return null;
-				return createPortal(
-					<TabPanel
-						className={`wcb-inspectorControls__panel ${selectedChildBlock.attributes.uniqueId}`}
-						activeClass="HOCInspectorControls__ative-tab active-tab"
-						tabs={INSPECTOR_CONTROLS_TABS}
-						onSelect={() => {}}
-						initialTabName="General"
-					>
-						{(tab: InspectorControlsTabs[number]) => (
-							<div key={tab.name} className={tab.name}>
-								{renderTabBodyPanels(tab)}
-							</div>
-						)}
-					</TabPanel>,
-					sidebarEl
-				);
-			})()}
 		</MyCacheProvider>
 	);
 };
