@@ -155,7 +155,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new),
 					},
 					[`@media (min-width: ${media_tablet})`]: {
-						maxWidth: (cWidthTablet_new ?? cWidthMobile_new) ? (cWidthTablet_new ?? cWidthMobile_new) + " !important" : "",
+						maxWidth: getResponsiveMaxWidthValue(cWidthTablet_new),
 						// width: cWidthTablet_new,
 						minHeight: (minHeightTablet_new ?? minHeightMobile_new) ?? undefined,
 						"&.is_wcb_container_child": {
@@ -164,7 +164,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 					},
 					[`@media (min-width: ${media_desktop})`]: {
-						maxWidth: (cWidthDesktop_new ?? cWidthMobile_new ?? cWidthTablet_new) ? (cWidthDesktop_new ?? cWidthMobile_new ?? cWidthTablet_new) + " !important" : "",
+						maxWidth: getResponsiveMaxWidthValue(cWidthDesktop_new),
 						// width: cWidthDesktop_new,
 						minHeight: (minHeightDesktop_new ?? minHeightTablet_new ?? minHeightMobile_new) ?? undefined,
 						"&.is_wcb_container_child": {

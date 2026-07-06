@@ -75,7 +75,7 @@ const GlobalCss = attrs => {
 
   // ------------------- WRAP DIV
   const getDivWrapStyles = () => {
-    var _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+    var _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
     const {
       containerWidthType,
       customWidth,
@@ -173,7 +173,7 @@ const GlobalCss = attrs => {
           maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new)
         },
         [`@media (min-width: ${media_tablet})`]: {
-          maxWidth: (cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : cWidthMobile_new) ? (cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : cWidthMobile_new) + " !important" : "",
+          maxWidth: getResponsiveMaxWidthValue(cWidthTablet_new),
           // width: cWidthTablet_new,
           minHeight: (_ref4 = minHeightTablet_new !== null && minHeightTablet_new !== void 0 ? minHeightTablet_new : minHeightMobile_new) !== null && _ref4 !== void 0 ? _ref4 : undefined,
           "&.is_wcb_container_child": {
@@ -182,9 +182,9 @@ const GlobalCss = attrs => {
           }
         },
         [`@media (min-width: ${media_desktop})`]: {
-          maxWidth: ((_ref5 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthMobile_new) !== null && _ref5 !== void 0 ? _ref5 : cWidthTablet_new) ? ((_ref6 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthMobile_new) !== null && _ref6 !== void 0 ? _ref6 : cWidthTablet_new) + " !important" : "",
+          maxWidth: getResponsiveMaxWidthValue(cWidthDesktop_new),
           // width: cWidthDesktop_new,
-          minHeight: (_ref7 = (_ref8 = minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : minHeightTablet_new) !== null && _ref8 !== void 0 ? _ref8 : minHeightMobile_new) !== null && _ref7 !== void 0 ? _ref7 : undefined,
+          minHeight: (_ref5 = (_ref6 = minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : minHeightTablet_new) !== null && _ref6 !== void 0 ? _ref6 : minHeightMobile_new) !== null && _ref5 !== void 0 ? _ref5 : undefined,
           "&.is_wcb_container_child": {
             // If desktop is optimized away (null) but equals mobile, use mobile value
             // This prevents old tablet values from interfering when user changes desktop
