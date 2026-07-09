@@ -403,57 +403,48 @@ add_action( 'wp_head', 'boostify_blocks_output_late_preload', 99 );
 // ─── Frontend hooks ───────────────────────────────────────────────────────────
 
 /**
- * When allowOnlySelectedFonts is enabled, removes any font not in the
- * selectedFonts list from the collected $fonts array.
- * Comparison is case-insensitive and trims whitespace.
+ * Collects unique Google Font family names used across every post shown on
+ * the current frontend request.
  *
- * @param string[] $fonts    Font family names collected from post content.
- * @param array    $settings The boostify_blocks_settings_options option value.
- * @return string[]
+ * is_singular() only covers a single displayed post (a post/page permalink).
+ * On archive-type views (blog index, category, search, a static front page
+ * set to "latest posts", etc.) WordPress renders multiple posts from the
+ * main query instead, so we walk $wp_query->posts and merge fonts found in
+ * each one — otherwise blocks placed there would never get their local font
+ * enqueued at all.
  */
-function boostify_blocks_apply_font_allowlist( array $fonts, array $settings ): array {
-    if ( ( $settings['allowOnlySelectedFonts'] ?? 'false' ) !== 'true' ) {
-        return $fonts;
+function boostify_blocks_collect_current_page_fonts(): array {
+    if ( is_singular() ) {
+        $post = get_post();
+        return $post ? boostify_blocks_collect_post_fonts( $post->post_content ) : [];
     }
 
-    $raw = $settings['selectedFonts'] ?? '';
-    if ( '' === trim( $raw ) ) {
-        return $fonts;
+    global $wp_query;
+    if ( empty( $wp_query->posts ) ) {
+        return [];
     }
 
-    $allowed = array_map( 'mb_strtolower', array_map( 'trim', explode( ',', $raw ) ) );
-    $allowed = array_filter( $allowed );
+    $fonts = [];
+    foreach ( $wp_query->posts as $queried_post ) {
+        if ( $queried_post instanceof WP_Post ) {
+            $fonts = array_merge( $fonts, boostify_blocks_collect_post_fonts( $queried_post->post_content ) );
+        }
+    }
 
-    return array_values(
-        array_filter( $fonts, fn( $f ) => in_array( mb_strtolower( trim( $f ) ), $allowed, true ) )
-    );
+    return array_values( array_unique( $fonts ) );
 }
 
 /**
- * Enqueue locally cached Google Font stylesheets on the frontend for fonts
- * found in block attributes (fontFamily).
- * Hooked to wp_enqueue_scripts so fonts are downloaded (if needed) before
- * wp_head outputs the <link> tags.
+ * Downloads/caches (if needed) and enqueues the local Google Font
+ * stylesheet for each given font family name.
+ *
+ * allowOnlySelectedFonts is intentionally NOT applied here: it only limits
+ * which fonts show up as pickable options in the Typography control
+ * (WcbFontFamilyPicker.tsx). A font already assigned to a block must always
+ * load, otherwise editors lose their chosen font the moment local fonts are
+ * enabled.
  */
-function boostify_blocks_enqueue_local_google_fonts(): void {
-    $settings = get_option( 'boostify_blocks_settings_options', [] );
-
-    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
-        return;
-    }
-
-    if ( ! is_singular() ) {
-        return;
-    }
-
-    $post = get_post();
-    if ( ! $post ) {
-        return;
-    }
-
-    $fonts = boostify_blocks_collect_post_fonts( $post->post_content );
-    $fonts = boostify_blocks_apply_font_allowlist( $fonts, $settings );
-
+function boostify_blocks_enqueue_local_fonts( array $fonts ): void {
     foreach ( $fonts as $font_family ) {
         $local_css_url = boostify_blocks_download_google_font( $font_family );
 
@@ -467,7 +458,44 @@ function boostify_blocks_enqueue_local_google_fonts(): void {
         }
     }
 }
+
+/**
+ * Enqueue locally cached Google Font stylesheets on the frontend for fonts
+ * found in block attributes (fontFamily), across every post rendered on the
+ * current request (singular or archive).
+ * Hooked to wp_enqueue_scripts so fonts are downloaded (if needed) before
+ * wp_head outputs the <link> tags.
+ */
+function boostify_blocks_enqueue_local_google_fonts(): void {
+    $settings = get_option( 'boostify_blocks_settings_options', [] );
+
+    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+        return;
+    }
+
+    boostify_blocks_enqueue_local_fonts( boostify_blocks_collect_current_page_fonts() );
+}
 add_action( 'wp_enqueue_scripts', 'boostify_blocks_enqueue_local_google_fonts' );
+
+/**
+ * Mirrors boostify_blocks_enqueue_local_google_fonts() for the block editor,
+ * so headings show the same local font while editing as they do on the
+ * frontend (the editor iframe copies stylesheets enqueued here).
+ */
+function boostify_blocks_enqueue_local_google_fonts_editor(): void {
+    $post = get_post();
+    if ( ! $post instanceof WP_Post ) {
+        return;
+    }
+
+    $settings = get_option( 'boostify_blocks_settings_options', [] );
+    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+        return;
+    }
+
+    boostify_blocks_enqueue_local_fonts( boostify_blocks_collect_post_fonts( $post->post_content ) );
+}
+add_action( 'enqueue_block_editor_assets', 'boostify_blocks_enqueue_local_google_fonts_editor' );
 
 /**
  * Output <link rel="preload"> tags for every woff2 file used on the current
@@ -492,23 +520,15 @@ function boostify_blocks_output_preload_local_fonts(): void {
     $paths      = boostify_blocks_fonts_upload_dir();
     $woff2_urls = [];
 
-    // 1. Fonts from block content (singular pages only).
-    if ( is_singular() ) {
-        $post = get_post();
-        if ( $post ) {
-            $fonts = boostify_blocks_collect_post_fonts( $post->post_content );
-            $fonts = boostify_blocks_apply_font_allowlist( $fonts, $settings );
-
-            foreach ( $fonts as $font_family ) {
-                $css_path = $paths['dir'] . sanitize_title( $font_family ) . '.css';
-                if ( ! file_exists( $css_path ) ) {
-                    continue;
-                }
-                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-                $css = file_get_contents( $css_path );
-                boostify_blocks_extract_woff2_urls( $css, $paths['url'], $woff2_urls );
-            }
+    // 1. Fonts from block content (every post rendered on this request).
+    foreach ( boostify_blocks_collect_current_page_fonts() as $font_family ) {
+        $css_path = $paths['dir'] . sanitize_title( $font_family ) . '.css';
+        if ( ! file_exists( $css_path ) ) {
+            continue;
         }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+        $css = file_get_contents( $css_path );
+        boostify_blocks_extract_woff2_urls( $css, $paths['url'], $woff2_urls );
     }
 
     // 2. Fonts from intercepted theme/plugin stylesheets (all page types).
