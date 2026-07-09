@@ -4896,33 +4896,6 @@ const ContainerEdit = props => {
     styles_dimensions,
     advance_motionEffect
   } = attributes;
-
-  //
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    if (uniqueId) {
-      return;
-    }
-    const {
-      containerWidthType
-    } = general_container;
-    if (containerWidthType === "Custom") {
-      return;
-    }
-    setAttributes({
-      align: containerWidthType === "Boxed" ? "wide" : "full"
-    });
-  }, [uniqueId]);
-
-  //
-
-  const ref = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
-  const {
-    tabIsOpen,
-    tabAdvancesIsPanelOpen,
-    tabGeneralIsPanelOpen,
-    tabStylesIsPanelOpen,
-    handleTogglePanel
-  } = (0,_hooks_useSetBlockPanelInfo__WEBPACK_IMPORTED_MODULE_16__["default"])(uniqueId);
   const {
     hasInnerBlocks,
     hasParent
@@ -4935,6 +4908,41 @@ const ContainerEdit = props => {
       hasInnerBlocks: select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.store).getBlocks(clientId).length > 0
     };
   }, [clientId]);
+
+  //
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    if (uniqueId) {
+      return;
+    }
+    // Only set align on root containers, not on child containers
+    if (hasParent) {
+      // Remove align attribute from child containers to prevent alignment wrapper
+      setAttributes({
+        align: ""
+      });
+      return;
+    }
+    const {
+      containerWidthType
+    } = general_container;
+    if (containerWidthType === "Custom") {
+      return;
+    }
+    setAttributes({
+      align: containerWidthType === "Boxed" ? "wide" : "full"
+    });
+  }, [uniqueId, general_container, setAttributes, hasParent]);
+
+  //
+
+  const ref = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+  const {
+    tabIsOpen,
+    tabAdvancesIsPanelOpen,
+    tabGeneralIsPanelOpen,
+    tabStylesIsPanelOpen,
+    handleTogglePanel
+  } = (0,_hooks_useSetBlockPanelInfo__WEBPACK_IMPORTED_MODULE_16__["default"])(uniqueId);
   const {
     containerWidthType
   } = general_container;
@@ -4946,7 +4954,7 @@ const ContainerEdit = props => {
     setAttributes({
       containerClassName: cl
     });
-  }, [hasParent, containerWidthType]);
+  }, [hasParent, containerWidthType, setAttributes]);
   //
 
   const renderPanelBackground = () => {
@@ -5277,7 +5285,7 @@ const Edit = props => {
     // Why check attributes.uniqueId: Changing the "align" attr causes a full re-render, resetting selectedVariant to false.
     hasParent || hasInnerBlocks || selectedVariant || !!attributes.uniqueId ? _ContainerEdit__WEBPACK_IMPORTED_MODULE_8__["default"] : Placeholder;
     return C;
-  }, [hasParent, hasInnerBlocks, selectedVariant]);
+  }, [hasParent, hasInnerBlocks, selectedVariant, attributes.uniqueId]);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(Component, {
     ...props,
     onSelect: () => {
@@ -5366,6 +5374,7 @@ const GlobalCss = attrs => {
 
   // ------------------- WRAP DIV
   const getDivWrapStyles = () => {
+    var _ref, _ref2, _ref3, _ref4, _ref5, _ref6;
     const {
       containerWidthType,
       customWidth,
@@ -5409,6 +5418,22 @@ const GlobalCss = attrs => {
     });
     //
 
+    const getResponsiveWidthValue = value => {
+      if (value === undefined || value === null || value === "") {
+        return undefined;
+      }
+      return value;
+    };
+    const getResponsiveMaxWidthValue = value => {
+      const responsiveValue = getResponsiveWidthValue(value);
+      if (responsiveValue === undefined) {
+        return undefined;
+      }
+      return `${responsiveValue} !important`;
+    };
+    const cWidthDesktop_new_child = (_ref = (_ref2 = cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : cWidthTablet_new) !== null && _ref2 !== void 0 ? _ref2 : cWidthMobile_new) !== null && _ref !== void 0 ? _ref : undefined;
+    const cWidthTablet_new_child = (_ref3 = cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : cWidthMobile_new) !== null && _ref3 !== void 0 ? _ref3 : undefined;
+    const cWidthMobile_new_child = getResponsiveWidthValue(cWidthMobile_new);
     return [{
       [`${WP_BLOCK_CLASSNAME}:has(> .wcb-container__wrap.${uniqueId}[data-uniqueid=${uniqueId}])`]: {
         marginTop: hasMarginTopDesktop ? "0px" + " !important" : "",
@@ -5435,31 +5460,34 @@ const GlobalCss = attrs => {
         padding: containerPadding || "",
         color: styles_color,
         overflow: overflow,
-        //
-        maxWidth: cWidthMobile_new ? cWidthMobile_new + " !important" : "",
-        // width: cWidthMobile_new,
+        maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new),
+        width: cWidthMobile_new_child,
         minHeight: minHeightMobile_new !== null && minHeightMobile_new !== void 0 ? minHeightMobile_new : undefined,
         "&.alignfull": {
           marginLeft: `calc(-50vw + 50%)`,
           marginRight: `calc(-50vw + 50%)`
         },
         "&.is_wcb_container_child": {
-          width: cWidthMobile_new !== null && cWidthMobile_new !== void 0 ? cWidthMobile_new : undefined
+          width: cWidthMobile_new_child,
+          maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new)
         },
         [`@media (min-width: ${media_tablet})`]: {
-          maxWidth: cWidthTablet_new ? cWidthTablet_new + " !important" : "",
+          maxWidth: getResponsiveMaxWidthValue(cWidthTablet_new),
           // width: cWidthTablet_new,
-          minHeight: minHeightTablet_new !== null && minHeightTablet_new !== void 0 ? minHeightTablet_new : undefined,
+          minHeight: (_ref4 = minHeightTablet_new !== null && minHeightTablet_new !== void 0 ? minHeightTablet_new : minHeightMobile_new) !== null && _ref4 !== void 0 ? _ref4 : undefined,
           "&.is_wcb_container_child": {
-            width: cWidthTablet_new !== null && cWidthTablet_new !== void 0 ? cWidthTablet_new : undefined
+            // If tablet is optimized away (null) but equals mobile, use mobile value							
+            width: cWidthTablet_new_child
           }
         },
         [`@media (min-width: ${media_desktop})`]: {
-          maxWidth: cWidthDesktop_new ? cWidthDesktop_new + " !important" : "",
+          maxWidth: getResponsiveMaxWidthValue(cWidthDesktop_new),
           // width: cWidthDesktop_new,
-          minHeight: minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : undefined,
+          minHeight: (_ref5 = (_ref6 = minHeightDesktop_new !== null && minHeightDesktop_new !== void 0 ? minHeightDesktop_new : minHeightTablet_new) !== null && _ref6 !== void 0 ? _ref6 : minHeightMobile_new) !== null && _ref5 !== void 0 ? _ref5 : undefined,
           "&.is_wcb_container_child": {
-            width: cWidthDesktop_new !== null && cWidthDesktop_new !== void 0 ? cWidthDesktop_new : undefined
+            // If desktop is optimized away (null) but equals mobile, use mobile value
+            // This prevents old tablet values from interfering when user changes desktop
+            width: cWidthDesktop_new_child
           }
         }
       }
@@ -6144,7 +6172,7 @@ const blokcContainerAttrs = {
     default: ""
   },
   isShowVariations: {
-    type: "bool",
+    type: "boolean",
     default: true
   },
   general_container: {
@@ -8712,11 +8740,11 @@ const MyDimensionsControl = ({
     className: className
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_MySpacingSizesControl_MySpacingSizesControl__WEBPACK_IMPORTED_MODULE_6__["default"], {
     onChange: setRowGrap,
-    value: rowGap || "0",
+    value: rowGap || "",
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Row Gap", "boostify-blocks")
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_MySpacingSizesControl_MySpacingSizesControl__WEBPACK_IMPORTED_MODULE_6__["default"], {
     onChange: setColumnGap,
-    value: colunmGap || "0",
+    value: colunmGap || "",
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Column Gap", "boostify-blocks")
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalBoxControl, {
     label: (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_MyLabelControl_MyLabelControl__WEBPACK_IMPORTED_MODULE_3__["default"], {
@@ -10262,11 +10290,12 @@ const SpacingInputControl = ({
   customUnitsValueSettings = MY_CUSTOM_UNITS_VALUE_SETTINGS
 }) => {
   const selectedUnit = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => (0,_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalParseQuantityAndUnitFromRawValue)(value), [value])[1] || units[0].value;
-  const customRangeValue = parseFloat(value !== null && value !== void 0 ? value : "10");
+  const customRangeValue = value && !Number.isNaN(parseFloat(value)) ? parseFloat(value) : 10;
   const handleCustomValueSliderChange = next => {
     const newValue = [next, selectedUnit].join("");
     onChange(newValue);
   };
+  const placeholder = value && !Number.isNaN(parseFloat(value)) ? `${parseFloat(value)}` : "";
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: `${className} flex items-center space-x-2.5`
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -10287,7 +10316,7 @@ const SpacingInputControl = ({
     onChange: (newSize, ...props) => {
       onChange(newSize);
     },
-    placeholder: `${parseInt(value || "")}`,
+    placeholder: placeholder,
     value: value,
     units: units,
     min: minCustomValue,
@@ -10911,6 +10940,8 @@ const checkResponsiveValueForOptimizeCSS = ({
 }) => {
   let new_tablet_v = tablet_v;
   let new_desktop_v = desktop_v;
+
+  // If all values are the same, only keep mobile
   if (mobile_v === tablet_v && tablet_v === desktop_v) {
     return {
       mobile_v,
@@ -10918,11 +10949,15 @@ const checkResponsiveValueForOptimizeCSS = ({
       desktop_v: null
     };
   }
-  if (desktop_v === tablet_v || desktop_v === mobile_v) {
-    new_desktop_v = null;
-  }
+
+  // If tablet equals mobile, don't output tablet CSS (let it cascade naturally)
   if (tablet_v === mobile_v) {
     new_tablet_v = null;
+  }
+
+  // If desktop equals tablet OR mobile, don't output desktop CSS  
+  if (desktop_v === tablet_v) {
+    new_desktop_v = null;
   }
   return {
     mobile_v: mobile_v !== null && mobile_v !== void 0 ? mobile_v : null,
@@ -11315,6 +11350,7 @@ const getFlexPropertiesStyles = ({
   flexProperties,
   className
 }) => {
+  var _ref, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9, _ref0, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16;
   const {
     media_desktop,
     media_tablet
@@ -11371,28 +11407,29 @@ const getFlexPropertiesStyles = ({
 
   return {
     [`${className}`]: {
-      flexDirection: flexDirection_Mobile,
-      alignItems: alignItems_Mobile,
-      flexWrap: flexWrap_Mobile,
-      justifyContent: justifyContent_Mobile,
-      columnGap: colunmGap_Mobile,
-      rowGap: rowGap_Mobile,
-      [`@media (min-width: ${media_tablet})`]: flexDirection_Tablet || alignItems_Tablet || flexWrap_Tablet || justifyContent_Tablet || colunmGap_Tablet || rowGap_Tablet ? {
-        flexDirection: flexDirection_Tablet,
-        alignItems: alignItems_Tablet,
-        flexWrap: flexWrap_Tablet,
-        justifyContent: justifyContent_Tablet,
-        columnGap: colunmGap_Tablet,
-        rowGap: rowGap_Tablet
-      } : undefined,
-      [`@media (min-width: ${media_desktop})`]: flexDirection_Desktop || alignItems_Desktop || flexWrap_Desktop || justifyContent_Desktop || colunmGap_Desktop || rowGap_Desktop ? {
-        flexDirection: flexDirection_Desktop,
-        alignItems: alignItems_Desktop,
-        flexWrap: flexWrap_Desktop,
-        justifyContent: justifyContent_Desktop,
-        columnGap: colunmGap_Desktop,
-        rowGap: rowGap_Desktop
-      } : undefined
+      display: "flex !important",
+      flexDirection: flexDirection_Mobile !== null && flexDirection_Mobile !== void 0 ? flexDirection_Mobile : "row",
+      alignItems: alignItems_Mobile !== null && alignItems_Mobile !== void 0 ? alignItems_Mobile : "stretch",
+      flexWrap: flexWrap_Mobile !== null && flexWrap_Mobile !== void 0 ? flexWrap_Mobile : "nowrap",
+      justifyContent: justifyContent_Mobile !== null && justifyContent_Mobile !== void 0 ? justifyContent_Mobile : "flex-start",
+      columnGap: colunmGap_Mobile !== null && colunmGap_Mobile !== void 0 ? colunmGap_Mobile : "0px",
+      rowGap: rowGap_Mobile !== null && rowGap_Mobile !== void 0 ? rowGap_Mobile : "0px",
+      [`@media (min-width: ${media_tablet})`]: {
+        flexDirection: (_ref = flexDirection_Tablet !== null && flexDirection_Tablet !== void 0 ? flexDirection_Tablet : flexDirection_Mobile) !== null && _ref !== void 0 ? _ref : "row",
+        alignItems: (_ref2 = alignItems_Tablet !== null && alignItems_Tablet !== void 0 ? alignItems_Tablet : alignItems_Mobile) !== null && _ref2 !== void 0 ? _ref2 : "stretch",
+        flexWrap: (_ref3 = flexWrap_Tablet !== null && flexWrap_Tablet !== void 0 ? flexWrap_Tablet : flexWrap_Mobile) !== null && _ref3 !== void 0 ? _ref3 : "nowrap",
+        justifyContent: (_ref4 = justifyContent_Tablet !== null && justifyContent_Tablet !== void 0 ? justifyContent_Tablet : justifyContent_Mobile) !== null && _ref4 !== void 0 ? _ref4 : "flex-start",
+        columnGap: (_ref5 = colunmGap_Tablet !== null && colunmGap_Tablet !== void 0 ? colunmGap_Tablet : colunmGap_Mobile) !== null && _ref5 !== void 0 ? _ref5 : "0px",
+        rowGap: (_ref6 = rowGap_Tablet !== null && rowGap_Tablet !== void 0 ? rowGap_Tablet : rowGap_Mobile) !== null && _ref6 !== void 0 ? _ref6 : "0px"
+      },
+      [`@media (min-width: ${media_desktop})`]: {
+        flexDirection: (_ref7 = (_ref8 = flexDirection_Desktop !== null && flexDirection_Desktop !== void 0 ? flexDirection_Desktop : flexDirection_Tablet) !== null && _ref8 !== void 0 ? _ref8 : flexDirection_Mobile) !== null && _ref7 !== void 0 ? _ref7 : "row",
+        alignItems: (_ref9 = (_ref0 = alignItems_Desktop !== null && alignItems_Desktop !== void 0 ? alignItems_Desktop : alignItems_Tablet) !== null && _ref0 !== void 0 ? _ref0 : alignItems_Mobile) !== null && _ref9 !== void 0 ? _ref9 : "stretch",
+        flexWrap: (_ref1 = (_ref10 = flexWrap_Desktop !== null && flexWrap_Desktop !== void 0 ? flexWrap_Desktop : flexWrap_Tablet) !== null && _ref10 !== void 0 ? _ref10 : flexWrap_Mobile) !== null && _ref1 !== void 0 ? _ref1 : "nowrap",
+        justifyContent: (_ref11 = (_ref12 = justifyContent_Desktop !== null && justifyContent_Desktop !== void 0 ? justifyContent_Desktop : justifyContent_Tablet) !== null && _ref12 !== void 0 ? _ref12 : justifyContent_Mobile) !== null && _ref11 !== void 0 ? _ref11 : "flex-start",
+        columnGap: (_ref13 = (_ref14 = colunmGap_Desktop !== null && colunmGap_Desktop !== void 0 ? colunmGap_Desktop : colunmGap_Tablet) !== null && _ref14 !== void 0 ? _ref14 : colunmGap_Mobile) !== null && _ref13 !== void 0 ? _ref13 : "0px",
+        rowGap: (_ref15 = (_ref16 = rowGap_Desktop !== null && rowGap_Desktop !== void 0 ? rowGap_Desktop : rowGap_Tablet) !== null && _ref16 !== void 0 ? _ref16 : rowGap_Mobile) !== null && _ref15 !== void 0 ? _ref15 : "0px"
+      }
     }
   };
 };

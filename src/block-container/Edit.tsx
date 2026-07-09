@@ -119,7 +119,7 @@ const Edit = (props: any) => {
 				? ContainerEdit
 				: Placeholder;
 		return C;
-	}, [hasParent, hasInnerBlocks, selectedVariant]);
+	}, [hasParent, hasInnerBlocks, selectedVariant, attributes.uniqueId]);
 
 	return (
 		<Component

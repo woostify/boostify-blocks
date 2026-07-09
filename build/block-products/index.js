@@ -13555,11 +13555,11 @@ const MyDimensionsControl = ({
     className: className
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_MySpacingSizesControl_MySpacingSizesControl__WEBPACK_IMPORTED_MODULE_6__["default"], {
     onChange: setRowGrap,
-    value: rowGap || "0",
+    value: rowGap || "",
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Row Gap", "boostify-blocks")
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_MySpacingSizesControl_MySpacingSizesControl__WEBPACK_IMPORTED_MODULE_6__["default"], {
     onChange: setColumnGap,
-    value: colunmGap || "0",
+    value: colunmGap || "",
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Column Gap", "boostify-blocks")
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalBoxControl, {
     label: (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_MyLabelControl_MyLabelControl__WEBPACK_IMPORTED_MODULE_3__["default"], {
@@ -15405,11 +15405,12 @@ const SpacingInputControl = ({
   customUnitsValueSettings = MY_CUSTOM_UNITS_VALUE_SETTINGS
 }) => {
   const selectedUnit = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useMemo)(() => (0,_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalParseQuantityAndUnitFromRawValue)(value), [value])[1] || units[0].value;
-  const customRangeValue = parseFloat(value !== null && value !== void 0 ? value : "10");
+  const customRangeValue = value && !Number.isNaN(parseFloat(value)) ? parseFloat(value) : 10;
   const handleCustomValueSliderChange = next => {
     const newValue = [next, selectedUnit].join("");
     onChange(newValue);
   };
+  const placeholder = value && !Number.isNaN(parseFloat(value)) ? `${parseFloat(value)}` : "";
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: `${className} flex items-center space-x-2.5`
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -15430,7 +15431,7 @@ const SpacingInputControl = ({
     onChange: (newSize, ...props) => {
       onChange(newSize);
     },
-    placeholder: `${parseInt(value || "")}`,
+    placeholder: placeholder,
     value: value,
     units: units,
     min: minCustomValue,
@@ -16663,6 +16664,8 @@ const checkResponsiveValueForOptimizeCSS = ({
 }) => {
   let new_tablet_v = tablet_v;
   let new_desktop_v = desktop_v;
+
+  // If all values are the same, only keep mobile
   if (mobile_v === tablet_v && tablet_v === desktop_v) {
     return {
       mobile_v,
@@ -16670,11 +16673,15 @@ const checkResponsiveValueForOptimizeCSS = ({
       desktop_v: null
     };
   }
-  if (desktop_v === tablet_v || desktop_v === mobile_v) {
-    new_desktop_v = null;
-  }
+
+  // If tablet equals mobile, don't output tablet CSS (let it cascade naturally)
   if (tablet_v === mobile_v) {
     new_tablet_v = null;
+  }
+
+  // If desktop equals tablet OR mobile, don't output desktop CSS  
+  if (desktop_v === tablet_v) {
+    new_desktop_v = null;
   }
   return {
     mobile_v: mobile_v !== null && mobile_v !== void 0 ? mobile_v : null,

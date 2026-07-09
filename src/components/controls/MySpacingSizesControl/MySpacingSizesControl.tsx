@@ -13,7 +13,7 @@ export interface Props
 	hasResponsive?: boolean;
 	units?: MyUnit[];
 	minCustomValue?: number;
-	value: string;
+	value?: string;
 	onChange: (e: string) => void;
 }
 
