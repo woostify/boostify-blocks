@@ -18,19 +18,19 @@ export const isWebFont = (fontName: string | null) =>
  * @param {string} fontName The name of the font
  */
 export const loadGoogleFont = (fontName: string) => {
-	if (window.boostify_blocks_global_variables?.loadGoogleFontsLocally === "true") {
-		return;
-	}
+	// if (window.boostify_blocks_global_variables?.loadGoogleFontsLocally === "true") {
+	// 	return;
+	// }
 
-	if (window.boostify_blocks_global_variables?.allowOnlySelectedFonts === "true") {
-		const raw = window.boostify_blocks_global_variables?.selectedFonts ?? "";
-		if (raw.trim() !== "") {
-			const allowed = raw.split(",").map((f) => f.trim().toLowerCase()).filter(Boolean);
-			if (!allowed.includes(fontName.trim().toLowerCase())) {
-				return;
-			}
-		}
-	}
+	// if (window.boostify_blocks_global_variables?.allowOnlySelectedFonts === "true") {
+	// 	const raw = window.boostify_blocks_global_variables?.selectedFonts ?? "";
+	// 	if (raw.trim() !== "") {
+	// 		const allowed = raw.split(",").map((f) => f.trim().toLowerCase()).filter(Boolean);
+	// 		if (!allowed.includes(fontName.trim().toLowerCase())) {
+	// 			return;
+	// 		}
+	// 	}
+	// }
 
 	setTimeout(() => {
 		const _loadGoogleFont = (head: HTMLHeadElement | null) => {
