@@ -7663,6 +7663,103 @@ function save({
 
 /***/ }),
 
+/***/ "./src/block-products/Save__110726.tsx":
+/*!*********************************************!*\
+  !*** ./src/block-products/Save__110726.tsx ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ save)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _components_SaveCommonLegacy__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/SaveCommonLegacy */ "./src/components/SaveCommonLegacy.tsx");
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./style.scss */ "./src/block-products/style.scss");
+
+
+
+
+// @ts-ignore
+
+function save({
+  attributes
+}) {
+  const {
+    uniqueId,
+    advance_responsiveCondition,
+    advance_zIndex,
+    general_addToCartBtn,
+    general_content,
+    general_featuredImage,
+    general_pagination,
+    general_sortingAndFiltering,
+    style_addToCardBtn,
+    style_border,
+    style_featuredImage,
+    style_layout,
+    style_pagination,
+    style_price,
+    style_rating,
+    style_saleBadge,
+    style_outOfStock,
+    style_title,
+    style_wishlistBtn,
+    advance_motionEffect,
+    style_category,
+    style_countdownUrgency,
+    style_dimension
+  } = attributes;
+
+  /**
+   * Legacy save
+   *
+   * IMPORTANT:
+   * Do not normalize any attribute here.
+   * Deprecated blocks must render exactly the same
+   * structure that was stored in post_content.
+   */
+  const newAttrForSave = {
+    uniqueId,
+    advance_responsiveCondition,
+    advance_zIndex,
+    general_addToCartBtn,
+    general_content,
+    general_featuredImage,
+    general_pagination,
+    general_sortingAndFiltering,
+    style_addToCardBtn,
+    style_border,
+    style_featuredImage,
+    style_layout,
+    style_pagination,
+    style_price,
+    style_rating,
+    style_saleBadge,
+    style_outOfStock,
+    style_title,
+    advance_motionEffect,
+    style_category,
+    style_wishlistBtn,
+    style_countdownUrgency,
+    style_dimension
+  };
+  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps.save({
+    className: "wcb-products__wrap"
+  });
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_SaveCommonLegacy__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    attributes: newAttrForSave,
+    uniqueId: uniqueId,
+    ...blockProps
+  }, null);
+}
+
+/***/ }),
+
 /***/ "./src/block-products/Save__260523.tsx":
 /*!*********************************************!*\
   !*** ./src/block-products/Save__260523.tsx ***!
@@ -10989,7 +11086,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Save_300523__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Save__300523 */ "./src/block-products/Save__300523.tsx");
 /* harmony import */ var _Save_020723__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Save__020723 */ "./src/block-products/Save__020723.tsx");
 /* harmony import */ var _Save_260626__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Save__260626 */ "./src/block-products/Save__260626.tsx");
-/* harmony import */ var _attributes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./attributes */ "./src/block-products/attributes.ts");
+/* harmony import */ var _Save_110726__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Save__110726 */ "./src/block-products/Save__110726.tsx");
+/* harmony import */ var _attributes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./attributes */ "./src/block-products/attributes.ts");
+
 
 
 
@@ -10998,22 +11097,26 @@ __webpack_require__.r(__webpack_exports__);
 const v1 = {};
 const v2 = {};
 const v3 = {
-  attributes: _attributes__WEBPACK_IMPORTED_MODULE_4__["default"],
+  attributes: _attributes__WEBPACK_IMPORTED_MODULE_5__["default"],
   save: _Save_260523__WEBPACK_IMPORTED_MODULE_0__["default"]
 };
 const v4 = {
-  attributes: _attributes__WEBPACK_IMPORTED_MODULE_4__["default"],
+  attributes: _attributes__WEBPACK_IMPORTED_MODULE_5__["default"],
   save: _Save_300523__WEBPACK_IMPORTED_MODULE_1__["default"]
 };
 const v5 = {
-  attributes: _attributes__WEBPACK_IMPORTED_MODULE_4__["default"],
+  attributes: _attributes__WEBPACK_IMPORTED_MODULE_5__["default"],
   save: _Save_020723__WEBPACK_IMPORTED_MODULE_2__["default"]
 };
 const v6 = {
-  attributes: _attributes__WEBPACK_IMPORTED_MODULE_4__["default"],
+  attributes: _attributes__WEBPACK_IMPORTED_MODULE_5__["default"],
   save: _Save_260626__WEBPACK_IMPORTED_MODULE_3__["default"]
 };
-const deprecated = [v6, v5, v4, v3, v2, v1];
+const v7 = {
+  attributes: _attributes__WEBPACK_IMPORTED_MODULE_5__["default"],
+  save: _Save_110726__WEBPACK_IMPORTED_MODULE_4__["default"]
+};
+const deprecated = [v7, v6, v5, v4, v3, v2, v1];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (deprecated);
 
 /***/ }),
@@ -12899,6 +13002,72 @@ function SaveCommon({
   }, blockJson));
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SaveCommon);
+
+/***/ }),
+
+/***/ "./src/components/SaveCommonLegacy.tsx":
+/*!*********************************************!*\
+  !*** ./src/components/SaveCommonLegacy.tsx ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "lodash");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+function SaveCommonLegacy({
+  className = "",
+  uniqueId = "",
+  HtmlTag = "div",
+  children,
+  attributes,
+  id,
+  ...props
+}) {
+  let blockJson = "";
+  try {
+    /**
+     * Legacy serializer.
+     *
+     * IMPORTANT:
+     * Do NOT normalize or mutate attributes.
+     * Gutenberg deprecated blocks must output exactly
+     * the same JSON that was stored by older versions.
+     */
+    blockJson = lodash__WEBPACK_IMPORTED_MODULE_1___default().escape(JSON.stringify(attributes));
+  } catch (error) {
+    console.log("attributes JSON.stringify error on SAVE function", {
+      error,
+      className,
+      attributes
+    });
+  }
+  const rc = attributes?.advance_responsiveCondition || {};
+  const responsiveClasses = [rc.isHiddenOnDesktop ? "wcb-hide-desktop" : "", rc.isHiddenOnTablet ? "wcb-hide-tab" : "", rc.isHiddenOnMobile ? "wcb-hide-mob" : ""].filter(Boolean).join(" ");
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(HtmlTag, {
+    ...props,
+    className: `wcb-cm wcb-update-div ${responsiveClasses} ${className.trim()} ${uniqueId.trim()}`,
+    id: id || attributes?.anchor,
+    "data-uniqueid": uniqueId,
+    "data-is-wcb-save-common": true
+  }, children, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    "data-wcb-global-styles": uniqueId
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("pre", {
+    "data-wcb-block-attrs": uniqueId,
+    style: {
+      display: "none"
+    }
+  }, blockJson));
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SaveCommonLegacy);
 
 /***/ }),
 
