@@ -16296,10 +16296,11 @@ const MyMediaUploadCheck = ({
     });
   };
   const onSelectMedia = media => {
+    const srcSet = [media.url && media.width ? `${media.url} ${media.width}w` : null, media.sizes?.thumbnail?.url && media.sizes?.thumbnail?.width ? `${media.sizes.thumbnail.url} ${media.sizes.thumbnail.width}w` : null, media.sizes?.medium?.url && media.sizes?.medium?.width ? `${media.sizes.medium.url} ${media.sizes.medium.width}w` : null, media.sizes?.large?.url && media.sizes?.large?.width ? `${media.sizes.large.url} ${media.sizes.large.width}w` : null, media.sizes?.full?.url && media.sizes?.full?.width ? `${media.sizes.full.url} ${media.sizes.full.width}w` : null].filter(Boolean).join(", ");
     onChange({
       mediaId: media.id,
       mediaUrl: media.url,
-      mediaSrcSet: `${media.url} ${media.width}w, ${media.sizes?.medium?.url} ${media.sizes?.medium?.width}w, ${media.sizes?.full?.url} ${media.sizes?.full?.width}w, ${media.sizes?.large?.url} ${media.sizes?.large?.width}w`,
+      mediaSrcSet: srcSet,
       sizes: media.sizes
     });
   };
