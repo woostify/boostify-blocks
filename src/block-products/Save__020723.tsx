@@ -58,6 +58,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const blockProps = useBlockProps.save({
 		className: "wcb-products__wrap",
 	});
+
+	console.log("======= Save__020723 =======");
+
 	return (
 		<SaveCommon attributes={newAttrForSave} uniqueId={uniqueId} {...blockProps}>
 			{null}

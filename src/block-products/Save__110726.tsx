@@ -144,6 +144,8 @@ export default function save({
 	const blockProps = useBlockProps.save({
 		className: "wcb-products__wrap",
 	});
+	
+	console.log("======= SAVE__110726 =======");
 
 	return (
 		<SaveCommonLegacy
