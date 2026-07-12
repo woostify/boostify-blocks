@@ -5,46 +5,53 @@ import SaveCommonLegacy from "../components/SaveCommonLegacy";
 // @ts-ignore
 import "./style.scss";
 
-export interface WcbAttrsForSave
-	extends Omit<WcbAttrs, "heading" | "subHeading"> {}
+export interface WcbAttrsForSave extends Omit<WcbAttrs, "heading" | "subHeading"> {}
 
-const normalizeTypographyForLegacy = (typography: any) => {
-	if (!typography) return typography;
+// Normalize strong to the same all old version
+const deepNormalize = (obj: any): any => {
+	if (obj === null || obj === undefined) return {};
+	if (Array.isArray(obj)) {
+		return obj.length === 0 ? {} : obj;
+	}
+	if (typeof obj === "object") {
+		const normalized: any = {};
+		for (const [key, value] of Object.entries(obj)) {
+			normalized[key] = deepNormalize(value);
+		}
+		return normalized;
+	}
+	return obj;
+};
 
+const normalizeTypography = (typography: any) => {
+	if (!typography) return {};
 	return {
 		...typography,
 		appearance: {
 			...typography.appearance,
-			style: Array.isArray(typography.appearance?.style)
-				? {}
-				: typography.appearance?.style ?? {},
+			style: typeof typography.appearance?.style === "object" && !Array.isArray(typography.appearance?.style)
+				? typography.appearance.style 
+				: {},
 		},
-		lineHeight: Array.isArray(typography.lineHeight)
-			? {}
-			: typography.lineHeight ?? {},
-		letterSpacing: Array.isArray(typography.letterSpacing)
-			? {}
-			: typography.letterSpacing ?? {},
+		lineHeight: typeof typography.lineHeight === "object" && !Array.isArray(typography.lineHeight)
+			? typography.lineHeight 
+			: {},
+		letterSpacing: typeof typography.letterSpacing === "object" && !Array.isArray(typography.letterSpacing)
+			? typography.letterSpacing 
+			: {},
 	};
 };
 
-export default function save({
-	attributes,
-}: {
-	attributes: WcbAttrs;
-}) {
+export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
 		uniqueId,
-
 		advance_responsiveCondition,
 		advance_zIndex,
-
 		general_addToCartBtn,
 		general_content,
 		general_featuredImage,
 		general_pagination,
 		general_sortingAndFiltering,
-
 		style_addToCardBtn,
 		style_border,
 		style_featuredImage,
@@ -59,15 +66,13 @@ export default function save({
 		style_category,
 		style_countdownUrgency,
 		style_dimension,
-
 		advance_motionEffect,
 	} = attributes;
 
-	const newAttrForSave: WcbAttrsForSave = {
+	const newAttrForSave: WcbAttrsForSave = deepNormalize({
 		uniqueId,
-
 		advance_responsiveCondition,
-		advance_zIndex,
+		advance_zIndex: advance_zIndex ?? {},
 
 		general_addToCartBtn,
 		general_content,
@@ -75,59 +80,35 @@ export default function save({
 		general_pagination,
 		general_sortingAndFiltering,
 
-		style_addToCardBtn: style_addToCardBtn
-			? {
-					...style_addToCardBtn,
-					typography: normalizeTypographyForLegacy(
-						style_addToCardBtn.typography
-					),
-			  }
-			: undefined,
+		style_addToCardBtn: style_addToCardBtn ? {
+			...style_addToCardBtn,
+			typography: normalizeTypography(style_addToCardBtn.typography),
+		} : undefined,
 
-		style_price: style_price
-			? {
-					...style_price,
-					typography: normalizeTypographyForLegacy(
-						style_price.typography
-					),
-			  }
-			: undefined,
+		style_price: style_price ? {
+			...style_price,
+			typography: normalizeTypography(style_price.typography),
+		} : undefined,
 
-		style_saleBadge: style_saleBadge
-			? {
-					...style_saleBadge,
-					typography: normalizeTypographyForLegacy(
-						style_saleBadge.typography
-					),
-			  }
-			: undefined,
+		style_saleBadge: style_saleBadge ? {
+			...style_saleBadge,
+			typography: normalizeTypography(style_saleBadge.typography),
+		} : undefined,
 
-		style_title: style_title
-			? {
-					...style_title,
-					typography: normalizeTypographyForLegacy(
-						style_title.typography
-					),
-			  }
-			: undefined,
+		style_title: style_title ? {
+			...style_title,
+			typography: normalizeTypography(style_title.typography),
+		} : undefined,
 
-		style_category: style_category
-			? {
-					...style_category,
-					typography: normalizeTypographyForLegacy(
-						style_category.typography
-					),
-			  }
-			: undefined,
+		style_category: style_category ? {
+			...style_category,
+			typography: normalizeTypography(style_category.typography),
+		} : undefined,
 
-		style_outOfStock: style_outOfStock
-			? {
-					...style_outOfStock,
-					typography: normalizeTypographyForLegacy(
-						style_outOfStock.typography
-					),
-			  }
-			: undefined,
+		style_outOfStock: style_outOfStock ? {
+			...style_outOfStock,
+			typography: normalizeTypography(style_outOfStock.typography),
+		} : undefined,
 
 		style_border,
 		style_featuredImage,
@@ -139,13 +120,9 @@ export default function save({
 		style_dimension,
 
 		advance_motionEffect,
-	};
-
-	const blockProps = useBlockProps.save({
-		className: "wcb-products__wrap",
 	});
-	
-	console.log("======= SAVE__110726 =======");
+
+	const blockProps = useBlockProps.save({ className: "wcb-products__wrap" });
 
 	return (
 		<SaveCommonLegacy
