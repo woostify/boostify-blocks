@@ -34,11 +34,13 @@ const v7 = {
 
 // Matches content saved before `advance_zIndex` existed and before
 // typography empty-array values ([]) were normalized to empty objects ({}).
-// Must NOT default advance_zIndex, so it stays undefined (and is dropped
-// from the serialized JSON) when absent from old post content.
+// advance_zIndex must have neither a "type" (some old content stored it as
+// an array [], which WP would reject/reset to default if type: "object" is
+// declared) nor a "default" (so it stays undefined, dropped from the
+// serialized JSON, when absent entirely from old post content).
 const legacyAttrsNoZIndex = {
 	...blokc1Attrs,
-	advance_zIndex: { type: "object" },
+	advance_zIndex: {} as (typeof blokc1Attrs)["advance_zIndex"],
 };
 const v8 = {
 	attributes: legacyAttrsNoZIndex,
