@@ -9,16 +9,28 @@ export interface WcbAttrsForSave
 	extends Omit<WcbAttrs, "heading" | "subHeading"> {}
 
 /**
- * True legacy save: reproduces content saved before `advance_zIndex`
- * existed and before typography empty-array values were normalized to
- * empty objects. Must be paired in deprecated.tsx with an attributes
- * schema where `advance_zIndex` has no default, and must go through
- * SaveCommonLegacy (no normalization) — not SaveCommon.
+ * Legacy save: reproduces content saved before typography empty-array
+ * values were normalized to empty objects. Covers two generations:
+ * `advance_zIndex` missing entirely (pre-existence), and `advance_zIndex`
+ * present as `[]`/`{}` but typography sub-fields still arrays (added
+ * before typography normalization existed). Must be paired in
+ * deprecated.tsx with an attributes schema where `advance_zIndex` has no
+ * default, and must go through SaveCommonLegacy (no normalization).
  */
+// Missing entirely -> undefined (dropped from JSON). Present as empty
+// array/object -> {} (matches how this generation's editor persisted it).
+const ensureObjectStructure = (value: any) => {
+	if (value === null || value === undefined) return undefined;
+	if (Array.isArray(value) && value.length === 0) return {};
+	if (typeof value === "object") return value;
+	return undefined;
+};
+
 export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
 		uniqueId,
 		advance_responsiveCondition,
+		advance_zIndex,
 		general_addToCartBtn,
 		general_content,
 		general_featuredImage,
@@ -40,6 +52,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const newAttrForSave: WcbAttrsForSave = {
 		uniqueId,
 		advance_responsiveCondition,
+		advance_zIndex: ensureObjectStructure(advance_zIndex),
 		general_addToCartBtn,
 		general_content,
 		general_featuredImage,
