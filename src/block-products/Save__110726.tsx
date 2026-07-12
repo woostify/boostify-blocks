@@ -7,74 +7,46 @@ import "./style.scss";
 
 export interface WcbAttrsForSave extends Omit<WcbAttrs, "heading" | "subHeading"> {}
 
-// Force typography to exactly match stored data in database
-const forceTypographyMatch = (typography: any) => {
-	if (!typography) return {};
-
-	return {
-		...typography,
-		appearance: {
-			...(typography.appearance || {}),
-			style: {},
-		},
-		lineHeight: {},
-		letterSpacing: {},
-	};
-};
-
+// Final fix - Force match database format
 export default function save({ attributes }: { attributes: WcbAttrs }) {
-	// Clone and fix
-	const fixedAttrs: WcbAttrsForSave = { ...attributes };
+	// Deep clone to avoid mutation
+	const attrs = JSON.parse(JSON.stringify(attributes || {}));
 
-	// Fix all typography fields
-	if (fixedAttrs.style_addToCardBtn) {
-		fixedAttrs.style_addToCardBtn = {
-			...fixedAttrs.style_addToCardBtn,
-			typography: forceTypographyMatch(fixedAttrs.style_addToCardBtn.typography),
-		};
-	}
-	if (fixedAttrs.style_price) {
-		fixedAttrs.style_price = {
-			...fixedAttrs.style_price,
-			typography: forceTypographyMatch(fixedAttrs.style_price.typography),
-		};
-	}
-	if (fixedAttrs.style_saleBadge) {
-		fixedAttrs.style_saleBadge = {
-			...fixedAttrs.style_saleBadge,
-			typography: forceTypographyMatch(fixedAttrs.style_saleBadge.typography),
-		};
-	}
-	if (fixedAttrs.style_title) {
-		fixedAttrs.style_title = {
-			...fixedAttrs.style_title,
-			typography: forceTypographyMatch(fixedAttrs.style_title.typography),
-		};
-	}
-	if (fixedAttrs.style_category) {
-		fixedAttrs.style_category = {
-			...fixedAttrs.style_category,
-			typography: forceTypographyMatch(fixedAttrs.style_category.typography),
-		};
-	}
-	if (fixedAttrs.style_outOfStock) {
-		fixedAttrs.style_outOfStock = {
-			...fixedAttrs.style_outOfStock,
-			typography: forceTypographyMatch(fixedAttrs.style_outOfStock.typography),
-		};
-	}
+	// Force all typography to object format (match post body)
+	const stylesWithTypography = [
+		'style_addToCardBtn',
+		'style_price',
+		'style_saleBadge',
+		'style_title',
+		'style_category',
+		'style_outOfStock'
+	];
 
-	// Ensure advance_zIndex exists
-	if (!fixedAttrs.advance_zIndex) {
-		fixedAttrs.advance_zIndex = {};
+	stylesWithTypography.forEach(key => {
+		if (attrs[key] && attrs[key].typography) {
+			attrs[key].typography = {
+				...attrs[key].typography,
+				appearance: {
+					...(attrs[key].typography.appearance || {}),
+					style: {},
+				},
+				lineHeight: {},
+				letterSpacing: {},
+			};
+		}
+	});
+
+	// Ensure advance_zIndex
+	if (!attrs.advance_zIndex) {
+		attrs.advance_zIndex = {};
 	}
 
 	const blockProps = useBlockProps.save({ className: "wcb-products__wrap" });
 
 	return (
 		<SaveCommonLegacy
-			attributes={fixedAttrs}
-			uniqueId={fixedAttrs.uniqueId}
+			attributes={attrs}
+			uniqueId={attrs.uniqueId}
 			{...blockProps}
 		>
 			{null}
