@@ -10881,7 +10881,9 @@ const Edit = props => {
         for (let i = 0; i < blocksToAdd; i++) {
           const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
           // updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
-          insertBlock(newBlock, currentNumber + i, clientId, false);
+          // insertBlock(newBlock, currentNumber + i, clientId, false);
+          const result = insertBlock(newBlock, currentNumber + i, clientId, false);
+          console.log("insert result", result);
         }
       } else if (currentNumber > targetNumber) {
         // Remove blocks from the end
