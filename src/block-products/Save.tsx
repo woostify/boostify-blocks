@@ -113,9 +113,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			...style_category,
 			typography: ensureTypographyConsistency(style_category.typography)
 		} : undefined,
-		style_wishlistBtn: ensureObjectStructure(style_wishlistBtn),
-		style_countdownUrgency: ensureObjectStructure(style_countdownUrgency),
-		style_dimension: ensureObjectStructure(style_dimension),
+		style_wishlistBtn: style_wishlistBtn ? ensureObjectStructure(style_wishlistBtn) : undefined,
+		style_countdownUrgency: style_countdownUrgency ? ensureObjectStructure(style_countdownUrgency) : undefined,
+		style_dimension: style_dimension ? ensureObjectStructure(style_dimension) : undefined,
 	};
 	//
 	const blockProps = useBlockProps.save({
