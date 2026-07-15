@@ -95,7 +95,6 @@ add_action( 'enqueue_block_editor_assets', function() {
         BOOSTIFY_BLOCKS_VERSION
     );
 
-<<<<<<< HEAD
     // load the extension block
     wp_enqueue_style(
         'boostify-blocks-extensions',
@@ -111,7 +110,7 @@ add_action( 'enqueue_block_editor_assets', function() {
         BOOSTIFY_BLOCKS_VERSION, 
         true
     );
-=======
+    
     wp_add_inline_script(
 		'wp-edit-post',
 		'
@@ -136,7 +135,6 @@ add_action( 'enqueue_block_editor_assets', function() {
 		} );
 		'
 	);
->>>>>>> feature/boostify-blocks-update-logo
 
 });
 
