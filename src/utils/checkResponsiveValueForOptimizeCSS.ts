@@ -29,15 +29,6 @@ const checkResponsiveValueForOptimizeCSS = ({
 		new_desktop_v = null;
 	}
 
-	if (tablet_v === mobile_v) {
-		new_tablet_v = null;
-	}
-
-	// If desktop equals tablet OR mobile, don't output desktop CSS  
-	if (desktop_v === tablet_v || desktop_v === mobile_v) {
-		new_desktop_v = null;
-	}
-
 	return {
 		mobile_v: mobile_v ?? null,
 		tablet_v: new_tablet_v ?? null,
