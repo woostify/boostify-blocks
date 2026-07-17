@@ -5,7 +5,7 @@ import HeaderToolBarPatterns from "./HeaderToolBarPatterns";
 import "./editor.scss";
 
 const client = new ApolloClient({
-	uri: "https://woostifyblocks.com/graphql",
+	uri: "https://boostifyblocks.com/graphql",
 	cache: new InMemoryCache(),
 });
 
@@ -23,7 +23,7 @@ const App = () => {
 
 const domObserver = new MutationObserver(() => {
 	const modalRoot = document.querySelector(
-		".edit-post-header__toolbar .edit-post-header-toolbar"
+		".editor-header__toolbar .edit-post-header-toolbar"
 	);
 
 	if (modalRoot) {

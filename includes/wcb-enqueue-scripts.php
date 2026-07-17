@@ -84,14 +84,33 @@ function boostify_blocks_my_scripts_method()
 }
 add_action('wp_enqueue_scripts', 'boostify_blocks_my_scripts_method');
 
-// Add style for editor
+// Load this script in the editor
 add_action( 'enqueue_block_editor_assets', function() {
+
+    // Add style for editor
     wp_enqueue_style(
         'boostify-blocks-frontend',
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css',
         array(),
         BOOSTIFY_BLOCKS_VERSION
     );
+
+    // load the extension block
+    wp_enqueue_style(
+        'boostify-blocks-extensions',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/extensions/index.css',
+        array(),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script(
+        'boostify-blocks-extensions', 
+        plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/extensions/index.js', 
+        ['wp-blocks', 'wp-element', 'jquery'], 
+        BOOSTIFY_BLOCKS_VERSION, 
+        true
+    );
+
 });
 
 // Enqueue for admin
