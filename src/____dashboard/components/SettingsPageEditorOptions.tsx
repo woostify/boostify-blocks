@@ -65,7 +65,7 @@ const SettingsPageEditorOptions: FC<Props> = ({
 			<div className="py-8">
 				<MyToggle
 					label="Button - Inherit From Theme"
-					desc='Enable the "Inherit From Theme" option to make all buttons in Spectra blocks across your website inherit their styles from the theme.'
+					desc='Enable the "Inherit From Theme" option to make all buttons in Boostify Blocks across your website inherit their styles from the theme.'
 					id="MyToggle_ButtonInheritFromTheme"
 					checked={allSettings.buttonInheritFromTheme === "true"}
 					onChange={(checked) => {
@@ -121,10 +121,9 @@ const SettingsPageEditorOptions: FC<Props> = ({
 					id="MyToggle_CollapsePanels"
 				/>
 			</div> */}
-			<div className="py-8 wcb-field-disabled">
+			<div className="py-8">
 				<MyToggle
 					checked={allSettings.enableCopyPasteStyles === "true"}
-					disabled={!!"wcb-field-disabled"}
 					onChange={(checked) => {
 						debounce_fun({
 							...allSettings,
@@ -132,7 +131,7 @@ const SettingsPageEditorOptions: FC<Props> = ({
 						});
 					}}
 					label="Copy Paste Styles"
-					desc='Enable the "Copy Paste Styles" option to have the ability to copy & paste Woostify & Core Gutenberg Blocks Styles.'
+					desc='Enable the "Copy Paste Styles" option to have the ability to copy & paste Boostify Blocks & Core Gutenberg Blocks Styles.'
 					id="MyToggle_CopyPasteStyles"
 				/>
 			</div>
