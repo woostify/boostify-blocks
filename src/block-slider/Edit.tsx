@@ -156,7 +156,25 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	/**
 	 * Parent-Child Synchronization
 	 */
-	const { insertBlock, removeBlock, selectBlock } = useDispatch("core/block-editor");
+	const { insertBlock, removeBlock, selectBlock, updateBlockListSettings } = useDispatch("core/block-editor");
+
+	// Gutenberg only allows inserting a block under `clientId` (canInsertBlockType)
+	// once `getBlockListSettings(clientId)` is populated - normally this happens
+	// as a side effect of mounting <InnerBlocks>/useInnerBlocksProps's returned
+	// children. But this block renders its own slide children manually (via
+	// WPBlockEdit below) instead of through <InnerBlocks>, and only spreads
+	// useInnerBlocksProps' return value onto the DOM in the "no children yet"
+	// branch of renderSliderContent - so that registration never happens once
+	// real slides exist, and insertBlock() silently no-ops from then on (it
+	// resolves without error, but nothing is actually added). Register the
+	// settings ourselves so inserting/removing slides keeps working regardless
+	// of which render branch is active.
+	useEffect(() => {
+		updateBlockListSettings(clientId, {
+			allowedBlocks: SLIDER_ITEM_DEMO,
+			orientation: "horizontal",
+		});
+	}, [clientId, updateBlockListSettings]);
 
 	// Last time a Slider setting (columns, carousel...) changed. These values go
 	// into the react-slick `settings` object. When they change, react-slick moves
@@ -198,37 +216,65 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		setDeviceTypeState(deviceType);
 	}, [deviceType]);
 
-	// Initialize blocks after innerBlocks is available
+	// Keep innerBlocks in sync with "Number of Sliders" (numberofTestimonials).
+	// This single effect owns both creating the initial slides (currentNumber
+	// starts at 0 - e.g. a freshly inserted block) AND topping up/trimming slides
+	// whenever the count changes afterwards - including the very first time this
+	// runs after the block remounts from saved content (page reload). Previously
+	// this was split into two separate effects with slightly different guard
+	// conditions on the same [numberofTestimonials, innerBlocks.length]
+	// dependencies; keeping one effect avoids them racing each other and
+	// guarantees the "top up missing slides" branch always runs, regardless of
+	// whether currentNumber is 0 or already > 0 from a saved post.
 	useEffect(() => {
 		const targetNumber = general_general.numberofTestimonials || 3;
 		const currentNumber = innerBlocks.length;
 
-		if (currentNumber === 0 && targetNumber > 0) {
-			const timeoutId = setTimeout(() => {
-				for (let i = 0; i < targetNumber; i++) {
-					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
-					insertBlock(newBlock, i, clientId, false);
+		if (currentNumber === targetNumber) {
+			// Force parent selection after adding inner blocks, and restore any
+			// previously selected child (e.g. after a device type change).
+			selectBlock(clientId);
+			const storedChildId = getStoredSelectedChildId();
+			if (storedChildId) {
+				const childExists = innerBlocks.some((block: any) => block.clientId === storedChildId);
+				if (childExists) {
+					setSelectedChildId(storedChildId);
+					setIsParentSelected(false);
+				} else {
+					setIsParentSelected(true);
+					setSelectedChildId(null);
+					setStoredSelectedChildId(null);
 				}
-			}, 100);
-			return () => clearTimeout(timeoutId);
+			}
+			return;
 		}
 
-		// Force parent selection after adding inner blocks
-        selectBlock(clientId);
-		const storedChildId = getStoredSelectedChildId();
-		if (storedChildId) {
-			const childExists = innerBlocks.some((block: any) => block.clientId === storedChildId);
-			if (childExists) {
-				setSelectedChildId(storedChildId);
-				setIsParentSelected(false);
-			} else {
+		const timeoutId = setTimeout(() => {
+			if (currentNumber < targetNumber) {
+				const blocksToAdd = targetNumber - currentNumber;
+				for (let i = 0; i < blocksToAdd; i++) {
+					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
+					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+					insertBlock(newBlock, currentNumber + i, clientId, false);
+				}
+			} else if (currentNumber > targetNumber) {
+				const blocksToRemove = currentNumber - targetNumber;
+				const clientIdsToRemove = innerBlocks.slice(-blocksToRemove).map((block: any) => block.clientId);
+				clientIdsToRemove.forEach((childClientId: any) => {
+					removeBlock(childClientId);
+				});
+			}
+
+			// Force parent selection after modifying inner blocks
+			selectBlock(clientId);
+			if (!isChangeDeviceType) {
 				setIsParentSelected(true);
 				setSelectedChildId(null);
 				setStoredSelectedChildId(null);
 			}
-		}
+		}, 100); // Small delay to prevent race conditions
 
+		return () => clearTimeout(timeoutId);
 	}, [general_general.numberofTestimonials, innerBlocks.length]);
 
 	// Navigate the slider carousel to the slide matching the given child clientId.
@@ -305,53 +351,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		setSelectedChildId(null);
 		setIsParentSelected(false);
 	}, [selectedBlockClientId]);
-
-	// Add useEffect to monitor numberofTestimonials changes and update inner blocks accordingly
-	useEffect(() => {
-		// Add a small delay to avoid conflicts with InnerBlocks initialization
-		const targetNumber = general_general.numberofTestimonials || 3;
-		const currentNumber = innerBlocks.length;
-
-		// Only proceed if there's a real difference and blocks are actually loaded
-		if (currentNumber === targetNumber || !targetNumber) {
-			return; // No change needed
-		}
-
-		// Prevent running during initial load when innerBlocks might be empty
-		if (currentNumber === 0 && targetNumber > 0) {
-			// Let InnerBlocks handle initial template creation
-			return;
-		}
-
-		const timeoutId = setTimeout(() => {
-			if (currentNumber < targetNumber) {
-				// Add blocks
-				const blocksToAdd = targetNumber - currentNumber;
-				for (let i = 0; i < blocksToAdd; i++) {
-					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-child");
-					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
-					insertBlock(newBlock, currentNumber + i, clientId, false);
-				}
-			} else if (currentNumber > targetNumber) {
-				// Remove blocks from the end
-				const blocksToRemove = currentNumber - targetNumber;
-				const clientIdsToRemove = innerBlocks.slice(-blocksToRemove).map((block: { clientId: any; }) => block.clientId);
-				clientIdsToRemove.forEach((childClientId: any) => {
-					removeBlock(childClientId);
-				});
-			}
-
-			// Force parent selection after modifying inner blocks
-			selectBlock(clientId);
-			if (!isChangeDeviceType) {
-				setIsParentSelected(true);
-				setSelectedChildId(null);
-				setStoredSelectedChildId(null);
-			}
-		}, 100); // Small delay to prevent race conditions
-
-		return () => clearTimeout(timeoutId);
-	}, [general_general.numberofTestimonials, innerBlocks.length]); // Simplified dependency array
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
 		// Parent panel rendering (original logic)
