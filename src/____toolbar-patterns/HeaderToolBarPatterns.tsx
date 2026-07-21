@@ -348,8 +348,8 @@ const HeaderToolBarPatterns = () => {
 						</p>
 					</div>
 					<div className="pt-5 md:pt-0 col-span-2 md:col-span-1 md:ml-6 flex items-center">
-						{renderFreeProTab()}
-						<div className="ml-6 mr-3 h-5 w-px bg-slate-900/10 block"></div>
+						{/* {renderFreeProTab()} */}
+						{/* <div className="ml-6 mr-3 h-5 w-px bg-slate-900/10 block"></div> */}
 						{renderSelectCategories()}
 						<a
 							href="https://boostifyblocks.com/"
@@ -387,7 +387,7 @@ const HeaderToolBarPatterns = () => {
 				onClick={openModal}
 			>
 				<Logo className="w-4 h-4 text-white" />
-				<span className="ml-2">Woostify Patterns</span>
+				<span className="ml-2">Templates</span>
 			</Button>
 
 			{isOpen && renderModal()}
