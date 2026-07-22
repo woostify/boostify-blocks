@@ -5,7 +5,6 @@ import getBoxShadowStyles from "../utils/getBoxShadowStyles";
 import getBackgroundColorGradientStyles from "../utils/getBackgroundColorGradientStyles";
 import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
-import getFlexPropertiesStyles from "../utils/getFlexPropertiesStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
@@ -209,13 +208,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 					className: WRAP_CLASSNAME,
 					value: general_layout.contentWidth,
 					prefix: "width",
-				})}
-			/>
-			{/* Flex css */}
-			<Global
-				styles={getFlexPropertiesStyles({
-					flexProperties: general_layout.flexDirection,
-					className: CONTENT_CLASSNAME,
 				})}
 			/>
 
