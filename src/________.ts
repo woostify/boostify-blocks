@@ -17,6 +17,7 @@ declare global {
 		containerPadding: string,
 		enableTemplatesButton?: "true" | "false";
 		enableCopyPasteStyles?: "true" | "false";
+		enableFileGeneration?: "true" | "false";
 		containerElementsGap?: string;
 		blocksEditorSpacing?: string;
 		buttonInheritFromTheme?: "true" | "false";
@@ -54,6 +55,7 @@ const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks_global
 	containerPadding: "10px",
 	enableTemplatesButton: "true",
 	enableCopyPasteStyles: "false",
+	enableFileGeneration: "false",
 	containerElementsGap: "10px",
 	blocksEditorSpacing: "0px",
 	buttonInheritFromTheme: "false",

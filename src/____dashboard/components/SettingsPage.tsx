@@ -2,6 +2,7 @@ import React, { useEffect, useState, FC } from "react";
 import {
 	Cog6ToothIcon,
 	RectangleGroupIcon,
+	CubeIcon,
 	Squares2X2Icon,
 	RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
@@ -9,6 +10,7 @@ import SettingsPageEditorOptions from "./SettingsPageEditorOptions";
 import toast, { Toaster } from "react-hot-toast";
 import SettingsPageTemplates from "./SettingsPageTemplates";
 import SettingsPageBlockSettings from "./SettingsPageBlockSettings";
+import SettingsPageAssetGeneration from "./SettingPageAssetGeneration";
 import SettingsPagePerformance from "./SettingsPagePerformance";
 import { Wcb_theme_layout_global_settings } from "../../types";
 
@@ -28,6 +30,11 @@ const TABS: Tab[] = [
 		name: "templates",
 		label: "Templates",
 		icon: RectangleGroupIcon,
+	},
+	{
+		name: "asset-generation",
+		label: "Asset Generation",
+		icon: CubeIcon,
 	},
 	{
 		name: "block-settings",
@@ -149,7 +156,15 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 						allSettings={allSettings}
 					/>
 				);
-
+			case "asset-generation":
+				return (
+					<SettingsPageAssetGeneration
+						onChange={(data) => {
+							handleUpdateSettings(data);
+						}}
+						allSettings={allSettings}
+					/>
+				);
 			case "block-settings":
 				return (
 					<SettingsPageBlockSettings

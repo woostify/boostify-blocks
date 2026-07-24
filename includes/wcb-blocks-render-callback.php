@@ -171,6 +171,28 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
             $asset_ver = $asset['version'] ?? BOOSTIFY_BLOCKS_VERSION;
             wp_enqueue_script('boostify-blocks-commoncss-frontend', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/FrontendStyles.js', $deps, $asset_ver, true);
 
+            // When file generation is enabled, signal the JS.
+            // boostify_blocks_file_css_loaded: true if a static CSS file was enqueued → skip inline CSS injection.
+            // boostify_blocks_file_generation_enabled: true if the setting is ON → collect CSS for saving.
+            // boostify_blocks_fallback_css: true if file should exist but doesn't → inject inline CSS anyway.
+            if (class_exists('WCB_Post_Assets')) {
+                $assets = WCB_Post_Assets::instance();
+                if ($assets->is_file_generation_enabled()) {
+                    wp_add_inline_script(
+                        'boostify-blocks-commoncss-frontend',
+                        'window.boostify_blocks_file_generation_enabled = true;' .
+                        'window.boostify_blocks_file_css_loaded = ' . ($assets->is_file_css_enqueued() ? 'true' : 'false') . ';' .
+                        'window.boostify_blocks_fallback_css = ' . ($assets->is_fallback_css() ? 'true' : 'false') . ';' .
+                        'window.boostify_blocks_post_id = ' . intval(get_queried_object_id()) . ';' .
+                        'window.boostify_blocks_ajax_object = ' . wp_json_encode(array(
+                            'ajaxurl' => admin_url('admin-ajax.php'),
+                            'nonce'   => wp_create_nonce('boostifyblocks_dashboard_settings_nonce'),
+                        )) . ';',
+                        'before'
+                    );
+                }
+            }
+
             // Expose theme defaults on the frontend so JS helpers can read them.
             static $boostify_blocks_theme_defaults_enqueued = false;
             if (!$boostify_blocks_theme_defaults_enqueued && function_exists('boostify_blocks_get_theme_defaults_data')) {
