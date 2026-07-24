@@ -475,7 +475,7 @@ const HeaderToolBarPatterns = () => {
 						<div className="flex min-w-0 items-center">
 							<Logo className="h-5 w-5 text-slate-900" />
 							<h2 className="ml-2 truncate text-base font-medium leading-7 text-slate-900">
-								Woostify Pattern Library
+								Templates
 							</h2>
 							<p className="ml-3 whitespace-nowrap rounded-lg bg-slate-100 py-0.5 px-2 text-xs font-semibold leading-6 text-slate-700 block">
 								{data ? patternsEdge.length : ""} patterns
