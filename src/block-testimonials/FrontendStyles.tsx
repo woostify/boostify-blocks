@@ -67,6 +67,16 @@ export function initCarouselForWcbTestimonials(div: Element, props: Props) {
 			},
 		],
 	};
+
+	const $slider = $(`.${dataUniqueid} .wcb-testimonials__wrap-items`);
+	const slideCount = $slider ? $slider.children().length : 0;
+
+	const finalSettings = {
+		...settings,
+		arrows: slideCount > 1 && showArrowsDots !== "Dot",
+		dots: slideCount > 1 && showArrowsDots !== "Arrow",
+	};
+
 	// @ts-ignore
-	$(`.${dataUniqueid} .wcb-testimonials__wrap-items`)?.slick?.(settings);
+	$(`.${dataUniqueid} .wcb-testimonials__wrap-items`)?.slick?.(finalSettings);
 }

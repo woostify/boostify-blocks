@@ -86,8 +86,15 @@ export function initCarouselForWcbSliders(div: Element, props: Props) {
 	}
 
 	try {
+		const slideCount = targetElement ? targetElement.children().length : 0;
+		const finalSettings = {
+			...settings,
+			arrows: slideCount > 1 && showArrowsDots !== "Dot",
+			dots: slideCount > 1 && showArrowsDots !== "Arrow",
+		};
+
 		// @ts-ignore
-		targetElement.slick(settings);
+		targetElement.slick(finalSettings);
 	} catch (error) {
 		console.error('🎠 Slider initialization failed:', error);
 	}
