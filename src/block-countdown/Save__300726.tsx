@@ -64,7 +64,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const textAlignment_Desktop = general_layout.textAlignment.Desktop || "center";
 	const textAlignment_tablet = general_layout.textAlignment.Tablet || textAlignment_Desktop;
 	const textAlignment_mobile = general_layout.textAlignment.Mobile || textAlignment_tablet;
-	
+
 	// Get flex direction values
 	const flexDirection_Desktop = general_layout.flexDirection.Desktop || "row";
 	const flexDirection_tablet = general_layout.flexDirection.Tablet || flexDirection_Desktop;
@@ -95,14 +95,14 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	// Generate class names for layout
 	const getLayoutClasses = () => {
 	const classes = [`wcb-countdown__content ${general_preset.preset}`];
-	
+
 	// Add flex direction classes
 	if (flexDirection_Desktop === "column") {
 		classes.push("wcb-flex-col");
 	} else {
 		classes.push("wcb-flex-row");
 	}
-	
+
 	// Add alignment classes
 	if (ALIGN_ITEMS.Desktop === "start") {
 		classes.push("wcb-justify-start");
@@ -111,31 +111,13 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	} else {
 		classes.push("wcb-justify-center");
 	}
-	
+
 	// Add responsive classes
 	classes.push("wcb-layout-desktop-" + textAlignment_Desktop);
 	if (textAlignment_tablet) classes.push("wcb-layout-tablet-" + textAlignment_tablet);
 	if (textAlignment_mobile) classes.push("wcb-layout-mobile-" + textAlignment_mobile);
-	
-	return classes.join(" ");
-	};
 
-	// Context for the Interactivity API store (see public/js/countdown/boostify-blocks-countdown-view.js).
-	const countdownContext = {
-		timerType: general_date.timerType,
-		endDateTime: general_date.date,
-		evergreenDays: general_date.evergreenDays ?? 0,
-		evergreenHrs: general_date.evergreenHrs ?? 0,
-		evergreenMinutes: general_date.evergreenMinutes ?? 0,
-		resetDays: general_date.resetDays ?? 30,
-		campaignKey: general_date.campaignID || uniqueId,
-		showDays: general_date.show_day,
-		showHours: general_date.show_hour,
-		showMinutes: general_date.show_minute,
-		days: 0,
-		hours: 0,
-		minutes: 0,
-		seconds: 0,
+	return classes.join(" ");
 	};
 
 	return (
@@ -146,15 +128,10 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		>
 			{/* CHILD CONTENT  */}
 
-			<div
-				className={getLayoutClasses()}
-				data-wp-interactive="boostify-blocks/countdown"
-				data-wp-context={JSON.stringify(countdownContext)}
-				data-wp-init="callbacks.start"
-			>
+			<div className={getLayoutClasses()}>
 				{general_date.show_day && (
 					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-day" data-wp-text="context.days"></div>
+						<div className="wcb-countdown__number wcb-countdown-day"></div>
 						<RichText.Content
 							tagName='div'
 							value={daylabel}
@@ -164,7 +141,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				)}
 				{general_date.show_hour && (
 					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-hrs" data-wp-text="context.hours"></div>
+						<div className="wcb-countdown__number wcb-countdown-hrs"></div>
 						<RichText.Content
 							tagName='div'
 							value={hrslabel}
@@ -174,7 +151,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				)}
 				{general_date.show_minute && (
 					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-mins" data-wp-text="context.minutes"></div>
+						<div className="wcb-countdown__number wcb-countdown-mins"></div>
 						<RichText.Content
 							tagName='div'
 							value={minlabel}
@@ -183,7 +160,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 					</div>
 				)}
 				<div className="wcb-countdown__box">
-					<div className="wcb-countdown__number wcb-countdown-secs" data-wp-text="context.seconds"></div>
+					<div className="wcb-countdown__number wcb-countdown-secs"></div>
 					<RichText.Content
 						tagName='div'
 						value={seclabel}
