@@ -284,10 +284,6 @@ video {
   display: none;
 }
 
-[data-is-wcb-save-common] {
-  visibility: hidden;
-}
-
 .sr-only {
   position: absolute;
   width: 1px;

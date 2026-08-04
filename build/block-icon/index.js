@@ -7050,7 +7050,8 @@ const ___boostify_blocks_global = 1;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getAdvanveDivWrapStyles: () => (/* binding */ getAdvanveDivWrapStyles)
+/* harmony export */   getAdvanveDivWrapStyles: () => (/* binding */ getAdvanveDivWrapStyles),
+/* harmony export */   initAdvanceMotionEffect: () => (/* binding */ initAdvanceMotionEffect)
 /* harmony export */ });
 /* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @emotion/react */ "./node_modules/@emotion/react/dist/emotion-react.browser.esm.js");
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
@@ -7088,20 +7089,16 @@ const hiddenPreviewOverlay = (0,_emotion_react__WEBPACK_IMPORTED_MODULE_2__.css)
 		z-index: 9997;
 	}
 `;
-const getAdvanveDivWrapStyles = ({
+
+/**
+ * Initialize motion effect (animate__ classes) via IntersectionObserver.
+ * This runs independently of emotion CSS rendering so it works even when
+ * file generation is enabled and inline CSS is skipped.
+ */
+const initAdvanceMotionEffect = ({
   advance_motionEffect,
-  advance_zIndex,
-  advance_responsiveCondition,
-  className,
-  defaultDisplay
+  className
 }) => {
-  const {
-    media_desktop,
-    media_tablet
-  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
-  //
-  //
-  // Trigger animation only when in viewport
   try {
     if (advance_motionEffect?.entranceAnimation) {
       const thisELs = document.querySelectorAll(className);
@@ -7132,6 +7129,17 @@ const getAdvanveDivWrapStyles = ({
   } catch (error) {
     console.log("error, advance_motionEffect", error);
   }
+};
+const getAdvanveDivWrapStyles = ({
+  advance_zIndex,
+  advance_responsiveCondition,
+  className,
+  defaultDisplay
+}) => {
+  const {
+    media_desktop,
+    media_tablet
+  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
   const {
     mobile_v: zIndexMobile,
     tablet_v: zIndexTablet,

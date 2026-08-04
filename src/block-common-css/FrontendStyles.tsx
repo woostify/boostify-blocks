@@ -8,6 +8,24 @@ import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
 import { initCountDown } from "../block-countdown/FrontendScript";
 import { initTabsForWcbTabs } from "../block-tabs/FrontendStyles";
 import { animateProgressElements } from "../block-counter/FrontendStyles";
+import { initAdvanceMotionEffect } from "../block-container/getAdvanveStyles";
+
+/**
+ * Helper: creates an init function for advance motion effect (animation)
+ * that runs independently of emotion CSS rendering, so it works even when
+ * file generation is enabled and inline CSS is skipped.
+ */
+const createMotionEffectInit = () => (el: Element, props: any) => {
+	const { uniqueId } = props;
+	if (uniqueId) {
+		initAdvanceMotionEffect({
+			advance_motionEffect: props.advance_motionEffect,
+			className: `.${uniqueId}[data-uniqueid=${uniqueId}]`,
+		});
+	}
+};
+
+const motionEffectInit = createMotionEffectInit();
 
 const classes: {
 	D: string;
@@ -183,6 +201,10 @@ function renderToDom(
 
 		// run function if exits
 		funcRunOnEl && funcRunOnEl(div, props);
+
+		// Always run motion effect (animation) init, even when skipCss=true.
+		// This is separated from GlobalCss rendering so it works with file generation.
+		motionEffectInit(div, props);
 
 		//
 		div.classList.remove("wcb-update-div");

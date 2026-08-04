@@ -18,7 +18,6 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
 class WCB_Post_Assets {
 
 	/**
@@ -93,6 +92,10 @@ class WCB_Post_Assets {
 	 * Constructor. Hooks into WordPress.
 	 */
 	private function __construct() {
+		
+		// Load helper class for block CSS extraction.
+		require_once BOOSTIFY_BLOCKS_PATH . 'includes/class-wcb-block-helper.php';
+
 		$settings = get_option( 'boostify_blocks_settings_options', array() );
 		$this->file_generation_enabled = isset( $settings['enableFileGeneration'] ) && 'true' === $settings['enableFileGeneration'];
 
@@ -107,6 +110,9 @@ class WCB_Post_Assets {
 		// Auto-regenerate assets when a post is saved.
 		add_action( 'save_post', array( $this, 'on_save_post' ), 20, 2 );
 
+		// Frontend: enqueue generated JS if present.
+		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_enqueue_post_js' ), 21 );
+
 		// AJAX handlers for asset management.
 		add_action( 'wp_ajax_boostify_blocks_regenerate_assets', array( $this, 'ajax_regenerate_assets' ) );
 		add_action( 'wp_ajax_boostify_blocks_save_post_assets', array( $this, 'ajax_save_post_assets' ) );
@@ -115,6 +121,13 @@ class WCB_Post_Assets {
 
 		// Ensure assets directory exists.
 		$this->maybe_create_assets_dir();
+
+		// When file generation is enabled, bundle all block static styles into one file
+		// and dequeue individual style-index.css files to reduce HTTP requests.
+		if ( $this->file_generation_enabled ) {
+			add_action( 'wp_enqueue_scripts', array( $this, 'maybe_enqueue_common_static_css' ), 5 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_individual_block_styles' ), 999 );
+		}
 	}
 
 	/**
@@ -664,7 +677,9 @@ class WCB_Post_Assets {
 	 */
 	public function regenerate_all_assets() {
 		// Step 1: Clear all existing files and meta.
-		$deleted = $this->delete_all_css_files();
+		$deleted_css = $this->delete_all_css_files();
+		$deleted_js  = $this->delete_all_js_files();
+		$deleted     = $deleted_css + $deleted_js;
 
 		// Step 2: Get all post IDs across all post types.
 		$block_names  = $this->get_boostify_block_names();
@@ -673,8 +688,17 @@ class WCB_Post_Assets {
 		$regenerated = 0;
 		$skipped     = 0;
 
+		$posts_blocks = array();
+
 		// Step 3: Regenerate for each post.
 		foreach ( $all_post_ids as $post_id ) {
+
+			$content = get_post_field( 'post_content', $post_id );
+			$blocks = parse_blocks( $content );
+			if( !empty($blocks) ){
+				$posts_blocks[$post_id] = $blocks;
+			}
+
 			$result = $this->regenerate_post_assets( $post_id );
 			if ( $result ) {
 				$regenerated++;
@@ -689,19 +713,25 @@ class WCB_Post_Assets {
 			$template_regenerated = $this->regenerate_template_assets();
 		}
 
+		// Step 5: Build common static CSS from all block style-index.css files.
+		$common_static_built = $this->build_common_static_css();
+
 		return array(
 			'success'               => true,
+			'posts_blocks'			=> $posts_blocks,
 			'files_cleared'         => $deleted,
 			'posts_regenerated'     => $regenerated,
 			'posts_skipped'         => $skipped,
 			'templates_regenerated' => $template_regenerated,
+			'common_static_built'   => ! empty( $common_static_built ),
 			'message'               => sprintf(
 				/* translators: 1: cleared files, 2: regenerated posts, 3: skipped posts, 4: regenerated templates */
-				__( 'Cleared %1$d cached file(s). Regenerated CSS for %2$d post(s). %3$d post(s) skipped. %4$d template(s) regenerated. Please purge any caching plugins.', 'boostify-blocks' ),
+				__( 'Cleared %1$d cached file(s). Regenerated CSS for %2$d post(s). %3$d post(s) skipped. %4$d template(s) regenerated. Common static CSS: %5$s. Please purge any caching plugins.', 'boostify-blocks' ),
 				$deleted,
 				$regenerated,
 				$skipped,
-				$template_regenerated
+				$template_regenerated,
+				$common_static_built ? __( 'built', 'boostify-blocks' ) : __( 'skipped', 'boostify-blocks' )
 			),
 		);
 	}
@@ -772,7 +802,7 @@ class WCB_Post_Assets {
 			}
 
 			$blocks = parse_blocks( $template->content );
-			$css    = $this->extract_css_from_blocks( $blocks );
+			$css    = WCB_Block_Helper::extract_css_from_blocks( $blocks );
 
 			if ( ! empty( $css ) ) {
 				$file_id = absint( crc32( $template->slug ) );
@@ -792,12 +822,17 @@ class WCB_Post_Assets {
 	 * @return bool True on success.
 	 */
 	public function regenerate_post_assets( $post_id ) {
-		$css = $this->extract_css_from_post( $post_id );
+		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
 		if ( empty( $css ) ) {
 			// No Boostify blocks in this post — delete file and meta.
 			$this->delete_css_file( $post_id );
+			$this->delete_js_file( $post_id );
 			return false;
 		}
+
+		// Generate JS alongside CSS.
+		$this->generate_post_js( $post_id );
+
 		return $this->save_css_file( $post_id, $css );
 	}
 
@@ -811,351 +846,271 @@ class WCB_Post_Assets {
 	 * @return string Combined CSS for all Boostify blocks in the post.
 	 */
 	private function extract_css_from_post( $post_id ) {
-		$post = get_post( $post_id );
-		if ( ! $post ) {
-			return '';
-		}
-
-		$blocks = parse_blocks( $post->post_content );
-		return $this->extract_css_from_blocks( $blocks );
+		return WCB_Block_Helper::extract_css_from_post( $post_id );
 	}
 
 	/**
 	 * Recursively extract CSS from an array of parsed blocks.
 	 *
+	 * Delegates to WCB_Block_Helper.
+	 *
 	 * @param array $blocks Parsed blocks.
 	 * @return string Combined CSS.
 	 */
 	private function extract_css_from_blocks( $blocks ) {
-		$css = '';
+		return WCB_Block_Helper::extract_css_from_blocks( $blocks );
+	}
 
-		foreach ( $blocks as $block ) {
-			if ( empty( $block['blockName'] ) ) {
-				// Recurse into inner blocks.
-				if ( ! empty( $block['innerBlocks'] ) ) {
-					$css .= $this->extract_css_from_blocks( $block['innerBlocks'] );
+	/**
+	 * Get the JS file path for a given post ID.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string
+	 */
+	public function get_js_file_path( $post_id ) {
+		return $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.js';
+	}
+
+	/**
+	 * Get the JS file URL for a given post ID.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string
+	 */
+	public function get_js_file_url( $post_id ) {
+		return $this->get_assets_url() . '/post-' . absint( $post_id ) . '.js';
+	}
+
+	/**
+	 * Check if a generated JS file exists for a post.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool
+	 */
+	public function js_file_exists( $post_id ) {
+		$file = $this->get_js_file_path( $post_id );
+		return file_exists( $file ) && filesize( $file ) > 0;
+	}
+
+	/**
+	 * Save JS content to a file for a post.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $js      JavaScript content.
+	 * @return bool True on success.
+	 */
+	public function save_js_file( $post_id, $js ) {
+		$this->maybe_create_assets_dir();
+		$file = $this->get_js_file_path( $post_id );
+
+		if ( '' === trim( $js ) ) {
+			return false;
+		}
+
+		// Compare with existing — only write if changed.
+		if ( file_exists( $file ) ) {
+			// phpcs:ignore
+			$old = file_get_contents( $file );
+			if ( $old === $js ) {
+				return true;
+			}
+		}
+
+		// phpcs:ignore
+		$result = file_put_contents( $file, $js, LOCK_EX );
+		return false !== $result;
+	}
+
+	/**
+	 * Delete the JS file for a post.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool
+	 */
+	public function delete_js_file( $post_id ) {
+		$file = $this->get_js_file_path( $post_id );
+		if ( file_exists( $file ) ) {
+			// phpcs:ignore
+			return unlink( $file );
+		}
+		return true;
+	}
+
+	/**
+	 * Delete all generated JS files.
+	 *
+	 * @return int Number of files deleted.
+	 */
+	public function delete_all_js_files() {
+		$dir   = $this->get_assets_dir();
+		$count = 0;
+
+		if ( ! is_dir( $dir ) ) {
+			return 0;
+		}
+
+		$files = glob( $dir . '/post-*.js' );
+		if ( is_array( $files ) ) {
+			foreach ( $files as $file ) {
+				// phpcs:ignore
+				if ( unlink( $file ) ) {
+					$count++;
 				}
+			}
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Generate JS file for a single post based on its blocks.
+	 *
+	 * Determines which JS libraries are needed and writes a
+	 * dependency loader file.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool True on success.
+	 */
+	public function generate_post_js( $post_id ) {
+		$blocks = $this->get_blocks_from_post( $post_id );
+		$js     = $this->build_js_for_blocks( $blocks );
+
+		if ( empty( $js ) ) {
+			$this->delete_js_file( $post_id );
+			return false;
+		}
+
+		return $this->save_js_file( $post_id, $js );
+	}
+
+	/**
+	 * Get parsed blocks from a post.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array Parsed blocks.
+	 */
+	private function get_blocks_from_post( $post_id ) {
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			return array();
+		}
+		return parse_blocks( $post->post_content );
+	}
+
+	/**
+	 * Build JS content for a set of parsed blocks.
+	 *
+	 * Collects init calls for interactive blocks that require JS.
+	 *
+	 * @param array $blocks Parsed blocks.
+	 * @return string JS content.
+	 */
+	private function build_js_for_blocks( $blocks ) {
+		$needs_js = $this->collect_js_block_info( $blocks );
+		if ( empty( $needs_js ) ) {
+			return '';
+		}
+
+		$js = "/* Boostify Blocks auto-generated JS */\n";
+		$js .= "(function(){\n";
+		$js .= "'use strict';\n";
+		$js .= "document.addEventListener('DOMContentLoaded',function(){\n\n";
+
+		// Gather unique IDs for each block type that needs JS.
+		foreach ( $needs_js as $block_type => $ids ) {
+			if ( empty( $ids ) ) {
 				continue;
 			}
 
-			// Only process Boostify blocks.
-			if ( 0 === strpos( $block['blockName'], 'boostify-blocks/' ) ) {
-				$css .= $this->generate_block_css( $block );
+		}
+
+		$js .= "\n});\n})();\n";
+		return $js;
+	}
+
+	/**
+	 * Recursively collect unique IDs of interactive blocks.
+	 *
+	 * @param array $blocks Parsed blocks.
+	 * @return array Map of block_type => [uniqueId, ...].
+	 */
+	private function collect_js_block_info( $blocks ) {
+		$result = array();
+
+		$js_blocks = array(
+			'boostify-blocks/slider'        => 'slider',
+			'boostify-blocks/testimonials'  => 'testimonials',
+			'boostify-blocks/products'      => 'products',
+			'boostify-blocks/faq'           => 'faq',
+			'boostify-blocks/tabs'          => 'tabs',
+			'boostify-blocks/counter'       => 'counter',
+			'boostify-blocks/countdown'     => 'countdown',
+		);
+
+		foreach ( $blocks as $block ) {
+			$name = $block['blockName'] ?? '';
+
+			if ( isset( $js_blocks[ $name ] ) ) {
+				$uid = $block['attrs']['uniqueId'] ?? '';
+				if ( ! empty( $uid ) ) {
+					$key = $js_blocks[ $name ];
+					if ( ! isset( $result[ $key ] ) ) {
+						$result[ $key ] = array();
+					}
+					$result[ $key ][] = $uid;
+				}
 			}
 
 			// Recurse into inner blocks.
 			if ( ! empty( $block['innerBlocks'] ) ) {
-				$css .= $this->extract_css_from_blocks( $block['innerBlocks'] );
-			}
-		}
-
-		return $css;
-	}
-
-	/**
-	 * Generate CSS for a single Boostify block from its attributes.
-	 *
-	 * Handles both naming conventions used across blocks:
-	 *   - Singular prefix: style_background, style_border, etc. (button, CTA, etc.)
-	 *   - Plural prefix:   styles_background, styles_border, etc. (container, heading, etc.)
-	 *   - Sub-key variants: boxshadow / boxShadow, dimension / dimensions
-	 *
-	 * @param array $block Parsed block with attrs.
-	 * @return string CSS rules.
-	 */
-	private function generate_block_css( $block ) {
-		$attrs    = $block['attrs'] ?? array();
-		$uniqueId = $attrs['uniqueId'] ?? '';
-
-		if ( empty( $uniqueId ) ) {
-			return '';
-		}
-
-		$css         = '';
-		$wrapper_sel = '.' . esc_attr( $uniqueId ) . '[data-uniqueid="' . esc_attr( $uniqueId ) . '"]';
-
-		// --- Background styles ---
-		$bg = $this->get_attr( $attrs, array( 'style_background', 'styles_background' ) );
-		if ( ! empty( $bg ) ) {
-			$css .= $this->css_background( $wrapper_sel, $bg );
-		}
-
-		// --- Border styles ---
-		$border = $this->get_attr( $attrs, array( 'style_border', 'styles_border' ) );
-		if ( ! empty( $border ) ) {
-			$css .= $this->css_border( $wrapper_sel, $border );
-		}
-
-		// --- Box shadow ---
-		$shadow = $this->get_attr( $attrs, array( 'style_boxshadow', 'styles_boxShadow', 'style_boxShadow', 'styles_boxshadow' ) );
-		if ( ! empty( $shadow ) ) {
-			$css .= $this->css_box_shadow( $wrapper_sel, $shadow );
-		}
-
-		// --- Padding / Margin ---
-		$spacing = $this->get_attr( $attrs, array( 'style_dimension', 'styles_dimensions', 'style_dimensions', 'styles_dimension' ) );
-		if ( ! empty( $spacing ) ) {
-			$css .= $this->css_spacing( $wrapper_sel, $spacing );
-		}
-
-		// --- Z-Index ---
-		if ( isset( $attrs['advance_zIndex'] ) && '' !== $attrs['advance_zIndex'] ) {
-			$css .= $wrapper_sel . ' { z-index: ' . intval( $attrs['advance_zIndex'] ) . '; }' . "\n";
-		}
-
-		return $css;
-	}
-
-	/**
-	 * Get the first non-empty value from a list of possible attribute keys.
-	 *
-	 * @param array    $attrs Block attributes.
-	 * @param string[] $keys  Possible keys in order of priority.
-	 * @return mixed The first non-empty value, or null.
-	 */
-	private function get_attr( $attrs, $keys ) {
-		foreach ( $keys as $key ) {
-			if ( ! empty( $attrs[ $key ] ) ) {
-				return $attrs[ $key ];
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Generate background CSS from block background attributes.
-	 *
-	 * Handles multiple data shapes:
-	 *   1. BackgroundControlData (container, heading):
-	 *      { bgType, color, gradient, imageData, ... }
-	 *   2. { normal: BackgroundNoImageControlData, hover: ... } (button):
-	 *      { normal: { bgType, color, gradient }, hover: { bgType, color, gradient } }
-	 *
-	 * @param string $selector CSS selector.
-	 * @param array  $bg_attrs Background attributes.
-	 * @return string CSS rules.
-	 */
-	private function css_background( $selector, $bg_attrs ) {
-		$css = '';
-
-		// Button-style wrapper: { normal: {...}, hover: {...} }
-		if ( isset( $bg_attrs['normal'] ) && is_array( $bg_attrs['normal'] ) ) {
-			$bg_attrs = $bg_attrs['normal'];
-		}
-
-		$type = $bg_attrs['bgType'] ?? $bg_attrs['backgroundType'] ?? 'classic';
-		if ( 'classic' === $type || 'color' === $type ) {
-			$color = $bg_attrs['color'] ?? $bg_attrs['backgroundColor'] ?? '';
-			if ( ! empty( $color ) ) {
-				$css .= $selector . ' { background-color: ' . esc_attr( $color ) . '; }' . "\n";
-			}
-			// Image: extract from imageData.Desktop.mediaUrl (BackgroundControlData shape).
-			$image_data = $bg_attrs['imageData'] ?? array();
-			$image_url  = '';
-			if ( is_array( $image_data ) ) {
-				$desktop_img = $this->get_desktop_value( $image_data );
-				if ( is_array( $desktop_img ) ) {
-					$image_url = $desktop_img['mediaUrl'] ?? $desktop_img['url'] ?? '';
-				}
-			}
-			// Fallback: flat backgroundImage key (older blocks).
-			if ( empty( $image_url ) ) {
-				$image_url = $bg_attrs['backgroundImage'] ?? '';
-			}
-			if ( ! empty( $image_url ) ) {
-				$css .= $selector . ' { background-image: url(' . esc_url( $image_url ) . '); }' . "\n";
-			}
-		} elseif ( 'gradient' === $type ) {
-			$gradient = $bg_attrs['gradient'] ?? $bg_attrs['gradientColor'] ?? '';
-			if ( ! empty( $gradient ) ) {
-				$css .= $selector . ' { background-image: ' . esc_attr( $gradient ) . '; }' . "\n";
-			}
-		}
-
-		return $css;
-	}
-
-	/**
-	 * Generate border CSS from block border attributes.
-	 *
-	 * Handles the MyBorderControlData structure:
-	 *   radius: HasResponsive<BorderRadiusSettings> (Desktop/Tablet/Mobile)
-	 *   mainSettings: BorderMain4Side | BorderMainSingleSide
-	 *
-	 * @param string $selector     CSS selector.
-	 * @param array  $border_attrs Border attributes (MyBorderControlData shape).
-	 * @return string CSS rules.
-	 */
-	private function css_border( $selector, $border_attrs ) {
-		$css = '';
-
-		// --- Border radius ---
-		// radius is HasResponsive<BorderRadiusSettings>:
-		// { Desktop: "5px" | {topLeft,topRight,bottomRight,bottomLeft}, Tablet?: ..., Mobile?: ... }
-		$radius_raw = $border_attrs['radius'] ?? array();
-		$radius_val = $this->get_desktop_value( $radius_raw );
-
-		if ( ! empty( $radius_val ) && '0' !== (string) $radius_val ) {
-			if ( is_array( $radius_val ) ) {
-				// Object form: { topLeft: "5px", topRight: "10px", bottomRight: "3px", bottomLeft: "0" }
-				$tl = $radius_val['topLeft'] ?? '0';
-				$tr = $radius_val['topRight'] ?? '0';
-				$br = $radius_val['bottomRight'] ?? '0';
-				$bl = $radius_val['bottomLeft'] ?? '0';
-				$css .= $selector . ' { border-radius: ' . esc_attr( "$tl $tr $br $bl" ) . '; }' . "\n";
-			} else {
-				// String form: "5px"
-				$css .= $selector . ' { border-radius: ' . esc_attr( (string) $radius_val ) . '; }' . "\n";
-			}
-		}
-
-		// --- Border lines (mainSettings) ---
-		$main = $border_attrs['mainSettings'] ?? null;
-		if ( ! empty( $main ) && is_array( $main ) ) {
-			// Check if 4-side (has top/right/bottom/left keys)
-			if ( isset( $main['top'] ) || isset( $main['right'] ) || isset( $main['bottom'] ) || isset( $main['left'] ) ) {
-				$sides = array(
-					'top'    => 'border-top',
-					'right'  => 'border-right',
-					'bottom' => 'border-bottom',
-					'left'   => 'border-left',
-				);
-				foreach ( $sides as $key => $property ) {
-					$side = $main[ $key ] ?? null;
-					if ( ! empty( $side ) && is_array( $side ) ) {
-						$width = $side['width'] ?? '1px';
-						$style = $side['style'] ?? 'none';
-						$color = $side['color'] ?? '';
-						if ( 'none' !== $style ) {
-							$css .= $selector . ' { ' . $property . ': ' . esc_attr( "$width $style $color" ) . '; }' . "\n";
-						}
+				$inner = $this->collect_js_block_info( $block['innerBlocks'] );
+				foreach ( $inner as $k => $ids ) {
+					if ( ! isset( $result[ $k ] ) ) {
+						$result[ $k ] = array();
 					}
-				}
-			} else {
-				// Single-side form: { color, style, width }
-				$width = $main['width'] ?? '1px';
-				$style = $main['style'] ?? 'none';
-				$color = $main['color'] ?? '';
-				if ( 'none' !== $style ) {
-					$css .= $selector . ' { border: ' . esc_attr( "$width $style $color" ) . '; }' . "\n";
+					$result[ $k ] = array_merge( $result[ $k ], $ids );
 				}
 			}
 		}
 
-		return $css;
+		return $result;
 	}
 
 	/**
-	 * Extract the Desktop value from a HasResponsive<T> structure.
+	 * Sanitize a unique ID for use as a JS variable name.
+	 * Replaces hyphens with underscores.
 	 *
-	 * HasResponsive shape: { Desktop: T, Tablet?: T, Mobile?: T }
-	 *
-	 * @param mixed $responsive The responsive value.
-	 * @return mixed The Desktop value, or the raw input if not a responsive array.
+	 * @param string $unique_id Block unique ID.
+	 * @return string JS-safe identifier.
 	 */
-	private function get_desktop_value( $responsive ) {
-		if ( is_array( $responsive ) && isset( $responsive['Desktop'] ) ) {
-			return $responsive['Desktop'];
-		}
-		// Fallback: try lowercase key.
-		if ( is_array( $responsive ) && isset( $responsive['desktop'] ) ) {
-			return $responsive['desktop'];
-		}
-		// Not a HasResponsive wrapper — return as-is.
-		return $responsive;
+	private function js_safe_id( $unique_id ) {
+		return str_replace( '-', '_', $unique_id );
 	}
 
 	/**
-	 * Generate box-shadow CSS.
-	 *
-	 * @param string $selector       CSS selector.
-	 * @param array  $shadow_attrs   Box shadow attributes.
-	 * @return string CSS rules.
+	 * Conditionally enqueue generated JS file for the current request.
 	 */
-	private function css_box_shadow( $selector, $shadow_attrs ) {
-		$css = '';
-
-		$enabled = $shadow_attrs['boxShadowEnabled'] ?? false;
-		if ( ! $enabled ) {
-			return '';
+	public function maybe_enqueue_post_js() {
+		if ( ! $this->file_generation_enabled ) {
+			return;
 		}
 
-		$h_offset = $shadow_attrs['boxShadowHOffset'] ?? 0;
-		$v_offset = $shadow_attrs['boxShadowVOffset'] ?? 0;
-		$blur     = $shadow_attrs['boxShadowBlur'] ?? 0;
-		$spread   = $shadow_attrs['boxShadowSpread'] ?? 0;
-		$color    = $shadow_attrs['boxShadowColor'] ?? 'rgba(0,0,0,0.5)';
-		$inset    = ! empty( $shadow_attrs['boxShadowInset'] ) ? 'inset ' : '';
-
-		$css .= $selector . ' { box-shadow: ' . esc_attr( $inset . $h_offset . 'px ' . $v_offset . 'px ' . $blur . 'px ' . $spread . 'px ' . $color ) . '; }' . "\n";
-
-		return $css;
-	}
-
-	/**
-	 * Generate padding/margin CSS.
-	 *
-	 * Handles two data shapes:
-	 *   1. Flat: { padding: HasResponsive<DimensionSettings>, margin: ... }
-	 *      (used by container, button, etc.)
-	 *   2. Wrapped: { dimension: { padding: HasResponsive<...>, margin: ... } }
-	 *      (used by heading, etc.)
-	 *
-	 * HasResponsive<DimensionSettings> = { Desktop: {top,left,right,bottom}, Tablet?: ..., Mobile?: ... }
-	 *
-	 * @param string $selector      CSS selector.
-	 * @param array  $spacing_attrs Spacing attributes.
-	 * @return string CSS rules.
-	 */
-	private function css_spacing( $selector, $spacing_attrs ) {
-		$css = '';
-
-		// Some blocks (e.g. heading) wrap spacing in a "dimension" key.
-		$data = $spacing_attrs;
-		if ( isset( $data['dimension'] ) && is_array( $data['dimension'] ) ) {
-			$data = $data['dimension'];
+		$post_id = $this->get_effective_post_id();
+		if ( ! $post_id ) {
+			return;
 		}
 
-		// --- Padding ---
-		$padding_raw = $data['padding'] ?? '';
-		$padding     = $this->get_desktop_value( $padding_raw );
-		if ( is_array( $padding ) && $this->has_any_value( $padding ) ) {
-			$top    = $padding['top'] ?? '0';
-			$right  = $padding['right'] ?? '0';
-			$bottom = $padding['bottom'] ?? '0';
-			$left   = $padding['left'] ?? '0';
-			$css   .= $selector . ' { padding: ' . esc_attr( $top . ' ' . $right . ' ' . $bottom . ' ' . $left ) . '; }' . "\n";
-		}
+		$file_id = $this->get_css_file_id_for_request( $post_id );
 
-		// --- Margin ---
-		$margin_raw = $data['margin'] ?? '';
-		$margin     = $this->get_desktop_value( $margin_raw );
-		if ( is_array( $margin ) && $this->has_any_value( $margin ) ) {
-			$top    = $margin['top'] ?? '0';
-			$right  = $margin['right'] ?? '0';
-			$bottom = $margin['bottom'] ?? '0';
-			$left   = $margin['left'] ?? '0';
-			$css   .= $selector . ' { margin: ' . esc_attr( $top . ' ' . $right . ' ' . $bottom . ' ' . $left ) . '; }' . "\n";
+		if ( $this->js_file_exists( $file_id ) ) {
+			wp_enqueue_script(
+				'boostify-blocks-js-' . $file_id,
+				$this->get_js_file_url( $file_id ),
+				array( 'jquery' ),
+				BOOSTIFY_BLOCKS_VERSION,
+				true
+			);
 		}
-
-		return $css;
-	}
-
-	/**
-	 * Check if an array has at least one non-empty string value.
-	 *
-	 * Used to avoid outputting CSS rules like `margin:` with all empty values.
-	 *
-	 * @param array $arr Associative array of string values.
-	 * @return bool True if at least one value is a non-empty string.
-	 */
-	private function has_any_value( $arr ) {
-		foreach ( $arr as $val ) {
-			if ( is_string( $val ) && '' !== $val ) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -1200,6 +1155,162 @@ class WCB_Post_Assets {
 		$results = $wpdb->get_col( $query );
 
 		return array_map( 'intval', $results );
+	}
+
+	/**
+	 * Get the merged static CSS content from all block style-index.css files.
+	 *
+	 * Returns cached content if already built, or builds on-the-fly.
+	 * Used to prepend static styles into generated per-post CSS files.
+	 *
+	 * @return string Merged static CSS, or empty string on failure.
+	 */
+	private function get_common_static_css_content() {
+		$file = $this->get_assets_dir() . '/custom-style-blocks.css';
+
+		// Build if not exists.
+		if ( ! file_exists( $file ) ) {
+			$this->build_common_static_css();
+		}
+
+		if ( file_exists( $file ) && filesize( $file ) > 0 ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			return file_get_contents( $file );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Build a single CSS file containing all block static styles (style-index.css).
+	 *
+	 * WordPress auto-enqueues each block's style-index.css separately (37+ HTTP requests).
+	 * This method merges them all into one file so only 1 request is needed.
+	 *
+	 * Called during asset regeneration and on-demand when the common file is missing.
+	 *
+	 * @return string|false URL of the common CSS file, or false on failure.
+	 */
+	public function build_common_static_css() {
+		$this->maybe_create_assets_dir();
+
+		$dir      = BOOSTIFY_BLOCKS_PATH . 'build/';
+		$out_file = $this->get_assets_dir() . '/custom-style-blocks.css';
+		$css      = '';
+
+		// Collect all block style-index.css files.
+		$style_files = glob( $dir . 'block-*/style-index.css' );
+		if ( empty( $style_files ) ) {
+			return false;
+		}
+
+		foreach ( $style_files as $file ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$content = file_get_contents( $file );
+			if ( empty( $content ) ) {
+				continue;
+			}
+
+			// Strip webpack banner comments: /*! ... */ blocks (includes inner !*** / \*** lines).
+			$content = preg_replace( '/\/\*![\s\S]*?\*\/\s*/', '', $content );
+
+			// Strip source map references.
+			$content = preg_replace( '/\/\*# sourceMappingURL=.*?\*\/\s*/', '', $content );
+
+			// Strip @charset declarations (only need one at the top).
+			$content = preg_replace( '/@charset\s+"[^"]*";\s*/', '', $content );
+
+			$css .= trim( $content ) . "\n";
+		}
+
+		if ( empty( trim( $css ) ) ) {
+			return false;
+		}
+
+		$css = "@charset \"UTF-8\";\n" . $css;
+
+		// Strip all remaining CSS comments (/* ... */).
+		$css = preg_replace( '/\/\*[\s\S]*?\*\//', '', $css );
+
+		// Collapse multiple blank lines into one.
+		$css = preg_replace( "/\n{3,}/", "\n\n", $css );
+
+		// Compare with existing — only write if changed.
+		if ( file_exists( $out_file ) ) {
+			// phpcs:ignore
+			$old = file_get_contents( $out_file );
+			if ( $old === $css ) {
+				return $this->get_assets_url() . '/custom-style-blocks.css';
+			}
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		$result = file_put_contents( $out_file, $css, LOCK_EX );
+
+		if ( false !== $result ) {
+			return $this->get_assets_url() . '/custom-style-blocks.css';
+		}
+
+		return false;
+	}
+
+	/**
+	 * Enqueue the common static CSS file if it exists.
+	 *
+	 * Replaces 37+ individual block style-index.css files with 1 merged file.
+	 * Called on wp_enqueue_scripts at priority 5 (before post CSS at 20).
+	 */
+	public function maybe_enqueue_common_static_css() {
+		if ( ! $this->file_generation_enabled ) {
+			return;
+		}
+
+		$file = $this->get_assets_dir() . '/custom-style-blocks.css';
+
+		// Build on-the-fly if missing.
+		if ( ! file_exists( $file ) ) {
+			$this->build_common_static_css();
+		}
+
+		if ( file_exists( $file ) && filesize( $file ) > 0 ) {
+			wp_enqueue_style(
+				'boostify-blocks-custom-style-blocks',
+				$this->get_assets_url() . '/custom-style-blocks.css',
+				array(),
+				BOOSTIFY_BLOCKS_VERSION
+			);
+		}
+	}
+
+	/**
+	 * Dequeue individual block style-index.css files.
+	 *
+	 * When file generation is enabled and custom-style-blocks.css is loaded,
+	 * remove the per-block style-index.css <link> tags to save HTTP requests.
+	 * Called on wp_enqueue_scripts at priority 999 (after all blocks are registered).
+	 */
+	public function dequeue_individual_block_styles() {
+		if ( ! $this->file_generation_enabled ) {
+			return;
+		}
+
+		// Only dequeue if custom-style-blocks was successfully enqueued.
+		if ( ! wp_style_is( 'boostify-blocks-custom-style-blocks', 'enqueued' ) ) {
+			return;
+		}
+
+		global $wp_styles;
+		if ( empty( $wp_styles->registered ) ) {
+			return;
+		}
+
+		foreach ( $wp_styles->registered as $handle => $style ) {
+			// Match handles like: boostify-blocks-heading-style, boostify-blocks-container-style, etc.
+			// These are auto-generated by WP from block.json "style" handles.
+			if ( 0 === strpos( $handle, 'boostify-blocks-' ) && '-style' === substr( $handle, -6 ) ) {
+				wp_dequeue_style( $handle );
+			}
+		}
 	}
 
 	/**

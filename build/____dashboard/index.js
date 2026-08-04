@@ -3520,7 +3520,11 @@ const SettingsPageAssetGeneration = ({
         ...allSettings,
         enableFileGeneration: checked ? "true" : "false"
       });
-      enableFileGeneration();
+      // Only regenerate assets when enabling (false → true).
+      // When disabling (true → false), keep existing files intact.
+      if (checked) {
+        enableFileGeneration();
+      }
     }
   })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "py-8"

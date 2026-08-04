@@ -238,7 +238,11 @@ const SettingsPageAssetGeneration: FC<Props> = ({
                             ...allSettings,
                             enableFileGeneration: checked ? "true" : "false",
                         });
-						enableFileGeneration( );
+						// Only regenerate assets when enabling (false → true).
+						// When disabling (true → false), keep existing files intact.
+						if ( checked ) {
+							enableFileGeneration( );
+						}
                     }}
                 />
             </div>

@@ -4155,7 +4155,8 @@ const ___boostify_blocks_global = 1;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getAdvanveDivWrapStyles: () => (/* binding */ getAdvanveDivWrapStyles)
+/* harmony export */   getAdvanveDivWrapStyles: () => (/* binding */ getAdvanveDivWrapStyles),
+/* harmony export */   initAdvanceMotionEffect: () => (/* binding */ initAdvanceMotionEffect)
 /* harmony export */ });
 /* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @emotion/react */ "./node_modules/@emotion/react/dist/emotion-react.browser.esm.js");
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
@@ -4193,20 +4194,16 @@ const hiddenPreviewOverlay = (0,_emotion_react__WEBPACK_IMPORTED_MODULE_2__.css)
 		z-index: 9997;
 	}
 `;
-const getAdvanveDivWrapStyles = ({
+
+/**
+ * Initialize motion effect (animate__ classes) via IntersectionObserver.
+ * This runs independently of emotion CSS rendering so it works even when
+ * file generation is enabled and inline CSS is skipped.
+ */
+const initAdvanceMotionEffect = ({
   advance_motionEffect,
-  advance_zIndex,
-  advance_responsiveCondition,
-  className,
-  defaultDisplay
+  className
 }) => {
-  const {
-    media_desktop,
-    media_tablet
-  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
-  //
-  //
-  // Trigger animation only when in viewport
   try {
     if (advance_motionEffect?.entranceAnimation) {
       const thisELs = document.querySelectorAll(className);
@@ -4237,6 +4234,17 @@ const getAdvanveDivWrapStyles = ({
   } catch (error) {
     console.log("error, advance_motionEffect", error);
   }
+};
+const getAdvanveDivWrapStyles = ({
+  advance_zIndex,
+  advance_responsiveCondition,
+  className,
+  defaultDisplay
+}) => {
+  const {
+    media_desktop,
+    media_tablet
+  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
   const {
     mobile_v: zIndexMobile,
     tablet_v: zIndexTablet,
@@ -7151,6 +7159,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _block_countdown_FrontendScript__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../block-countdown/FrontendScript */ "./src/block-countdown/FrontendScript.tsx");
 /* harmony import */ var _block_tabs_FrontendStyles__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../block-tabs/FrontendStyles */ "./src/block-tabs/FrontendStyles.tsx");
 /* harmony import */ var _block_counter_FrontendStyles__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../block-counter/FrontendStyles */ "./src/block-counter/FrontendStyles.tsx");
+/* harmony import */ var _block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../block-container/getAdvanveStyles */ "./src/block-container/getAdvanveStyles.ts");
 
 
 
@@ -7162,6 +7171,25 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+/**
+ * Helper: creates an init function for advance motion effect (animation)
+ * that runs independently of emotion CSS rendering, so it works even when
+ * file generation is enabled and inline CSS is skipped.
+ */
+const createMotionEffectInit = () => (el, props) => {
+  const {
+    uniqueId
+  } = props;
+  if (uniqueId) {
+    (0,_block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_10__.initAdvanceMotionEffect)({
+      advance_motionEffect: props.advance_motionEffect,
+      className: `.${uniqueId}[data-uniqueid=${uniqueId}]`
+    });
+  }
+};
+const motionEffectInit = createMotionEffectInit();
 const classes = [{
   D: ".wcb-button__wrap.wcb-update-div",
   C: react__WEBPACK_IMPORTED_MODULE_0___default().lazy(() => __webpack_require__.e(/*! import() */ "src_block-button_GlobalCss_tsx").then(__webpack_require__.bind(__webpack_require__, /*! ../block-button/GlobalCss */ "./src/block-button/GlobalCss.tsx")))
@@ -7287,6 +7315,10 @@ function renderToDom(divsToUpdate, GlobalCss, funcRunOnEl, skipCss = false) {
 
     // run function if exits
     funcRunOnEl && funcRunOnEl(div, props);
+
+    // Always run motion effect (animation) init, even when skipCss=true.
+    // This is separated from GlobalCss rendering so it works with file generation.
+    motionEffectInit(div, props);
 
     //
     div.classList.remove("wcb-update-div");
