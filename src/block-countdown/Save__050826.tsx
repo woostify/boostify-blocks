@@ -64,7 +64,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const textAlignment_Desktop = general_layout.textAlignment.Desktop || "center";
 	const textAlignment_tablet = general_layout.textAlignment.Tablet || textAlignment_Desktop;
 	const textAlignment_mobile = general_layout.textAlignment.Mobile || textAlignment_tablet;
-	
+
 	// Get flex direction values
 	const flexDirection_Desktop = general_layout.flexDirection.Desktop || "row";
 	const flexDirection_tablet = general_layout.flexDirection.Tablet || flexDirection_Desktop;
@@ -95,14 +95,14 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	// Generate class names for layout
 	const getLayoutClasses = () => {
 	const classes = [`wcb-countdown__content ${general_preset.preset}`];
-	
+
 	// Add flex direction classes
 	if (flexDirection_Desktop === "column") {
 		classes.push("wcb-flex-col");
 	} else {
 		classes.push("wcb-flex-row");
 	}
-	
+
 	// Add alignment classes
 	if (ALIGN_ITEMS.Desktop === "start") {
 		classes.push("wcb-justify-start");
@@ -111,12 +111,12 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	} else {
 		classes.push("wcb-justify-center");
 	}
-	
+
 	// Add responsive classes
 	classes.push("wcb-layout-desktop-" + textAlignment_Desktop);
 	if (textAlignment_tablet) classes.push("wcb-layout-tablet-" + textAlignment_tablet);
 	if (textAlignment_mobile) classes.push("wcb-layout-mobile-" + textAlignment_mobile);
-	
+
 	return classes.join(" ");
 	};
 
@@ -155,48 +155,40 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				{general_date.show_day && (
 					<div className="wcb-countdown__box">
 						<div className="wcb-countdown__number wcb-countdown-day" data-wp-text="context.days"></div>
-						{general_date.enableLabel && (
-							<RichText.Content
-								tagName='div'
-								value={daylabel}
-								className="wcb-countdown__label wcb-countdown__daylabel"
-							/>
-						)}
+						<RichText.Content
+							tagName='div'
+							value={daylabel}
+							className="wcb-countdown__label wcb-countdown__daylabel"
+						/>
 					</div>
 				)}
 				{general_date.show_hour && (
 					<div className="wcb-countdown__box">
 						<div className="wcb-countdown__number wcb-countdown-hrs" data-wp-text="context.hours"></div>
-						{general_date.enableLabel && (
-							<RichText.Content
-								tagName='div'
-								value={hrslabel}
-								className="wcb-countdown__label wcb-countdown__hrslabel"
-							/>
-						)}
+						<RichText.Content
+							tagName='div'
+							value={hrslabel}
+							className="wcb-countdown__label wcb-countdown__hrslabel"
+						/>
 					</div>
 				)}
 				{general_date.show_minute && (
 					<div className="wcb-countdown__box">
 						<div className="wcb-countdown__number wcb-countdown-mins" data-wp-text="context.minutes"></div>
-						{general_date.enableLabel && (
-							<RichText.Content
-								tagName='div'
-								value={minlabel}
-								className="wcb-countdown__label wcb-countdown__minlabel"
-							/>
-						)}
+						<RichText.Content
+							tagName='div'
+							value={minlabel}
+							className="wcb-countdown__label wcb-countdown__minlabel"
+						/>
 					</div>
 				)}
 				<div className="wcb-countdown__box">
 					<div className="wcb-countdown__number wcb-countdown-secs" data-wp-text="context.seconds"></div>
-					{general_date.enableLabel && (
-						<RichText.Content
-							tagName='div'
-							value={seclabel}
-							className="wcb-countdown__label wcb-countdown__seclabel"
-						/>
-					)}
+					<RichText.Content
+						tagName='div'
+						value={seclabel}
+						className="wcb-countdown__label wcb-countdown__seclabel"
+					/>
 				</div>
 			</div>
 		</SaveCommon>
