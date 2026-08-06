@@ -24,6 +24,21 @@ return array(
 	'testimonials' => array(
 		'type'    => 'array',
 		'default' => array(
+			array(
+				'name'        => 'Drink Water',
+				'companyName' => 'CEO of Meta',
+				'content'     => 'I have been working with these guys for years now! With lots of hard work and timely communication, they made sure they delivered the best to me. Highly recommended!',
+			),
+			array(
+				'name'        => 'Drink Water',
+				'companyName' => 'CEO of Meta',
+				'content'     => 'I have been working with these guys for years now! With lots of hard work and timely communication, they made sure they delivered the best to me. Highly recommended!',
+			),
+			array(
+				'name'        => 'Drink Water',
+				'companyName' => 'CEO of Meta',
+				'content'     => 'I have been working with these guys for years now! With lots of hard work and timely communication, they made sure they delivered the best to me. Highly recommended!',
+			),
 		),
 	),
 	

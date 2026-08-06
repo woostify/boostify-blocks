@@ -24,6 +24,21 @@ return array(
 	'titles' => array(
 		'type'    => 'array',
 		'default' => array(
+			array(
+				'id'            => '1',
+				'title'         => 'Tab 1',
+				'dataTabIndex'  => 0,
+			),
+			array(
+				'id'            => '2',
+				'title'         => 'Tab 2',
+				'dataTabIndex'  => 1,
+			),
+			array(
+				'id'            => '3',
+				'title'         => 'Tab 3',
+				'dataTabIndex'  => 2,
+			),
 		),
 	),
 	
@@ -32,8 +47,7 @@ return array(
 	// =================================================================
 	'tabContents' => array(
 		'type'    => 'array',
-		'default' => array(
-		),
+		'default' => array( '', '', '' ),
 	),
 	
 	// =================================================================

@@ -24,6 +24,9 @@ return array(
 	'sliders' => array(
 		'type'    => 'array',
 		'default' => array(
+			array( 'boostify-blocks/slider-child' ),
+			array( 'boostify-blocks/slider-child' ),
+			array( 'boostify-blocks/slider-child' ),
 		),
 	),
 	

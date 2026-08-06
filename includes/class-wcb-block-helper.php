@@ -186,6 +186,65 @@ class WCB_Block_Helper {
 		return $css;
 	}
 
+	/**
+	 * Full border CSS — supports 4-side borders and hover color.
+	 * Mirrors getBorderStyles in TypeScript (with isWithRadius=true).
+	 *
+	 * @param array  $border   Border control data.
+	 * @param string $selector CSS selector.
+	 * @return string CSS rules.
+	 */
+	public static function css_border_full( $border, $selector ) {
+		if ( empty( $border ) || ! is_array( $border ) ) {
+			return '';
+		}
+
+		$css        = '';
+		$main       = $border['mainSettings'] ?? null;
+		$hover_color = $border['hoverColor'] ?? '';
+		$radius     = $border['radius'] ?? null;
+
+		if ( ! empty( $main ) && is_array( $main ) ) {
+			// Check if 4-side border (has 'top', 'right', 'bottom', or 'left').
+			$is_4side = isset( $main['top'] ) || isset( $main['right'] ) || isset( $main['bottom'] ) || isset( $main['left'] );
+
+			if ( $is_4side ) {
+				$sides = array( 'top', 'right', 'bottom', 'left' );
+				foreach ( $sides as $side ) {
+					if ( ! empty( $main[ $side ] ) && is_array( $main[ $side ] ) ) {
+						$s = $main[ $side ];
+						$w = $s['width'] ?? '1px';
+						$st = $s['style'] ?? 'none';
+						$c  = $s['color'] ?? '';
+						if ( '' !== $c ) {
+							$css .= "$selector { border-$side: $w $st $c; }\n";
+						}
+					}
+				}
+			} else {
+				// Single-side border.
+				$color = $main['color'] ?? '';
+				$style = $main['style'] ?? 'solid';
+				$width = $main['width'] ?? '1px';
+				if ( $color ) {
+					$css .= "$selector { border: $width $style $color; }\n";
+				}
+			}
+
+			// Hover border color.
+			if ( ! empty( $hover_color ) ) {
+				$css .= "$selector:hover { border-color: $hover_color; }\n";
+			}
+		}
+
+		// Border radius.
+		if ( ! empty( $radius ) ) {
+			$css .= self::css_responsive( 'border-radius', $radius, $selector, 'px' );
+		}
+
+		return $css;
+	}
+
 	public static function css_dimension( $dimension, $selector ) {
 		if ( empty( $dimension ) || ! is_array( $dimension ) ) {
 			return '';
@@ -398,6 +457,254 @@ class WCB_Block_Helper {
 		return $css;
 	}
 
+	/**
+	 * Generate flex properties CSS for container inner.
+	 * Mirrors getFlexPropertiesStyles in TypeScript.
+	 *
+	 * @param array  $flex     Flex properties from general_flexProperties.
+	 * @param array  $gap      Gap values from styles_dimensions (colunmGap, rowGap).
+	 * @param string $selector CSS selector (should target .wcb-container__inner).
+	 * @return string CSS rules.
+	 */
+	public static function css_flex_properties( $flex, $gap, $selector ) {
+		$css = '';
+
+		// Always set display:flex on the inner container.
+		$css .= "$selector { display: flex !important; }\n";
+
+		$props = array(
+			'flexDirection'  => array( 'property' => 'flex-direction', 'default' => 'row' ),
+			'alignItems'     => array( 'property' => 'align-items', 'default' => 'stretch' ),
+			'justifyContent' => array( 'property' => 'justify-content', 'default' => 'flex-start' ),
+			'flexWrap'       => array( 'property' => 'flex-wrap', 'default' => 'nowrap' ),
+		);
+
+		foreach ( $props as $key => $config ) {
+			$value = isset( $flex[ $key ] ) ? $flex[ $key ] : null;
+			if ( ! empty( $value ) && is_array( $value ) ) {
+				// Cascade: Tablet → Desktop, Mobile → Tablet → Desktop.
+				$desktop = $value['Desktop'] ?? null;
+				$tablet  = $value['Tablet'] ?? $desktop;
+				$mobile  = $value['Mobile'] ?? $tablet;
+
+				if ( null !== $mobile && '' !== $mobile ) {
+					$css .= "$selector { {$config['property']}: $mobile; }\n";
+				}
+				if ( null !== $tablet && '' !== $tablet && $tablet !== $mobile ) {
+					$css .= "@media (min-width: 768px) { $selector { {$config['property']}: $tablet; } }\n";
+				}
+				if ( null !== $desktop && '' !== $desktop && $desktop !== $tablet ) {
+					$css .= "@media (min-width: 1025px) { $selector { {$config['property']}: $desktop; } }\n";
+				}
+			}
+		}
+
+		// Gap (from styles_dimensions).
+		if ( ! empty( $gap ) && is_array( $gap ) ) {
+			if ( ! empty( $gap['colunmGap'] ) ) {
+				$css .= self::css_responsive( 'column-gap', $gap['colunmGap'], $selector );
+			}
+			if ( ! empty( $gap['rowGap'] ) ) {
+				$css .= self::css_responsive( 'row-gap', $gap['rowGap'], $selector );
+			}
+		}
+
+		return $css;
+	}
+
+	/**
+	 * Generate CSS for container control settings (width, min-height, overflow, alignment).
+	 * Mirrors getDivWrapStyles + getInner__contentCustomWidth in TypeScript GlobalCss.
+	 *
+	 * @param array  $container General container settings.
+	 * @param string $selector  CSS selector for the wrap element.
+	 * @param string $unique_id Block unique ID (for :has() parent selectors).
+	 * @param string $color     Text color (styles_color).
+	 * @return string CSS rules.
+	 */
+	public static function css_container_control( $container, $selector, $unique_id, $color ) {
+		if ( empty( $container ) || ! is_array( $container ) ) {
+			return '';
+		}
+
+		$global    = self::get_global_settings();
+		$css       = '';
+		$width_type      = $container['containerWidthType'] ?? 'Full Width';
+		$content_w_type  = $container['contentWidthType'] ?? 'Boxed';
+		$overflow        = $container['overflow'] ?? '';
+		$custom_width    = $container['customWidth'] ?? array();
+		$min_height      = $container['minHeight'] ?? array();
+		$content_box_w   = $container['contentBoxWidth'] ?? array();
+
+		// --- Parent .wp-block margin reset ---
+		$css .= ".wp-block:has(> .wcb-container__wrap.{$unique_id}[data-uniqueid=\"{$unique_id}\"]) { margin-top: 0 !important; margin-bottom: 0 !important; }\n";
+
+		// --- Full/wide alignment ---
+		$css .= ".wp-block[data-align=\"full\"]:has(> .wcb-container__wrap.{$unique_id}[data-uniqueid=\"{$unique_id}\"]) { {$selector} { margin-left: auto; margin-right: auto; } }\n";
+		$css .= ".wp-block[data-align=\"wide\"]:has(> .wcb-container__wrap.{$unique_id}[data-uniqueid=\"{$unique_id}\"]) { margin-left: -8px; margin-right: -8px; {$selector} { margin-left: auto; margin-right: auto; } }\n";
+
+		// --- Base wrap styles ---
+		$wrap_styles = '';
+
+		// Global container padding.
+		$wrap_styles .= 'padding: ' . ( $global['containerPadding'] ?: '10px' ) . '; ';
+
+		// Color.
+		if ( ! empty( $color ) ) {
+			$wrap_styles .= "color: $color; ";
+		}
+
+		// Overflow.
+		if ( ! empty( $overflow ) ) {
+			$wrap_styles .= "overflow: $overflow; ";
+		}
+
+		// Custom Width.
+		if ( 'Custom' === $width_type && ! empty( $custom_width ) && is_array( $custom_width ) ) {
+			$mw_desktop = $custom_width['Desktop'] ?? null;
+			$mw_tablet  = $custom_width['Tablet'] ?? $mw_desktop;
+			$mw_mobile  = $custom_width['Mobile'] ?? $mw_tablet;
+
+			if ( null !== $mw_mobile && '' !== $mw_mobile ) {
+				$wrap_styles .= "max-width: {$mw_mobile} !important; width: {$mw_mobile}; ";
+			}
+		}
+
+		// Min Height.
+		if ( ! empty( $min_height ) && is_array( $min_height ) ) {
+			$mh_desktop = $min_height['Desktop'] ?? null;
+			$mh_tablet  = $min_height['Tablet'] ?? $mh_desktop;
+			$mh_mobile  = $min_height['Mobile'] ?? $mh_tablet;
+
+			if ( null !== $mh_mobile && '' !== $mh_mobile ) {
+				$wrap_styles .= "min-height: {$mh_mobile}; ";
+			}
+		}
+
+		if ( ! empty( trim( $wrap_styles ) ) ) {
+			$css .= "$selector { $wrap_styles}\n";
+		}
+
+		// --- Responsive max-width ---
+		if ( 'Custom' === $width_type && ! empty( $custom_width ) && is_array( $custom_width ) ) {
+			$mw_desktop = $custom_width['Desktop'] ?? null;
+			$mw_tablet  = $custom_width['Tablet'] ?? $mw_desktop;
+			$mw_mobile  = $custom_width['Mobile'] ?? $mw_tablet;
+
+			if ( null !== $mw_tablet && '' !== $mw_tablet && $mw_tablet !== $mw_mobile ) {
+				$css .= "@media (min-width: 768px) { $selector { max-width: {$mw_tablet} !important; width: {$mw_tablet}; } }\n";
+			}
+			if ( null !== $mw_desktop && '' !== $mw_desktop && $mw_desktop !== $mw_tablet ) {
+				$css .= "@media (min-width: 1025px) { $selector { max-width: {$mw_desktop} !important; width: {$mw_desktop}; } }\n";
+			}
+		}
+
+		// --- Responsive min-height ---
+		if ( ! empty( $min_height ) && is_array( $min_height ) ) {
+			$mh_desktop = $min_height['Desktop'] ?? null;
+			$mh_tablet  = $min_height['Tablet'] ?? $mh_desktop;
+			$mh_mobile  = $min_height['Mobile'] ?? $mh_tablet;
+
+			if ( null !== $mh_tablet && '' !== $mh_tablet && $mh_tablet !== $mh_mobile ) {
+				$css .= "@media (min-width: 768px) { $selector { min-height: {$mh_tablet}; } }\n";
+			}
+			if ( null !== $mh_desktop && '' !== $mh_desktop && $mh_desktop !== $mh_tablet ) {
+				$css .= "@media (min-width: 1025px) { $selector { min-height: {$mh_desktop}; } }\n";
+			}
+		}
+
+		// --- .alignfull ---
+		$css .= "$selector.alignfull { margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); }\n";
+
+		// --- .is_wcb_container_child ---
+		if ( 'Custom' === $width_type && ! empty( $custom_width ) && is_array( $custom_width ) ) {
+			$mw_desktop = $custom_width['Desktop'] ?? null;
+			$mw_tablet  = $custom_width['Tablet'] ?? $mw_desktop;
+			$mw_mobile  = $custom_width['Mobile'] ?? $mw_tablet;
+
+			if ( null !== $mw_mobile && '' !== $mw_mobile ) {
+				$css .= "$selector.is_wcb_container_child { width: {$mw_mobile}; max-width: {$mw_mobile} !important; }\n";
+			}
+			if ( null !== $mw_tablet && '' !== $mw_tablet && $mw_tablet !== $mw_mobile ) {
+				$css .= "@media (min-width: 768px) { $selector.is_wcb_container_child { width: {$mw_tablet}; } }\n";
+			}
+			if ( null !== $mw_desktop && '' !== $mw_desktop && $mw_desktop !== $mw_tablet ) {
+				$css .= "@media (min-width: 1025px) { $selector.is_wcb_container_child { width: {$mw_desktop}; } }\n";
+			}
+		}
+
+		// --- Content Box Width (inner container max-width) ---
+		$inner_sel = "$selector .wcb-container__inner";
+
+		// Fallback to global defaultContentWidth when contentBoxWidth is not set.
+		$has_content_w = false;
+		if ( is_array( $content_box_w ) ) {
+			foreach ( array( 'Desktop', 'Tablet', 'Mobile' ) as $bp ) {
+				if ( ! empty( $content_box_w[ $bp ] ) ) {
+					$has_content_w = true;
+					break;
+				}
+			}
+		}
+		if ( ! $has_content_w && ! empty( $global['defaultContentWidth'] ) ) {
+			$content_box_w = array( 'Desktop' => $global['defaultContentWidth'] );
+		}
+
+		if ( 'Full Width' === $content_w_type ) {
+			$css .= "$inner_sel { max-width: 100%; }\n";
+		} elseif ( 'Boxed' === $content_w_type ) {
+			if ( ! empty( $content_box_w ) && is_array( $content_box_w ) ) {
+				// Global containerElementsGap.
+				$gap = $global['containerElementsGap'] ?: '10px';
+
+				$cbw_desktop = $content_box_w['Desktop'] ?? '';
+				$cbw_tablet  = $content_box_w['Tablet'] ?? $cbw_desktop;
+				$cbw_mobile  = $content_box_w['Mobile'] ?? $cbw_tablet;
+
+				$inner_styles = '';
+				if ( '' !== $cbw_mobile && null !== $cbw_mobile ) {
+					$inner_styles .= "max-width: $cbw_mobile; ";
+				}
+				$inner_styles .= "row-gap: $gap; column-gap: $gap; ";
+
+				if ( ! empty( trim( $inner_styles ) ) ) {
+					$css .= "$inner_sel { $inner_styles}\n";
+				}
+
+				if ( '' !== $cbw_tablet && null !== $cbw_tablet && $cbw_tablet !== $cbw_mobile ) {
+					$css .= "@media (min-width: 768px) { $inner_sel { max-width: $cbw_tablet; } }\n";
+				}
+				if ( '' !== $cbw_desktop && null !== $cbw_desktop && $cbw_desktop !== $cbw_tablet ) {
+					$css .= "@media (min-width: 1025px) { $inner_sel { max-width: $cbw_desktop; } }\n";
+				}
+			}
+		}
+
+		return $css;
+	}
+
+	// =====================================================================
+	// GLOBAL SETTINGS
+	// =====================================================================
+
+	/**
+	 * Get global layout/settings values (mirrors DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES).
+	 *
+	 * @return array Associative array of global settings.
+	 */
+	public static function get_global_settings() {
+		$options = get_option( 'boostify_blocks_settings_options', array() );
+		$layout  = wp_get_global_settings( array( 'layout' ) );
+
+		return array(
+			'defaultContentWidth'  => $options['defaultContentWidth'] ?? ( $layout['contentSize'] ?? '' ),
+			'containerPadding'     => $options['containerPadding'] ?? '10px',
+			'containerElementsGap' => $options['containerElementsGap'] ?? '10px',
+			'media_tablet'         => $options['media_tablet'] ?? '768px',
+			'media_desktop'        => $options['media_desktop'] ?? '1024px',
+		);
+	}
+
 	// =====================================================================
 	// BLOCK TYPE DISPATCH
 	// =====================================================================
@@ -519,65 +826,140 @@ class WCB_Block_Helper {
 	}
 
 	public static function process_container_block( $attrs, $selector, $unique_id ) {
-		$css = '';
-		$sb  = $attrs['styles_background'] ?? array();
-		$sbd = $attrs['styles_border'] ?? array();
-		$sbs = $attrs['styles_boxShadow'] ?? array();
-		$sd  = $attrs['styles_dimensions'] ?? array();
-		$sc  = $attrs['styles_color'] ?? '';
+		$css       = '';
+		$gc        = $attrs['general_container'] ?? array();
+		$gfp       = $attrs['general_flexProperties'] ?? array();
+		$sb        = $attrs['styles_background'] ?? array();
+		$sbd       = $attrs['styles_border'] ?? array();
+		$sbs       = $attrs['styles_boxShadow'] ?? array();
+		$sd        = $attrs['styles_dimensions'] ?? array();
+		$sc        = $attrs['styles_color'] ?? '';
+		$inner_sel = "$selector .wcb-container__inner";
 
-		if ( ! empty( $sc ) ) {
-			$css .= "$selector { color: $sc; }\n";
-		}
+		// --- Background (color, gradient, image) ---
 		if ( ! empty( $sb ) ) {
 			$css .= self::css_background_full( $sb, $selector );
 		}
+
+		// --- Border (supports 4-side + hoverColor) ---
 		if ( ! empty( $sbd ) ) {
-			$css .= self::css_border( $sbd, $selector );
+			$css .= self::css_border_full( $sbd, $selector );
 		}
+
+		// --- Box shadow (Normal + Hover) ---
 		if ( ! empty( $sbs['Normal']['color'] ) ) {
 			$css .= self::css_box_shadow( $sbs['Normal'], $selector );
 		}
 		if ( ! empty( $sbs['Hover']['color'] ) ) {
 			$css .= self::css_box_shadow_hover( $sbs['Hover'], $selector );
 		}
+
+		// --- Padding & Margin (on wrap element) ---
 		if ( ! empty( $sd ) ) {
 			$css .= self::css_dimension( $sd, $selector );
-			if ( ! empty( $sd['colunmGap'] ) || ! empty( $sd['rowGap'] ) ) {
-				$css .= self::css_gap( $sd, $selector );
-			}
 		}
+
+		// --- Container control (width, min-height, overflow, content box width, color, alignment) ---
+		if ( ! empty( $gc ) ) {
+			$css .= self::css_container_control( $gc, $selector, $unique_id, $sc );
+		} elseif ( ! empty( $sc ) ) {
+			// Fallback: apply color even without container settings.
+			$css .= "$selector { color: $sc; }\n";
+		} else {
+			// Still need :has() parent margin reset for all containers.
+			$css .= ".wp-block:has(> .wcb-container__wrap.{$unique_id}[data-uniqueid=\"{$unique_id}\"]) { margin-top: 0 !important; margin-bottom: 0 !important; }\n";
+			$css .= ".wp-block[data-align=\"full\"]:has(> .wcb-container__wrap.{$unique_id}[data-uniqueid=\"{$unique_id}\"]) { {$selector} { margin-left: auto; margin-right: auto; } }\n";
+			$css .= ".wp-block[data-align=\"wide\"]:has(> .wcb-container__wrap.{$unique_id}[data-uniqueid=\"{$unique_id}\"]) { margin-left: -8px; margin-right: -8px; {$selector} { margin-left: auto; margin-right: auto; } }\n";
+			$css .= "$selector.alignfull { margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); }\n";
+		}
+
+		// --- Flex properties + gap (on inner container) ---
+		$has_flex = ! empty( $gfp ) && is_array( $gfp );
+		$has_gap  = ! empty( $sd ) && is_array( $sd ) && ( ! empty( $sd['colunmGap'] ) || ! empty( $sd['rowGap'] ) );
+		if ( $has_flex || $has_gap ) {
+			$css .= self::css_flex_properties( $gfp, $sd, $inner_sel );
+		}
+
+		// --- Advance (responsive condition, z-index) ---
 		$css .= self::css_advance( $attrs, $selector );
+
 		return $css;
 	}
 
 	public static function process_button_block( $attrs, $selector, $unique_id ) {
-		$css    = '';
-		$st     = $attrs['style_text'] ?? array();
-		$sbg    = $attrs['style_background'] ?? array();
-		$sbd    = $attrs['style_border'] ?? array();
-		$sbs    = $attrs['style_boxshadow'] ?? array();
-		$sd     = $attrs['style_dimension'] ?? array();
-		$txt_sel = "$selector .wcb-button__text";
+		$css       = '';
+		$st        = $attrs['style_text'] ?? array();
+		$si        = $attrs['style_icon'] ?? array();
+		$sbg       = $attrs['style_background'] ?? array();
+		$sbd       = $attrs['style_border'] ?? array();
+		$sbs       = $attrs['style_boxshadow'] ?? array();
+		$sd        = $attrs['style_dimension'] ?? array();
+		$btn_sel   = "$selector .wcb-button__main";
+		$txt_sel   = "$selector .wcb-button__text";
+		$icon_sel  = "$selector .wcb-button__icon";
 
+		// --- Text typography & color ---
 		if ( ! empty( $st['typography'] ) ) {
 			$css .= self::css_typography( $st['typography'], $txt_sel );
 		}
-		if ( ! empty( $st['textColor'] ) ) {
-			$css .= self::css_text_color( $st['textColor'], $txt_sel );
+		if ( ! empty( $st['color'] ) ) {
+			$css .= "$txt_sel { color: {$st['color']}; }\n";
 		}
-		if ( ! empty( $sbg ) ) {
-			$css .= self::css_background( $sbg, $selector );
+
+		// --- Text hover color ---
+		if ( ! empty( $st['hoverColor'] ) ) {
+			$css .= "$btn_sel:hover $txt_sel { color: {$st['hoverColor']}; }\n";
 		}
+
+		// --- Icon color & size ---
+		if ( ! empty( $si['color'] ) ) {
+			$css .= "$icon_sel { color: {$si['color']}; }\n";
+		}
+		if ( ! empty( $si['hoverColor'] ) ) {
+			$css .= "$btn_sel:hover $icon_sel { color: {$si['hoverColor']}; }\n";
+		}
+		if ( ! empty( $si['size'] ) ) {
+			$css .= self::css_responsive( 'font-size', $si['size'], "$icon_sel, $icon_sel:before, $icon_sel svg" );
+		}
+
+		// --- Background (normal + hover via nested structure) ---
+		if ( ! empty( $sbg['normal'] ) && is_array( $sbg['normal'] ) ) {
+			$css .= self::css_background( $sbg['normal'], $btn_sel );
+		}
+		if ( ! empty( $sbg['hover'] ) && is_array( $sbg['hover'] ) ) {
+			$css .= self::css_background( $sbg['hover'], "$btn_sel:hover" );
+		}
+		// Fallback: flat background.
+		if ( empty( $sbg['normal'] ) && ! empty( $sbg ) ) {
+			$css .= self::css_background( $sbg, $btn_sel );
+		}
+
+		// --- Border ---
 		if ( ! empty( $sbd ) ) {
-			$css .= self::css_border( $sbd, $selector );
+			$css .= self::css_border_full( $sbd, $btn_sel );
 		}
-		if ( ! empty( $sbs ) ) {
-			$css .= self::css_box_shadow( $sbs, $selector );
+
+		// --- Box shadow ---
+		if ( ! empty( $sbs['Normal']['color'] ) ) {
+			$css .= self::css_box_shadow( $sbs['Normal'], $btn_sel );
 		}
+		if ( ! empty( $sbs['Hover']['color'] ) ) {
+			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$btn_sel:hover" );
+		}
+		// Fallback: flat box shadow.
+		if ( empty( $sbs['Normal'] ) && ! empty( $sbs['color'] ) ) {
+			$css .= self::css_box_shadow( $sbs, $btn_sel );
+		}
+
+		// --- Dimension (padding + margin + colGap) ---
 		if ( ! empty( $sd ) ) {
-			$css .= self::css_dimension( $sd, $selector );
+			$css .= self::css_dimension( $sd, $btn_sel );
+			if ( ! empty( $sd['colGap'] ) ) {
+				$css .= self::css_responsive( 'gap', $sd['colGap'], $btn_sel );
+			}
 		}
+
+		// --- Advance ---
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -611,128 +993,165 @@ class WCB_Block_Helper {
 		$sb  = $attrs['style_border'] ?? array();
 		$sd  = $attrs['style_dimension'] ?? array();
 
+		$product_sel   = "$selector .wcb-products__product";
+		$list_sel      = "$selector .wcb-products__list";
+		$title_sel     = "$selector .wcb-products__product-title";
+		$category_sel  = "$selector .wcb-products__product-category";
+		$price_sel     = "$selector .wcb-products__product-price";
+		$rating_sel    = "$selector .wcb-products__product-rating";
+		$image_sel     = "$selector .wcb-products__product-image";
+		$add_cart_sel  = "$selector .wcb-products__product-add-to-cart a";
+		$sale_sel      = "$selector .wcb-products__product-sale-badge";
+		$out_of_stock_sel   = "$selector .wcb-products__product-out-of-stock";
+		$pagination_sel = "$selector .wcb-products__pagination .page-numbers";
+		$pagination_active = "$selector .wcb-products__pagination .page-numbers.current";
+
+		// --- Title ---
 		if ( ! empty( $st['typography'] ) ) {
-			$css .= self::css_typography( $st['typography'], "$selector .wcb-product__title" );
+			$css .= self::css_typography( $st['typography'], $title_sel );
 		}
 		if ( ! empty( $st['textColor'] ) ) {
-			$css .= "$selector .wcb-product__title { color: {$st['textColor']}; }\n";
+			$css .= "$title_sel { color: {$st['textColor']}; }\n";
 		}
 		if ( ! empty( $st['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], "$selector .wcb-product__title" );
+			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], $title_sel );
 		}
+
+		// --- Category ---
 		if ( ! empty( $sc['typography'] ) ) {
-			$css .= self::css_typography( $sc['typography'], "$selector .wcb-product__category" );
+			$css .= self::css_typography( $sc['typography'], $category_sel );
 		}
 		if ( ! empty( $sc['textColor'] ) ) {
-			$css .= "$selector .wcb-product__category { color: {$sc['textColor']}; }\n";
+			$css .= "$category_sel { color: {$sc['textColor']}; }\n";
 		}
+
+		// --- Price ---
 		if ( ! empty( $sp['typography'] ) ) {
-			$css .= self::css_typography( $sp['typography'], "$selector .wcb-product__price" );
+			$css .= self::css_typography( $sp['typography'], $price_sel );
 		}
 		if ( ! empty( $sp['textColor'] ) ) {
-			$css .= "$selector .wcb-product__price { color: {$sp['textColor']}; }\n";
+			$css .= "$price_sel { color: {$sp['textColor']}; }\n";
 		}
+
+		// --- Rating ---
 		if ( ! empty( $sr['color'] ) ) {
-			$css .= "$selector .wcb-product__rating { color: {$sr['color']}; }\n";
+			$css .= "$rating_sel { color: {$sr['color']}; }\n";
 		}
+
+		// --- Featured Image ---
 		if ( ! empty( $sf['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sf['marginBottom'], "$selector .wcb-product__featured-image" );
+			$css .= self::css_responsive( 'margin-bottom', $sf['marginBottom'], $image_sel );
 		}
 		if ( ! empty( $sf['backgroundOverlay'] ) ) {
-			$css .= "$selector .wcb-product__featured-image-overlay { background-color: {$sf['backgroundOverlay']}; }\n";
+			$css .= "$selector .wcb-products__product-image-overlay { background-color: {$sf['backgroundOverlay']}; }\n";
 		}
 		if ( ! empty( $sf['border'] ) ) {
-			$css .= self::css_border( $sf['border'], "$selector .wcb-product__featured-image" );
+			$css .= self::css_border( $sf['border'], $image_sel );
 		}
+
+		// --- Layout ---
 		if ( ! empty( $sl['textAlignment'] ) ) {
-			$css .= "$selector .wcb-product__wrap { text-align: {$sl['textAlignment']}; }\n";
+			$css .= "$product_sel { text-align: {$sl['textAlignment']}; }\n";
 		}
 		if ( ! empty( $sl['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-product__wrap { background-color: {$sl['backgroundColor']}; }\n";
+			$css .= "$product_sel { background-color: {$sl['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $sl['padding'] ) ) {
-			$css .= self::css_responsive_spacing( 'padding', $sl['padding'], "$selector .wcb-product__wrap" );
+			$css .= self::css_responsive_spacing( 'padding', $sl['padding'], $product_sel );
 		}
 		if ( ! empty( $sl['colunmGap'] ) ) {
-			$css .= self::css_responsive( 'column-gap', $sl['colunmGap'], "$selector .wcb-products__wrap" );
+			$css .= self::css_responsive( 'column-gap', $sl['colunmGap'], $list_sel );
 		}
 		if ( ! empty( $sl['rowGap'] ) ) {
-			$css .= self::css_responsive( 'row-gap', $sl['rowGap'], "$selector .wcb-products__wrap" );
+			$css .= self::css_responsive( 'row-gap', $sl['rowGap'], $list_sel );
 		}
+
+		// --- Sale Badge ---
 		if ( ! empty( $ss['typography'] ) ) {
-			$css .= self::css_typography( $ss['typography'], "$selector .wcb-product__sale-badge" );
+			$css .= self::css_typography( $ss['typography'], $sale_sel );
 		}
 		if ( ! empty( $ss['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-product__sale-badge { background-color: {$ss['backgroundColor']}; }\n";
+			$css .= "$sale_sel { background-color: {$ss['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $ss['textColor'] ) ) {
-			$css .= "$selector .wcb-product__sale-badge { color: {$ss['textColor']}; }\n";
+			$css .= "$sale_sel { color: {$ss['textColor']}; }\n";
 		}
+
+		// --- Out of Stock ---
 		if ( ! empty( $so['typography'] ) ) {
-			$css .= self::css_typography( $so['typography'], "$selector .wcb-product__out-of-stock" );
+			$css .= self::css_typography( $so['typography'], $out_of_stock_sel );
 		}
 		if ( ! empty( $so['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-product__out-of-stock { background-color: {$so['backgroundColor']}; }\n";
+			$css .= "$out_of_stock_sel { background-color: {$so['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $so['textColor'] ) ) {
-			$css .= "$selector .wcb-product__out-of-stock { color: {$so['textColor']}; }\n";
+			$css .= "$out_of_stock_sel { color: {$so['textColor']}; }\n";
 		}
+
+		// --- Add to Cart ---
 		if ( ! empty( $sa['typography'] ) ) {
-			$css .= self::css_typography( $sa['typography'], "$selector .wcb-product__add-to-cart" );
+			$css .= self::css_typography( $sa['typography'], $add_cart_sel );
 		}
 		if ( ! empty( $sa['colorAndBackgroundColor'] ) ) {
 			$cbc = $sa['colorAndBackgroundColor'];
 			if ( ! empty( $cbc['Normal']['color'] ) ) {
-				$css .= "$selector .wcb-product__add-to-cart { color: {$cbc['Normal']['color']}; }\n";
+				$css .= "$add_cart_sel { color: {$cbc['Normal']['color']}; }\n";
 			}
 			if ( ! empty( $cbc['Normal']['backgroundColor'] ) ) {
-				$css .= "$selector .wcb-product__add-to-cart { background-color: {$cbc['Normal']['backgroundColor']}; }\n";
+				$css .= "$add_cart_sel { background-color: {$cbc['Normal']['backgroundColor']}; }\n";
 			}
 			if ( ! empty( $cbc['Hover']['color'] ) ) {
-				$css .= "$selector .wcb-product__add-to-cart:hover { color: {$cbc['Hover']['color']}; }\n";
+				$css .= "$add_cart_sel:hover { color: {$cbc['Hover']['color']}; }\n";
 			}
 			if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
-				$css .= "$selector .wcb-product__add-to-cart:hover { background-color: {$cbc['Hover']['backgroundColor']}; }\n";
+				$css .= "$add_cart_sel:hover { background-color: {$cbc['Hover']['backgroundColor']}; }\n";
 			}
 		}
 		if ( ! empty( $sa['padding'] ) ) {
-			$css .= self::css_responsive_spacing( 'padding', $sa['padding'], "$selector .wcb-product__add-to-cart" );
+			$css .= self::css_responsive_spacing( 'padding', $sa['padding'], $add_cart_sel );
 		}
 		if ( ! empty( $sa['border'] ) ) {
-			$css .= self::css_border( $sa['border'], "$selector .wcb-product__add-to-cart" );
+			$css .= self::css_border( $sa['border'], $add_cart_sel );
 		}
+
+		// --- Pagination ---
 		if ( ! empty( $sg ) ) {
 			if ( ! empty( $sg['mainStyle']['Normal'] ) ) {
 				$n = $sg['mainStyle']['Normal'];
 				if ( ! empty( $n['color'] ) ) {
-					$css .= "$selector .wcb-pagination__item { color: {$n['color']}; }\n";
+					$css .= "$pagination_sel { color: {$n['color']}; }\n";
 				}
 				if ( ! empty( $n['backgroundColor'] ) ) {
-					$css .= "$selector .wcb-pagination__item { background-color: {$n['backgroundColor']}; }\n";
+					$css .= "$pagination_sel { background-color: {$n['backgroundColor']}; }\n";
 				}
 				if ( ! empty( $n['border'] ) ) {
-					$css .= self::css_border( $n['border'], "$selector .wcb-pagination__item" );
+					$css .= self::css_border( $n['border'], $pagination_sel );
 				}
 			}
 			if ( ! empty( $sg['mainStyle']['Active'] ) ) {
 				$a = $sg['mainStyle']['Active'];
 				if ( ! empty( $a['color'] ) ) {
-					$css .= "$selector .wcb-pagination__item--active { color: {$a['color']}; }\n";
+					$css .= "$pagination_active { color: {$a['color']}; }\n";
 				}
 				if ( ! empty( $a['backgroundColor'] ) ) {
-					$css .= "$selector .wcb-pagination__item--active { background-color: {$a['backgroundColor']}; }\n";
+					$css .= "$pagination_active { background-color: {$a['backgroundColor']}; }\n";
 				}
 			}
 			if ( ! empty( $sg['marginTop'] ) ) {
-				$css .= self::css_responsive( 'margin-top', $sg['marginTop'], "$selector .wcb-pagination" );
+				$css .= self::css_responsive( 'margin-top', $sg['marginTop'], "$selector .wcb-products__pagination" );
 			}
 		}
+
+		// --- Border ---
 		if ( ! empty( $sb ) ) {
-			$css .= self::css_border( $sb, "$selector .wcb-product__wrap" );
+			$css .= self::css_border( $sb, $product_sel );
 		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sd ) ) {
 			$css .= self::css_dimension( $sd, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -750,89 +1169,102 @@ class WCB_Block_Helper {
 		$sb  = $attrs['style_border'] ?? array();
 		$sbs = $attrs['style_boxShadow'] ?? array();
 
+		$card_sel      = "$selector .wcbPostCard";
+		$list_sel      = "$selector .wcb-posts-grid__list-posts";
+		$title_sel     = "$selector .wcbPostCard__title a";
+		$excerpt_sel   = "$selector .wcbPostCard__excerpt";
+		$tax_sel       = "$selector .wcbPostCard__taxonomies a";
+		$meta_sel      = "$selector .wcbPostCard__meta";
+		$author_sel    = "$selector .wcbPostCard__meta-author-name";
+		$date_sel      = "$selector .wcbPostCard__meta-date-and-comments";
+		$readmore_sel  = "$selector .wcbPostCard__readmoreLink";
+		$image_sel     = "$selector .wcbPostCard__featuredImage";
+		$pag_sel       = "$selector .wcb-posts-grid__pagination .page-numbers";
+		$pag_active    = "$selector .wcb-posts-grid__pagination .page-numbers.current";
+
 		// --- Title ---
 		if ( ! empty( $st['typography'] ) ) {
-			$css .= self::css_typography( $st['typography'], "$selector .wcb-post__title" );
+			$css .= self::css_typography( $st['typography'], $title_sel );
 		}
 		if ( ! empty( $st['textColor'] ) ) {
-			$css .= "$selector .wcb-post__title { color: {$st['textColor']}; }\n";
+			$css .= "$title_sel { color: {$st['textColor']}; }\n";
 		}
 		if ( ! empty( $st['textHoverColor'] ) ) {
-			$css .= "$selector .wcb-post__title:hover { color: {$st['textHoverColor']}; }\n";
+			$css .= "$title_sel:hover { color: {$st['textHoverColor']}; }\n";
 		}
 		if ( ! empty( $st['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], "$selector .wcb-post__title" );
+			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], $title_sel );
 		}
 
 		// --- Excerpt ---
 		if ( ! empty( $se['typography'] ) ) {
-			$css .= self::css_typography( $se['typography'], "$selector .wcb-post__excerpt" );
+			$css .= self::css_typography( $se['typography'], $excerpt_sel );
 		}
 		if ( ! empty( $se['textColor'] ) ) {
-			$css .= "$selector .wcb-post__excerpt { color: {$se['textColor']}; }\n";
+			$css .= "$excerpt_sel { color: {$se['textColor']}; }\n";
 		}
 		if ( ! empty( $se['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $se['marginBottom'], "$selector .wcb-post__excerpt" );
+			$css .= self::css_responsive( 'margin-bottom', $se['marginBottom'], $excerpt_sel );
 		}
 
 		// --- Taxonomy ---
 		if ( ! empty( $stx['typography'] ) ) {
-			$css .= self::css_typography( $stx['typography'], "$selector .wcb-post__taxonomy" );
+			$css .= self::css_typography( $stx['typography'], $tax_sel );
 		}
 		if ( ! empty( $stx['textColor'] ) ) {
-			$css .= "$selector .wcb-post__taxonomy { color: {$stx['textColor']}; }\n";
+			$css .= "$tax_sel { color: {$stx['textColor']}; }\n";
 		}
 		if ( ! empty( $stx['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-post__taxonomy { background-color: {$stx['backgroundColor']}; }\n";
+			$css .= "$tax_sel { background-color: {$stx['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $stx['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $stx['marginBottom'], "$selector .wcb-post__taxonomy" );
+			$css .= self::css_responsive( 'margin-bottom', $stx['marginBottom'], $tax_sel );
 		}
 
-		// --- Meta (author + date) ---
+		// --- Meta ---
 		if ( ! empty( $sm['authorTypography'] ) ) {
-			$css .= self::css_typography( $sm['authorTypography'], "$selector .wcb-post__author" );
+			$css .= self::css_typography( $sm['authorTypography'], $author_sel );
 		}
 		if ( ! empty( $sm['dateTypography'] ) ) {
-			$css .= self::css_typography( $sm['dateTypography'], "$selector .wcb-post__date" );
+			$css .= self::css_typography( $sm['dateTypography'], $date_sel );
 		}
 		if ( ! empty( $sm['authorColor'] ) ) {
-			$css .= "$selector .wcb-post__author { color: {$sm['authorColor']}; }\n";
+			$css .= "$author_sel { color: {$sm['authorColor']}; }\n";
 		}
 		if ( ! empty( $sm['dateTextColor'] ) ) {
-			$css .= "$selector .wcb-post__date { color: {$sm['dateTextColor']}; }\n";
+			$css .= "$date_sel { color: {$sm['dateTextColor']}; }\n";
 		}
 		if ( ! empty( $sm['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sm['marginBottom'], "$selector .wcb-post__meta" );
+			$css .= self::css_responsive( 'margin-bottom', $sm['marginBottom'], $meta_sel );
 		}
 
 		// --- Read more link ---
 		if ( ! empty( $sr['typography'] ) ) {
-			$css .= self::css_typography( $sr['typography'], "$selector .wcb-post__read-more" );
+			$css .= self::css_typography( $sr['typography'], $readmore_sel );
 		}
 		if ( ! empty( $sr['colorAndBackgroundColor'] ) ) {
 			$cbc = $sr['colorAndBackgroundColor'];
 			if ( ! empty( $cbc['Normal']['color'] ) ) {
-				$css .= "$selector .wcb-post__read-more { color: {$cbc['Normal']['color']}; }\n";
+				$css .= "$readmore_sel { color: {$cbc['Normal']['color']}; }\n";
 			}
 			if ( ! empty( $cbc['Normal']['backgroundColor'] ) ) {
-				$css .= "$selector .wcb-post__read-more { background-color: {$cbc['Normal']['backgroundColor']}; }\n";
+				$css .= "$readmore_sel { background-color: {$cbc['Normal']['backgroundColor']}; }\n";
 			}
 			if ( ! empty( $cbc['Hover']['color'] ) ) {
-				$css .= "$selector .wcb-post__read-more:hover { color: {$cbc['Hover']['color']}; }\n";
+				$css .= "$readmore_sel:hover { color: {$cbc['Hover']['color']}; }\n";
 			}
 			if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
-				$css .= "$selector .wcb-post__read-more:hover { background-color: {$cbc['Hover']['backgroundColor']}; }\n";
+				$css .= "$readmore_sel:hover { background-color: {$cbc['Hover']['backgroundColor']}; }\n";
 			}
 		}
 		if ( ! empty( $sr['padding'] ) ) {
-			$css .= self::css_responsive_spacing( 'padding', $sr['padding'], "$selector .wcb-post__read-more" );
+			$css .= self::css_responsive_spacing( 'padding', $sr['padding'], $readmore_sel );
 		}
 		if ( ! empty( $sr['border'] ) ) {
-			$css .= self::css_border( $sr['border'], "$selector .wcb-post__read-more" );
+			$css .= self::css_border( $sr['border'], $readmore_sel );
 		}
 		if ( ! empty( $sr['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sr['marginBottom'], "$selector .wcb-post__read-more" );
+			$css .= self::css_responsive( 'margin-bottom', $sr['marginBottom'], $readmore_sel );
 		}
 
 		// --- Pagination ---
@@ -841,71 +1273,71 @@ class WCB_Block_Helper {
 			if ( ! empty( $ms['Normal'] ) ) {
 				$n = $ms['Normal'];
 				if ( ! empty( $n['color'] ) ) {
-					$css .= "$selector .wcb-pagination__item { color: {$n['color']}; }\n";
+					$css .= "$pag_sel { color: {$n['color']}; }\n";
 				}
 				if ( ! empty( $n['backgroundColor'] ) ) {
-					$css .= "$selector .wcb-pagination__item { background-color: {$n['backgroundColor']}; }\n";
+					$css .= "$pag_sel { background-color: {$n['backgroundColor']}; }\n";
 				}
 				if ( ! empty( $n['border'] ) ) {
-					$css .= self::css_border( $n['border'], "$selector .wcb-pagination__item" );
+					$css .= self::css_border( $n['border'], $pag_sel );
 				}
 			}
 			if ( ! empty( $ms['Active'] ) ) {
 				$a = $ms['Active'];
 				if ( ! empty( $a['color'] ) ) {
-					$css .= "$selector .wcb-pagination__item--active { color: {$a['color']}; }\n";
+					$css .= "$pag_active { color: {$a['color']}; }\n";
 				}
 				if ( ! empty( $a['backgroundColor'] ) ) {
-					$css .= "$selector .wcb-pagination__item--active { background-color: {$a['backgroundColor']}; }\n";
+					$css .= "$pag_active { background-color: {$a['backgroundColor']}; }\n";
 				}
 				if ( ! empty( $a['border'] ) ) {
-					$css .= self::css_border( $a['border'], "$selector .wcb-pagination__item--active" );
+					$css .= self::css_border( $a['border'], $pag_active );
 				}
 			}
 			if ( ! empty( $sp['marginTop'] ) ) {
-				$css .= self::css_responsive( 'margin-top', $sp['marginTop'], "$selector .wcb-pagination" );
+				$css .= self::css_responsive( 'margin-top', $sp['marginTop'], "$selector .wcb-posts-grid__pagination" );
 			}
 		}
 
 		// --- Featured image ---
 		if ( ! empty( $sf['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sf['marginBottom'], "$selector .wcb-post__featured-image" );
+			$css .= self::css_responsive( 'margin-bottom', $sf['marginBottom'], $image_sel );
 		}
 		if ( ! empty( $sf['backgroundOverlay'] ) ) {
-			$css .= "$selector .wcb-post__featured-image-overlay { background-color: {$sf['backgroundOverlay']}; }\n";
+			$css .= "$selector .wcbPostCard__featuredImage-overlay { background-color: {$sf['backgroundOverlay']}; }\n";
 		}
 		if ( ! empty( $sf['border'] ) ) {
-			$css .= self::css_border( $sf['border'], "$selector .wcb-post__featured-image" );
+			$css .= self::css_border( $sf['border'], $image_sel );
 		}
 
-		// --- Layout ---
+		// --- Layout (grid) ---
 		if ( ! empty( $sl['colunmGap'] ) ) {
-			$css .= self::css_responsive( 'column-gap', $sl['colunmGap'], "$selector .wcb-posts__wrap" );
+			$css .= self::css_responsive( 'column-gap', $sl['colunmGap'], $list_sel );
 		}
 		if ( ! empty( $sl['rowGap'] ) ) {
-			$css .= self::css_responsive( 'row-gap', $sl['rowGap'], "$selector .wcb-posts__wrap" );
+			$css .= self::css_responsive( 'row-gap', $sl['rowGap'], $list_sel );
 		}
 		if ( ! empty( $sl['textAlignment'] ) ) {
-			$css .= "$selector .wcb-post__wrap { text-align: {$sl['textAlignment']}; }\n";
+			$css .= "$card_sel { text-align: {$sl['textAlignment']}; }\n";
 		}
 		if ( ! empty( $sl['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-post__wrap { background-color: {$sl['backgroundColor']}; }\n";
+			$css .= "$card_sel { background-color: {$sl['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $sl['padding'] ) ) {
-			$css .= self::css_responsive_spacing( 'padding', $sl['padding'], "$selector .wcb-post__wrap" );
+			$css .= self::css_responsive_spacing( 'padding', $sl['padding'], $card_sel );
 		}
 
 		// --- Border ---
 		if ( ! empty( $sb ) ) {
-			$css .= self::css_border( $sb, "$selector .wcb-post__wrap" );
+			$css .= self::css_border( $sb, $card_sel );
 		}
 
-		// --- Box shadow (Normal/Hover nesting) ---
+		// --- Box shadow ---
 		if ( ! empty( $sbs['Normal']['color'] ) ) {
-			$css .= self::css_box_shadow( $sbs['Normal'], "$selector .wcb-post__wrap" );
+			$css .= self::css_box_shadow( $sbs['Normal'], $card_sel );
 		}
 		if ( ! empty( $sbs['Hover']['color'] ) ) {
-			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$selector .wcb-post__wrap" );
+			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$card_sel:hover" );
 		}
 
 		$css .= self::css_advance( $attrs, $selector );
@@ -913,138 +1345,326 @@ class WCB_Block_Helper {
 	}
 
 	public static function process_cta_block( $attrs, $selector, $unique_id ) {
-		$css = '';
+		$css  = '';
+		$gl  = $attrs['general_layout'] ?? array();
 		$st  = $attrs['style_title'] ?? array();
 		$sd  = $attrs['style_description'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$inner_sel   = "$selector .wcb-cta__inner";
+		$content_sel = "$selector .wcb-cta__content";
+		$title_sel   = "$selector .wcb-cta__title";
+		$desc_sel    = "$selector .wcb-cta__description";
+
+		// --- Layout: text alignment ---
+		if ( ! empty( $gl['textAlignment'] ) ) {
+			$css .= self::css_responsive( 'text-align', $gl['textAlignment'], $inner_sel );
+		}
+
+		// --- Layout: flex direction ---
+		if ( ! empty( $gl['flexDirection'] ) ) {
+			$css .= self::css_responsive( 'flex-direction', $gl['flexDirection'], $inner_sel );
+		}
+
+		// --- Layout: content width ---
+		if ( ! empty( $gl['contentWidth'] ) ) {
+			$css .= self::css_responsive( 'width', $gl['contentWidth'], $content_sel );
+		}
+
+		// --- Gap ---
+		if ( ! empty( $sdm['gap'] ) ) {
+			$css .= self::css_responsive( 'gap', $sdm['gap'], $inner_sel );
+		}
+
+		// --- Padding & Margin ---
+		if ( ! empty( $sdm ) ) {
+			$css .= self::css_dimension( $sdm, $inner_sel );
+		}
+
+		// --- Title ---
 		if ( ! empty( $st['typography'] ) ) {
-			$css .= self::css_typography( $st['typography'], "$selector .wcb-cta__title" );
+			$css .= self::css_typography( $st['typography'], $title_sel );
 		}
 		if ( ! empty( $st['textColor'] ) ) {
-			$css .= "$selector .wcb-cta__title { color: {$st['textColor']}; }\n";
+			$css .= "$title_sel { color: {$st['textColor']}; }\n";
 		}
+		if ( ! empty( $st['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], $title_sel );
+		}
+
+		// --- Description ---
 		if ( ! empty( $sd['typography'] ) ) {
-			$css .= self::css_typography( $sd['typography'], "$selector .wcb-cta__description" );
+			$css .= self::css_typography( $sd['typography'], $desc_sel );
 		}
 		if ( ! empty( $sd['textColor'] ) ) {
-			$css .= "$selector .wcb-cta__description { color: {$sd['textColor']}; }\n";
+			$css .= "$desc_sel { color: {$sd['textColor']}; }\n";
 		}
-		if ( ! empty( $sdm ) ) {
-			$css .= self::css_dimension( $sdm, $selector );
+		if ( ! empty( $sd['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sd['marginBottom'], $desc_sel );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
 
 	public static function process_team_block( $attrs, $selector, $unique_id ) {
 		$css = '';
+		$gl  = $attrs['general_layout'] ?? array();
+		$gi  = $attrs['general_image'] ?? array();
 		$st  = $attrs['style_title'] ?? array();
 		$sd  = $attrs['style_desination'] ?? array();
 		$sds = $attrs['style_description'] ?? array();
 		$ss  = $attrs['style_socialIcons'] ?? array();
 		$si  = $attrs['style_image'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$heading_sel     = "$selector .wcb-team__heading";
+		$designation_sel = "$selector .wcb-team__designation";
+		$desc_sel        = "$selector .wcb-team__description";
+		$social_sel      = "$selector .wcb-team__social-icon";
+		$image_sel       = "$selector .wcb-team__image";
+
+		// --- Text alignment ---
+		if ( ! empty( $gl['textAlignment'] ) ) {
+			$css .= self::css_responsive( 'text-align', $gl['textAlignment'], $selector );
+		}
+
+		// --- Title ---
 		if ( ! empty( $st['typography'] ) ) {
-			$css .= self::css_typography( $st['typography'], "$selector .wcb-team__heading" );
+			$css .= self::css_typography( $st['typography'], $heading_sel );
 		}
 		if ( ! empty( $st['textColor'] ) ) {
-			$css .= "$selector .wcb-team__heading { color: {$st['textColor']}; }\n";
+			$css .= "$heading_sel { color: {$st['textColor']}; }\n";
 		}
+		if ( ! empty( $st['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], $heading_sel );
+		}
+
+		// --- Designation ---
 		if ( ! empty( $sd['typography'] ) ) {
-			$css .= self::css_typography( $sd['typography'], "$selector .wcb-team__designation" );
+			$css .= self::css_typography( $sd['typography'], $designation_sel );
 		}
 		if ( ! empty( $sd['textColor'] ) ) {
-			$css .= "$selector .wcb-team__designation { color: {$sd['textColor']}; }\n";
+			$css .= "$designation_sel { color: {$sd['textColor']}; }\n";
 		}
+		if ( ! empty( $sd['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sd['marginBottom'], $designation_sel );
+		}
+
+		// --- Description ---
 		if ( ! empty( $sds['typography'] ) ) {
-			$css .= self::css_typography( $sds['typography'], "$selector .wcb-team__description" );
+			$css .= self::css_typography( $sds['typography'], $desc_sel );
 		}
 		if ( ! empty( $sds['textColor'] ) ) {
-			$css .= "$selector .wcb-team__description { color: {$sds['textColor']}; }\n";
+			$css .= "$desc_sel { color: {$sds['textColor']}; }\n";
 		}
+		if ( ! empty( $sds['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sds['marginBottom'], $desc_sel );
+		}
+
+		// --- Social Icons ---
 		if ( ! empty( $ss['color'] ) ) {
-			$css .= "$selector .wcb-team__social-icon { color: {$ss['color']}; }\n";
+			$css .= "$social_sel { color: {$ss['color']}; }\n";
 		}
+		if ( ! empty( $ss['hoverColor'] ) ) {
+			$css .= "$social_sel:hover { color: {$ss['hoverColor']}; }\n";
+		}
+		if ( ! empty( $ss['iconSize'] ) ) {
+			$css .= self::css_responsive( 'font-size', $ss['iconSize'], $social_sel );
+		}
+		if ( ! empty( $ss['iconSpacing'] ) ) {
+			$css .= self::css_responsive( 'gap', $ss['iconSpacing'], "$selector .wcb-team__socials" );
+		}
+
+		// --- Image ---
 		if ( ! empty( $si['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $si['marginBottom'], "$selector .wcb-team__image" );
+			$css .= self::css_responsive( 'margin-bottom', $si['marginBottom'], $image_sel );
 		}
+		if ( ! empty( $si['border'] ) ) {
+			$css .= self::css_border( $si['border'], "$image_sel img" );
+		}
+		if ( ! empty( $si['imageSize'] ) ) {
+			$css .= self::css_responsive( 'width', $si['imageSize'], "$image_sel img" );
+		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
 
 	public static function process_icon_box_block( $attrs, $selector, $unique_id ) {
 		$css = '';
+		$gl  = $attrs['general_layout'] ?? array();
+		$gi  = $attrs['general_icon'] ?? array();
 		$st  = $attrs['style_title'] ?? array();
 		$sd  = $attrs['style_desination'] ?? array();
 		$sds = $attrs['style_description'] ?? array();
 		$ss  = $attrs['style_separator'] ?? array();
 		$si  = $attrs['style_Icon'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$heading_sel     = "$selector .wcb-icon-box__heading";
+		$designation_sel = "$selector .wcb-icon-box__designation";
+		$desc_sel        = "$selector .wcb-icon-box__description";
+		$separator_sel   = "$selector .wcb-icon-box__separator";
+		$icon_sel        = "$selector .wcb-icon-box__icon";
+
+		// --- Text alignment ---
+		if ( ! empty( $gl['textAlignment'] ) ) {
+			$css .= self::css_responsive( 'text-align', $gl['textAlignment'], $selector );
+		}
+
+		// --- Title ---
 		if ( ! empty( $st['typography'] ) ) {
-			$css .= self::css_typography( $st['typography'], "$selector .wcb-icon-box__heading" );
+			$css .= self::css_typography( $st['typography'], $heading_sel );
 		}
 		if ( ! empty( $st['textColor'] ) ) {
-			$css .= "$selector .wcb-icon-box__heading { color: {$st['textColor']}; }\n";
+			$css .= "$heading_sel { color: {$st['textColor']}; }\n";
 		}
+		if ( ! empty( $st['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], $heading_sel );
+		}
+
+		// --- Designation ---
 		if ( ! empty( $sd['typography'] ) ) {
-			$css .= self::css_typography( $sd['typography'], "$selector .wcb-icon-box__designation" );
+			$css .= self::css_typography( $sd['typography'], $designation_sel );
 		}
 		if ( ! empty( $sd['textColor'] ) ) {
-			$css .= "$selector .wcb-icon-box__designation { color: {$sd['textColor']}; }\n";
+			$css .= "$designation_sel { color: {$sd['textColor']}; }\n";
 		}
+		if ( ! empty( $sd['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sd['marginBottom'], $designation_sel );
+		}
+
+		// --- Description ---
 		if ( ! empty( $sds['typography'] ) ) {
-			$css .= self::css_typography( $sds['typography'], "$selector .wcb-icon-box__description" );
+			$css .= self::css_typography( $sds['typography'], $desc_sel );
 		}
 		if ( ! empty( $sds['textColor'] ) ) {
-			$css .= "$selector .wcb-icon-box__description { color: {$sds['textColor']}; }\n";
+			$css .= "$desc_sel { color: {$sds['textColor']}; }\n";
 		}
+		if ( ! empty( $sds['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sds['marginBottom'], $desc_sel );
+		}
+
+		// --- Icon ---
 		if ( ! empty( $si['color'] ) ) {
-			$css .= "$selector .wcb-icon-box__icon { color: {$si['color']}; }\n";
+			$css .= "$icon_sel { color: {$si['color']}; }\n";
+		}
+		if ( ! empty( $si['hoverColor'] ) ) {
+			$css .= "$icon_sel:hover { color: {$si['hoverColor']}; }\n";
 		}
 		if ( ! empty( $si['size'] ) ) {
-			$css .= self::css_responsive( 'font-size', $si['size'], "$selector .wcb-icon-box__icon" );
+			$css .= self::css_responsive( 'font-size', $si['size'], "$selector .wcb-icon-full" );
+		}
+		if ( ! empty( $si['border'] ) ) {
+			$css .= self::css_border( $si['border'], $icon_sel );
+		}
+		if ( ! empty( $si['dimensions'] ) ) {
+			$css .= self::css_dimension( $si['dimensions'], "$selector .wcb-icon-box__icon-wrap" );
+		}
+
+		// --- Separator ---
+		if ( ! empty( $ss['width'] ) ) {
+			$css .= self::css_responsive( 'width', $ss['width'], $separator_sel );
 		}
 		if ( ! empty( $ss['color'] ) ) {
-			$css .= "$selector .wcb-icon-box__separator { border-color: {$ss['color']}; }\n";
+			$css .= "$separator_sel { border-color: {$ss['color']}; }\n";
 		}
+		if ( ! empty( $ss['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $ss['marginBottom'], $separator_sel );
+		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
 
 	public static function process_icon_block( $attrs, $selector, $unique_id ) {
-		$css = '';
-		$si  = $attrs['style_icon'] ?? array();
-		$sbg = $attrs['style_background'] ?? array();
-		$sbd = $attrs['style_border'] ?? array();
-		$sbs = $attrs['style_boxshadow'] ?? array();
-		$sd  = $attrs['style_dimension'] ?? array();
-		if ( ! empty( $si['color'] ) ) {
-			$css .= "$selector .wcb-icon__icon { color: {$si['color']}; }\n";
+		$css  = '';
+		$gi   = $attrs['general_icon'] ?? array();
+		$si   = $attrs['style_icon'] ?? array();
+		$sbg  = $attrs['style_background'] ?? array();
+		$sbd  = $attrs['style_border'] ?? array();
+		$sbs  = $attrs['style_boxshadow'] ?? array();
+		$sd   = $attrs['style_dimension'] ?? array();
+
+		$content_sel = "$selector .wcb-icon__content";
+		$icon_sel    = "$content_sel .wcb-icon-full";
+
+		// --- Alignment ---
+		if ( ! empty( $gi['alignment'] ) ) {
+			$css .= self::css_responsive( 'text-align', $gi['alignment'], $selector );
 		}
+
+		// --- Icon color & hover ---
+		if ( ! empty( $si['color'] ) ) {
+			$css .= "$icon_sel { color: {$si['color']}; }\n";
+		}
+		if ( ! empty( $si['hoverColor'] ) ) {
+			$css .= "$content_sel:hover $icon_sel { color: {$si['hoverColor']}; }\n";
+		}
+
+		// --- Icon size ---
+		if ( ! empty( $gi['size'] ) ) {
+			$css .= self::css_responsive( 'width', $gi['size'], "$selector .wcb-icon-full" );
+			$css .= self::css_responsive( 'font-size', $gi['size'], "$selector .wcb-icon-full" );
+		}
+		// Fallback: style_icon size as font-size.
 		if ( ! empty( $si['size'] ) ) {
 			$css .= self::css_responsive( 'font-size', $si['size'], "$selector .wcb-icon__icon" );
 		}
-		if ( ! empty( $sbg ) ) {
-			$css .= self::css_background( $sbg, $selector );
+
+		// --- Background (on content) ---
+		if ( ! empty( $sbg['normal'] ) && is_array( $sbg['normal'] ) ) {
+			$css .= self::css_background( $sbg['normal'], $content_sel );
 		}
+		if ( ! empty( $sbg['hover'] ) && is_array( $sbg['hover'] ) ) {
+			$css .= self::css_background( $sbg['hover'], "$content_sel:hover" );
+		}
+		// Fallback.
+		if ( empty( $sbg['normal'] ) && ! empty( $sbg ) ) {
+			$css .= self::css_background( $sbg, $content_sel );
+		}
+
+		// --- Border (on content) ---
 		if ( ! empty( $sbd ) ) {
-			$css .= self::css_border( $sbd, $selector );
+			$css .= self::css_border_full( $sbd, $content_sel );
 		}
+
+		// --- Box shadow (on content) ---
 		if ( ! empty( $sbs['Normal']['color'] ) ) {
-			$css .= self::css_box_shadow( $sbs['Normal'], $selector );
+			$css .= self::css_box_shadow( $sbs['Normal'], $content_sel );
 		}
 		if ( ! empty( $sbs['Hover']['color'] ) ) {
-			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$selector:hover" );
+			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$content_sel:hover" );
 		}
-		if ( ! empty( $sd ) ) {
-			$css .= self::css_dimension( $sd, $selector );
+		// Fallback.
+		if ( empty( $sbs['Normal'] ) && ! empty( $sbs['color'] ) ) {
+			$css .= self::css_box_shadow( $sbs, $content_sel );
 		}
+
+		// --- Dimensions (margin on wrap, padding on content) ---
+		if ( ! empty( $sd['margin'] ) ) {
+			$css .= self::css_responsive_spacing( 'margin', $sd['margin'], $selector );
+		}
+		if ( ! empty( $sd['padding'] ) ) {
+			$css .= self::css_responsive_spacing( 'padding', $sd['padding'], $content_sel );
+		}
+
+		// --- Cursor pointer if link enabled ---
+		if ( ! empty( $gi['enableLink'] ) ) {
+			$css .= "$content_sel { cursor: pointer; }\n";
+		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -1089,21 +1709,33 @@ class WCB_Block_Helper {
 		$so  = $attrs['style_overlay'] ?? array();
 		$sc  = $attrs['style_caption'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$overlay_sel = "$selector .wcb-image__overlay-bg";
+		$caption_sel = "$selector figcaption.wp-element-caption";
+
+		// --- Image border ---
 		if ( ! empty( $si['border'] ) ) {
 			$css .= self::css_border( $si['border'], "$selector img" );
 		}
+
+		// --- Overlay ---
 		if ( ! empty( $so['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-image__overlay { background-color: {$so['backgroundColor']}; }\n";
+			$css .= "$overlay_sel { background-color: {$so['backgroundColor']}; }\n";
 		}
+
+		// --- Caption ---
 		if ( ! empty( $sc['typography'] ) ) {
-			$css .= self::css_typography( $sc['typography'], "$selector figcaption" );
+			$css .= self::css_typography( $sc['typography'], $caption_sel );
 		}
 		if ( ! empty( $sc['textColor'] ) ) {
-			$css .= "$selector figcaption { color: {$sc['textColor']}; }\n";
+			$css .= "$caption_sel { color: {$sc['textColor']}; }\n";
 		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -1117,113 +1749,199 @@ class WCB_Block_Helper {
 		$sbs = $attrs['style_boxshadow'] ?? array();
 		$sd  = $attrs['style_dimension'] ?? array();
 		$sdm = $attrs['style_dimensions'] ?? array();
+
+		$box_sel    = "$selector .wcb-countdown__box";
+		$number_sel = "$selector .wcb-countdown__number";
+		$label_sel  = "$selector .wcb-countdown__label";
+
+		// --- Number ---
 		if ( ! empty( $sn['typography'] ) ) {
-			$css .= self::css_typography( $sn['typography'], "$selector .wcb-countdown__number" );
+			$css .= self::css_typography( $sn['typography'], $number_sel );
 		}
 		if ( ! empty( $sn['textColor'] ) ) {
-			$css .= "$selector .wcb-countdown__number { color: {$sn['textColor']}; }\n";
+			$css .= "$number_sel { color: {$sn['textColor']}; }\n";
 		}
+
+		// --- Label ---
 		if ( ! empty( $sl['typography'] ) ) {
-			$css .= self::css_typography( $sl['typography'], "$selector .wcb-countdown__label" );
+			$css .= self::css_typography( $sl['typography'], $label_sel );
 		}
 		if ( ! empty( $sl['textColor'] ) ) {
-			$css .= "$selector .wcb-countdown__label { color: {$sl['textColor']}; }\n";
+			$css .= "$label_sel { color: {$sl['textColor']}; }\n";
 		}
+
+		// --- Box: background, border, box shadow, dimension ---
 		if ( ! empty( $sbg ) ) {
-			$css .= self::css_background( $sbg, "$selector .wcb-countdown__item" );
+			$css .= self::css_background( $sbg, $box_sel );
 		}
 		if ( ! empty( $sbd ) ) {
-			$css .= self::css_border( $sbd, "$selector .wcb-countdown__item" );
+			$css .= self::css_border( $sbd, $box_sel );
 		}
-		if ( ! empty( $sbs ) ) {
-			$css .= self::css_box_shadow( $sbs, "$selector .wcb-countdown__item" );
+		if ( ! empty( $sbs['Normal']['color'] ) ) {
+			$css .= self::css_box_shadow( $sbs['Normal'], $box_sel );
+		}
+		if ( ! empty( $sbs['Hover']['color'] ) ) {
+			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$box_sel:hover" );
+		}
+		// Fallback.
+		if ( empty( $sbs['Normal'] ) && ! empty( $sbs['color'] ) ) {
+			$css .= self::css_box_shadow( $sbs, $box_sel );
 		}
 		if ( ! empty( $sd ) ) {
-			$css .= self::css_dimension( $sd, "$selector .wcb-countdown__item" );
+			$css .= self::css_dimension( $sd, $box_sel );
 		}
+
+		// --- Wrap dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
 
 	public static function process_counter_block( $attrs, $selector, $unique_id ) {
 		$css = '';
+		$gl  = $attrs['general_layout'] ?? array();
 		$st  = $attrs['style_title'] ?? array();
 		$sd  = $attrs['style_desination'] ?? array();
 		$sds = $attrs['style_description'] ?? array();
 		$si  = $attrs['style_Icon'] ?? array();
 		$sp  = $attrs['style_progress'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$number_sel      = "$selector .wcb-icon-box__number";
+		$desc_sel        = "$selector .wcb-icon-box__description";
+		$icon_sel        = "$selector .wcb-icon-box__icon";
+		$progress_bar_sel = "$selector .wcb-icon-box__progress-bar-wrap";
+		$progress_circle_sel = "$selector .wcb-icon-box__progress-circle-wrap";
+
+		// --- Text alignment ---
+		if ( ! empty( $gl['textAlignment'] ) ) {
+			$css .= self::css_responsive( 'text-align', $gl['textAlignment'], $selector );
+		}
+
+		// --- Number (title + designation) ---
 		if ( ! empty( $st['typography'] ) ) {
-			$css .= self::css_typography( $st['typography'], "$selector .wcb-icon-box__heading" );
+			$css .= self::css_typography( $st['typography'], $number_sel );
 		}
 		if ( ! empty( $st['textColor'] ) ) {
-			$css .= "$selector .wcb-icon-box__heading { color: {$st['textColor']}; }\n";
+			$css .= "$number_sel { color: {$st['textColor']}; }\n";
+		}
+		if ( ! empty( $st['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $st['marginBottom'], $number_sel );
 		}
 		if ( ! empty( $sd['typography'] ) ) {
-			$css .= self::css_typography( $sd['typography'], "$selector .wcb-icon-box__designation" );
+			$css .= self::css_typography( $sd['typography'], $number_sel );
 		}
-		if ( ! empty( $sd['textColor'] ) ) {
-			$css .= "$selector .wcb-icon-box__designation { color: {$sd['textColor']}; }\n";
-		}
+
+		// --- Description ---
 		if ( ! empty( $sds['typography'] ) ) {
-			$css .= self::css_typography( $sds['typography'], "$selector .wcb-icon-box__description" );
+			$css .= self::css_typography( $sds['typography'], $desc_sel );
 		}
 		if ( ! empty( $sds['textColor'] ) ) {
-			$css .= "$selector .wcb-icon-box__description { color: {$sds['textColor']}; }\n";
+			$css .= "$desc_sel { color: {$sds['textColor']}; }\n";
 		}
+		if ( ! empty( $sds['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sds['marginBottom'], $desc_sel );
+		}
+
+		// --- Icon ---
 		if ( ! empty( $si['color'] ) ) {
-			$css .= "$selector .wcb-icon-box__icon { color: {$si['color']}; }\n";
+			$css .= "$icon_sel { color: {$si['color']}; }\n";
 		}
+		if ( ! empty( $si['hoverColor'] ) ) {
+			$css .= "$icon_sel:hover { color: {$si['hoverColor']}; }\n";
+		}
+		if ( ! empty( $si['iconSize'] ) ) {
+			$css .= self::css_responsive( 'font-size', $si['iconSize'], $icon_sel );
+		}
+		if ( ! empty( $si['border'] ) ) {
+			$css .= self::css_border( $si['border'], $icon_sel );
+		}
+		if ( ! empty( $si['dimensions'] ) ) {
+			$css .= self::css_dimension( $si['dimensions'], "$selector .wcb-icon-box__icon-wrap" );
+		}
+
+		// --- Progress ---
 		if ( ! empty( $sp['color'] ) ) {
-			$css .= "$selector .wcb-icon-box__progress-bar { background-color: {$sp['color']}; }\n";
+			$css .= "$progress_bar_sel, $progress_circle_sel { background-color: {$sp['color']}; }\n";
 		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
 
 	public static function process_faq_block( $attrs, $selector, $unique_id ) {
 		$css = '';
+		$gg  = $attrs['general_general'] ?? array();
 		$sc  = $attrs['style_container'] ?? array();
 		$sq  = $attrs['style_question'] ?? array();
 		$si  = $attrs['style_icon'] ?? array();
 		$sa  = $attrs['style_answer'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$faq_wrap      = "$selector .wcb-faq-child__wrap";
+		$faq_question  = "$selector .wcb-faq-child__question";
+		$faq_q_text    = "$selector .wcb-faq-child__question-text";
+		$faq_answer    = "$selector .wcb-faq-child__answer";
+		$faq_icon      = "$selector .wcb-faq-child__icon";
+		$inner_sel     = "$selector .wcb-faq__inner";
+
+		// --- Container (background, border) on .wcb-faq-child__wrap ---
 		if ( ! empty( $sc['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-faq__item { background-color: {$sc['backgroundColor']}; }\n";
+			$css .= "$faq_wrap { background-color: {$sc['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $sc['border'] ) ) {
-			$css .= self::css_border( $sc['border'], "$selector .wcb-faq__item" );
+			$css .= self::css_border( $sc['border'], $faq_wrap );
 		}
+		if ( ! empty( $sc['colunmGap'] ) ) {
+			$css .= self::css_responsive( 'column-gap', $sc['colunmGap'], $inner_sel );
+		}
+		if ( ! empty( $sc['rowGap'] ) ) {
+			$css .= self::css_responsive( 'row-gap', $sc['rowGap'], $inner_sel );
+		}
+
+		// --- Question ---
 		if ( ! empty( $sq['typography'] ) ) {
-			$css .= self::css_typography( $sq['typography'], "$selector .wcb-faq-child__question-text" );
+			$css .= self::css_typography( $sq['typography'], $faq_q_text );
 		}
 		if ( ! empty( $sq['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-faq-child__question { background-color: {$sq['backgroundColor']}; }\n";
+			$css .= "$faq_question { background-color: {$sq['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $sq['textColor'] ) ) {
-			$css .= "$selector .wcb-faq-child__question-text { color: {$sq['textColor']}; }\n";
+			$css .= "$faq_q_text { color: {$sq['textColor']}; }\n";
 		}
+
+		// --- Icon ---
 		if ( ! empty( $si['color'] ) ) {
-			$css .= "$selector .wcb-faq-child__icon { color: {$si['color']}; }\n";
+			$css .= "$faq_icon { color: {$si['color']}; }\n";
 		}
+		if ( ! empty( $si['size'] ) ) {
+			$css .= self::css_responsive( 'font-size', $si['size'], $faq_icon );
+		}
+
+		// --- Answer ---
 		if ( ! empty( $sa['typography'] ) ) {
-			$css .= self::css_typography( $sa['typography'], "$selector .wcb-faq-child__answer" );
+			$css .= self::css_typography( $sa['typography'], $faq_answer );
 		}
 		if ( ! empty( $sa['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-faq-child__answer { background-color: {$sa['backgroundColor']}; }\n";
+			$css .= "$faq_answer { background-color: {$sa['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $sa['textColor'] ) ) {
-			$css .= "$selector .wcb-faq-child__answer { color: {$sa['textColor']}; }\n";
+			$css .= "$faq_answer { color: {$sa['textColor']}; }\n";
 		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -1234,41 +1952,69 @@ class WCB_Block_Helper {
 
 	public static function process_tabs_block( $attrs, $selector, $unique_id ) {
 		$css = '';
+		$gg  = $attrs['general_general'] ?? array();
 		$sc  = $attrs['style_container'] ?? array();
 		$st  = $attrs['style_title'] ?? array();
 		$sb  = $attrs['style_body'] ?? array();
 		$si  = $attrs['style_icon'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$title_sel         = "$selector .wcb-tabs__title";
+		$title_active_sel  = "$selector .wcb-tabs__title-selected";
+		$body_sel          = "$selector .wcb-tab-child__wrap";
+		$icon_sel          = "$selector .wcb-tabs__icon";
+		$icon_active_sel   = "$selector .wcb-tabs__icon-selected";
+		$inner_sel         = "$selector .wcb-tabs__contents";
+
+		// --- Container ---
 		if ( ! empty( $sc['backgroundColor'] ) ) {
 			$css .= "$selector { background-color: {$sc['backgroundColor']}; }\n";
 		}
+		if ( ! empty( $sc['colunmGap'] ) ) {
+			$css .= self::css_responsive( 'column-gap', $sc['colunmGap'], $inner_sel );
+		}
+		if ( ! empty( $sc['rowGap'] ) ) {
+			$css .= self::css_responsive( 'row-gap', $sc['rowGap'], $inner_sel );
+		}
+
+		// --- Title ---
 		if ( ! empty( $st['typography'] ) ) {
-			$css .= self::css_typography( $st['typography'], "$selector .wcb-tabs__title" );
+			$css .= self::css_typography( $st['typography'], $title_sel );
 		}
 		if ( ! empty( $st['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-tabs__title { background-color: {$st['backgroundColor']}; }\n";
+			$css .= "$title_sel { background-color: {$st['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $st['textColor'] ) ) {
-			$css .= "$selector .wcb-tabs__title { color: {$st['textColor']}; }\n";
+			$css .= "$title_sel { color: {$st['textColor']}; }\n";
 		}
 		if ( ! empty( $st['activeBackgroundColor'] ) ) {
-			$css .= "$selector .wcb-tabs__title--active { background-color: {$st['activeBackgroundColor']}; }\n";
+			$css .= "$title_active_sel { background-color: {$st['activeBackgroundColor']}; }\n";
 		}
 		if ( ! empty( $st['activeTextColor'] ) ) {
-			$css .= "$selector .wcb-tabs__title--active { color: {$st['activeTextColor']}; }\n";
+			$css .= "$title_active_sel { color: {$st['activeTextColor']}; }\n";
 		}
+
+		// --- Body ---
 		if ( ! empty( $sb['backgroundColor'] ) ) {
-			$css .= "$selector .wcb-tabs__body { background-color: {$sb['backgroundColor']}; }\n";
+			$css .= "$body_sel { background-color: {$sb['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $sb['border'] ) ) {
-			$css .= self::css_border( $sb['border'], "$selector .wcb-tabs__body" );
+			$css .= self::css_border( $sb['border'], $body_sel );
 		}
+
+		// --- Icon ---
 		if ( ! empty( $si['color'] ) ) {
-			$css .= "$selector .wcb-tabs__icon { color: {$si['color']}; }\n";
+			$css .= "$icon_sel { color: {$si['color']}; }\n";
 		}
+		if ( ! empty( $si['activeColor'] ) ) {
+			$css .= "$icon_active_sel { color: {$si['activeColor']}; }\n";
+		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -1279,6 +2025,7 @@ class WCB_Block_Helper {
 
 	public static function process_testimonials_block( $attrs, $selector, $unique_id ) {
 		$css = '';
+		$gg  = $attrs['general_general'] ?? array();
 		$sn  = $attrs['style_name'] ?? array();
 		$sc  = $attrs['style_content'] ?? array();
 		$sco = $attrs['style_company'] ?? array();
@@ -1286,89 +2033,136 @@ class WCB_Block_Helper {
 		$sr  = $attrs['style_rating'] ?? array();
 		$sab = $attrs['style_backgroundAndBorder'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
+
+		$item_sel    = "$selector .wcb-testimonials__item";
+		$name_sel    = "$selector .wcb-testimonials__item-name";
+		$content_sel = "$selector .wcb-testimonials__item-content";
+		$company_sel = "$selector .wcb-testimonials__item-company";
+		$image_sel   = "$selector .wcb-testimonials__item-image";
+		$rating_sel  = "$selector .wcb-testimonials__item-rating";
+
+		// --- Text alignment ---
+		if ( ! empty( $gg['textAlignment'] ) ) {
+			$css .= self::css_responsive( 'text-align', $gg['textAlignment'], $item_sel );
+		}
+
+		// --- Name ---
 		if ( ! empty( $sn['typography'] ) ) {
-			$css .= self::css_typography( $sn['typography'], "$selector .wcb-testimonials__name" );
+			$css .= self::css_typography( $sn['typography'], $name_sel );
 		}
 		if ( ! empty( $sn['textColor'] ) ) {
-			$css .= "$selector .wcb-testimonials__name { color: {$sn['textColor']}; }\n";
+			$css .= "$name_sel { color: {$sn['textColor']}; }\n";
 		}
 		if ( ! empty( $sn['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sn['marginBottom'], "$selector .wcb-testimonials__name" );
+			$css .= self::css_responsive( 'margin-bottom', $sn['marginBottom'], $name_sel );
 		}
+
+		// --- Content ---
 		if ( ! empty( $sc['typography'] ) ) {
-			$css .= self::css_typography( $sc['typography'], "$selector .wcb-testimonials__content" );
+			$css .= self::css_typography( $sc['typography'], $content_sel );
 		}
 		if ( ! empty( $sc['textColor'] ) ) {
-			$css .= "$selector .wcb-testimonials__content { color: {$sc['textColor']}; }\n";
+			$css .= "$content_sel { color: {$sc['textColor']}; }\n";
 		}
 		if ( ! empty( $sc['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sc['marginBottom'], "$selector .wcb-testimonials__content" );
+			$css .= self::css_responsive( 'margin-bottom', $sc['marginBottom'], $content_sel );
 		}
+
+		// --- Company ---
 		if ( ! empty( $sco['typography'] ) ) {
-			$css .= self::css_typography( $sco['typography'], "$selector .wcb-testimonials__company" );
+			$css .= self::css_typography( $sco['typography'], $company_sel );
 		}
 		if ( ! empty( $sco['textColor'] ) ) {
-			$css .= "$selector .wcb-testimonials__company { color: {$sco['textColor']}; }\n";
+			$css .= "$company_sel { color: {$sco['textColor']}; }\n";
 		}
+
+		// --- Image ---
 		if ( ! empty( $si['radius'] ) ) {
-			$css .= self::css_responsive( 'border-radius', $si['radius'], "$selector .wcb-testimonials__image img", 'px' );
+			$css .= self::css_responsive( 'border-radius', $si['radius'], "$image_sel img", 'px' );
 		}
 		if ( ! empty( $si['imageSize'] ) ) {
-			$css .= self::css_responsive( 'width', $si['imageSize'], "$selector .wcb-testimonials__image img" );
+			$css .= self::css_responsive( 'width', $si['imageSize'], "$image_sel img" );
 		}
+
+		// --- Rating ---
 		if ( ! empty( $sr['color'] ) ) {
-			$css .= "$selector .wcb-testimonials__rating { color: {$sr['color']}; }\n";
+			$css .= "$rating_sel { color: {$sr['color']}; }\n";
 		}
 		if ( ! empty( $sr['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sr['marginBottom'], "$selector .wcb-testimonials__rating" );
+			$css .= self::css_responsive( 'margin-bottom', $sr['marginBottom'], $rating_sel );
 		}
+
+		// --- Background & Border ---
 		if ( ! empty( $sab['background'] ) ) {
-			$css .= self::css_background( $sab['background'], "$selector .wcb-testimonials__item" );
+			$css .= self::css_background( $sab['background'], $item_sel );
 		}
 		if ( ! empty( $sab['border'] ) ) {
-			$css .= self::css_border( $sab['border'], "$selector .wcb-testimonials__item" );
+			$css .= self::css_border( $sab['border'], $item_sel );
 		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
 
 	public static function process_slider_block( $attrs, $selector, $unique_id ) {
 		$css = '';
-		$sn  = $attrs['style_name'] ?? array();
-		$sc  = $attrs['style_content'] ?? array();
+		$gg  = $attrs['general_general'] ?? array();
 		$sab = $attrs['style_backgroundAndBorder'] ?? array();
 		$sbs = $attrs['style_boxshadow'] ?? array();
+		$sa  = $attrs['style_arrowAndDots'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
-		if ( ! empty( $sn['typography'] ) ) {
-			$css .= self::css_typography( $sn['typography'], "$selector .wcb-slider-child__name" );
+
+		$wrap_sel   = "$selector.wcb-slider__wrap";
+		$arrow_sel  = "$selector .slick-arrow";
+		$dots_sel   = "$selector .slick-dots";
+		$prev_sel   = "$selector .slick-prev";
+		$next_sel   = "$selector .slick-next";
+
+		// --- Text alignment ---
+		if ( ! empty( $gg['textAlignment'] ) ) {
+			$css .= self::css_responsive( 'text-align', $gg['textAlignment'], $wrap_sel );
 		}
-		if ( ! empty( $sn['textColor'] ) ) {
-			$css .= "$selector .wcb-slider-child__name { color: {$sn['textColor']}; }\n";
-		}
-		if ( ! empty( $sc['typography'] ) ) {
-			$css .= self::css_typography( $sc['typography'], "$selector .wcb-slider-child__content" );
-		}
-		if ( ! empty( $sc['textColor'] ) ) {
-			$css .= "$selector .wcb-slider-child__content { color: {$sc['textColor']}; }\n";
-		}
+
+		// --- Background & Border (on .wcb-slider__wrap) ---
 		if ( ! empty( $sab['background'] ) ) {
-			$css .= self::css_background( $sab['background'], "$selector .wcb-slider-child" );
+			$css .= self::css_background( $sab['background'], $wrap_sel );
 		}
 		if ( ! empty( $sab['border'] ) ) {
-			$css .= self::css_border( $sab['border'], "$selector .wcb-slider-child" );
+			$css .= self::css_border_full( $sab['border'], $wrap_sel );
 		}
+
+		// --- Box shadow ---
 		if ( ! empty( $sbs['Normal']['color'] ) ) {
-			$css .= self::css_box_shadow( $sbs['Normal'], "$selector .wcb-slider-child" );
+			$css .= self::css_box_shadow( $sbs['Normal'], $wrap_sel );
 		}
 		if ( ! empty( $sbs['Hover']['color'] ) ) {
-			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$selector .wcb-slider-child:hover" );
+			$css .= self::css_box_shadow_hover( $sbs['Hover'], "$wrap_sel:hover" );
 		}
+
+		// --- Slick arrows ---
+		if ( ! empty( $sa['border'] ) ) {
+			$css .= self::css_border( $sa['border'], $arrow_sel );
+		}
+		if ( ! empty( $sa['arrowSize'] ) ) {
+			$css .= "$arrow_sel svg { width: {$sa['arrowSize']}; height: {$sa['arrowSize']}; }\n";
+		}
+		if ( ! empty( $sa['color'] ) ) {
+			$css .= "$arrow_sel { color: {$sa['color']}; }\n";
+		}
+		if ( ! empty( $sa['dotsMarginTop'] ) ) {
+			$css .= "$dots_sel { margin-top: {$sa['dotsMarginTop']}; }\n";
+		}
+
+		// --- Dimensions ---
 		if ( ! empty( $sdm ) ) {
 			$css .= self::css_dimension( $sdm, $selector );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -1382,66 +2176,69 @@ class WCB_Block_Helper {
 		$sab = $attrs['style_backgroundAndBorder'] ?? array();
 		$sdm = $attrs['style_dimension'] ?? array();
 
+		$name_sel    = "$selector .wcb-slider-child__name";
+		$content_sel = "$selector .wcb-slider-child__content";
+		$btn_sel     = "$selector .wcb-slider-child__btn-text";
+		$btn_inner   = "$selector .wcb-slider-child__btn-inner";
+		$icon_sel    = "$selector .wcb-top__icon";
+
 		// --- Name ---
 		if ( ! empty( $sn['typography'] ) ) {
-			$css .= self::css_typography( $sn['typography'], "$selector .wcb-slider-child__name" );
+			$css .= self::css_typography( $sn['typography'], $name_sel );
 		}
 		if ( ! empty( $sn['textColor'] ) ) {
-			$css .= "$selector .wcb-slider-child__name { color: {$sn['textColor']}; }\n";
+			$css .= "$name_sel { color: {$sn['textColor']}; }\n";
 		}
 		if ( ! empty( $sn['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sn['marginBottom'], "$selector .wcb-slider-child__name" );
+			$css .= self::css_responsive( 'margin-bottom', $sn['marginBottom'], $name_sel );
 		}
 
 		// --- Content ---
 		if ( ! empty( $sc['typography'] ) ) {
-			$css .= self::css_typography( $sc['typography'], "$selector .wcb-slider-child__content" );
+			$css .= self::css_typography( $sc['typography'], $content_sel );
 		}
 		if ( ! empty( $sc['textColor'] ) ) {
-			$css .= "$selector .wcb-slider-child__content { color: {$sc['textColor']}; }\n";
+			$css .= "$content_sel { color: {$sc['textColor']}; }\n";
 		}
 		if ( ! empty( $sc['marginBottom'] ) ) {
-			$css .= self::css_responsive( 'margin-bottom', $sc['marginBottom'], "$selector .wcb-slider-child__content" );
+			$css .= self::css_responsive( 'margin-bottom', $sc['marginBottom'], $content_sel );
 		}
 
 		// --- Call to action button ---
 		if ( ! empty( $sb['typographyText'] ) ) {
-			$css .= self::css_typography( $sb['typographyText'], "$selector .wcb-slider-child__btn" );
+			$css .= self::css_typography( $sb['typographyText'], $btn_sel );
 		}
 		if ( ! empty( $sb['colorText'] ) ) {
-			$css .= "$selector .wcb-slider-child__btn { color: {$sb['colorText']}; }\n";
+			$css .= "$btn_sel { color: {$sb['colorText']}; }\n";
 		}
 		if ( ! empty( $sb['hoverColorText'] ) ) {
-			$css .= "$selector .wcb-slider-child__btn:hover { color: {$sb['hoverColorText']}; }\n";
+			$css .= "$btn_sel:hover { color: {$sb['hoverColorText']}; }\n";
 		}
 		if ( ! empty( $sb['normalBackground'] ) ) {
-			$css .= self::css_background( $sb['normalBackground'], "$selector .wcb-slider-child__btn" );
+			$css .= self::css_background( $sb['normalBackground'], $btn_inner );
 		}
 		if ( ! empty( $sb['hoverBackground'] ) ) {
-			$css .= self::css_background( $sb['hoverBackground'], "$selector .wcb-slider-child__btn:hover" );
+			$css .= self::css_background( $sb['hoverBackground'], "$btn_inner:hover" );
 		}
 		if ( ! empty( $sb['mainSettings']['color'] ) ) {
-			$css .= self::css_border( array( 'mainSettings' => $sb['mainSettings'], 'radius' => $sb['radius'] ?? array() ), "$selector .wcb-slider-child__btn" );
+			$css .= self::css_border( array( 'mainSettings' => $sb['mainSettings'], 'radius' => $sb['radius'] ?? array() ), $btn_inner );
 		}
 		if ( ! empty( $sb['padding'] ) ) {
-			$css .= self::css_responsive_spacing( 'padding', $sb['padding'], "$selector .wcb-slider-child__btn" );
-		}
-		if ( ! empty( $sb['margin'] ) ) {
-			$css .= self::css_responsive_spacing( 'margin', $sb['margin'], "$selector .wcb-slider-child__btn" );
+			$css .= self::css_responsive_spacing( 'padding', $sb['padding'], $btn_inner );
 		}
 
 		// --- Image / Icon ---
 		if ( ! empty( $si['iconColor'] ) ) {
-			$css .= "$selector .wcb-slider-child__icon { color: {$si['iconColor']}; }\n";
+			$css .= "$icon_sel { color: {$si['iconColor']}; }\n";
 		}
 		if ( ! empty( $si['iconHoverColor'] ) ) {
-			$css .= "$selector .wcb-slider-child__icon:hover { color: {$si['iconHoverColor']}; }\n";
+			$css .= "$icon_sel:hover { color: {$si['iconHoverColor']}; }\n";
 		}
 		if ( ! empty( $si['iconSize'] ) ) {
-			$css .= self::css_responsive( 'font-size', $si['iconSize'], "$selector .wcb-slider-child__icon" );
+			$css .= self::css_responsive( 'font-size', $si['iconSize'], $icon_sel );
 		}
 		if ( ! empty( $si['iconBorder'] ) ) {
-			$css .= self::css_border( $si['iconBorder'], "$selector .wcb-slider-child__icon" );
+			$css .= self::css_border( $si['iconBorder'], $icon_sel );
 		}
 
 		// --- Background / Border ---
@@ -1463,10 +2260,22 @@ class WCB_Block_Helper {
 
 	public static function process_map_block( $attrs, $selector, $unique_id ) {
 		$css = '';
+		$gg  = $attrs['general_general'] ?? array();
 		$sb  = $attrs['style_border'] ?? array();
+
+		// --- Border ---
 		if ( ! empty( $sb ) ) {
-			$css .= self::css_border( $sb, $selector );
+			$css .= self::css_border_full( $sb, $selector );
 		}
+
+		// --- Height ---
+		if ( ! empty( $gg['height'] ) ) {
+			$css .= self::css_responsive( 'height', $gg['height'], "$selector .wcb-map__inner" );
+		}
+
+		// --- Flex ---
+		$css .= "$selector { flex: 1; }\n";
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
@@ -1478,13 +2287,21 @@ class WCB_Block_Helper {
 		$ss  = $attrs['style_submit_button'] ?? array();
 		$sm  = $attrs['style_messages'] ?? array();
 		$sp  = $attrs['style_spacing'] ?? array();
+
+		$input_sel = "$selector [type=\"text\"], $selector [type=\"email\"], $selector [type=\"url\"], $selector [type=\"password\"], $selector [type=\"number\"], $selector [type=\"date\"], $selector select, $selector textarea";
+		$submit_sel     = "$selector .wcb-form__btn-submit";
+		$success_sel    = "$selector .wcb-form__successMessageText";
+		$error_sel      = "$selector .wcb-form__errorMessageText";
+
+		// --- Label ---
 		if ( ! empty( $sl['typography'] ) ) {
 			$css .= self::css_typography( $sl['typography'], "$selector .wcb-form__label" );
 		}
 		if ( ! empty( $sl['textColor'] ) ) {
 			$css .= "$selector .wcb-form__label { color: {$sl['textColor']}; }\n";
 		}
-		$input_sel = "$selector .wcb-form__input, $selector .wcb-form__textarea, $selector .wcb-form__select";
+
+		// --- Input ---
 		if ( ! empty( $si['typography'] ) ) {
 			$css .= self::css_typography( $si['typography'], $input_sel );
 		}
@@ -1497,36 +2314,43 @@ class WCB_Block_Helper {
 		if ( ! empty( $si['textColor'] ) ) {
 			$css .= "$input_sel { color: {$si['textColor']}; }\n";
 		}
+
+		// --- Submit button ---
 		if ( ! empty( $ss['typography'] ) ) {
-			$css .= self::css_typography( $ss['typography'], "$selector .wcb-form__btn-submit" );
+			$css .= self::css_typography( $ss['typography'], $submit_sel );
 		}
 		if ( ! empty( $ss['colorAndBackgroundColor'] ) ) {
 			$cbc = $ss['colorAndBackgroundColor'];
 			if ( ! empty( $cbc['Normal']['color'] ) ) {
-				$css .= "$selector .wcb-form__btn-submit { color: {$cbc['Normal']['color']}; }\n";
+				$css .= "$submit_sel { color: {$cbc['Normal']['color']}; }\n";
 			}
 			if ( ! empty( $cbc['Normal']['backgroundColor'] ) ) {
-				$css .= "$selector .wcb-form__btn-submit { background-color: {$cbc['Normal']['backgroundColor']}; }\n";
+				$css .= "$submit_sel { background-color: {$cbc['Normal']['backgroundColor']}; }\n";
 			}
 			if ( ! empty( $cbc['Hover']['color'] ) ) {
-				$css .= "$selector .wcb-form__btn-submit:hover { color: {$cbc['Hover']['color']}; }\n";
+				$css .= "$submit_sel:hover { color: {$cbc['Hover']['color']}; }\n";
 			}
 			if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
-				$css .= "$selector .wcb-form__btn-submit:hover { background-color: {$cbc['Hover']['backgroundColor']}; }\n";
+				$css .= "$submit_sel:hover { background-color: {$cbc['Hover']['backgroundColor']}; }\n";
 			}
 		}
 		if ( ! empty( $ss['border'] ) ) {
-			$css .= self::css_border( $ss['border'], "$selector .wcb-form__btn-submit" );
+			$css .= self::css_border( $ss['border'], $submit_sel );
 		}
+
+		// --- Messages ---
 		if ( ! empty( $sm['successColor'] ) ) {
-			$css .= "$selector .wcb-form__message--success { color: {$sm['successColor']}; }\n";
+			$css .= "$success_sel { color: {$sm['successColor']}; }\n";
 		}
 		if ( ! empty( $sm['errorColor'] ) ) {
-			$css .= "$selector .wcb-form__message--error { color: {$sm['errorColor']}; }\n";
+			$css .= "$error_sel { color: {$sm['errorColor']}; }\n";
 		}
+
+		// --- Field spacing ---
 		if ( ! empty( $sp['fieldSpacing'] ) ) {
 			$css .= self::css_responsive( 'margin-bottom', $sp['fieldSpacing'], "$selector .wcb-form__field" );
 		}
+
 		$css .= self::css_advance( $attrs, $selector );
 		return $css;
 	}
