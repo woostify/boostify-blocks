@@ -20,19 +20,20 @@ const MyIconFull: FC<Props> = ({
 			return <>{renderIfNone}</>;
 		}
 		if (icon.type === "icon" && icon.iconName) {
-			return <MyIcon className={`${classes}`} icon={icon.iconName} />;
+			return <MyIcon className={`${classes}`} icon={icon.iconName} {...props} />;
 		}
 		if (icon.type === "svg") {
 			return (
 				<div
 					className={`${classes} is-svg wcb-icon-full--svg`}
 					dangerouslySetInnerHTML={{ __html: icon.svgCode }}
+					{...props}
 				></div>
 			);
 		}
 		if (icon.type === "image" && icon.imageData?.mediaId) {
 			return (
-				<div className={`${classes} is-image wcb-icon-full--image`}>
+				<div className={`${classes} is-image wcb-icon-full--image`} {...props}>
 					<img src={icon.imageData.mediaUrl} alt="" />
 				</div>
 			);

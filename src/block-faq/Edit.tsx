@@ -121,6 +121,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										general_general: {
 											...general_general,
 											layout: "grid",
+											collapseOtherItems: false,
 										},
 										style_container: WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO,
 										style_answer: WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
@@ -133,6 +134,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 										general_general: {
 											...general_general,
 											layout: "grid",
+											collapseOtherItems: false,
 										},
 										style_container: WCB_FAQ_PANEL_STYLE_CONTAINER_DEMO_SOLID,
 										style_answer: WCB_FAQ_PANEL_STYLE_ANSWER_DEMO,
