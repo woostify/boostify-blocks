@@ -34,9 +34,14 @@ import WcbButtonPanel_StyleBoxshadow from "./WcbButtonPanel_StyleBoxshadow";
 import { WcbAttrsForSave } from "./Save";
 import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
-import '../../public/js/countdown/boostify-blocks-countdown.js';
 
-declare const WCBCountdown: any;
+// Mirrors the calculation in public/js/countdown/boostify-blocks-countdown-view.js
+// so the editor preview matches what visitors see on the frontend.
+function getEvergreenEndDate(days: number, hours: number, minutes: number) {
+	const now = new Date();
+	const newDate = new Date(now.getTime() + (days * 24 * 60 + hours * 60 + minutes) * 60 * 1000);
+	return newDate.toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
 
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	if (props.attributes.cover) {
@@ -80,6 +85,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	} = attributes;
 	//  COMMON HOOKS
 	const ref = useRef<HTMLDivElement>(null);
+	const countdownContentRef = useRef<HTMLDivElement>(null);
 	const wrapBlockProps = useBlockProps({ ref });
 	const {
 		tabIsOpen,
@@ -96,31 +102,65 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			uniqueId: converUniqueIdToAnphaKey(UNIQUE_ID),
 		});
 
-		const baseData = {
-			'block_id': UNIQUE_ID,
-			'showDays': general_date.show_day,
-			'showHours': general_date.show_hour,
-			'showMinutes': general_date.show_minute,
-			'isFrontend': false,
-			'timerEndAction': '',
-			'redirectURL': '',
-			'endDateTime': '',
+		const endDateTime =
+			general_date.timerType === 'evergreen'
+				? getEvergreenEndDate(
+						general_date.evergreenDays ?? 0,
+						general_date.evergreenHrs ?? 0,
+						general_date.evergreenMinutes ?? 0
+				  )
+				: general_date.date;
+
+		// If show days or show hours is true, set the further units to true (hours, minutes).
+		const showDays = general_date.show_day;
+		const showHours = showDays || general_date.show_hour;
+		const showMinutes = showHours || general_date.show_minute;
+
+		let intervalId: ReturnType<typeof setInterval>;
+
+		const tick = () => {
+			const contentEl = countdownContentRef.current;
+			if (!contentEl) {
+				return;
+			}
+
+			const diff = new Date(endDateTime as unknown as string).getTime() - Date.now();
+			const isOvertime = diff < 0;
+
+			const days = Math.floor(diff / 86400000);
+			let hours = Math.floor(diff / 3600000) % 24;
+			let minutes = Math.floor(diff / 60000) % 60;
+			let seconds = Math.floor(diff / 1000) % 60;
+
+			if (!showDays) {
+				hours += days * 24;
+			}
+			if (!showHours) {
+				minutes += hours * 60;
+			}
+			if (!showMinutes) {
+				seconds += minutes * 60;
+			}
+
+			const dayEl = contentEl.querySelector('.wcb-countdown-day');
+			const hrsEl = contentEl.querySelector('.wcb-countdown-hrs');
+			const minsEl = contentEl.querySelector('.wcb-countdown-mins');
+			const secsEl = contentEl.querySelector('.wcb-countdown-secs');
+
+			if (dayEl) dayEl.textContent = String(isOvertime ? 0 : days);
+			if (hrsEl) hrsEl.textContent = String(isOvertime ? 0 : hours);
+			if (minsEl) minsEl.textContent = String(isOvertime ? 0 : minutes);
+			if (secsEl) secsEl.textContent = String(isOvertime ? 0 : seconds);
+
+			if (isOvertime) {
+				clearInterval(intervalId);
+			}
 		};
 
-		if ( general_date.timerType === 'evergreen' ) {
-			baseData.endDateTime = WCBCountdown.getEvergreenEndDate(
-				general_date.evergreenDays ?? 0,
-				general_date.evergreenHrs ?? 0,
-				general_date.evergreenMinutes ?? 0
-			);
-		} else {
-			const cd_date = (general_date.date as unknown as string).split("T");
-			baseData.endDateTime = cd_date[0];
-			baseData.timerEndAction = cd_date[1] || '';
-		}
+		tick();
+		intervalId = setInterval(tick, 1000);
 
-		WCBCountdown.changeEndTime(`#${UNIQUE_ID} .wcb-countdown__content`, baseData);
-
+		return () => clearInterval(intervalId);
 	}, [UNIQUE_ID, attributes]);
 	//
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
@@ -369,7 +409,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 				{/* CHILD CONTENT  */}
 
-				<div className={`wcb-countdown__content ${general_preset.preset}`}>
+				<div ref={countdownContentRef} className={`wcb-countdown__content ${general_preset.preset}`}>
 					{general_date.show_day && (
 						<div className="wcb-countdown__box">
 							<div className="wcb-countdown__number wcb-countdown-day"></div>

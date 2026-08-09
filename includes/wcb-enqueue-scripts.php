@@ -31,12 +31,11 @@ function boostify_blocks_my_scripts_method()
     // TODO: Consider conditionally enqueuing only when the testimonials block is used.
     wp_enqueue_script('boostify-blocks-slicklib', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/slick/slick.min.js', ['jquery'], "1.8.0", false);
 
-    wp_enqueue_script(
-        'boostify-blocks-countdown-lib',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/boostify-blocks-countdown.js',
-        array( 'jquery' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+    wp_enqueue_script_module(
+        'boostify-blocks-countdown-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/boostify-blocks-countdown-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
     );
 
     wp_enqueue_script(

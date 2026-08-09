@@ -4,7 +4,6 @@ import { handleSubmitFormForWcbForm } from "../block-form/FrontendStyles";
 import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendStyles";
 import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
-import { initCountDown } from "../block-countdown/FrontendScript";
 import { initTabsForWcbTabs } from "../block-tabs/FrontendStyles";
 import { animateProgressElements } from "../block-counter/FrontendStyles";
 
@@ -75,7 +74,6 @@ const classes: {
 	{
 		D: ".wcb-countdown__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-countdown/GlobalCss")),
-		F: initCountDown,
 	},
 	{
 		D: ".wcb-tabs__wrap.wcb-update-div",
