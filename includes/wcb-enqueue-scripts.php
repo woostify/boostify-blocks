@@ -46,30 +46,6 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
-    wp_enqueue_script(
-        'boostify-blocks-quick-view',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-quick-view.js',
-        array( 'jquery', 'boostify-blocks-tiny-slider' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
-    );
-
-    wp_enqueue_script(
-        'boostify-blocks-buynow',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-buynow.js',
-        array( 'jquery', 'boostify-blocks-tiny-slider' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
-    );
-
-    wp_enqueue_script(
-        'boostify-blocks-product-quantity',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-product-quantity.js',
-        array(),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
-    );
-
     // Enqueue the FAQ view script as a module
     wp_enqueue_script_module(
         'boostify-blocks-faq-view',
@@ -77,13 +53,40 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
-    if ( class_exists( 'WC_AJAX' ) ) {
-        wp_localize_script(
-            'boostify-blocks-buynow',
-            'wcb_buynow_data',
+    wp_enqueue_script_module(
+        'boostify-blocks-buynow',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-buynow.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-product-quantity-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/product-quantity/wcb-product-quantity-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-pre-order-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/pre-order/wcb-pre-order-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-quick-view-preview',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/quick-view/wcb-quick-view-preview.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    if ( class_exists( 'WC_AJAX' ) && function_exists( 'wp_interactivity_state' ) ) {
+        wp_interactivity_state(
+            'boostify-blocks/buynow',
             array(
-                'ajax_url'      => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
-                'redirect_delay' => 300,
+                'ajaxUrl'       => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
+                'redirectDelay' => 300,
             )
         );
     }
