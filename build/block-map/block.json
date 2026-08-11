@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "boostify-blocks/map",
+  "version": "0.1.0",
+  "title": "Google maps",
+  "category": "boostify-blocks",
+  "icon": "- wcb-block-editor-block-icon lni lni-map",
+  "description": "Add customize and beautify the maps on your website.",
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "align": true
+  },
+  "textdomain": "boostify-blocks",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}

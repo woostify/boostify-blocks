@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "boostify-blocks/icon-list",
+  "version": "0.1.2",
+  "title": "Icon List",
+  "category": "boostify-blocks",
+  "icon": "- wcb-block-editor-block-icon lni lni-clipboard",
+  "description": "Create a list highlighted with icons/images.",
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "align": true
+  },
+  "textdomain": "boostify-blocks",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}

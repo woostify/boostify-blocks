@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "name": "create-block-wcbxxyyyzz/wcbxxyyyzz-blocks-toolbar-patterns",
+  "version": "0.1.0",
+  "title": "Block Common CSS",
+  "category": "boostify-blocks",
+  "parent": [
+    "boostify-blocks/create-block-toolbar-patterns"
+  ],
+  "icon": "heart text-xl",
+  "description": "Example static block scaffolded with Create Block tool.",
+  "supports": {
+    "html": false
+  },
+  "textdomain": "boostify-blocks",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}

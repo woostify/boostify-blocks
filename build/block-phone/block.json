@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "name": "boostify-blocks/phone",
+  "parent": [
+    "boostify-blocks/form"
+  ],
+  "version": "0.1.0",
+  "title": "Phone",
+  "category": "boostify-blocks",
+  "icon": "- wcb-block-editor-block-icon lni lni-phone text-xl",
+  "description": "Example static block scaffolded with Create Block tool.",
+  "supports": {
+    "__experimentalSelector": "span,label"
+  },
+  "textdomain": "boostify-blocks",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}

@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "parent": [
+    "boostify-blocks/form"
+  ],
+  "name": "boostify-blocks/checkbox",
+  "version": "0.1.0",
+  "title": "Checkbox",
+  "category": "boostify-blocks",
+  "icon": "- wcb-block-editor-block-icon lni lni-check-box text-xl",
+  "description": "Example static block scaffolded with Create Block tool.",
+  "supports": {
+    "__experimentalSelector": "span,label"
+  },
+  "textdomain": "boostify-blocks",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}

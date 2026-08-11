@@ -34,7 +34,6 @@ import WcbButtonPanel_StyleBoxshadow from "./WcbButtonPanel_StyleBoxshadow";
 import { WcbAttrsForSave } from "./Save";
 import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
-import '../../public/js/countdown/boostify-blocks-countdown.js';
 
 declare const WCBCountdown: any;
 

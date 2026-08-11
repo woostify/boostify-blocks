@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "name": "boostify-blocks/toggle",
+  "version": "0.1.0",
+  "parent": [
+    "boostify-blocks/form"
+  ],
+  "title": "Toggle",
+  "category": "boostify-blocks",
+  "icon": "- wcb-block-editor-block-icon lni lni-capsule text-xl",
+  "description": "Example static block scaffolded with Create Block tool.",
+  "supports": {
+    "__experimentalSelector": "span,label"
+  },
+  "textdomain": "boostify-blocks",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}

@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "boostify-blocks/boostify-icon",
+  "version": "0.1.0",
+  "title": "Icon",
+  "category": "boostify-blocks",
+  "icon": "icon - wcb-block-editor-block-icon lni lni-target",
+  "description": "Add stunning customizable icons to your website.",
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "align": true
+  },
+  "textdomain": "boostify-blocks",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}
