@@ -46,6 +46,14 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
+    wp_enqueue_script(
+        'boostify-blocks-quick-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-quick-view.js',
+        array( 'jquery', 'boostify-blocks-tiny-slider' ),
+        BOOSTIFY_BLOCKS_VERSION,
+        true
+    );
+
     // Enqueue the FAQ view script as a module
     wp_enqueue_script_module(
         'boostify-blocks-faq-view',
