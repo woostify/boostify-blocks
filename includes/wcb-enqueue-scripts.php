@@ -54,6 +54,29 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
+    wp_enqueue_script(
+        'boostify-blocks-buynow',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-buynow.js',
+        array( 'jquery', 'boostify-blocks-tiny-slider' ),
+        BOOSTIFY_BLOCKS_VERSION,
+        true
+    );
+
+    wp_enqueue_script(
+        'boostify-blocks-product-quantity',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-product-quantity.js',
+        array(),
+        BOOSTIFY_BLOCKS_VERSION,
+        true
+    );
+
+    // Enqueue the Tabs view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-tabs-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/tabs/boostify-blocks-tabs-view.js',
+        array( '@wordpress/interactivity' )
+    );
+    
     // Enqueue the FAQ view script as a module
     wp_enqueue_script_module(
         'boostify-blocks-faq-view',
