@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
-import { initCarouselForWcbFaq } from "../block-faq/FrontendStyles";
 import { handleSubmitFormForWcbForm } from "../block-form/FrontendStyles";
 import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendStyles";
 import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
@@ -41,7 +40,6 @@ const classes: {
 	{
 		D: ".wcb-faq__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-faq/GlobalCss")),
-		F: initCarouselForWcbFaq,
 	},
 	{
 		D: ".wcb-form__wrap.wcb-update-div",

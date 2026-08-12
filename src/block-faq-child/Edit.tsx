@@ -56,23 +56,30 @@ const Edit: FC<
 		[clientId]
 	);
 
-	//
-
+	// Update attributes based on context changes
 	useEffect(() => {
-		// console.log(12, "------ FAQ CHILD setAttributes ON useEffect --------");
+		const faqGeneral = context["boostify-blocks/faq_general"];
+		const faqEnableSeparator = faqGeneral?.enableSeparator;
+		const faqCollapseOtherItems = faqGeneral?.collapseOtherItems;
+		const faqExpandFirstItem = faqGeneral?.expandFirstItem;
+		const isGrid = faqGeneral?.layout === "grid";
+		const faqDefaultExtend = isGrid
+			? true
+			: !faqCollapseOtherItems || (faqCollapseOtherItems && !blockIndex && faqExpandFirstItem);
 
 		setAttributes({
-			layout: context["boostify-blocks/faq_general"]?.layout,
-			headingTag: context["boostify-blocks/faq_general"]?.headingTag,
+			layout: faqGeneral?.layout,
+			headingTag: faqGeneral?.headingTag,
 			general_icon: context["boostify-blocks/faq_icon"],
-			enableSeparator: context["boostify-blocks/faq_general"]?.enableSeparator,
-			defaultExtend:
-				!context["boostify-blocks/faq_general"]?.collapseOtherItems ||
-				(context["boostify-blocks/faq_general"]?.collapseOtherItems &&
-					!blockIndex &&
-					context["boostify-blocks/faq_general"]?.expandFirstItem),
+			enableSeparator: faqEnableSeparator,
+			defaultExtend: faqDefaultExtend,
 		});
-	}, [context["boostify-blocks/faq_general"], context["boostify-blocks/faq_icon"], blockIndex]);
+	}, 
+	[
+		context["boostify-blocks/faq_general"], 
+		context["boostify-blocks/faq_icon"], 
+		blockIndex
+	]);
 
 	const renderIcon = () => {
 		if (!general_icon.enableIcon || layout !== "accordion") {
@@ -80,13 +87,13 @@ const Edit: FC<
 		}
 		return (
 			<>
-				{general_icon.icon && (
+				{isActive && general_icon.icon && (
 					<MyIconFull
 						className="wcb-faq-child__icon wcb-faq-child__icon--active"
 						icon={general_icon.icon}
 					/>
 				)}
-				{general_icon.inactiveIcon && (
+				{!isActive && general_icon.inactiveIcon && (
 					<MyIconFull
 						className="wcb-faq-child__icon wcb-faq-child__icon--inactive"
 						icon={general_icon.inactiveIcon}
@@ -96,7 +103,7 @@ const Edit: FC<
 		);
 	};
 
-	const ACTIVE = (defaultExtend || isSelected) && layout === "accordion";
+	const isActive = (defaultExtend || isSelected) && layout === "accordion";
 
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
@@ -105,7 +112,7 @@ const Edit: FC<
 				className={`${
 					wrapBlockProps?.className
 				} wcb-faq-child__wrap wcb-faq-child__wrap--${layout} ${
-					ACTIVE ? "active" : ""
+					isActive ? "active" : ""
 				} ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
@@ -126,7 +133,7 @@ const Edit: FC<
 						{general_icon.iconPosition === "right" && renderIcon()}
 					</div>
 				</div>
-				{(ACTIVE || layout === "grid") && (
+				{(isActive || layout === "grid") && (
 					<div className="ac-panel">
 						{enableSeparator && (
 							<div className="wcb-faq-child__separator"></div>
