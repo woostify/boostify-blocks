@@ -43,7 +43,16 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-faq__wrap" });
+	const wrapBlockProps = useBlockProps.save({ 
+		className: "wcb-faq__wrap",
+		// Register this block's namespace with the Interactivity API
+		'data-wp-interactive': 'boostify-blocks/faq',
+		'data-wp-context': JSON.stringify({
+			showMultiple: general_general.showMultiple,
+			activeItem: '',
+			hasInteracted: false,
+		}),
+	});
 	// INNER BLOCKS
 	const innerBlockProps = useBlockProps.save();
 	const innerBlocksProps = useInnerBlocksProps.save(innerBlockProps);
