@@ -70,6 +70,13 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
+    // Enqueue the FAQ view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-faq-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/faq/boostify-blocks-faq-view.js',
+        array( '@wordpress/interactivity' )
+    );
+
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(
             'boostify-blocks-buynow',

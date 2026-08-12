@@ -186,7 +186,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 								backgroundColor: style_question.backgroundColorHover,
 							},
 						},
-						[`${WRAP_CLASSNAME} .wcb-faq-child__wrap.active .wcb-faq-child__question`]:
+						[`${WRAP_CLASSNAME} .wcb-faq-child__wrap.is-open .wcb-faq-child__question`]:
 							{
 								color: style_question.colorHover,
 								backgroundColor: style_question.backgroundColorHover,
@@ -209,7 +209,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						[FAQ_CHILD_ICON]: {
 							color: style_icon.color,
 						},
-						[`${WRAP_CLASSNAME} .wcb-faq-child__wrap.active`]: {
+						[`${WRAP_CLASSNAME} .wcb-faq-child__wrap.is-open`]: {
 							".wcb-faq-child__icon": {
 								color: style_icon.activeColor,
 							},
