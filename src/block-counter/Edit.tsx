@@ -24,6 +24,23 @@ import WcbIconBoxPanel_StyleProgress from "./WcbIconBoxPanel_StyleProgress";
 import { MY_DIMENSIONS_NO_GAP_DEMO__EMPTY } from "../components/controls/MyDimensionsControl/types";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 
+// Easing functions (keep in sync with the front-end counter view script).
+const EASING_FUNCTIONS: Record<string, (t: number) => number> = {
+	easeOutCubic: (t) => 1 - Math.pow(1 - t, 3),
+	easeInOutQuad: (t) =>
+		t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+	easeInOutCubic: (t) =>
+		t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+	easeOutElastic: (t) => {
+		const c4 = (2 * Math.PI) / 3;
+		return t === 0
+			? 0
+			: t === 1
+			? 1
+			: Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+	},
+};
+
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const { attributes, setAttributes, clientId } = props;
 	const {
@@ -82,12 +99,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		let animationFrameId = 0;
 		const startedAt = performance.now();
 
-		// Cubic ease-out for natural deceleration (matches front-end).
-		const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+		// Matches the front-end counter view script.
+		const easingFn =
+			EASING_FUNCTIONS[general_layout?.animationType || "easeOutCubic"] ||
+			EASING_FUNCTIONS.easeOutCubic;
 
 		const tick = (now: number) => {
 			const progress = Math.min((now - startedAt) / duration, 1);
-			const value = start + (end - start) * easeOutCubic(progress);
+			const value = start + (end - start) * easingFn(progress);
 
 			setCurrentNumber(value);
 
@@ -104,6 +123,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	}, [
 		endNumber,
 		general_layout?.animationDuration,
+		general_layout?.animationType,
 		general_layout?.startNumber,
 		general_layout?.decimalNumber,
 		general_layout?.type,
@@ -146,6 +166,43 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		const progress = calculateProgress();
 		const strokeDashoffset = circumference - (progress / 100) * circumference;
 
+		const isIconBesideContent =
+			general_icon.iconPosition === "left" ||
+			general_icon.iconPosition === "right";
+
+		const isIconBesideTitle =
+			general_icon.iconPosition === "leftOfTitle" ||
+			general_icon.iconPosition === "rightOfTitle";
+
+		const iconEl = general_icon.enableIcon ? (
+			<div className="wcb-icon-box__icon">
+				<MyIconFull icon={general_icon.icon} />
+			</div>
+		) : null;
+
+		const numberEl = (
+			<div className="wcb-icon-box__number">
+				<span>{general_layout.numberPrefix}</span>
+				{formatNumber(currentNumber, general_layout?.decimalNumber)}
+				<span>{general_layout.numberSuffix}</span>
+			</div>
+		);
+
+		const descriptionEl = general_layout.enableDescription ? (
+			<RichText
+				tagName="div"
+				value={description}
+				allowedFormats={["core/bold", "core/italic"]}
+				onChange={(content) => setAttributes({ description: content })}
+				placeholder={__("Description of box ...")}
+				className="wcb-icon-box__description"
+				style={{
+					wordBreak: "break-word",
+					maxWidth: "100%",
+				}}
+			/>
+		) : null;
+
 		return (
 			<div
 				className="wcb-icon-box__progress-circle-wrap"
@@ -187,36 +244,56 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						transform: "translate(-50%, -50%)",
 						textAlign: "center",
 						display: "flex",
-						flexDirection: "column",
+						flexDirection: isIconBesideContent ? "row" : "column",
 						alignItems: "center",
 						gap: "10px",
                         maxWidth: `${radius * 1.5}px`, // Limit the content width to not overflow
 						padding: "10px",
 					}}
 				>
-					{general_icon.enableIcon && (
-						<div className="wcb-icon-box__icon">
-							<MyIconFull icon={general_icon.icon} />
-						</div>
-					)}
-					<div className="wcb-icon-box__number">
-						<span>{general_layout.numberPrefix}</span>
-						{formatNumber(currentNumber, general_layout?.decimalNumber)}
-						<span>{general_layout.numberSuffix}</span>
-					</div>
-					{general_layout.enableDescription && (
-						<RichText
-							tagName="div"
-							value={description}
-							allowedFormats={["core/bold", "core/italic"]}
-							onChange={(content) => setAttributes({ description: content })}
-							placeholder={__("Description of box ...")}
-							className="wcb-icon-box__description"
-							style={{
-								wordBreak: "break-word",
-								maxWidth: "100%",
-							}}
-						/>
+					{isIconBesideContent ? (
+						<>
+							{general_icon.iconPosition === "left" && iconEl}
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
+									gap: "10px",
+								}}
+							>
+								{numberEl}
+								{descriptionEl}
+							</div>
+							{general_icon.iconPosition === "right" && iconEl}
+						</>
+					) : isIconBesideTitle ? (
+						<>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "center",
+									gap: "10px",
+								}}
+							>
+								{general_icon.iconPosition === "leftOfTitle" &&
+									iconEl}
+								{numberEl}
+								{general_icon.iconPosition === "rightOfTitle" &&
+									iconEl}
+							</div>
+							{descriptionEl}
+						</>
+					) : (
+						<>
+							{general_icon.iconPosition === "top" && iconEl}
+							{numberEl}
+							{general_icon.iconPosition === "bellowTitle" && iconEl}
+							{descriptionEl}
+							{general_icon.iconPosition === "bottom" && iconEl}
+						</>
 					)}
 				</div>
 			</div>
@@ -298,6 +375,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							panelData={general_layout}
 						/>
 
+						{general_layout.type !== "bar" && (
 						<WcbIconBoxPanelIcon
 							onToggle={() => handleTogglePanel("General", "Icon")}
 							initialOpen={tabGeneralIsPanelOpen === "Icon"}
@@ -380,6 +458,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							}}
 							panelData={general_icon}
 						/>
+						)}
 					</>
 				);
 			case "Styles":
@@ -637,7 +716,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					)}
 				</div>
 
-				{general_icon.iconPosition === "right" &&
+			{(general_icon.iconPosition === "right" ||
+				general_icon.iconPosition === "bottom") &&
 					general_layout.type !== "circle" &&
 					general_layout.type !== "bar" &&
 					renderIcon()}

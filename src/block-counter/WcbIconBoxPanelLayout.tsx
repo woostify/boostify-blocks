@@ -24,6 +24,7 @@ export interface WCB_ICON_BOX_PANEL_LAYOUT {
 	numberPrefix: string;
 	numberSuffix: string;
 	thousand: string;
+	animationType: string;
 	animationDuration: string;
 }
 
@@ -41,6 +42,7 @@ export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
 	numberPrefix: '',
 	numberSuffix: '%',
 	thousand: '',
+	animationType: 'easeOutCubic',
 	animationDuration: '1500',
 };
 
@@ -73,6 +75,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 		numberPrefix,
 		numberSuffix,
 		thousand,
+		animationType,
 		animationDuration,
 	} = panelData;
 
@@ -168,6 +171,20 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 					value={numberSuffix}
 					onChange={(value) => {
 						setAttr__({ ...panelData, numberSuffix: value });
+					}}
+				/>
+
+				<SelectControl
+					label={__("Animation Type", "boostify-blocks")}
+					value={animationType}
+					options={[
+						{ label: "Ease Out Cubic", value: "easeOutCubic" },
+						{ label: "Ease In Out Quad", value: "easeInOutQuad" },
+						{ label: "Ease In Out Cubic", value: "easeInOutCubic" },
+						{ label: "Ease Out Elastic", value: "easeOutElastic" },
+					]}
+					onChange={(value) => {
+						setAttr__({ ...panelData, animationType: value });
 					}}
 				/>
 

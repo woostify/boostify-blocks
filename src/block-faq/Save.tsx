@@ -52,6 +52,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			activeItem: '',
 			hasInteracted: false,
 		}),
+		// FAQ schema (JSON-LD) flag
+		'data-faq-schema': general_general.enableSchemaSupport ? 'true' : 'false',
+		'data-wp-init': 'callbacks.generateSchema',
 	});
 	// INNER BLOCKS
 	const innerBlockProps = useBlockProps.save();

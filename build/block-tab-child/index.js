@@ -3079,6 +3079,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const Edit = props => {
+  var _context$boostifyBlo;
   const {
     attributes,
     setAttributes,
@@ -3108,19 +3109,14 @@ const Edit = props => {
 
   //
   const blockIndex = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => select(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.store).getBlockIndex(clientId), [clientId]);
-
-  //
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    console.log(12, "------ FAQ CHILD setAttributes ON useEffect --------");
-    // setAttributes({
-    // 	enableSeparator: context["boostify-blocks/faq_general"]?.enableSeparator,
-    // });
-  }, [context["boostify-blocks/faq_general"], context["boostify-blocks/faq_icon"], blockIndex]);
-
-  //
+  const activeTabIndex = (_context$boostifyBlo = context["boostify-blocks/tabs/activeTabIndex"]) !== null && _context$boostifyBlo !== void 0 ? _context$boostifyBlo : 0;
+  const tabContents = context["boostify-blocks/tabs/tabContents"];
+  const savedContent = tabContents?.[blockIndex] || "";
+  const isActiveTab = blockIndex === activeTabIndex;
+  const DEFAULT_CONTENT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.";
   const MY_TEMPLATE = [["core/paragraph", {
-    placeholder: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo."
+    placeholder: DEFAULT_CONTENT,
+    content: savedContent || DEFAULT_CONTENT
   }]];
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps)({
     className: `wcb-tab-child__inner`
@@ -3128,19 +3124,16 @@ const Edit = props => {
   const innerBlocksProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useInnerBlocksProps)(blockProps, {
     allowedBlocks: null,
     template: MY_TEMPLATE
-    // renderAppender: () => {
-    // 	if (!hasInnerBlocks) {
-    // 		return <InnerBlocks.ButtonBlockAppender />;
-    // 	}
-    // 	return isSelected ? <InnerBlocks.DefaultBlockAppender /> : null;
-    // },
   });
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_MyCacheProvider__WEBPACK_IMPORTED_MODULE_5__["default"], {
     uniqueKey: clientId
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...wrapBlockProps,
     className: `${wrapBlockProps?.className} wcb-tab-child__wrap ${uniqueId}`,
-    "data-uniqueid": uniqueId
+    "data-uniqueid": uniqueId,
+    style: {
+      display: isActiveTab ? undefined : 'none'
+    }
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...innerBlocksProps,
     id: undefined
@@ -3226,7 +3219,7 @@ const blokc1Attrs = {
   \****************************************/
 /***/ ((module) => {
 
-module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"boostify-blocks/tab-child","version":"0.1.0","title":"Tab child","category":"boostify-blocks","icon":"- wcb-block-editor-block-icon lni lni-support text-xl","description":"Example static block scaffolded with Create Block tool.","parent":["boostify-blocks/tabs"],"supports":{"html":false,"anchor":true,"align":true},"textdomain":"boostify-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
+module.exports = /*#__PURE__*/JSON.parse('{"apiVersion":3,"name":"boostify-blocks/tab-child","version":"0.1.0","title":"Tab child","category":"boostify-blocks","icon":"- wcb-block-editor-block-icon lni lni-support text-xl","description":"Example static block scaffolded with Create Block tool.","parent":["boostify-blocks/tabs"],"usesContext":["boostify-blocks/tabs/activeTabIndex","boostify-blocks/tabs/tabContents"],"supports":{"html":false,"anchor":true,"align":true},"textdomain":"boostify-blocks","editorScript":"file:./index.js","editorStyle":"file:./index.css","style":"file:./style-index.css"}');
 
 /***/ }),
 

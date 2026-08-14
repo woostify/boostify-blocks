@@ -12,15 +12,10 @@ const NAMESPACE = 'boostify-blocks/counter';
 const easing = {
 	// Cubic ease-out for natural deceleration
 	easeOutCubic: (t) => 1 - Math.pow(1 - t, 3),
-
 	// Quad ease-in-out for smooth acceleration and deceleration
-	easeInOutQuad: (t) =>
-		t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
-
+	easeInOutQuad: (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
 	// Cubic ease-in-out for very smooth transitions
-	easeInOutCubic: (t) =>
-		t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
-
+	easeInOutCubic: (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
 	// Elastic ease-out for a subtle "bounce" effect
 	easeOutElastic: (t) => {
 		const c4 = (2 * Math.PI) / 3;

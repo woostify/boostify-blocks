@@ -7872,6 +7872,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+// Easing functions (keep in sync with the front-end counter view script).
+const EASING_FUNCTIONS = {
+  easeOutCubic: t => 1 - Math.pow(1 - t, 3),
+  easeInOutQuad: t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+  easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  easeOutElastic: t => {
+    const c4 = 2 * Math.PI / 3;
+    return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+  }
+};
 const Edit = props => {
   const {
     attributes,
@@ -7930,11 +7941,11 @@ const Edit = props => {
     let animationFrameId = 0;
     const startedAt = performance.now();
 
-    // Cubic ease-out for natural deceleration (matches front-end).
-    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+    // Matches the front-end counter view script.
+    const easingFn = EASING_FUNCTIONS[general_layout?.animationType || "easeOutCubic"] || EASING_FUNCTIONS.easeOutCubic;
     const tick = now => {
       const progress = Math.min((now - startedAt) / duration, 1);
-      const value = start + (end - start) * easeOutCubic(progress);
+      const value = start + (end - start) * easingFn(progress);
       setCurrentNumber(value);
       if (progress < 1) {
         animationFrameId = requestAnimationFrame(tick);
@@ -7944,7 +7955,7 @@ const Edit = props => {
     };
     animationFrameId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [endNumber, general_layout?.animationDuration, general_layout?.startNumber, general_layout?.decimalNumber, general_layout?.type, general_layout?.endNumber]);
+  }, [endNumber, general_layout?.animationDuration, general_layout?.animationType, general_layout?.startNumber, general_layout?.decimalNumber, general_layout?.type, general_layout?.endNumber]);
 
   // Format number before display
   const formatNumber = (num, decimalPlaces) => {
@@ -7981,6 +7992,30 @@ const Edit = props => {
     const circumference = normalizedRadius * 2 * Math.PI;
     const progress = calculateProgress();
     const strokeDashoffset = circumference - progress / 100 * circumference;
+    const isIconBesideContent = general_icon.iconPosition === "left" || general_icon.iconPosition === "right";
+    const isIconBesideTitle = general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle";
+    const iconEl = general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__icon"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_15__["default"], {
+      icon: general_icon.icon
+    })) : null;
+    const numberEl = (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__number"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), formatNumber(currentNumber, general_layout?.decimalNumber), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix));
+    const descriptionEl = general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
+      tagName: "div",
+      value: description,
+      allowedFormats: ["core/bold", "core/italic"],
+      onChange: content => setAttributes({
+        description: content
+      }),
+      placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description of box ..."),
+      className: "wcb-icon-box__description",
+      style: {
+        wordBreak: "break-word",
+        maxWidth: "100%"
+      }
+    }) : null;
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__progress-circle-wrap",
       style: {
@@ -8020,33 +8055,29 @@ const Edit = props => {
         transform: "translate(-50%, -50%)",
         textAlign: "center",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: isIconBesideContent ? "row" : "column",
         alignItems: "center",
         gap: "10px",
         maxWidth: `${radius * 1.5}px`,
         // Limit the content width to not overflow
         padding: "10px"
       }
-    }, general_icon.enableIcon && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "wcb-icon-box__icon"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_15__["default"], {
-      icon: general_icon.icon
-    })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "wcb-icon-box__number"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), formatNumber(currentNumber, general_layout?.decimalNumber), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
-      tagName: "div",
-      value: description,
-      allowedFormats: ["core/bold", "core/italic"],
-      onChange: content => setAttributes({
-        description: content
-      }),
-      placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description of box ..."),
-      className: "wcb-icon-box__description",
+    }, isIconBesideContent ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "left" && iconEl, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       style: {
-        wordBreak: "break-word",
-        maxWidth: "100%"
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "10px"
       }
-    })));
+    }, numberEl, descriptionEl), general_icon.iconPosition === "right" && iconEl) : isIconBesideTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      style: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "10px"
+      }
+    }, general_icon.iconPosition === "leftOfTitle" && iconEl, numberEl, general_icon.iconPosition === "rightOfTitle" && iconEl), descriptionEl) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "top" && iconEl, numberEl, general_icon.iconPosition === "bellowTitle" && iconEl, descriptionEl, general_icon.iconPosition === "bottom" && iconEl)));
   };
   const renderProgressBar = () => {
     const progress = calculateProgress(); // Use the updated calculateProgressBar function
@@ -8115,7 +8146,7 @@ const Edit = props => {
             });
           },
           panelData: general_layout
-        }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbIconBoxPanelIcon__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        }), general_layout.type !== "bar" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbIconBoxPanelIcon__WEBPACK_IMPORTED_MODULE_9__["default"], {
           onToggle: () => handleTogglePanel("General", "Icon"),
           initialOpen: tabGeneralIsPanelOpen === "Icon",
           opened: tabGeneralIsPanelOpen === "Icon" || undefined
@@ -8347,7 +8378,7 @@ const Edit = props => {
   }), general_layout.enableCTAButton && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InnerBlocks, {
     allowedBlocks: [],
     template: [["boostify-blocks/button", {}]]
-  })), general_icon.iconPosition === "right" && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon()));
+  })), (general_icon.iconPosition === "right" || general_icon.iconPosition === "bottom") && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon()));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Edit);
 
@@ -8418,16 +8449,14 @@ const GlobalCss = attrs => {
         ".wcb-icon-box__content-title-wrap": {
           display: general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle" ? "flex" : "block"
         },
-        // Styles for circle type
         ".wcb-icon-box__progress-circle-wrap": {
           position: "relative",
-          margin: general_layout.textAlignment.Desktop === "left" ? "" : general_layout.textAlignment.Tablet === "left" ? "" : general_layout.textAlignment.Desktop === "right" ? "0 0 0 auto" : general_layout.textAlignment.Tablet === "right" ? "0 0 0 auto" : "0 auto"
+          display: "inline-block",
+          verticalAlign: "top"
         },
-        // Styles for bar type
         ".wcb-icon-box__progress-bar-wrap": {
           position: "relative",
-          width: "100%",
-          textAlign: general_layout.textAlignment.Desktop === "left" ? "start" : general_layout.textAlignment.Tablet === "left" ? "start" : general_layout.textAlignment.Desktop === "right" ? "end" : general_layout.textAlignment.Tablet === "right" ? "end" : "center"
+          width: "100%"
         },
         ".wcb-icon-box__title": {
           fontSize: "16px",
@@ -8627,6 +8656,7 @@ function save({
     suffix: general_layout?.numberSuffix || "",
     thousand: general_layout?.thousand || "",
     mode: general_layout?.type || "number",
+    easing: general_layout?.animationType || "easeOutCubic",
     circumference: counterCircumference,
     current: formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber || "0"),
     dashOffset: counterCircumference,
@@ -8640,6 +8670,29 @@ function save({
     const stroke = counterStroke;
     const normalizedRadius = counterNormalizedRadius;
     const circumference = counterCircumference;
+    const isIconBesideContent = general_icon.iconPosition === "left" || general_icon.iconPosition === "right";
+    const isIconBesideTitle = general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle";
+    const iconEl = general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__icon"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      icon: general_icon.icon
+    })) : null;
+    const numberEl = (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__number"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+      className: "wcb-icon-box__number-value",
+      "data-wp-text": "context.current"
+    }, formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix));
+    const descriptionEl = general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
+      tagName: "div",
+      value: description,
+      placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description of box ..."),
+      className: "wcb-icon-box__description",
+      style: {
+        wordBreak: "break-word",
+        maxWidth: "100%"
+      }
+    }) : null;
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__progress-circle-wrap",
       style: {
@@ -8687,31 +8740,28 @@ function save({
         transform: "translate(-50%, -50%)",
         textAlign: "center",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: isIconBesideContent ? "row" : "column",
         alignItems: "center",
         gap: "10px",
         maxWidth: `${radius * 1.5}px`,
         padding: "10px"
       }
-    }, general_icon.enableIcon && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "wcb-icon-box__icon"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_5__["default"], {
-      icon: general_icon.icon
-    })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "wcb-icon-box__number"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-      className: "wcb-icon-box__number-value",
-      "data-wp-text": "context.current"
-    }, formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
-      tagName: "div",
-      value: description,
-      placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description of box ..."),
-      className: "wcb-icon-box__description",
+    }, isIconBesideContent ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "left" && iconEl, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       style: {
-        wordBreak: "break-word",
-        maxWidth: "100%"
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "10px"
       }
-    })));
+    }, numberEl, descriptionEl), general_icon.iconPosition === "right" && iconEl) : isIconBesideTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      style: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "10px"
+      }
+    }, general_icon.iconPosition === "leftOfTitle" && iconEl, numberEl, general_icon.iconPosition === "rightOfTitle" && iconEl), descriptionEl) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "top" && iconEl, numberEl, general_icon.iconPosition === "bellowTitle" && iconEl, descriptionEl, general_icon.iconPosition === "bottom" && iconEl)));
   };
 
   // Render the progress bar structure
@@ -8810,7 +8860,7 @@ function save({
     value: description,
     placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description..."),
     className: "wcb-icon-box__description"
-  }), general_layout.enableCTAButton && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InnerBlocks.Content, null)), general_icon.iconPosition === "right" && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon());
+  }), general_layout.enableCTAButton && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InnerBlocks.Content, null)), (general_icon.iconPosition === "right" || general_icon.iconPosition === "bottom") && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon());
 }
 
 /***/ }),
@@ -9235,6 +9285,9 @@ const WcbIconBoxPanelIcon = ({
   }, {
     value: "bellowTitle",
     label: "Bellow Title"
+  }, {
+    value: "bottom",
+    label: "Bottom"
   }];
   const STACK_ON_DEMO = [{
     value: "none",
@@ -9287,7 +9340,7 @@ const WcbIconBoxPanelIcon = ({
         ...panelData,
         iconPosition: value
       };
-      if (iconPosition !== "left" && iconPosition !== "right") {
+      if (value !== "left" && value !== "right") {
         newData = {
           ...panelData,
           iconPosition: value,
@@ -9366,6 +9419,7 @@ const WCB_ICON_BOX_PANEL_LAYOUT_DEMO = {
   numberPrefix: '',
   numberSuffix: '%',
   thousand: '',
+  animationType: 'easeOutCubic',
   animationDuration: '1500'
 };
 const WcbIconBoxPanelLayout = ({
@@ -9390,6 +9444,7 @@ const WcbIconBoxPanelLayout = ({
     numberPrefix,
     numberSuffix,
     thousand,
+    animationType,
     animationDuration
   } = panelData;
   const {
@@ -9485,6 +9540,28 @@ const WcbIconBoxPanelLayout = ({
       setAttr__({
         ...panelData,
         numberSuffix: value
+      });
+    }
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Animation Type", "boostify-blocks"),
+    value: animationType,
+    options: [{
+      label: "Ease Out Cubic",
+      value: "easeOutCubic"
+    }, {
+      label: "Ease In Out Quad",
+      value: "easeInOutQuad"
+    }, {
+      label: "Ease In Out Cubic",
+      value: "easeInOutCubic"
+    }, {
+      label: "Ease Out Elastic",
+      value: "easeOutElastic"
+    }],
+    onChange: value => {
+      setAttr__({
+        ...panelData,
+        animationType: value
       });
     }
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {

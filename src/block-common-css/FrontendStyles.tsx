@@ -5,7 +5,6 @@ import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendSt
 import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
 import { initCountDown } from "../block-countdown/FrontendScript";
-import { initTabsForWcbTabs } from "../block-tabs/FrontendStyles";
 
 const classes: {
 	D: string;
@@ -79,7 +78,6 @@ const classes: {
 	{
 		D: ".wcb-tabs__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-tabs/GlobalCss")),
-		F: initTabsForWcbTabs,
 	},
 	{
 		D: ".wcb-counter-box__wrap.wcb-update-div",

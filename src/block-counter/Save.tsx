@@ -77,6 +77,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         suffix: general_layout?.numberSuffix || "",
         thousand: general_layout?.thousand || "",
         mode: general_layout?.type || "number",
+        easing: general_layout?.animationType || "easeOutCubic",
         circumference: counterCircumference,
         current: formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber || "0"),
         dashOffset: counterCircumference,
@@ -90,6 +91,43 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         const stroke = counterStroke;
         const normalizedRadius = counterNormalizedRadius;
         const circumference = counterCircumference;
+
+        const isIconBesideContent =
+            general_icon.iconPosition === "left" ||
+            general_icon.iconPosition === "right";
+
+        const isIconBesideTitle =
+            general_icon.iconPosition === "leftOfTitle" ||
+            general_icon.iconPosition === "rightOfTitle";
+
+        const iconEl = general_icon.enableIcon ? (
+            <div className="wcb-icon-box__icon">
+                <MyIconFull icon={general_icon.icon} />
+            </div>
+        ) : null;
+
+        const numberEl = (
+            <div className="wcb-icon-box__number">
+                <span>{general_layout.numberPrefix}</span>
+                <span className="wcb-icon-box__number-value" data-wp-text="context.current">
+                    {formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
+                </span>
+                <span>{general_layout.numberSuffix}</span>
+            </div>
+        );
+
+        const descriptionEl = general_layout.enableDescription ? (
+            <RichText.Content
+                tagName="div"
+                value={description}
+                placeholder={__("Description of box ...")}
+                className="wcb-icon-box__description"
+                style={{
+                    wordBreak: "break-word",
+                    maxWidth: "100%",
+                }}
+            />
+        ) : null;
 
         return (
             <div
@@ -139,40 +177,56 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         transform: "translate(-50%, -50%)",
                         textAlign: "center",
                         display: "flex",
-                        flexDirection: "column",
+                        flexDirection: isIconBesideContent ? "row" : "column",
                         alignItems: "center",
                         gap: "10px",
                         maxWidth: `${radius * 1.5}px`,
                         padding: "10px",
                     }}
                 >
-                    {general_icon.enableIcon && (
-                        <div className="wcb-icon-box__icon">
-                            <MyIconFull icon={general_icon.icon} />
-                        </div>
-                    )}
-                    {/* <div className="wcb-icon-box__number-inside">
-                        {formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
-                        {general_layout.numberSuffix}
-                    </div> */}
-                    <div className="wcb-icon-box__number">
-						<span>{general_layout.numberPrefix}</span>
-						<span className="wcb-icon-box__number-value" data-wp-text="context.current">
-							{formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
-						</span>
-						<span>{general_layout.numberSuffix}</span>
-					</div>
-                    {general_layout.enableDescription && (
-                        <RichText.Content
-                            tagName="div"
-                            value={description}
-                            placeholder={__("Description of box ...")}
-                            className="wcb-icon-box__description"
-                            style={{
-                                wordBreak: "break-word",
-                                maxWidth: "100%",
-                            }}
-                        />
+                    {isIconBesideContent ? (
+                        <>
+                            {general_icon.iconPosition === "left" && iconEl}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                }}
+                            >
+                                {numberEl}
+                                {descriptionEl}
+                            </div>
+                            {general_icon.iconPosition === "right" && iconEl}
+                        </>
+                    ) : isIconBesideTitle ? (
+                        <>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "10px",
+                                }}
+                            >
+                                {general_icon.iconPosition === "leftOfTitle" &&
+                                    iconEl}
+                                {numberEl}
+                                {general_icon.iconPosition === "rightOfTitle" &&
+                                    iconEl}
+                            </div>
+                            {descriptionEl}
+                        </>
+                    ) : (
+                        <>
+                            {general_icon.iconPosition === "top" && iconEl}
+                            {numberEl}
+                            {general_icon.iconPosition === "bellowTitle" && iconEl}
+                            {descriptionEl}
+                            {general_icon.iconPosition === "bottom" && iconEl}
+                        </>
                     )}
                 </div>
             </div>
@@ -333,7 +387,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 {general_layout.enableCTAButton && <InnerBlocks.Content />}
             </div>
 
-            {general_icon.iconPosition === "right" &&
+            {(general_icon.iconPosition === "right" ||
+                general_icon.iconPosition === "bottom") &&
                 general_layout.type !== "circle" &&
                 general_layout.type !== "bar" &&
                 renderIcon()}

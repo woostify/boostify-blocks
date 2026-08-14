@@ -8061,7 +8061,7 @@ const Edit = props => {
     tabStylesIsPanelOpen,
     handleTogglePanel
   } = (0,_hooks_useSetBlockPanelInfo__WEBPACK_IMPORTED_MODULE_6__["default"])(uniqueId);
-  const [indexFocused, setIndexFocused] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
+  const [indexFocused, setIndexFocused] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(activeTabIndex);
   const {
     childInnerBlocks
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_8__.useSelect)(select => ({
@@ -8089,6 +8089,17 @@ const Edit = props => {
       });
     }
   }, [indexFocused, activeTabIndex, setAttributes]);
+
+  // Sync initOpenTab setting → activeTabIndex
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    const match = general_tabTitle.initOpenTab?.match(/^tab(\d+)$/);
+    if (match) {
+      const tabNum = parseInt(match[1], 10) - 1;
+      if (tabNum >= 0 && tabNum < titles.length && tabNum !== activeTabIndex) {
+        setIndexFocused(tabNum);
+      }
+    }
+  }, [general_tabTitle.initOpenTab]);
 
   // Synchronze number childInnerBlocks with titles and tabContents
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
@@ -8130,13 +8141,10 @@ const Edit = props => {
       });
     }
   }, [childInnerBlocks, titles.length, setAttributes]);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    const childs = document.querySelectorAll(`#block-${clientId} .wcb-tab-child__wrap`);
-    if (!childs || !childs.length) return;
-    Array.from(childs).forEach((item, index) => {
-      if (index !== indexFocused) item.setAttribute("hidden", "");else item.removeAttribute("hidden");
-    });
-  }, [indexFocused, clientId]);
+
+  // Tab visibility in editor is now handled by child blocks via
+  // context "boostify-blocks/tabs/activeTabIndex" and hidden prop.
+
   const renderTabBodyPanels = tab => {
     switch (tab.name) {
       case "General":
@@ -8348,7 +8356,7 @@ const Edit = props => {
   const renderIcon = index => {
     if (!general_tabTitle.enableIcon) return null;
     return general_tabTitle.icon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_17__["default"], {
-      className: `wcb-tabs__icon ${activeTabIndex === index ? "wcb-tabs__icon-selected" : ""}`,
+      className: "wcb-tabs__icon",
       icon: general_tabTitle.icon
     }) : null;
   };
@@ -8368,13 +8376,13 @@ const Edit = props => {
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "wcb-tabs__titles"
   }, titles.map((item, index) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: `wcb-tabs__title_inner relative group ${activeTabIndex === index ? "wcb-tabs__title_inner-selected" : ""}`,
+    className: `wcb-tabs__title_inner relative group wcb-tabs__title_inner--icon-${general_tabTitle.iconPosition} ${activeTabIndex === index ? "is-active" : ""}`,
     "data-tab-index": item.dataTabIndex,
     key: item.id
   }, renderRemoveBtn(item, index), (general_tabTitle.iconPosition === "left" || general_tabTitle.iconPosition === "top") && renderIcon(index), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
     key: item.id,
     tagName: "p",
-    className: `wcb-tabs__title ${activeTabIndex === index ? "wcb-tabs__title-selected" : ""}`,
+    className: "wcb-tabs__title",
     value: item.title,
     onFocusCapture: () => setIndexFocused(index),
     onChange: value => {
@@ -8463,14 +8471,14 @@ const GlobalCss = attrs => {
   const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
   const TITLE_WRAP_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__titles`;
   const TITLE_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner`;
-  const TITLE_CHILD_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__title_inner-selected`;
+  const TITLE_CHILD_CLASSNAME_ACTIVE = `${WRAP_CLASSNAME} .wcb-tabs__title_inner.is-active`;
   const TITLE_CHILD_BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner_btn`;
   const TITLE_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title`;
-  const TITLE_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__title-selected`;
+  const TITLE_CLASSNAME_ACTIVE = `${TITLE_CHILD_CLASSNAME_ACTIVE} .wcb-tabs__title`;
   const BODY_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tab-child__wrap`;
   const BODY_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tab-child__inner`;
   const ICON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__icon`;
-  const ICON_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__icon-selected`;
+  const ICON_CLASSNAME_ACTIVE = `${TITLE_CHILD_CLASSNAME_ACTIVE} .wcb-tabs__icon`;
   const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__contents`;
   const IconSizeConverted = {
     Desktop: `${(0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_2__["default"])(style_icon.size).value_Desktop}px`,
@@ -8562,7 +8570,7 @@ const GlobalCss = attrs => {
         marginBottom: "-2px",
         zIndex: 1
       },
-      [TITLE_CHILD_CLASSNAME_SELECTED]: {
+      [TITLE_CHILD_CLASSNAME_ACTIVE]: {
         background: style_title.backgroundColorActive || "#fff",
         border: "none",
         borderTop: "2px solid #d1d5db",
@@ -8608,10 +8616,10 @@ const GlobalCss = attrs => {
       [TITLE_CLASSNAME]: {
         color: style_title.color
       },
-      [TITLE_CHILD_CLASSNAME_SELECTED]: {
+      [TITLE_CHILD_CLASSNAME_ACTIVE]: {
         backgroundColor: style_title.backgroundColorActive
       },
-      [TITLE_CLASSNAME_SELECTED]: {
+      [TITLE_CLASSNAME_ACTIVE]: {
         color: style_title.colorActive
       }
     }, (0,_utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_7__["default"])({
@@ -8647,8 +8655,17 @@ const GlobalCss = attrs => {
       [ICON_CLASSNAME]: {
         color: style_icon.color
       },
-      [ICON_CLASSNAME_SELECTED]: {
+      [ICON_CLASSNAME_ACTIVE]: {
         color: style_icon.activeColor
+      }
+    }]
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_9__.Global, {
+    styles: [{
+      [`${TITLE_CHILD_CLASSNAME}--icon-top`]: {
+        flexDirection: "column"
+      },
+      [`${TITLE_CHILD_CLASSNAME}--icon-bottom`]: {
+        flexDirection: "column"
       }
     }]
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_9__.Global, {
@@ -8670,7 +8687,7 @@ const GlobalCss = attrs => {
       border: style_title.border,
       isWithRadius: true
     }), (0,_utils_getBorderStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
-      className: TITLE_CHILD_CLASSNAME_SELECTED,
+      className: TITLE_CHILD_CLASSNAME_ACTIVE,
       border: style_title.borderActive,
       isWithRadius: true
     })]
@@ -8746,12 +8763,16 @@ function save({
     general_general
   };
   const wrapBlockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps.save({
-    className: "wcb-tabs__wrap"
+    className: "wcb-tabs__wrap",
+    'data-wp-interactive': 'boostify-blocks/tabs',
+    'data-wp-context': JSON.stringify({
+      activeTab: activeTabIndex
+    })
   });
   const renderIcon = index => {
     if (!general_tabTitle.enableIcon) return null;
     return general_tabTitle.icon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_3__["default"], {
-      className: `wcb-tabs__icon ${activeTabIndex === index ? "wcb-tabs__icon-selected" : ""}`,
+      className: "wcb-tabs__icon",
       icon: general_tabTitle.icon
     }) : null;
   };
@@ -8764,12 +8785,18 @@ function save({
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "wcb-tabs__titles"
   }, titles.map((item, index) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-    className: `wcb-tabs__title_inner relative group ${activeTabIndex === index ? "wcb-tabs__title_inner-selected" : ""}`,
+    className: `wcb-tabs__title_inner relative group wcb-tabs__title_inner--icon-${general_tabTitle.iconPosition}`,
     key: item.id,
-    "data-tab-index": item.dataTabIndex
+    "data-tab-index": item.dataTabIndex,
+    "data-wp-context": JSON.stringify({
+      tabIndex: index
+    }),
+    "data-wp-on--click": "actions.switchTab",
+    "data-wp-watch": "callbacks.syncActiveTab",
+    "data-wp-class--is-active": "context.isActiveTab"
   }, (general_tabTitle.iconPosition === "left" || general_tabTitle.iconPosition === "top") && renderIcon(index), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.RichText.Content, {
     tagName: "p",
-    className: `wcb-tabs__title ${activeTabIndex === index ? "wcb-tabs__title-selected" : ""}`,
+    className: "wcb-tabs__title",
     value: item.title,
     placeholder: "Title"
   }), (general_tabTitle.iconPosition === "right" || general_tabTitle.iconPosition === "bottom") && renderIcon(index)))), titles.map((_, index) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -8778,7 +8805,11 @@ function save({
     role: "tabpanel",
     id: `tabpanel-${uniqueId}-${index}`,
     "aria-labelledby": `tab-${uniqueId}-${index}`,
-    hidden: index !== activeTabIndex
+    "data-wp-context": JSON.stringify({
+      tabIndex: index
+    }),
+    "data-wp-watch": "callbacks.syncActiveTab",
+    "data-wp-bind--hidden": "!context.isActiveTab"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "wcb-tab-child__inner"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
@@ -8828,12 +8859,7 @@ const WCB_TAGS_PANEL_GENERAL_DEMO = {
   layout: "accordion",
   style: "horizontalStyle1",
   headingTag: "div",
-  collapseOtherItems: true,
   // columns: { Desktop: 2 },
-  enableSchemaSupport: true,
-  enableSeparator: true,
-  showMultiple: true,
-  expandFirstItem: true,
   textAlignment: "left"
 };
 const WcbTabsPanelGeneral = ({
@@ -8846,12 +8872,7 @@ const WcbTabsPanelGeneral = ({
   // const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
   const {
     textAlignment,
-    collapseOtherItems,
     // columns,
-    enableSchemaSupport,
-    enableSeparator,
-    showMultiple,
-    expandFirstItem,
     headingTag,
     style,
     layout
@@ -8866,34 +8887,6 @@ const WcbTabsPanelGeneral = ({
     icon: "Grid",
     name: "grid"
   }];
-  const renderCarouselToggleSettings = () => {
-    if (layout === "grid") return null;
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
-      label: "Collapse other items",
-      help: "Collapse all accordion elements during initialization",
-      checked: collapseOtherItems,
-      onChange: checked => setAttr__({
-        ...panelData,
-        collapseOtherItems: checked
-      })
-    }), collapseOtherItems && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
-      label: "Expand first item",
-      help: "Show accordion first element during initialization",
-      checked: expandFirstItem,
-      onChange: checked => setAttr__({
-        ...panelData,
-        expandFirstItem: checked
-      })
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
-      label: "Show multiple",
-      help: "Show multiple elements at the same time",
-      checked: showMultiple,
-      onChange: checked => setAttr__({
-        ...panelData,
-        showMultiple: checked
-      })
-    }));
-  };
   const OPTION_STYLE_OPEN_TAB_DEMO = [{
     label: "Horizontal Style 1",
     value: "horizontalStyle1"
@@ -8936,22 +8929,6 @@ const WcbTabsPanelGeneral = ({
     }),
     value: layout,
     plans: PLANS_DEMO
-  }), renderCarouselToggleSettings(), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
-    label: "Enable schema support",
-    help: "Enable schema support",
-    checked: enableSchemaSupport,
-    onChange: checked => setAttr__({
-      ...panelData,
-      enableSchemaSupport: checked
-    })
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.ToggleControl, {
-    label: "Enable separator",
-    help: "Enable separator",
-    checked: enableSeparator,
-    onChange: checked => setAttr__({
-      ...panelData,
-      enableSeparator: checked
-    })
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyHeadingTagControl_MyHeadingTagControl__WEBPACK_IMPORTED_MODULE_3__["default"], {
     tag: headingTag,
     onChange: value => setAttr__({
@@ -9292,7 +9269,8 @@ const WcbTabsPanelTabTitle = ({
   setAttr__,
   initialOpen,
   onToggle,
-  opened
+  opened,
+  tabTitles
 }) => {
   const {
     textAlignment,
@@ -9302,16 +9280,10 @@ const WcbTabsPanelTabTitle = ({
     tabAlignment,
     iconPosition
   } = panelData;
-  const OPTION_INIT_OPEN_TAB_DEMO = [{
-    value: "tab1",
-    label: "Tab1"
-  }, {
-    value: "tab2",
-    label: "Tab2"
-  }, {
-    value: "tab3",
-    label: "Tab3"
-  }];
+  const OPTION_INIT_OPEN_TAB_DEMO = [...tabTitles.map((_, i) => ({
+    value: `tab${i + 1}`,
+    label: `Tab ${i + 1}`
+  }))];
   const PLANS_ICON_POS_DEMO = [{
     icon: "Left",
     name: "left"
@@ -10447,7 +10419,9 @@ const {
   // deprecated: deprecated,
   providesContext: {
     "boostify-blocks/faq_general": "general_general",
-    "boostify-blocks/faq_icon": "general_icon"
+    "boostify-blocks/faq_icon": "general_icon",
+    "boostify-blocks/tabs/activeTabIndex": "activeTabIndex",
+    "boostify-blocks/tabs/tabContents": "tabContents"
   },
   icon: (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
     className: "wcb-editor-block-icons fill-none ",

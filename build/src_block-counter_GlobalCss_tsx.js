@@ -207,16 +207,14 @@ const GlobalCss = attrs => {
         ".wcb-icon-box__content-title-wrap": {
           display: general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle" ? "flex" : "block"
         },
-        // Styles for circle type
         ".wcb-icon-box__progress-circle-wrap": {
           position: "relative",
-          margin: general_layout.textAlignment.Desktop === "left" ? "" : general_layout.textAlignment.Tablet === "left" ? "" : general_layout.textAlignment.Desktop === "right" ? "0 0 0 auto" : general_layout.textAlignment.Tablet === "right" ? "0 0 0 auto" : "0 auto"
+          display: "inline-block",
+          verticalAlign: "top"
         },
-        // Styles for bar type
         ".wcb-icon-box__progress-bar-wrap": {
           position: "relative",
-          width: "100%",
-          textAlign: general_layout.textAlignment.Desktop === "left" ? "start" : general_layout.textAlignment.Tablet === "left" ? "start" : general_layout.textAlignment.Desktop === "right" ? "end" : general_layout.textAlignment.Tablet === "right" ? "end" : "center"
+          width: "100%"
         },
         ".wcb-icon-box__title": {
           fontSize: "16px",
