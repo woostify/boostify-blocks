@@ -89,6 +89,20 @@ function boostify_blocks_my_scripts_method()
         BOOSTIFY_BLOCKS_VERSION
     );
 
+    // Enqueue the Tabs view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-tabs-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/tabs/boostify-blocks-tabs-view.js',
+        array( '@wordpress/interactivity' )
+    );
+    
+    // Enqueue the FAQ view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-faq-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/faq/boostify-blocks-faq-view.js',
+        array( '@wordpress/interactivity' )
+    );
+
     if ( class_exists( 'WC_AJAX' ) && function_exists( 'wp_interactivity_state' ) ) {
         wp_interactivity_state(
             'boostify-blocks/buynow',
