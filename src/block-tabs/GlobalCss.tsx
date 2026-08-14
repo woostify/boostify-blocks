@@ -47,14 +47,14 @@ const GlobalCss: FC<Props> = (attrs) => {
     const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
     const TITLE_WRAP_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__titles`;
     const TITLE_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner`;
-    const TITLE_CHILD_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__title_inner-selected`;
+    const TITLE_CHILD_CLASSNAME_ACTIVE = `${WRAP_CLASSNAME} .wcb-tabs__title_inner.is-active`;
     const TITLE_CHILD_BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner_btn`;
     const TITLE_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title`;
-    const TITLE_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__title-selected`;
+    const TITLE_CLASSNAME_ACTIVE = `${TITLE_CHILD_CLASSNAME_ACTIVE} .wcb-tabs__title`;
     const BODY_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tab-child__wrap`;
     const BODY_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tab-child__inner`;
     const ICON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__icon`;
-    const ICON_CLASSNAME_SELECTED = `${WRAP_CLASSNAME} .wcb-tabs__icon-selected`;
+    const ICON_CLASSNAME_ACTIVE = `${TITLE_CHILD_CLASSNAME_ACTIVE} .wcb-tabs__icon`;
     const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__contents`;
 
     const IconSizeConverted: HasResponsive<string> = {
@@ -165,7 +165,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 marginBottom: "-2px",
                                 zIndex: 1,
                             },
-                            [TITLE_CHILD_CLASSNAME_SELECTED]: {
+                            [TITLE_CHILD_CLASSNAME_ACTIVE]: {
                                 background: style_title.backgroundColorActive || "#fff",
                                 border: "none",
                                 borderTop: "2px solid #d1d5db",
@@ -201,10 +201,10 @@ const GlobalCss: FC<Props> = (attrs) => {
                         [TITLE_CLASSNAME]: {
                             color: style_title.color,
                         },
-                        [TITLE_CHILD_CLASSNAME_SELECTED]: {
+                        [TITLE_CHILD_CLASSNAME_ACTIVE]: {
                             backgroundColor: style_title.backgroundColorActive,
                         },
-                        [TITLE_CLASSNAME_SELECTED]: {
+                        [TITLE_CLASSNAME_ACTIVE]: {
                             color: style_title.colorActive,
                         },
                     },
@@ -238,7 +238,20 @@ const GlobalCss: FC<Props> = (attrs) => {
                     }),
                     {
                         [ICON_CLASSNAME]: { color: style_icon.color },
-                        [ICON_CLASSNAME_SELECTED]: { color: style_icon.activeColor },
+                        [ICON_CLASSNAME_ACTIVE]: { color: style_icon.activeColor },
+                    },
+                ]}
+            />
+            {/* Icon position flex direction */}
+            <Global
+                styles={[
+                    {
+                        [`${TITLE_CHILD_CLASSNAME}--icon-top`]: {
+                            flexDirection: "column",
+                        },
+                        [`${TITLE_CHILD_CLASSNAME}--icon-bottom`]: {
+                            flexDirection: "column",
+                        },
                     },
                 ]}
             />
@@ -266,7 +279,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                         isWithRadius: true,
                     }),
                     getBorderStyles({
-                        className: TITLE_CHILD_CLASSNAME_SELECTED,
+                        className: TITLE_CHILD_CLASSNAME_ACTIVE,
                         border: style_title.borderActive,
                         isWithRadius: true,
                     }),

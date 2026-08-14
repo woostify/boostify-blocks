@@ -8500,7 +8500,10 @@ function save({
       showMultiple: general_general.showMultiple,
       activeItem: '',
       hasInteracted: false
-    })
+    }),
+    // FAQ schema (JSON-LD) flag
+    'data-faq-schema': general_general.enableSchemaSupport ? 'true' : 'false',
+    'data-wp-init': 'callbacks.generateSchema'
   });
   // INNER BLOCKS
   const innerBlockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_1__.useBlockProps.save();
