@@ -7918,34 +7918,50 @@ const Edit = props => {
   }, [UNIQUE_ID]);
 
   // State manage value current_number
-  const [currentNumber, setCurrentNumber] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(general_layout?.startNumber) || 0);
+  const [currentNumber, setCurrentNumber] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseFloat(general_layout?.startNumber || "0"));
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    const targetNumber = parseInt(general_layout?.endNumber) || 0;
-    const duration = parseInt(general_layout?.animationDuration) || 1500;
-    const incrementTime = duration / (targetNumber || 1);
-    let current = parseInt(general_layout?.startNumber) || 0;
-    setCurrentNumber(current);
-    const interval = setInterval(() => {
-      current += 1;
-      setCurrentNumber(current);
-      if (current >= targetNumber) {
-        setCurrentNumber(targetNumber);
-        clearInterval(interval);
+    const start = parseFloat(general_layout?.startNumber || "0");
+    const end = parseFloat(general_layout?.endNumber || "0");
+    const duration = parseInt(general_layout?.animationDuration || "1500") || 1500;
+    setCurrentNumber(start);
+    if (start === end) {
+      return;
+    }
+    let animationFrameId = 0;
+    const startedAt = performance.now();
+
+    // Cubic ease-out for natural deceleration (matches front-end).
+    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+    const tick = now => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const value = start + (end - start) * easeOutCubic(progress);
+      setCurrentNumber(value);
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(tick);
+      } else {
+        setCurrentNumber(end);
       }
-    }, incrementTime);
-    return () => clearInterval(interval);
+    };
+    animationFrameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [endNumber, general_layout?.animationDuration, general_layout?.startNumber, general_layout?.decimalNumber, general_layout?.type, general_layout?.endNumber]);
 
   // Format number before display
   const formatNumber = (num, decimalPlaces) => {
     const decimal = parseInt(decimalPlaces);
-    if (!decimal || isNaN(decimal)) return num.toString();
-    return num.toFixed(decimal);
+    const fixed = num.toFixed(isNaN(decimal) || decimal < 0 ? 0 : decimal);
+    const thousandSeparator = general_layout?.thousand || "";
+    if (!thousandSeparator) {
+      return fixed;
+    }
+    const parts = fixed.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+    return parts.join(".");
   };
 
   // Calculate progress for the circle (0 to 100%)
   const calculateProgress = () => {
-    const end = parseInt(general_layout?.endNumber) || 0;
+    const end = parseFloat(general_layout?.endNumber) || 0;
     const current = currentNumber;
 
     // Calculate the ratio of curlentnumber compared to the maximum value (100%)
@@ -8419,8 +8435,7 @@ const GlobalCss = attrs => {
           marginTop: "10px"
         },
         ".wcb-icon-box__icon": {
-          fontSize: "20px",
-          marginBottom: "10px"
+          fontSize: "20px"
         },
         [`@media (min-width: ${media_tablet})`]: {
           flexDirection: general_icon.stackOn === "mobile" ? "row" : undefined
@@ -8586,16 +8601,45 @@ function save({
   // Format number for static display (used in non-circle/bar layouts)
   const formatNumber = (num, decimalPlaces) => {
     const decimal = parseInt(decimalPlaces);
-    if (!decimal || isNaN(decimal)) return num;
-    return parseFloat(num).toFixed(decimal);
+    const fixed = parseFloat(num || "0").toFixed(isNaN(decimal) || decimal < 0 ? 0 : decimal);
+    const thousandSeparator = general_layout?.thousand || "";
+    if (!thousandSeparator) {
+      return fixed;
+    }
+    const parts = fixed.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+    return parts.join(".");
+  };
+
+  // Circle geometry constants (kept in sync with the editor)
+  const counterRadius = 150;
+  const counterStroke = 5;
+  const counterNormalizedRadius = counterRadius - counterStroke * 2;
+  const counterCircumference = counterNormalizedRadius * 2 * Math.PI;
+
+  // Interactivity API context consumed by the counter view script
+  const counterContext = {
+    start: parseFloat(general_layout?.startNumber || "0"),
+    end: parseFloat(general_layout?.endNumber || "0"),
+    duration: parseInt(general_layout?.animationDuration || "1500") || 1500,
+    decimals: parseInt(general_layout?.decimalNumber || "0") || 0,
+    prefix: general_layout?.numberPrefix || "",
+    suffix: general_layout?.numberSuffix || "",
+    thousand: general_layout?.thousand || "",
+    mode: general_layout?.type || "number",
+    circumference: counterCircumference,
+    current: formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber || "0"),
+    dashOffset: counterCircumference,
+    width: "0%",
+    animated: false
   };
 
   // Render the progress circle structure
   const renderProgressCircle = () => {
-    const radius = 150;
-    const stroke = 5;
-    const normalizedRadius = radius - stroke * 2;
-    const circumference = normalizedRadius * 2 * Math.PI;
+    const radius = counterRadius;
+    const stroke = counterStroke;
+    const normalizedRadius = counterNormalizedRadius;
+    const circumference = counterCircumference;
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__progress-circle-wrap",
       style: {
@@ -8631,6 +8675,7 @@ function save({
         strokeDashoffset: circumference
       } // Initially set to 0% progress
       ,
+      "data-wp-style--stroke-dashoffset": "context.dashOffset",
       r: normalizedRadius,
       cx: radius,
       cy: radius
@@ -8654,7 +8699,10 @@ function save({
       icon: general_icon.icon
     })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__number"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+      className: "wcb-icon-box__number-value",
+      "data-wp-text": "context.current"
+    }, formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
       tagName: "div",
       value: description,
       placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description of box ..."),
@@ -8686,6 +8734,7 @@ function save({
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__progress-bar",
+      "data-wp-style--width": "context.width",
       style: {
         width: "0%",
         // Initially set to 0% progress
@@ -8704,7 +8753,8 @@ function save({
         marginBottom: "0px"
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-      className: "wcb-icon-box__number-value"
+      className: "wcb-icon-box__number-value",
+      "data-wp-text": "context.current"
     }, "0"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)))), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
       tagName: "div",
       value: description,
@@ -8726,7 +8776,10 @@ function save({
     }))));
   };
   const wrapBlockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save({
-    className: "wcb-counter-box__wrap"
+    className: "wcb-counter-box__wrap",
+    'data-wp-interactive': 'boostify-blocks/counter',
+    'data-wp-context': JSON.stringify(counterContext),
+    'data-wp-init': 'actions.init'
   });
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_SaveCommon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     ...wrapBlockProps,
@@ -8750,7 +8803,8 @@ function save({
     "data-animation-duration": general_layout?.animationDuration || "1500",
     "data-decimal-places": general_layout?.decimalNumber || "0"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-    className: "wcb-icon-box__number-value"
+    className: "wcb-icon-box__number-value",
+    "data-wp-text": "context.current"
   }, formatNumber(general_layout.startNumber, general_layout?.decimalNumber)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.type === "circle" && renderProgressCircle(), general_layout.type === "bar" && renderProgressBar()), (general_icon.iconPosition === "rightOfTitle" || general_icon.iconPosition === "bellowTitle") && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon()), general_layout.enableDescription && general_layout.type !== "circle" && general_layout.type !== "bar" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
     tagName: "div",
     value: description,

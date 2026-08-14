@@ -97,7 +97,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 
                     ".wcb-icon-box__icon": {
                         fontSize: "20px",
-                        marginBottom: "10px",
                     },
 
                     [`@media (min-width: ${media_tablet})`]: {

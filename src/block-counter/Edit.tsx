@@ -65,47 +65,67 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	// State manage value current_number
 	const [currentNumber, setCurrentNumber] = useState(
-		parseInt(general_layout?.startNumber) || 0
+		parseFloat(general_layout?.startNumber || "0")
 	);
 
 	useEffect(() => {
-		const targetNumber = parseInt(general_layout?.endNumber) || 0;
-		const duration = parseInt(general_layout?.animationDuration) || 1500;
-		const incrementTime = duration / (targetNumber || 1);
-		let current = parseInt(general_layout?.startNumber) || 0;
+		const start = parseFloat(general_layout?.startNumber || "0");
+		const end = parseFloat(general_layout?.endNumber || "0");
+		const duration = parseInt(general_layout?.animationDuration || "1500") || 1500;
 
-		setCurrentNumber(current);
+		setCurrentNumber(start);
 
-		const interval = setInterval(() => {
-			current += 1;
-			setCurrentNumber(current);
+		if (start === end) {
+			return;
+		}
 
-			if (current >= targetNumber) {
-				setCurrentNumber(targetNumber);
-				clearInterval(interval);
+		let animationFrameId = 0;
+		const startedAt = performance.now();
+
+		// Cubic ease-out for natural deceleration (matches front-end).
+		const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+		const tick = (now: number) => {
+			const progress = Math.min((now - startedAt) / duration, 1);
+			const value = start + (end - start) * easeOutCubic(progress);
+
+			setCurrentNumber(value);
+
+			if (progress < 1) {
+				animationFrameId = requestAnimationFrame(tick);
+			} else {
+				setCurrentNumber(end);
 			}
-		}, incrementTime);
+		};
 
-		return () => clearInterval(interval);
+		animationFrameId = requestAnimationFrame(tick);
+
+		return () => cancelAnimationFrame(animationFrameId);
 	}, [
 		endNumber,
 		general_layout?.animationDuration,
 		general_layout?.startNumber,
 		general_layout?.decimalNumber,
 		general_layout?.type,
-        general_layout?.endNumber
+		general_layout?.endNumber
 	]);
 
 	// Format number before display
 	const formatNumber = (num: number, decimalPlaces: string) => {
 		const decimal = parseInt(decimalPlaces);
-		if (!decimal || isNaN(decimal)) return num.toString();
-		return num.toFixed(decimal);
+		const fixed = num.toFixed(isNaN(decimal) || decimal < 0 ? 0 : decimal);
+		const thousandSeparator = general_layout?.thousand || "";
+		if (!thousandSeparator) {
+			return fixed;
+		}
+		const parts = fixed.split(".");
+		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+		return parts.join(".");
 	};
 
 	// Calculate progress for the circle (0 to 100%)
 	const calculateProgress = () => {
-		const end = parseInt(general_layout?.endNumber) || 0;
+		const end = parseFloat(general_layout?.endNumber) || 0;
 		const current = currentNumber;
 
         // Calculate the ratio of curlentnumber compared to the maximum value (100%)

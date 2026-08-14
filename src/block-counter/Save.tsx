@@ -49,16 +49,47 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
     // Format number for static display (used in non-circle/bar layouts)
     const formatNumber = (num: string, decimalPlaces: string) => {
         const decimal = parseInt(decimalPlaces);
-        if (!decimal || isNaN(decimal)) return num;
-        return parseFloat(num).toFixed(decimal);
+        const fixed = parseFloat(num || "0").toFixed(
+            isNaN(decimal) || decimal < 0 ? 0 : decimal
+        );
+        const thousandSeparator = general_layout?.thousand || "";
+        if (!thousandSeparator) {
+            return fixed;
+        }
+        const parts = fixed.split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+        return parts.join(".");
+    };
+
+    // Circle geometry constants (kept in sync with the editor)
+    const counterRadius = 150;
+    const counterStroke = 5;
+    const counterNormalizedRadius = counterRadius - counterStroke * 2;
+    const counterCircumference = counterNormalizedRadius * 2 * Math.PI;
+
+    // Interactivity API context consumed by the counter view script
+    const counterContext = {
+        start: parseFloat(general_layout?.startNumber || "0"),
+        end: parseFloat(general_layout?.endNumber || "0"),
+        duration: parseInt(general_layout?.animationDuration || "1500") || 1500,
+        decimals: parseInt(general_layout?.decimalNumber || "0") || 0,
+        prefix: general_layout?.numberPrefix || "",
+        suffix: general_layout?.numberSuffix || "",
+        thousand: general_layout?.thousand || "",
+        mode: general_layout?.type || "number",
+        circumference: counterCircumference,
+        current: formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber || "0"),
+        dashOffset: counterCircumference,
+        width: "0%",
+        animated: false,
     };
 
     // Render the progress circle structure
     const renderProgressCircle = () => {
-        const radius = 150;
-        const stroke = 5;
-        const normalizedRadius = radius - stroke * 2;
-        const circumference = normalizedRadius * 2 * Math.PI;
+        const radius = counterRadius;
+        const stroke = counterStroke;
+        const normalizedRadius = counterNormalizedRadius;
+        const circumference = counterCircumference;
 
         return (
             <div
@@ -94,6 +125,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         strokeWidth={stroke}
                         strokeDasharray={`${circumference} ${circumference}`}
                         style={{ strokeDashoffset: circumference }} // Initially set to 0% progress
+                        data-wp-style--stroke-dashoffset="context.dashOffset"
                         r={normalizedRadius}
                         cx={radius}
                         cy={radius}
@@ -125,7 +157,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                     </div> */}
                     <div className="wcb-icon-box__number">
 						<span>{general_layout.numberPrefix}</span>
-						{formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
+						<span className="wcb-icon-box__number-value" data-wp-text="context.current">
+							{formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
+						</span>
 						<span>{general_layout.numberSuffix}</span>
 					</div>
                     {general_layout.enableDescription && (
@@ -168,6 +202,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 >
                     <div
                         className="wcb-icon-box__progress-bar"
+                        data-wp-style--width="context.width"
                         style={{
                             width: "0%", // Initially set to 0% progress
                             height: "100%",
@@ -184,7 +219,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 							marginBottom: "0px"
 						}}>
 							<span>{general_layout.numberPrefix}</span>
-                            <span className="wcb-icon-box__number-value">0</span>
+                            <span className="wcb-icon-box__number-value" data-wp-text="context.current">0</span>
 							<span>{general_layout.numberSuffix}</span>
 						</div>
                     </div>
@@ -221,6 +256,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
     const wrapBlockProps = useBlockProps.save({
         className: "wcb-counter-box__wrap",
+        'data-wp-interactive': 'boostify-blocks/counter',
+        'data-wp-context': JSON.stringify(counterContext),
+        'data-wp-init': 'actions.init',
     });
 
     return (
@@ -264,7 +302,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                                     data-decimal-places={general_layout?.decimalNumber || "0"}
 								>
                                     <span>{general_layout.numberPrefix}</span>
-									<span className="wcb-icon-box__number-value">
+									<span className="wcb-icon-box__number-value" data-wp-text="context.current">
 										{formatNumber(general_layout.startNumber, general_layout?.decimalNumber)}
 									</span>
                                     <span>{general_layout.numberSuffix}</span>
