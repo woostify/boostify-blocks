@@ -43,11 +43,20 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         general_general,
     };
 
-    const wrapBlockProps = useBlockProps.save({ className: "wcb-tabs__wrap" });
+    const wrapBlockProps = useBlockProps.save({
+        className: "wcb-tabs__wrap",
+        'data-wp-interactive': 'boostify-blocks/tabs',
+        'data-wp-context': JSON.stringify({ activeTab: activeTabIndex }),
+    });
 
     const renderIcon = (index: number) => {
         if (!general_tabTitle.enableIcon) return null;
-        return general_tabTitle.icon ? <MyIconFull className={`wcb-tabs__icon ${activeTabIndex === index ? "wcb-tabs__icon-selected" : ""}`} icon={general_tabTitle.icon} /> : null;
+        return general_tabTitle.icon ? (
+            <MyIconFull
+                className="wcb-tabs__icon"
+                icon={general_tabTitle.icon}
+            />
+        ) : null;
     };
 
     return (
@@ -55,16 +64,22 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
             <div className="wcb-tabs__contents">
                 <div className="wcb-tabs__titles">
                     {titles.map((item, index) => (
-                        <div 
-                            className={`wcb-tabs__title_inner relative group ${activeTabIndex === index ? "wcb-tabs__title_inner-selected" : ""}`} 
-                            key={item.id} 
-                            data-tab-index={item.dataTabIndex}>
+                        <div
+                            className={`wcb-tabs__title_inner relative group wcb-tabs__title_inner--icon-${general_tabTitle.iconPosition}`}
+                            key={item.id}
+                            data-tab-index={item.dataTabIndex}
+                            data-wp-context={JSON.stringify({ tabIndex: index })}
+                            data-wp-on--click="actions.switchTab"
+                            data-wp-watch="callbacks.syncActiveTab"
+                            data-wp-class--is-active="context.isActiveTab"
+                        >
                             {(general_tabTitle.iconPosition === "left" || general_tabTitle.iconPosition === "top") && renderIcon(index)}
-                            <RichText.Content 
-                                tagName="p" 
-                                className={`wcb-tabs__title ${activeTabIndex === index ? "wcb-tabs__title-selected" : ""}`}
-                                value={item.title} 
-                                placeholder="Title" />
+                            <RichText.Content
+                                tagName="p"
+                                className="wcb-tabs__title"
+                                value={item.title}
+                                placeholder="Title"
+                            />
                             {(general_tabTitle.iconPosition === "right" || general_tabTitle.iconPosition === "bottom") && renderIcon(index)}
                         </div>
                     ))}
@@ -76,7 +91,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         role="tabpanel"
                         id={`tabpanel-${uniqueId}-${index}`}
                         aria-labelledby={`tab-${uniqueId}-${index}`}
-                        hidden={index !== activeTabIndex}
+                        data-wp-context={JSON.stringify({ tabIndex: index })}
+                        data-wp-watch="callbacks.syncActiveTab"
+                        data-wp-bind--hidden="!context.isActiveTab"
                     >
                         <div className="wcb-tab-child__inner">
                             <div dangerouslySetInnerHTML={{ __html: tabContents[index] }} />
