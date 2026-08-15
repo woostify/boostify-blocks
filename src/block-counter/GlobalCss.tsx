@@ -5,6 +5,7 @@ import getBorderStyles from "../utils/getBorderStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
+import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 
@@ -18,6 +19,7 @@ const GlobalCss: FC<Props> = (attrs) => {
         style_desination,
         style_Icon,
         style_title,
+        style_circle,
         advance_responsiveCondition,
         advance_zIndex,
         general_icon,
@@ -30,12 +32,70 @@ const GlobalCss: FC<Props> = (attrs) => {
 
     // ------------------- WRAP DIV
     const getDivWrapStyles = (): CSSObject[] => {
+        const isIconBesideContent =
+            general_icon.iconPosition === "left" ||
+            general_icon.iconPosition === "right";
+        const isIconBesideTitle =
+            general_icon.iconPosition === "leftOfTitle" ||
+            general_icon.iconPosition === "rightOfTitle";
+
+        // Convert text alignment to flex alignment for horizontal layouts.
+        const getFlexAlignment = (alignment?: string | null) => {
+            switch (alignment) {
+                case "center":
+                    return "center";
+                case "right":
+                    return "flex-end";
+                case "left":
+                default:
+                    return "flex-start";
+            }
+        };
+
+        const { value_Desktop, value_Tablet, value_Mobile } =
+            getValueFromAttrsResponsives(general_layout.textAlignment);
+
+        const justifyContentResponsive = {
+            justifyContent: getFlexAlignment(value_Mobile),
+            [`@media (min-width: ${media_tablet})`]: {
+                justifyContent: getFlexAlignment(value_Tablet),
+            },
+            [`@media (min-width: ${media_desktop})`]: {
+                justifyContent: getFlexAlignment(value_Desktop),
+            },
+        };
+
+        const horizontalJustifyStyles: CSSObject = {
+            [`${WRAP_CLASSNAME}`]: {
+                ...justifyContentResponsive,
+                ".wcb-icon-box__content": {
+                    flexGrow: 0,
+                },
+            },
+        };
+
+        const titleJustifyStyles: CSSObject = {
+            [`${WRAP_CLASSNAME} .wcb-icon-box__content-title-wrap`]: {
+                ...justifyContentResponsive,
+                ".wcb-icon-box__content-title": {
+                    flexGrow: 0,
+                },
+            },
+        };
+
         return [
             getStyleObjectFromResponsiveAttr({
                 className: WRAP_CLASSNAME,
                 value: general_layout.textAlignment,
                 prefix: "textAlign",
             }),
+
+            ...(general_layout.type === "number" && isIconBesideContent
+                ? [horizontalJustifyStyles]
+                : []),
+            ...(general_layout.type === "number" && isIconBesideTitle
+                ? [titleJustifyStyles]
+                : []),
 
             {
                 [`${WRAP_CLASSNAME}`]: {
@@ -73,9 +133,64 @@ const GlobalCss: FC<Props> = (attrs) => {
                         verticalAlign: "top",
                     },
 
+                    ".wcb-icon-box__progress-circle-svg": {
+                        transform: "rotate(-90deg)",
+                    },
+
+                    ".wcb-icon-box__progress-circle-content": {
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        textAlign: "center",
+                        display: "flex",
+                        flexDirection: isIconBesideContent ? "row" : "column",
+                        alignItems: "center",
+                        gap: "10px",
+                        maxWidth: "100%",
+                        width: "100%",
+                        padding: "10px",
+                    },
+
+                    ".wcb-icon-box__progress-circle-content-inner": {
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "10px",
+                    },
+
+                    ".wcb-icon-box__progress-circle-content-row": {
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "10px",
+                    },
+
                     ".wcb-icon-box__progress-bar-wrap": {
                         position: "relative",
                         width: "100%",
+                    },
+
+                    ".wcb-icon-box__progress-bar-track": {
+                        width: "100%",
+                        backgroundColor: "#e0e0e0",
+                        height: "100%",
+                        borderRadius: "5px",
+                        overflow: "hidden",
+                        position: "relative",
+                    },
+
+                    ".wcb-icon-box__progress-bar": {
+                        height: "100%",
+                        transition: "transparent",
+                        color: "white",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "end",
+                        paddingRight: "4px",
+                        paddingTop: "5px",
+                        paddingBottom: "5px",
                     },
 
                     ".wcb-icon-box__title": {
@@ -115,6 +230,20 @@ const GlobalCss: FC<Props> = (attrs) => {
                     padding: style_dimension?.padding,
                 })}
             />
+
+            {/* --------- CIRCLE --------- */}
+            {general_layout.type === "circle" ? (
+                <Global
+                    styles={[
+                        getStyleObjectFromResponsiveAttr({
+                            className: `${WRAP_CLASSNAME} .wcb-icon-box__progress-circle-wrap`,
+                            value: style_circle?.circleSize,
+                            prefix: "width",
+                            prefix_2: "height",
+                        }),
+                    ]}
+                />
+            ) : null}
 
             {/* --------- ICON --------- */}
             {general_icon.enableIcon ? (

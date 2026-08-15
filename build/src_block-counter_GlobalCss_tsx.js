@@ -155,13 +155,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @emotion/react */ "./node_modules/@emotion/react/dist/emotion-react.browser.esm.js");
+/* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @emotion/react */ "./node_modules/@emotion/react/dist/emotion-react.browser.esm.js");
 /* harmony import */ var _block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../block-container/getAdvanveStyles */ "./src/block-container/getAdvanveStyles.ts");
 /* harmony import */ var _utils_getBorderStyles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getBorderStyles */ "./src/utils/getBorderStyles.ts");
 /* harmony import */ var _utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/getPaddingMarginStyles */ "./src/utils/getPaddingMarginStyles.ts");
 /* harmony import */ var _utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/getStyleObjectFromResponsiveAttr */ "./src/utils/getStyleObjectFromResponsiveAttr.ts");
 /* harmony import */ var _utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/getTypographyStyles */ "./src/utils/getTypographyStyles.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
+/* harmony import */ var _utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/getValueFromAttrsResponsives */ "./src/utils/getValueFromAttrsResponsives.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
+
 
 
 
@@ -179,6 +181,7 @@ const GlobalCss = attrs => {
     style_desination,
     style_Icon,
     style_title,
+    style_circle,
     advance_responsiveCondition,
     advance_zIndex,
     general_icon,
@@ -188,16 +191,61 @@ const GlobalCss = attrs => {
   const {
     media_desktop,
     media_tablet
-  } = ___WEBPACK_IMPORTED_MODULE_6__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+  } = ___WEBPACK_IMPORTED_MODULE_7__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
   const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 
   // ------------------- WRAP DIV
   const getDivWrapStyles = () => {
+    const isIconBesideContent = general_icon.iconPosition === "left" || general_icon.iconPosition === "right";
+    const isIconBesideTitle = general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle";
+
+    // Convert text alignment to flex alignment for horizontal layouts.
+    const getFlexAlignment = alignment => {
+      switch (alignment) {
+        case "center":
+          return "center";
+        case "right":
+          return "flex-end";
+        case "left":
+        default:
+          return "flex-start";
+      }
+    };
+    const {
+      value_Desktop,
+      value_Tablet,
+      value_Mobile
+    } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__["default"])(general_layout.textAlignment);
+    const justifyContentResponsive = {
+      justifyContent: getFlexAlignment(value_Mobile),
+      [`@media (min-width: ${media_tablet})`]: {
+        justifyContent: getFlexAlignment(value_Tablet)
+      },
+      [`@media (min-width: ${media_desktop})`]: {
+        justifyContent: getFlexAlignment(value_Desktop)
+      }
+    };
+    const horizontalJustifyStyles = {
+      [`${WRAP_CLASSNAME}`]: {
+        ...justifyContentResponsive,
+        ".wcb-icon-box__content": {
+          flexGrow: 0
+        }
+      }
+    };
+    const titleJustifyStyles = {
+      [`${WRAP_CLASSNAME} .wcb-icon-box__content-title-wrap`]: {
+        ...justifyContentResponsive,
+        ".wcb-icon-box__content-title": {
+          flexGrow: 0
+        }
+      }
+    };
     return [(0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__["default"])({
       className: WRAP_CLASSNAME,
       value: general_layout.textAlignment,
       prefix: "textAlign"
-    }), {
+    }), ...(general_layout.type === "number" && isIconBesideContent ? [horizontalJustifyStyles] : []), ...(general_layout.type === "number" && isIconBesideTitle ? [titleJustifyStyles] : []), {
       [`${WRAP_CLASSNAME}`]: {
         display: general_icon.iconPosition === "left" || general_icon.iconPosition === "right" ? "flex" : "block",
         flexDirection: general_icon.stackOn === "mobile" || general_icon.stackOn === "tablet" ? general_icon.iconPosition === "right" ? "column-reverse" : "column" : undefined,
@@ -212,9 +260,58 @@ const GlobalCss = attrs => {
           display: "inline-block",
           verticalAlign: "top"
         },
+        ".wcb-icon-box__progress-circle-svg": {
+          transform: "rotate(-90deg)"
+        },
+        ".wcb-icon-box__progress-circle-content": {
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          textAlign: "center",
+          display: "flex",
+          flexDirection: isIconBesideContent ? "row" : "column",
+          alignItems: "center",
+          gap: "10px",
+          maxWidth: "100%",
+          width: "100%",
+          padding: "10px"
+        },
+        ".wcb-icon-box__progress-circle-content-inner": {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "10px"
+        },
+        ".wcb-icon-box__progress-circle-content-row": {
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "10px"
+        },
         ".wcb-icon-box__progress-bar-wrap": {
           position: "relative",
           width: "100%"
+        },
+        ".wcb-icon-box__progress-bar-track": {
+          width: "100%",
+          backgroundColor: "#e0e0e0",
+          height: "100%",
+          borderRadius: "5px",
+          overflow: "hidden",
+          position: "relative"
+        },
+        ".wcb-icon-box__progress-bar": {
+          height: "100%",
+          transition: "transparent",
+          color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "end",
+          paddingRight: "4px",
+          paddingTop: "5px",
+          paddingBottom: "5px"
         },
         ".wcb-icon-box__title": {
           fontSize: "16px",
@@ -236,15 +333,22 @@ const GlobalCss = attrs => {
   if (!uniqueId) {
     return null;
   }
-  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: getDivWrapStyles()
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: (0,_utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
       className: WRAP_CLASSNAME,
       margin: style_dimension?.margin,
       padding: style_dimension?.padding
     })
-  }), general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }), general_layout.type === "circle" ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
+    styles: [(0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__["default"])({
+      className: `${WRAP_CLASSNAME} .wcb-icon-box__progress-circle-wrap`,
+      value: style_circle?.circleSize,
+      prefix: "width",
+      prefix_2: "height"
+    })]
+  }) : null, general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
       className: `${WRAP_CLASSNAME} .wcb-icon-box__icon-wrap`,
       margin: style_Icon.dimensions?.margin
@@ -268,7 +372,7 @@ const GlobalCss = attrs => {
         }
       }
     }]
-  }) : null, general_layout.enablePrefix ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, general_layout.enablePrefix ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__["default"])({
       typography: style_desination.typography,
       className: `${WRAP_CLASSNAME} .wcb-icon-box__number`
@@ -281,7 +385,7 @@ const GlobalCss = attrs => {
         color: style_desination.textColor
       }
     }]
-  }) : null, general_layout.enableTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, general_layout.enableTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__["default"])({
       typography: style_title.typography,
       className: `${WRAP_CLASSNAME} .wcb-icon-box__number`
@@ -294,7 +398,7 @@ const GlobalCss = attrs => {
         color: style_title.textColor
       }
     }]
-  }) : null, general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__["default"])({
       typography: style_description.typography,
       className: `${WRAP_CLASSNAME} .wcb-icon-box__description`
@@ -307,7 +411,7 @@ const GlobalCss = attrs => {
         color: style_description.textColor
       }
     }]
-  }) : null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: (0,_block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__.getAdvanveDivWrapStyles)({
       advance_responsiveCondition,
       advance_motionEffect,

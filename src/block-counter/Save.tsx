@@ -23,8 +23,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_desination,
         style_Icon,
         style_progress,
-        style_title,
-        general_icon,
+		style_circle,
+		style_title,
+		general_icon,
         style_dimension,
         advance_motionEffect,
     } = attributes;
@@ -40,8 +41,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_desination,
         style_Icon,
         style_progress,
-        style_title,
-        general_icon,
+		style_circle,
+		style_title,
+		general_icon,
         style_dimension,
         advance_motionEffect,
     };
@@ -62,7 +64,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
     };
 
     // Circle geometry constants (kept in sync with the editor)
-    const counterRadius = 150;
+    const counterViewBoxSize = 300;
+    const counterRadius = counterViewBoxSize / 2;
     const counterStroke = 5;
     const counterNormalizedRadius = counterRadius - counterStroke * 2;
     const counterCircumference = counterNormalizedRadius * 2 * Math.PI;
@@ -71,6 +74,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
     const counterContext = {
         start: parseFloat(general_layout?.startNumber || "0"),
         end: parseFloat(general_layout?.endNumber || "0"),
+        total: parseFloat(general_layout?.totalNumber || general_layout?.endNumber || "0"),
         duration: parseInt(general_layout?.animationDuration || "1500") || 1500,
         decimals: parseInt(general_layout?.decimalNumber || "0") || 0,
         prefix: general_layout?.numberPrefix || "",
@@ -91,6 +95,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         const stroke = counterStroke;
         const normalizedRadius = counterNormalizedRadius;
         const circumference = counterCircumference;
+        const viewBoxSize = counterViewBoxSize;
 
         const isIconBesideContent =
             general_icon.iconPosition === "left" ||
@@ -134,8 +139,6 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 className="wcb-icon-box__progress-circle-wrap"
                 style={{
                     position: "relative",
-                    width: `${radius * 2}px`,
-                    height: `${radius * 2}px`,
                 }}
                 data-start-number={general_layout?.startNumber || "0"}
                 data-end-number={general_layout?.endNumber || "0"}
@@ -144,9 +147,10 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 data-number-suffix={general_layout?.numberSuffix || ""}
             >
                 <svg
-                    height={radius * 2}
-                    width={radius * 2}
-                    style={{ transform: "rotate(-90deg)" }}
+                    className="wcb-icon-box__progress-circle-svg"
+                    viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+                    width="100%"
+                    height="100%"
                 >
                     <circle
                         stroke="#e0e0e0"
@@ -169,32 +173,11 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         cy={radius}
                     />
                 </svg>
-                <div
-                    style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        textAlign: "center",
-                        display: "flex",
-                        flexDirection: isIconBesideContent ? "row" : "column",
-                        alignItems: "center",
-                        gap: "10px",
-                        maxWidth: `${radius * 1.5}px`,
-                        padding: "10px",
-                    }}
-                >
+                <div className="wcb-icon-box__progress-circle-content">
                     {isIconBesideContent ? (
                         <>
                             {general_icon.iconPosition === "left" && iconEl}
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    gap: "10px",
-                                }}
-                            >
+                            <div className="wcb-icon-box__progress-circle-content-inner">
                                 {numberEl}
                                 {descriptionEl}
                             </div>
@@ -202,15 +185,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         </>
                     ) : isIconBesideTitle ? (
                         <>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: "10px",
-                                }}
-                            >
+                            <div className="wcb-icon-box__progress-circle-content-row">
                                 {general_icon.iconPosition === "leftOfTitle" &&
                                     iconEl}
                                 {numberEl}
@@ -244,29 +219,13 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 data-number-prefix={general_layout?.numberPrefix || ""}
                 data-number-suffix={general_layout?.numberSuffix || ""}
             >
-                <div
-                    style={{
-                        width: "100%",
-                        backgroundColor: "#e0e0e0",
-                        height: "100%",
-                        borderRadius: "5px",
-                        overflow: "hidden",
-                        position: "relative",
-                    }}
-                >
+                <div className="wcb-icon-box__progress-bar-track">
                     <div
                         className="wcb-icon-box__progress-bar"
                         data-wp-style--width="context.width"
                         style={{
-                            width: "0%", // Initially set to 0% progress
-                            height: "100%",
+                            width: "0%",
                             backgroundColor: style_progress.progressColor,
-                            transition: "transparent",
-                            color: "white",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "end",
-                            paddingRight: "4px",
                         }}
                     >
                     <div className="wcb-icon-box__number" style={{

@@ -11862,7 +11862,7 @@ const TYPOGRAPHY_CONTROL_DEMO = {
   textDecoration: undefined,
   textTransform: undefined,
   lineHeight: {
-    Desktop: undefined
+    Desktop: "1.5"
   },
   letterSpacing: {
     Desktop: undefined

@@ -21,8 +21,11 @@ import WcbIconBoxPanel_StyleIcons from "./WcbIconBoxPanel_StyleIcons";
 import MyIconFull from "../components/controls/MyIconFull";
 import WcbIconBoxPanel_StyleDimension from "./WcbIconBoxPanel_StyleDimension";
 import WcbIconBoxPanel_StyleProgress from "./WcbIconBoxPanel_StyleProgress";
+import WcbIconBoxPanel_StyleCircle from "./WcbIconBoxPanel_StyleCircle";
 import { MY_DIMENSIONS_NO_GAP_DEMO__EMPTY } from "../components/controls/MyDimensionsControl/types";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
+import useGetDeviceType from "../hooks/useGetDeviceType";
+import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
 // Easing functions (keep in sync with the front-end counter view script).
 const EASING_FUNCTIONS: Record<string, (t: number) => number> = {
@@ -57,6 +60,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_description,
 		style_Icon,
 		style_progress,
+		style_circle,
 		style_dimension,
 		advance_motionEffect,
 	} = attributes;
@@ -71,6 +75,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		tabStylesIsPanelOpen,
 		handleTogglePanel,
 	} = useSetBlockPanelInfo(uniqueId);
+
+	const deviceType = useGetDeviceType() || "Desktop";
+	const { currentDeviceValue: currentCircleSize } = getValueFromAttrsResponsives(
+		style_circle?.circleSize,
+		deviceType
+	);
 
 	// Make uniqueId
 	const UNIQUE_ID = wrapBlockProps.id;
@@ -143,28 +153,22 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return parts.join(".");
 	};
 
-	// Calculate progress for the circle (0 to 100%)
-	const calculateProgress = () => {
-		const end = parseFloat(general_layout?.endNumber) || 0;
-		const current = currentNumber;
-
-        // Calculate the ratio of curlentnumber compared to the maximum value (100%)
-		const maxValue = 100;
-		const progress = (current / maxValue) * 100;
-
-        // The maximum progress limit is equal to the ratio of Endnumber compared to Maxvalue
-		const endProgress = (end / maxValue) * 100;
-		return Math.min(progress, endProgress);
-	};
-
 	// Render the progress circle with content inside
 	const renderProgressCircle = () => {
-		const radius = 150;
+		const viewBoxSize = 300;
+		const radius = viewBoxSize / 2;
 		const stroke = 5;
 		const normalizedRadius = radius - stroke * 2;
 		const circumference = normalizedRadius * 2 * Math.PI;
-		const progress = calculateProgress();
-		const strokeDashoffset = circumference - (progress / 100) * circumference;
+		const totalNumber =
+			parseFloat(general_layout?.totalNumber || general_layout?.endNumber) ||
+			0;
+		const progressFraction =
+			totalNumber !== 0
+				? Math.min(Math.max(currentNumber / totalNumber, 0), 1)
+				: 0;
+		const strokeDashoffset = circumference * (1 - progressFraction);
+		const circleSize = currentCircleSize || "300px";
 
 		const isIconBesideContent =
 			general_icon.iconPosition === "left" ||
@@ -208,14 +212,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				className="wcb-icon-box__progress-circle-wrap"
 				style={{
 					position: "relative",
-					width: `${radius * 2}px`,
-					height: `${radius * 2}px`,
+					width: circleSize,
+					height: circleSize,
 				}}
 			>
 				<svg
-					height={radius * 2}
-					width={radius * 2}
-					style={{ transform: "rotate(-90deg)" }}
+					className="wcb-icon-box__progress-circle-svg"
+					viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+					width="100%"
+					height="100%"
 				>
 					<circle
 						stroke="#e0e0e0"
@@ -226,6 +231,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						cy={radius}
 					/>
 					<circle
+						className="wcb-icon-box__progress-circle"
 						stroke={style_progress.progressColor}
 						fill="transparent"
                         strokeWidth={stroke}
@@ -236,32 +242,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						cy={radius}
 					/>
 				</svg>
-				<div
-					style={{
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-						textAlign: "center",
-						display: "flex",
-						flexDirection: isIconBesideContent ? "row" : "column",
-						alignItems: "center",
-						gap: "10px",
-                        maxWidth: `${radius * 1.5}px`, // Limit the content width to not overflow
-						padding: "10px",
-					}}
-				>
+				<div className="wcb-icon-box__progress-circle-content">
 					{isIconBesideContent ? (
 						<>
 							{general_icon.iconPosition === "left" && iconEl}
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									alignItems: "center",
-									gap: "10px",
-								}}
-							>
+							<div className="wcb-icon-box__progress-circle-content-inner">
 								{numberEl}
 								{descriptionEl}
 							</div>
@@ -269,15 +254,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						</>
 					) : isIconBesideTitle ? (
 						<>
-							<div
-								style={{
-									display: "flex",
-									flexDirection: "row",
-									alignItems: "center",
-									justifyContent: "center",
-									gap: "10px",
-								}}
-							>
+							<div className="wcb-icon-box__progress-circle-content-row">
 								{general_icon.iconPosition === "leftOfTitle" &&
 									iconEl}
 								{numberEl}
@@ -301,31 +278,22 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	};
 
 	const renderProgressBar = () => {
-		const progress = calculateProgress(); // Use the updated calculateProgressBar function
+		const totalNumber =
+			parseFloat(general_layout?.totalNumber || general_layout?.endNumber) ||
+			0;
+		const barWidth =
+			totalNumber !== 0
+				? Math.min((currentNumber / totalNumber) * 100, 100)
+				: 0;
 
 		return (
 			<div className="wcb-icon-box__progress-bar-wrap">
-				<div
-					style={{
-						width: "100%",
-						backgroundColor: "#e0e0e0", // Background color for the unfilled portion
-						height: "100%", // Height of the bar
-						borderRadius: "5px", // Optional: rounded edges
-						overflow: "hidden", // Ensure the fill doesn't overflow
-						position: "relative",
-					}}
-				>
+				<div className="wcb-icon-box__progress-bar-track">
 					<div
+						className="wcb-icon-box__progress-bar"
 						style={{
-							width: `${progress}%`, // Dynamic width based on progress
-							height: "100%",
+							width: `${barWidth}%`,
 							backgroundColor: style_progress.progressColor,
-							transition: "transparent", // Smooth transition for the fill
-							color: "white",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "end",
-							paddingRight: "4px"
 						}}
 					>
 						<div className="wcb-icon-box__number" style={{
@@ -490,6 +458,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								panelData={style_progress}
 							/>
 						)}
+						{general_layout.type === "circle" && (
+							<WcbIconBoxPanel_StyleCircle
+								onToggle={() => handleTogglePanel("Styles", "_StyleCircle")}
+								initialOpen={tabStylesIsPanelOpen === "_StyleCircle"}
+								opened={tabStylesIsPanelOpen === "_StyleCircle" || undefined}
+								//
+								setAttr__={(data) => {
+									setAttributes({ style_circle: data });
+								}}
+								panelData={style_circle}
+							/>
+						)}
 						{general_layout.enablePrefix && (
 							<WcbTeamPanel_StyleDesignation
 								onToggle={() =>
@@ -588,6 +568,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			style_description,
 			style_Icon,
 			style_progress,
+			style_circle,
 			style_dimension,
 			general_icon,
 			advance_motionEffect,
@@ -604,6 +585,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_description,
 		style_Icon,
 		style_progress,
+		style_circle,
 		style_dimension,
 		general_icon,
 		advance_motionEffect,

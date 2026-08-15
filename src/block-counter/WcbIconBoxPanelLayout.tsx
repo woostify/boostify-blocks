@@ -20,6 +20,7 @@ export interface WCB_ICON_BOX_PANEL_LAYOUT {
 	type: string;
 	startNumber: string;
 	endNumber: string;
+	totalNumber: string;
 	decimalNumber: string;
 	numberPrefix: string;
 	numberSuffix: string;
@@ -38,6 +39,7 @@ export const WCB_ICON_BOX_PANEL_LAYOUT_DEMO: WCB_ICON_BOX_PANEL_LAYOUT = {
 	type: 'number',
 	startNumber: '0',
 	endNumber: '80',
+	totalNumber: '',
 	decimalNumber: '0',
 	numberPrefix: '',
 	numberSuffix: '%',
@@ -71,6 +73,7 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 		type,
 		startNumber,
 		endNumber,
+		totalNumber,
 		decimalNumber,
 		numberPrefix,
 		numberSuffix,
@@ -146,6 +149,21 @@ const WcbIconBoxPanelLayout: FC<Props> = ({
 						setAttr__({ ...panelData, endNumber: value});
 					}}
 				/>
+
+				{(type === "circle" || type === "bar") && (
+					<TextControl
+						label={__("Total Number", "boostify-blocks")}
+						type="number"
+						value={totalNumber || endNumber}
+						help={__(
+							"Total Number should be more than or equal to the Ending Number (or the Starting number in case you want to animate the Counter in reverse direction).",
+							"boostify-blocks"
+						)}
+						onChange={(value) => {
+							setAttr__({ ...panelData, totalNumber: value });
+						}}
+					/>
+				)}
 				
 				<TextControl
 					label={__("Decimal Places", "boostify-blocks")}

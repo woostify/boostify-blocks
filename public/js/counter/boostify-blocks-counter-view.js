@@ -66,10 +66,10 @@ const { actions } = store(NAMESPACE, {
 		animate: (context) => {
 			const start = Number(context.start);
 			const end = Number(context.end);
+			const total = Number(context.total) || end;
 			const duration = Number(context.duration) || 1500;
 			const decimals = Number(context.decimals) || 0;
 			const separator = context.thousand || '';
-			const maxValue = 100;
 
 			// Easing type can be overridden per-block via context.easing.
 			const easingType = context.easing || 'easeOutCubic';
@@ -92,9 +92,14 @@ const { actions } = store(NAMESPACE, {
 
 			const setValue = (value) => {
 				context.current = format(value);
+				const progressFraction =
+					total !== 0
+						? Math.min(Math.max(value / total, 0), 1)
+						: 0;
 				context.dashOffset =
-					context.circumference * (1 - value / maxValue);
-				context.width = `${(value / maxValue) * 100}%`;
+					context.circumference * (1 - progressFraction);
+				const barProgress = total !== 0 ? (value / total) * 100 : 0;
+				context.width = `${Math.min(barProgress, 100)}%`;
 			};
 
 			if (start === end) {
