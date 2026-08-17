@@ -85,6 +85,13 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
+    // Enqueue the Counter view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-counter-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/counter/boostify-blocks-counter-view.js',
+        array( '@wordpress/interactivity' )
+    );
+
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(
             'boostify-blocks-buynow',

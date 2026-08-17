@@ -21,8 +21,28 @@ import WcbIconBoxPanel_StyleIcons from "./WcbIconBoxPanel_StyleIcons";
 import MyIconFull from "../components/controls/MyIconFull";
 import WcbIconBoxPanel_StyleDimension from "./WcbIconBoxPanel_StyleDimension";
 import WcbIconBoxPanel_StyleProgress from "./WcbIconBoxPanel_StyleProgress";
+import WcbIconBoxPanel_StyleCircle from "./WcbIconBoxPanel_StyleCircle";
 import { MY_DIMENSIONS_NO_GAP_DEMO__EMPTY } from "../components/controls/MyDimensionsControl/types";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
+import useGetDeviceType from "../hooks/useGetDeviceType";
+import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
+
+// Easing functions (keep in sync with the front-end counter view script).
+const EASING_FUNCTIONS: Record<string, (t: number) => number> = {
+	easeOutCubic: (t) => 1 - Math.pow(1 - t, 3),
+	easeInOutQuad: (t) =>
+		t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+	easeInOutCubic: (t) =>
+		t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+	easeOutElastic: (t) => {
+		const c4 = (2 * Math.PI) / 3;
+		return t === 0
+			? 0
+			: t === 1
+			? 1
+			: Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+	},
+};
 
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const { attributes, setAttributes, clientId } = props;
@@ -40,6 +60,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_description,
 		style_Icon,
 		style_progress,
+		style_circle,
 		style_dimension,
 		advance_motionEffect,
 	} = attributes;
@@ -55,6 +76,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		handleTogglePanel,
 	} = useSetBlockPanelInfo(uniqueId);
 
+	const deviceType = useGetDeviceType() || "Desktop";
+	const { currentDeviceValue: currentCircleSize } = getValueFromAttrsResponsives(
+		style_circle?.circleSize,
+		deviceType
+	);
+
 	// Make uniqueId
 	const UNIQUE_ID = wrapBlockProps.id;
 	useEffect(() => {
@@ -65,80 +92,135 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	// State manage value current_number
 	const [currentNumber, setCurrentNumber] = useState(
-		parseInt(general_layout?.startNumber) || 0
+		parseFloat(general_layout?.startNumber || "0")
 	);
 
 	useEffect(() => {
-		const targetNumber = parseInt(general_layout?.endNumber) || 0;
-		const duration = parseInt(general_layout?.animationDuration) || 1500;
-		const incrementTime = duration / (targetNumber || 1);
-		let current = parseInt(general_layout?.startNumber) || 0;
+		const start = parseFloat(general_layout?.startNumber || "0");
+		const end = parseFloat(general_layout?.endNumber || "0");
+		const duration = parseInt(general_layout?.animationDuration || "1500") || 1500;
 
-		setCurrentNumber(current);
+		setCurrentNumber(start);
 
-		const interval = setInterval(() => {
-			current += 1;
-			setCurrentNumber(current);
+		if (start === end) {
+			return;
+		}
 
-			if (current >= targetNumber) {
-				setCurrentNumber(targetNumber);
-				clearInterval(interval);
+		let animationFrameId = 0;
+		const startedAt = performance.now();
+
+		// Matches the front-end counter view script.
+		const easingFn =
+			EASING_FUNCTIONS[general_layout?.animationType || "easeOutCubic"] ||
+			EASING_FUNCTIONS.easeOutCubic;
+
+		const tick = (now: number) => {
+			const progress = Math.min((now - startedAt) / duration, 1);
+			const value = start + (end - start) * easingFn(progress);
+
+			setCurrentNumber(value);
+
+			if (progress < 1) {
+				animationFrameId = requestAnimationFrame(tick);
+			} else {
+				setCurrentNumber(end);
 			}
-		}, incrementTime);
+		};
 
-		return () => clearInterval(interval);
+		animationFrameId = requestAnimationFrame(tick);
+
+		return () => cancelAnimationFrame(animationFrameId);
 	}, [
 		endNumber,
 		general_layout?.animationDuration,
+		general_layout?.animationType,
 		general_layout?.startNumber,
 		general_layout?.decimalNumber,
 		general_layout?.type,
-        general_layout?.endNumber
+		general_layout?.endNumber
 	]);
 
 	// Format number before display
 	const formatNumber = (num: number, decimalPlaces: string) => {
 		const decimal = parseInt(decimalPlaces);
-		if (!decimal || isNaN(decimal)) return num.toString();
-		return num.toFixed(decimal);
-	};
-
-	// Calculate progress for the circle (0 to 100%)
-	const calculateProgress = () => {
-		const end = parseInt(general_layout?.endNumber) || 0;
-		const current = currentNumber;
-
-        // Calculate the ratio of curlentnumber compared to the maximum value (100%)
-		const maxValue = 100;
-		const progress = (current / maxValue) * 100;
-
-        // The maximum progress limit is equal to the ratio of Endnumber compared to Maxvalue
-		const endProgress = (end / maxValue) * 100;
-		return Math.min(progress, endProgress);
+		const fixed = num.toFixed(isNaN(decimal) || decimal < 0 ? 0 : decimal);
+		const thousandSeparator = general_layout?.thousand || "";
+		if (!thousandSeparator) {
+			return fixed;
+		}
+		const parts = fixed.split(".");
+		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+		return parts.join(".");
 	};
 
 	// Render the progress circle with content inside
 	const renderProgressCircle = () => {
-		const radius = 150;
+		const viewBoxSize = 300;
+		const radius = viewBoxSize / 2;
 		const stroke = 5;
 		const normalizedRadius = radius - stroke * 2;
 		const circumference = normalizedRadius * 2 * Math.PI;
-		const progress = calculateProgress();
-		const strokeDashoffset = circumference - (progress / 100) * circumference;
+		const totalNumber =
+			parseFloat(general_layout?.totalNumber || general_layout?.endNumber) ||
+			0;
+		const progressFraction =
+			totalNumber !== 0
+				? Math.min(Math.max(currentNumber / totalNumber, 0), 1)
+				: 0;
+		const strokeDashoffset = circumference * (1 - progressFraction);
+		const circleSize = currentCircleSize || "300px";
+
+		const isIconBesideContent =
+			general_icon.iconPosition === "left" ||
+			general_icon.iconPosition === "right";
+
+		const isIconBesideTitle =
+			general_icon.iconPosition === "leftOfTitle" ||
+			general_icon.iconPosition === "rightOfTitle";
+
+		const iconEl = general_icon.enableIcon ? (
+			<div className="wcb-icon-box__icon">
+				<MyIconFull icon={general_icon.icon} />
+			</div>
+		) : null;
+
+		const numberEl = (
+			<div className="wcb-icon-box__number">
+				<span>{general_layout.numberPrefix}</span>
+				{formatNumber(currentNumber, general_layout?.decimalNumber)}
+				<span>{general_layout.numberSuffix}</span>
+			</div>
+		);
+
+		const descriptionEl = general_layout.enableDescription ? (
+			<RichText
+				tagName="div"
+				value={description}
+				allowedFormats={["core/bold", "core/italic"]}
+				onChange={(content) => setAttributes({ description: content })}
+				placeholder={__("Description of box ...")}
+				className="wcb-icon-box__description"
+				style={{
+					wordBreak: "break-word",
+					maxWidth: "100%",
+				}}
+			/>
+		) : null;
 
 		return (
 			<div
 				className="wcb-icon-box__progress-circle-wrap"
 				style={{
 					position: "relative",
-					width: `${radius * 2}px`,
-					height: `${radius * 2}px`,
+					width: circleSize,
+					height: circleSize,
 				}}
 			>
 				<svg
-					height={radius * 2}
-					width={radius * 2}
-					style={{ transform: "rotate(-90deg)" }}
+					className="wcb-icon-box__progress-circle-svg"
+					viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+					width="100%"
+					height="100%"
 				>
 					<circle
 						stroke="#e0e0e0"
@@ -149,6 +231,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						cy={radius}
 					/>
 					<circle
+						className="wcb-icon-box__progress-circle"
 						stroke={style_progress.progressColor}
 						fill="transparent"
                         strokeWidth={stroke}
@@ -159,44 +242,35 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						cy={radius}
 					/>
 				</svg>
-				<div
-					style={{
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-						textAlign: "center",
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "center",
-						gap: "10px",
-                        maxWidth: `${radius * 1.5}px`, // Limit the content width to not overflow
-						padding: "10px",
-					}}
-				>
-					{general_icon.enableIcon && (
-						<div className="wcb-icon-box__icon">
-							<MyIconFull icon={general_icon.icon} />
-						</div>
-					)}
-					<div className="wcb-icon-box__number">
-						<span>{general_layout.numberPrefix}</span>
-						{formatNumber(currentNumber, general_layout?.decimalNumber)}
-						<span>{general_layout.numberSuffix}</span>
-					</div>
-					{general_layout.enableDescription && (
-						<RichText
-							tagName="div"
-							value={description}
-							allowedFormats={["core/bold", "core/italic"]}
-							onChange={(content) => setAttributes({ description: content })}
-							placeholder={__("Description of box ...")}
-							className="wcb-icon-box__description"
-							style={{
-								wordBreak: "break-word",
-								maxWidth: "100%",
-							}}
-						/>
+				<div className="wcb-icon-box__progress-circle-content">
+					{isIconBesideContent ? (
+						<>
+							{general_icon.iconPosition === "left" && iconEl}
+							<div className="wcb-icon-box__progress-circle-content-inner">
+								{numberEl}
+								{descriptionEl}
+							</div>
+							{general_icon.iconPosition === "right" && iconEl}
+						</>
+					) : isIconBesideTitle ? (
+						<>
+							<div className="wcb-icon-box__progress-circle-content-row">
+								{general_icon.iconPosition === "leftOfTitle" &&
+									iconEl}
+								{numberEl}
+								{general_icon.iconPosition === "rightOfTitle" &&
+									iconEl}
+							</div>
+							{descriptionEl}
+						</>
+					) : (
+						<>
+							{general_icon.iconPosition === "top" && iconEl}
+							{numberEl}
+							{general_icon.iconPosition === "bellowTitle" && iconEl}
+							{descriptionEl}
+							{general_icon.iconPosition === "bottom" && iconEl}
+						</>
 					)}
 				</div>
 			</div>
@@ -204,31 +278,22 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	};
 
 	const renderProgressBar = () => {
-		const progress = calculateProgress(); // Use the updated calculateProgressBar function
+		const totalNumber =
+			parseFloat(general_layout?.totalNumber || general_layout?.endNumber) ||
+			0;
+		const barWidth =
+			totalNumber !== 0
+				? Math.min((currentNumber / totalNumber) * 100, 100)
+				: 0;
 
 		return (
 			<div className="wcb-icon-box__progress-bar-wrap">
-				<div
-					style={{
-						width: "100%",
-						backgroundColor: "#e0e0e0", // Background color for the unfilled portion
-						height: "100%", // Height of the bar
-						borderRadius: "5px", // Optional: rounded edges
-						overflow: "hidden", // Ensure the fill doesn't overflow
-						position: "relative",
-					}}
-				>
+				<div className="wcb-icon-box__progress-bar-track">
 					<div
+						className="wcb-icon-box__progress-bar"
 						style={{
-							width: `${progress}%`, // Dynamic width based on progress
-							height: "100%",
+							width: `${barWidth}%`,
 							backgroundColor: style_progress.progressColor,
-							transition: "transparent", // Smooth transition for the fill
-							color: "white",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "end",
-							paddingRight: "4px"
 						}}
 					>
 						<div className="wcb-icon-box__number" style={{
@@ -278,6 +343,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							panelData={general_layout}
 						/>
 
+						{general_layout.type !== "bar" && (
 						<WcbIconBoxPanelIcon
 							onToggle={() => handleTogglePanel("General", "Icon")}
 							initialOpen={tabGeneralIsPanelOpen === "Icon"}
@@ -360,6 +426,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							}}
 							panelData={general_icon}
 						/>
+						)}
 					</>
 				);
 			case "Styles":
@@ -389,6 +456,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									setAttributes({ style_progress: data });
 								}}
 								panelData={style_progress}
+							/>
+						)}
+						{general_layout.type === "circle" && (
+							<WcbIconBoxPanel_StyleCircle
+								onToggle={() => handleTogglePanel("Styles", "_StyleCircle")}
+								initialOpen={tabStylesIsPanelOpen === "_StyleCircle"}
+								opened={tabStylesIsPanelOpen === "_StyleCircle" || undefined}
+								//
+								setAttr__={(data) => {
+									setAttributes({ style_circle: data });
+								}}
+								panelData={style_circle}
 							/>
 						)}
 						{general_layout.enablePrefix && (
@@ -489,6 +568,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			style_description,
 			style_Icon,
 			style_progress,
+			style_circle,
 			style_dimension,
 			general_icon,
 			advance_motionEffect,
@@ -505,6 +585,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_description,
 		style_Icon,
 		style_progress,
+		style_circle,
 		style_dimension,
 		general_icon,
 		advance_motionEffect,
@@ -617,7 +698,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					)}
 				</div>
 
-				{general_icon.iconPosition === "right" &&
+			{(general_icon.iconPosition === "right" ||
+				general_icon.iconPosition === "bottom") &&
 					general_layout.type !== "circle" &&
 					general_layout.type !== "bar" &&
 					renderIcon()}
