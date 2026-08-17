@@ -8,6 +8,7 @@ import {
 } from "@wordpress/block-editor";
 import { WcbAttrs } from "./attributes";
 import SaveCommon from "../components/SaveCommon";
+// @ts-ignore
 import "./style.scss";
 
 export default function save({ attributes }: { attributes: WcbAttrs }) {
@@ -55,7 +56,28 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		general_gg_recaptcha.version === "v3";
 
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-form__wrap" });
+	const interactivityContext = {
+		isSubmitting: false,
+		showSuccessMessage: false,
+		showErrorMessage: false,
+		mailInfo: {
+			to: general_action.main.To.email,
+			cc: general_action.main.CC.email,
+			bcc: general_action.main.BCC.email,
+			subject: general_action.subject,
+		},
+		confirmationType: general_general.confirmationType,
+		successRedirectUrl: general_general.successRedirectUrl,
+		recaptchaEnabled: general_gg_recaptcha.enableReCaptcha,
+		recaptchaVersion: general_gg_recaptcha.version,
+	};
+	//
+	const wrapBlockProps = useBlockProps.save({
+		className: "wcb-form__wrap",
+		"data-wp-interactive": "boostify-blocks/form",
+		"data-wp-context": JSON.stringify(interactivityContext),
+		"data-wp-on--submit": "actions.submitForm",
+	});
 	//
 	const blockProps = useBlockProps.save({ className: "wcb-form__inner" });
 	const innerBlocksProps = useInnerBlocksProps.save(blockProps);
@@ -72,10 +94,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				<div children={innerBlocksProps.children} className="wcb-form__inner" />
 				{/* V2 */}
 				{reCaptchaV2 && (
-					<div
-						className="g-recaptcha"
-						// data-sitekey will be added dynamically via jQuery in Frontend.tsx.
-					></div>
+					<div className="g-recaptcha" data-wp-init="callbacks.initRecaptchaV2"></div>
 				)}
 
 				<div className="wcb-form__btn-submit-wrap">
@@ -86,13 +105,20 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 						value={attributes.btnSubmitText}
 						tagName="button"
 						type="submit"
+						data-wp-bind--disabled="context.isSubmitting"
 					/>
 				</div>
 			</div>
-			<div className="wcb-form__successMessageText">
+			<div
+				className="wcb-form__successMessageText"
+				data-wp-class--is-visible="context.showSuccessMessage"
+			>
 				<span>{attributes.general_general.successMessageText}</span>
 			</div>
-			<div className="wcb-form__errorMessageText">
+			<div
+				className="wcb-form__errorMessageText"
+				data-wp-class--is-visible="context.showErrorMessage"
+			>
 				<span>{attributes.general_general.errorMessageText}</span>
 			</div>
 		</SaveCommon>
