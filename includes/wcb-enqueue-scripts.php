@@ -126,9 +126,17 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
-    if ( class_exists( 'WC_AJAX' ) && function_exists( 'wp_interactivity_state' ) ) {
-        wp_interactivity_state(
-            'boostify-blocks/buynow',
+    // Enqueue the Counter view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-counter-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/counter/boostify-blocks-counter-view.js',
+        array( '@wordpress/interactivity' )
+    );
+
+    if ( class_exists( 'WC_AJAX' ) ) {
+        wp_localize_script(
+            'boostify-blocks-buynow',
+            'wcb_buynow_data',
             array(
                 'ajaxUrl'       => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
                 'redirectDelay' => 300,

@@ -4,7 +4,6 @@ import { handleSubmitFormForWcbForm } from "../block-form/FrontendStyles";
 import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendStyles";
 import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
-import { animateProgressElements } from "../block-counter/FrontendStyles";
 
 const classes: {
 	D: string;
@@ -81,7 +80,6 @@ const classes: {
 	{
 		D: ".wcb-counter-box__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-counter/GlobalCss")),
-		F: animateProgressElements,
 	},
 	{
 		D: ".wcb-slider__wrap.wcb-update-div",
