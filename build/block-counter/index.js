@@ -7849,8 +7849,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../components/controls/MyIconFull */ "./src/components/controls/MyIconFull.tsx");
 /* harmony import */ var _WcbIconBoxPanel_StyleDimension__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleDimension */ "./src/block-counter/WcbIconBoxPanel_StyleDimension.tsx");
 /* harmony import */ var _WcbIconBoxPanel_StyleProgress__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleProgress */ "./src/block-counter/WcbIconBoxPanel_StyleProgress.tsx");
-/* harmony import */ var _components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../components/controls/MyDimensionsControl/types */ "./src/components/controls/MyDimensionsControl/types.ts");
-/* harmony import */ var _utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../utils/converUniqueIdToAnphaKey */ "./src/utils/converUniqueIdToAnphaKey.ts");
+/* harmony import */ var _WcbIconBoxPanel_StyleCircle__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleCircle */ "./src/block-counter/WcbIconBoxPanel_StyleCircle.tsx");
+/* harmony import */ var _components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../components/controls/MyDimensionsControl/types */ "./src/components/controls/MyDimensionsControl/types.ts");
+/* harmony import */ var _utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../utils/converUniqueIdToAnphaKey */ "./src/utils/converUniqueIdToAnphaKey.ts");
+/* harmony import */ var _hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../hooks/useGetDeviceType */ "./src/hooks/useGetDeviceType.ts");
+/* harmony import */ var _utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../utils/getValueFromAttrsResponsives */ "./src/utils/getValueFromAttrsResponsives.ts");
 
 
 
@@ -7872,6 +7875,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+// Easing functions (keep in sync with the front-end counter view script).
+const EASING_FUNCTIONS = {
+  easeOutCubic: t => 1 - Math.pow(1 - t, 3),
+  easeInOutQuad: t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
+  easeInOutCubic: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+  easeOutElastic: t => {
+    const c4 = 2 * Math.PI / 3;
+    return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+  }
+};
 const Edit = props => {
   const {
     attributes,
@@ -7892,6 +7909,7 @@ const Edit = props => {
     style_description,
     style_Icon,
     style_progress,
+    style_circle,
     style_dimension,
     advance_motionEffect
   } = attributes;
@@ -7908,116 +7926,83 @@ const Edit = props => {
     tabStylesIsPanelOpen,
     handleTogglePanel
   } = (0,_hooks_useSetBlockPanelInfo__WEBPACK_IMPORTED_MODULE_6__["default"])(uniqueId);
+  const deviceType = (0,_hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_21__["default"])() || "Desktop";
+  const {
+    currentDeviceValue: currentCircleSize
+  } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_22__["default"])(style_circle?.circleSize, deviceType);
 
   // Make uniqueId
   const UNIQUE_ID = wrapBlockProps.id;
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     setAttributes({
-      uniqueId: (0,_utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_19__["default"])(UNIQUE_ID)
+      uniqueId: (0,_utils_converUniqueIdToAnphaKey__WEBPACK_IMPORTED_MODULE_20__["default"])(UNIQUE_ID)
     });
   }, [UNIQUE_ID]);
 
   // State manage value current_number
-  const [currentNumber, setCurrentNumber] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseInt(general_layout?.startNumber) || 0);
+  const [currentNumber, setCurrentNumber] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(parseFloat(general_layout?.startNumber || "0"));
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    const targetNumber = parseInt(general_layout?.endNumber) || 0;
-    const duration = parseInt(general_layout?.animationDuration) || 1500;
-    const incrementTime = duration / (targetNumber || 1);
-    let current = parseInt(general_layout?.startNumber) || 0;
-    setCurrentNumber(current);
-    const interval = setInterval(() => {
-      current += 1;
-      setCurrentNumber(current);
-      if (current >= targetNumber) {
-        setCurrentNumber(targetNumber);
-        clearInterval(interval);
+    const start = parseFloat(general_layout?.startNumber || "0");
+    const end = parseFloat(general_layout?.endNumber || "0");
+    const duration = parseInt(general_layout?.animationDuration || "1500") || 1500;
+    setCurrentNumber(start);
+    if (start === end) {
+      return;
+    }
+    let animationFrameId = 0;
+    const startedAt = performance.now();
+
+    // Matches the front-end counter view script.
+    const easingFn = EASING_FUNCTIONS[general_layout?.animationType || "easeOutCubic"] || EASING_FUNCTIONS.easeOutCubic;
+    const tick = now => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const value = start + (end - start) * easingFn(progress);
+      setCurrentNumber(value);
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(tick);
+      } else {
+        setCurrentNumber(end);
       }
-    }, incrementTime);
-    return () => clearInterval(interval);
-  }, [endNumber, general_layout?.animationDuration, general_layout?.startNumber, general_layout?.decimalNumber, general_layout?.type, general_layout?.endNumber]);
+    };
+    animationFrameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [endNumber, general_layout?.animationDuration, general_layout?.animationType, general_layout?.startNumber, general_layout?.decimalNumber, general_layout?.type, general_layout?.endNumber]);
 
   // Format number before display
   const formatNumber = (num, decimalPlaces) => {
     const decimal = parseInt(decimalPlaces);
-    if (!decimal || isNaN(decimal)) return num.toString();
-    return num.toFixed(decimal);
-  };
-
-  // Calculate progress for the circle (0 to 100%)
-  const calculateProgress = () => {
-    const end = parseInt(general_layout?.endNumber) || 0;
-    const current = currentNumber;
-
-    // Calculate the ratio of curlentnumber compared to the maximum value (100%)
-    const maxValue = 100;
-    const progress = current / maxValue * 100;
-
-    // The maximum progress limit is equal to the ratio of Endnumber compared to Maxvalue
-    const endProgress = end / maxValue * 100;
-    return Math.min(progress, endProgress);
+    const fixed = num.toFixed(isNaN(decimal) || decimal < 0 ? 0 : decimal);
+    const thousandSeparator = general_layout?.thousand || "";
+    if (!thousandSeparator) {
+      return fixed;
+    }
+    const parts = fixed.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+    return parts.join(".");
   };
 
   // Render the progress circle with content inside
   const renderProgressCircle = () => {
-    const radius = 150;
+    const viewBoxSize = 300;
+    const radius = viewBoxSize / 2;
     const stroke = 5;
     const normalizedRadius = radius - stroke * 2;
     const circumference = normalizedRadius * 2 * Math.PI;
-    const progress = calculateProgress();
-    const strokeDashoffset = circumference - progress / 100 * circumference;
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "wcb-icon-box__progress-circle-wrap",
-      style: {
-        position: "relative",
-        width: `${radius * 2}px`,
-        height: `${radius * 2}px`
-      }
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
-      height: radius * 2,
-      width: radius * 2,
-      style: {
-        transform: "rotate(-90deg)"
-      }
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {
-      stroke: "#e0e0e0",
-      fill: "transparent",
-      strokeWidth: stroke,
-      r: normalizedRadius,
-      cx: radius,
-      cy: radius
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {
-      stroke: style_progress.progressColor,
-      fill: "transparent",
-      strokeWidth: stroke,
-      strokeDasharray: `${circumference} ${circumference}`,
-      style: {
-        strokeDashoffset
-      },
-      r: normalizedRadius,
-      cx: radius,
-      cy: radius
-    })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      style: {
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "10px",
-        maxWidth: `${radius * 1.5}px`,
-        // Limit the content width to not overflow
-        padding: "10px"
-      }
-    }, general_icon.enableIcon && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    const totalNumber = parseFloat(general_layout?.totalNumber || general_layout?.endNumber) || 0;
+    const progressFraction = totalNumber !== 0 ? Math.min(Math.max(currentNumber / totalNumber, 0), 1) : 0;
+    const strokeDashoffset = circumference * (1 - progressFraction);
+    const circleSize = currentCircleSize || "300px";
+    const isIconBesideContent = general_icon.iconPosition === "left" || general_icon.iconPosition === "right";
+    const isIconBesideTitle = general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle";
+    const iconEl = general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__icon"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_15__["default"], {
       icon: general_icon.icon
-    })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    })) : null;
+    const numberEl = (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__number"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), formatNumber(currentNumber, general_layout?.decimalNumber), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), formatNumber(currentNumber, general_layout?.decimalNumber), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix));
+    const descriptionEl = general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText, {
       tagName: "div",
       value: description,
       allowedFormats: ["core/bold", "core/italic"],
@@ -8030,39 +8015,58 @@ const Edit = props => {
         wordBreak: "break-word",
         maxWidth: "100%"
       }
-    })));
+    }) : null;
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__progress-circle-wrap",
+      style: {
+        position: "relative",
+        width: circleSize,
+        height: circleSize
+      }
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+      className: "wcb-icon-box__progress-circle-svg",
+      viewBox: `0 0 ${viewBoxSize} ${viewBoxSize}`,
+      width: "100%",
+      height: "100%"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {
+      stroke: "#e0e0e0",
+      fill: "transparent",
+      strokeWidth: stroke,
+      r: normalizedRadius,
+      cx: radius,
+      cy: radius
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {
+      className: "wcb-icon-box__progress-circle",
+      stroke: style_progress.progressColor,
+      fill: "transparent",
+      strokeWidth: stroke,
+      strokeDasharray: `${circumference} ${circumference}`,
+      style: {
+        strokeDashoffset
+      },
+      r: normalizedRadius,
+      cx: radius,
+      cy: radius
+    })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__progress-circle-content"
+    }, isIconBesideContent ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "left" && iconEl, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__progress-circle-content-inner"
+    }, numberEl, descriptionEl), general_icon.iconPosition === "right" && iconEl) : isIconBesideTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__progress-circle-content-row"
+    }, general_icon.iconPosition === "leftOfTitle" && iconEl, numberEl, general_icon.iconPosition === "rightOfTitle" && iconEl), descriptionEl) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "top" && iconEl, numberEl, general_icon.iconPosition === "bellowTitle" && iconEl, descriptionEl, general_icon.iconPosition === "bottom" && iconEl)));
   };
   const renderProgressBar = () => {
-    const progress = calculateProgress(); // Use the updated calculateProgressBar function
-
+    const totalNumber = parseFloat(general_layout?.totalNumber || general_layout?.endNumber) || 0;
+    const barWidth = totalNumber !== 0 ? Math.min(currentNumber / totalNumber * 100, 100) : 0;
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__progress-bar-wrap"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      style: {
-        width: "100%",
-        backgroundColor: "#e0e0e0",
-        // Background color for the unfilled portion
-        height: "100%",
-        // Height of the bar
-        borderRadius: "5px",
-        // Optional: rounded edges
-        overflow: "hidden",
-        // Ensure the fill doesn't overflow
-        position: "relative"
-      }
+      className: "wcb-icon-box__progress-bar-track"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__progress-bar",
       style: {
-        width: `${progress}%`,
-        // Dynamic width based on progress
-        height: "100%",
-        backgroundColor: style_progress.progressColor,
-        transition: "transparent",
-        // Smooth transition for the fill
-        color: "white",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "end",
-        paddingRight: "4px"
+        width: `${barWidth}%`,
+        backgroundColor: style_progress.progressColor
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__number",
@@ -8099,7 +8103,7 @@ const Edit = props => {
             });
           },
           panelData: general_layout
-        }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbIconBoxPanelIcon__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        }), general_layout.type !== "bar" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbIconBoxPanelIcon__WEBPACK_IMPORTED_MODULE_9__["default"], {
           onToggle: () => handleTogglePanel("General", "Icon"),
           initialOpen: tabGeneralIsPanelOpen === "Icon",
           opened: tabGeneralIsPanelOpen === "Icon" || undefined
@@ -8120,10 +8124,10 @@ const Edit = props => {
                 style_Icon: {
                   ...style_Icon,
                   dimensions: {
-                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
+                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_19__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
                     margin: {
                       Desktop: {
-                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
+                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_19__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
                         right: "1rem"
                       }
                     }
@@ -8145,10 +8149,10 @@ const Edit = props => {
                 style_Icon: {
                   ...style_Icon,
                   dimensions: {
-                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
+                    ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_19__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
                     margin: {
                       Desktop: {
-                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
+                        ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_19__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
                         left: "1rem"
                       }
                     }
@@ -8161,10 +8165,10 @@ const Edit = props => {
               style_Icon: {
                 ...style_Icon,
                 dimensions: {
-                  ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
+                  ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_19__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY,
                   margin: {
                     Desktop: {
-                      ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_18__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
+                      ..._components_controls_MyDimensionsControl_types__WEBPACK_IMPORTED_MODULE_19__.MY_DIMENSIONS_NO_GAP_DEMO__EMPTY.margin.Desktop,
                       top: "1rem",
                       bottom: "1rem"
                     }
@@ -8201,6 +8205,18 @@ const Edit = props => {
             });
           },
           panelData: style_progress
+        }), general_layout.type === "circle" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbIconBoxPanel_StyleCircle__WEBPACK_IMPORTED_MODULE_18__["default"], {
+          onToggle: () => handleTogglePanel("Styles", "_StyleCircle"),
+          initialOpen: tabStylesIsPanelOpen === "_StyleCircle",
+          opened: tabStylesIsPanelOpen === "_StyleCircle" || undefined
+          //
+          ,
+          setAttr__: data => {
+            setAttributes({
+              style_circle: data
+            });
+          },
+          panelData: style_circle
         }), general_layout.enablePrefix && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_WcbTeamPanel_StyleDesignation__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onToggle: () => handleTogglePanel("Styles", "_StyleDesignation"),
           initialOpen: tabStylesIsPanelOpen === "_StyleDesignation",
@@ -8276,11 +8292,12 @@ const Edit = props => {
       style_description,
       style_Icon,
       style_progress,
+      style_circle,
       style_dimension,
       general_icon,
       advance_motionEffect
     };
-  }, [uniqueId, advance_responsiveCondition, advance_zIndex, general_layout, endNumber, designation, style_title, style_desination, style_description, style_Icon, style_progress, style_dimension, general_icon, advance_motionEffect]);
+  }, [uniqueId, advance_responsiveCondition, advance_zIndex, general_layout, endNumber, designation, style_title, style_desination, style_description, style_Icon, style_progress, style_circle, style_dimension, general_icon, advance_motionEffect]);
   const renderIcon = () => {
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.enableIcon && general_layout.type !== "circle" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__icon-wrap"
@@ -8331,7 +8348,7 @@ const Edit = props => {
   }), general_layout.enableCTAButton && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InnerBlocks, {
     allowedBlocks: [],
     template: [["boostify-blocks/button", {}]]
-  })), general_icon.iconPosition === "right" && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon()));
+  })), (general_icon.iconPosition === "right" || general_icon.iconPosition === "bottom") && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon()));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Edit);
 
@@ -8350,13 +8367,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @emotion/react */ "./node_modules/@emotion/react/dist/emotion-react.browser.esm.js");
+/* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @emotion/react */ "./node_modules/@emotion/react/dist/emotion-react.browser.esm.js");
 /* harmony import */ var _block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../block-container/getAdvanveStyles */ "./src/block-container/getAdvanveStyles.ts");
 /* harmony import */ var _utils_getBorderStyles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getBorderStyles */ "./src/utils/getBorderStyles.ts");
 /* harmony import */ var _utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/getPaddingMarginStyles */ "./src/utils/getPaddingMarginStyles.ts");
 /* harmony import */ var _utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/getStyleObjectFromResponsiveAttr */ "./src/utils/getStyleObjectFromResponsiveAttr.ts");
 /* harmony import */ var _utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/getTypographyStyles */ "./src/utils/getTypographyStyles.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
+/* harmony import */ var _utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/getValueFromAttrsResponsives */ "./src/utils/getValueFromAttrsResponsives.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
+
 
 
 
@@ -8374,6 +8393,7 @@ const GlobalCss = attrs => {
     style_desination,
     style_Icon,
     style_title,
+    style_circle,
     advance_responsiveCondition,
     advance_zIndex,
     general_icon,
@@ -8383,16 +8403,61 @@ const GlobalCss = attrs => {
   const {
     media_desktop,
     media_tablet
-  } = ___WEBPACK_IMPORTED_MODULE_6__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
+  } = ___WEBPACK_IMPORTED_MODULE_7__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
   const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 
   // ------------------- WRAP DIV
   const getDivWrapStyles = () => {
+    const isIconBesideContent = general_icon.iconPosition === "left" || general_icon.iconPosition === "right";
+    const isIconBesideTitle = general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle";
+
+    // Convert text alignment to flex alignment for horizontal layouts.
+    const getFlexAlignment = alignment => {
+      switch (alignment) {
+        case "center":
+          return "center";
+        case "right":
+          return "flex-end";
+        case "left":
+        default:
+          return "flex-start";
+      }
+    };
+    const {
+      value_Desktop,
+      value_Tablet,
+      value_Mobile
+    } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_6__["default"])(general_layout.textAlignment);
+    const justifyContentResponsive = {
+      justifyContent: getFlexAlignment(value_Mobile),
+      [`@media (min-width: ${media_tablet})`]: {
+        justifyContent: getFlexAlignment(value_Tablet)
+      },
+      [`@media (min-width: ${media_desktop})`]: {
+        justifyContent: getFlexAlignment(value_Desktop)
+      }
+    };
+    const horizontalJustifyStyles = {
+      [`${WRAP_CLASSNAME}`]: {
+        ...justifyContentResponsive,
+        ".wcb-icon-box__content": {
+          flexGrow: 0
+        }
+      }
+    };
+    const titleJustifyStyles = {
+      [`${WRAP_CLASSNAME} .wcb-icon-box__content-title-wrap`]: {
+        ...justifyContentResponsive,
+        ".wcb-icon-box__content-title": {
+          flexGrow: 0
+        }
+      }
+    };
     return [(0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__["default"])({
       className: WRAP_CLASSNAME,
       value: general_layout.textAlignment,
       prefix: "textAlign"
-    }), {
+    }), ...(general_layout.type === "number" && isIconBesideContent ? [horizontalJustifyStyles] : []), ...(general_layout.type === "number" && isIconBesideTitle ? [titleJustifyStyles] : []), {
       [`${WRAP_CLASSNAME}`]: {
         display: general_icon.iconPosition === "left" || general_icon.iconPosition === "right" ? "flex" : "block",
         flexDirection: general_icon.stackOn === "mobile" || general_icon.stackOn === "tablet" ? general_icon.iconPosition === "right" ? "column-reverse" : "column" : undefined,
@@ -8402,16 +8467,63 @@ const GlobalCss = attrs => {
         ".wcb-icon-box__content-title-wrap": {
           display: general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle" ? "flex" : "block"
         },
-        // Styles for circle type
         ".wcb-icon-box__progress-circle-wrap": {
           position: "relative",
-          margin: general_layout.textAlignment.Desktop === "left" ? "" : general_layout.textAlignment.Tablet === "left" ? "" : general_layout.textAlignment.Desktop === "right" ? "0 0 0 auto" : general_layout.textAlignment.Tablet === "right" ? "0 0 0 auto" : "0 auto"
+          display: "inline-block",
+          verticalAlign: "top"
         },
-        // Styles for bar type
+        ".wcb-icon-box__progress-circle-svg": {
+          transform: "rotate(-90deg)"
+        },
+        ".wcb-icon-box__progress-circle-content": {
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          textAlign: "center",
+          display: "flex",
+          flexDirection: isIconBesideContent ? "row" : "column",
+          alignItems: "center",
+          gap: "10px",
+          maxWidth: "100%",
+          width: "100%",
+          padding: "10px"
+        },
+        ".wcb-icon-box__progress-circle-content-inner": {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "10px"
+        },
+        ".wcb-icon-box__progress-circle-content-row": {
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "10px"
+        },
         ".wcb-icon-box__progress-bar-wrap": {
           position: "relative",
+          width: "100%"
+        },
+        ".wcb-icon-box__progress-bar-track": {
           width: "100%",
-          textAlign: general_layout.textAlignment.Desktop === "left" ? "start" : general_layout.textAlignment.Tablet === "left" ? "start" : general_layout.textAlignment.Desktop === "right" ? "end" : general_layout.textAlignment.Tablet === "right" ? "end" : "center"
+          backgroundColor: "#e0e0e0",
+          height: "100%",
+          borderRadius: "5px",
+          overflow: "hidden",
+          position: "relative"
+        },
+        ".wcb-icon-box__progress-bar": {
+          height: "100%",
+          transition: "transparent",
+          color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "end",
+          paddingRight: "4px",
+          paddingTop: "5px",
+          paddingBottom: "5px"
         },
         ".wcb-icon-box__title": {
           fontSize: "16px",
@@ -8419,8 +8531,7 @@ const GlobalCss = attrs => {
           marginTop: "10px"
         },
         ".wcb-icon-box__icon": {
-          fontSize: "20px",
-          marginBottom: "10px"
+          fontSize: "20px"
         },
         [`@media (min-width: ${media_tablet})`]: {
           flexDirection: general_icon.stackOn === "mobile" ? "row" : undefined
@@ -8434,15 +8545,22 @@ const GlobalCss = attrs => {
   if (!uniqueId) {
     return null;
   }
-  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: getDivWrapStyles()
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: (0,_utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
       className: WRAP_CLASSNAME,
       margin: style_dimension?.margin,
       padding: style_dimension?.padding
     })
-  }), general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }), general_layout.type === "circle" ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
+    styles: [(0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_4__["default"])({
+      className: `${WRAP_CLASSNAME} .wcb-icon-box__progress-circle-wrap`,
+      value: style_circle?.circleSize,
+      prefix: "width",
+      prefix_2: "height"
+    })]
+  }) : null, general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getPaddingMarginStyles__WEBPACK_IMPORTED_MODULE_3__["default"])({
       className: `${WRAP_CLASSNAME} .wcb-icon-box__icon-wrap`,
       margin: style_Icon.dimensions?.margin
@@ -8466,7 +8584,7 @@ const GlobalCss = attrs => {
         }
       }
     }]
-  }) : null, general_layout.enablePrefix ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, general_layout.enablePrefix ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__["default"])({
       typography: style_desination.typography,
       className: `${WRAP_CLASSNAME} .wcb-icon-box__number`
@@ -8479,7 +8597,7 @@ const GlobalCss = attrs => {
         color: style_desination.textColor
       }
     }]
-  }) : null, general_layout.enableTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, general_layout.enableTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__["default"])({
       typography: style_title.typography,
       className: `${WRAP_CLASSNAME} .wcb-icon-box__number`
@@ -8492,7 +8610,7 @@ const GlobalCss = attrs => {
         color: style_title.textColor
       }
     }]
-  }) : null, general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: [(0,_utils_getTypographyStyles__WEBPACK_IMPORTED_MODULE_5__["default"])({
       typography: style_description.typography,
       className: `${WRAP_CLASSNAME} .wcb-icon-box__description`
@@ -8505,7 +8623,7 @@ const GlobalCss = attrs => {
         color: style_description.textColor
       }
     }]
-  }) : null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_7__.Global, {
+  }) : null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_8__.Global, {
     styles: (0,_block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__.getAdvanveDivWrapStyles)({
       advance_responsiveCondition,
       advance_motionEffect,
@@ -8561,6 +8679,7 @@ function save({
     style_desination,
     style_Icon,
     style_progress,
+    style_circle,
     style_title,
     general_icon,
     style_dimension,
@@ -8577,6 +8696,7 @@ function save({
     style_desination,
     style_Icon,
     style_progress,
+    style_circle,
     style_title,
     general_icon,
     style_dimension,
@@ -8586,22 +8706,76 @@ function save({
   // Format number for static display (used in non-circle/bar layouts)
   const formatNumber = (num, decimalPlaces) => {
     const decimal = parseInt(decimalPlaces);
-    if (!decimal || isNaN(decimal)) return num;
-    return parseFloat(num).toFixed(decimal);
+    const fixed = parseFloat(num || "0").toFixed(isNaN(decimal) || decimal < 0 ? 0 : decimal);
+    const thousandSeparator = general_layout?.thousand || "";
+    if (!thousandSeparator) {
+      return fixed;
+    }
+    const parts = fixed.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+    return parts.join(".");
+  };
+
+  // Circle geometry constants (kept in sync with the editor)
+  const counterViewBoxSize = 300;
+  const counterRadius = counterViewBoxSize / 2;
+  const counterStroke = 5;
+  const counterNormalizedRadius = counterRadius - counterStroke * 2;
+  const counterCircumference = counterNormalizedRadius * 2 * Math.PI;
+
+  // Interactivity API context consumed by the counter view script
+  const counterContext = {
+    start: parseFloat(general_layout?.startNumber || "0"),
+    end: parseFloat(general_layout?.endNumber || "0"),
+    total: parseFloat(general_layout?.totalNumber || general_layout?.endNumber || "0"),
+    duration: parseInt(general_layout?.animationDuration || "1500") || 1500,
+    decimals: parseInt(general_layout?.decimalNumber || "0") || 0,
+    prefix: general_layout?.numberPrefix || "",
+    suffix: general_layout?.numberSuffix || "",
+    thousand: general_layout?.thousand || "",
+    mode: general_layout?.type || "number",
+    easing: general_layout?.animationType || "easeOutCubic",
+    circumference: counterCircumference,
+    current: formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber || "0"),
+    dashOffset: counterCircumference,
+    width: "0%",
+    animated: false
   };
 
   // Render the progress circle structure
   const renderProgressCircle = () => {
-    const radius = 150;
-    const stroke = 5;
-    const normalizedRadius = radius - stroke * 2;
-    const circumference = normalizedRadius * 2 * Math.PI;
+    const radius = counterRadius;
+    const stroke = counterStroke;
+    const normalizedRadius = counterNormalizedRadius;
+    const circumference = counterCircumference;
+    const viewBoxSize = counterViewBoxSize;
+    const isIconBesideContent = general_icon.iconPosition === "left" || general_icon.iconPosition === "right";
+    const isIconBesideTitle = general_icon.iconPosition === "leftOfTitle" || general_icon.iconPosition === "rightOfTitle";
+    const iconEl = general_icon.enableIcon ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__icon"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      icon: general_icon.icon
+    })) : null;
+    const numberEl = (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__number"
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+      className: "wcb-icon-box__number-value",
+      "data-wp-text": "context.current"
+    }, formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix));
+    const descriptionEl = general_layout.enableDescription ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
+      tagName: "div",
+      value: description,
+      placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description of box ..."),
+      className: "wcb-icon-box__description",
+      style: {
+        wordBreak: "break-word",
+        maxWidth: "100%"
+      }
+    }) : null;
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__progress-circle-wrap",
       style: {
-        position: "relative",
-        width: `${radius * 2}px`,
-        height: `${radius * 2}px`
+        position: "relative"
       },
       "data-start-number": general_layout?.startNumber || "0",
       "data-end-number": general_layout?.endNumber || "0",
@@ -8609,11 +8783,10 @@ function save({
       "data-decimal-places": general_layout?.decimalNumber || "0",
       "data-number-suffix": general_layout?.numberSuffix || ""
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
-      height: radius * 2,
-      width: radius * 2,
-      style: {
-        transform: "rotate(-90deg)"
-      }
+      className: "wcb-icon-box__progress-circle-svg",
+      viewBox: `0 0 ${viewBoxSize} ${viewBoxSize}`,
+      width: "100%",
+      height: "100%"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("circle", {
       stroke: "#e0e0e0",
       fill: "transparent",
@@ -8631,39 +8804,17 @@ function save({
         strokeDashoffset: circumference
       } // Initially set to 0% progress
       ,
+      "data-wp-style--stroke-dashoffset": "context.dashOffset",
       r: normalizedRadius,
       cx: radius,
       cy: radius
     })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      style: {
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "10px",
-        maxWidth: `${radius * 1.5}px`,
-        padding: "10px"
-      }
-    }, general_icon.enableIcon && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "wcb-icon-box__icon"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyIconFull__WEBPACK_IMPORTED_MODULE_5__["default"], {
-      icon: general_icon.icon
-    })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      className: "wcb-icon-box__number"
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
-      tagName: "div",
-      value: description,
-      placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description of box ..."),
-      className: "wcb-icon-box__description",
-      style: {
-        wordBreak: "break-word",
-        maxWidth: "100%"
-      }
-    })));
+      className: "wcb-icon-box__progress-circle-content"
+    }, isIconBesideContent ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "left" && iconEl, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__progress-circle-content-inner"
+    }, numberEl, descriptionEl), general_icon.iconPosition === "right" && iconEl) : isIconBesideTitle ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+      className: "wcb-icon-box__progress-circle-content-row"
+    }, general_icon.iconPosition === "leftOfTitle" && iconEl, numberEl, general_icon.iconPosition === "rightOfTitle" && iconEl), descriptionEl) : (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, general_icon.iconPosition === "top" && iconEl, numberEl, general_icon.iconPosition === "bellowTitle" && iconEl, descriptionEl, general_icon.iconPosition === "bottom" && iconEl)));
   };
 
   // Render the progress bar structure
@@ -8676,27 +8827,13 @@ function save({
       "data-number-prefix": general_layout?.numberPrefix || "",
       "data-number-suffix": general_layout?.numberSuffix || ""
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
-      style: {
-        width: "100%",
-        backgroundColor: "#e0e0e0",
-        height: "100%",
-        borderRadius: "5px",
-        overflow: "hidden",
-        position: "relative"
-      }
+      className: "wcb-icon-box__progress-bar-track"
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__progress-bar",
+      "data-wp-style--width": "context.width",
       style: {
         width: "0%",
-        // Initially set to 0% progress
-        height: "100%",
-        backgroundColor: style_progress.progressColor,
-        transition: "transparent",
-        color: "white",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "end",
-        paddingRight: "4px"
+        backgroundColor: style_progress.progressColor
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
       className: "wcb-icon-box__number",
@@ -8704,7 +8841,8 @@ function save({
         marginBottom: "0px"
       }
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-      className: "wcb-icon-box__number-value"
+      className: "wcb-icon-box__number-value",
+      "data-wp-text": "context.current"
     }, "0"), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)))), general_layout.enableDescription && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
       tagName: "div",
       value: description,
@@ -8726,7 +8864,10 @@ function save({
     }))));
   };
   const wrapBlockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.useBlockProps.save({
-    className: "wcb-counter-box__wrap"
+    className: "wcb-counter-box__wrap",
+    'data-wp-interactive': 'boostify-blocks/counter',
+    'data-wp-context': JSON.stringify(counterContext),
+    'data-wp-init': 'actions.init'
   });
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_SaveCommon__WEBPACK_IMPORTED_MODULE_3__["default"], {
     ...wrapBlockProps,
@@ -8750,13 +8891,14 @@ function save({
     "data-animation-duration": general_layout?.animationDuration || "1500",
     "data-decimal-places": general_layout?.decimalNumber || "0"
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberPrefix), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
-    className: "wcb-icon-box__number-value"
+    className: "wcb-icon-box__number-value",
+    "data-wp-text": "context.current"
   }, formatNumber(general_layout.startNumber, general_layout?.decimalNumber)), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", null, general_layout.numberSuffix)), general_layout.type === "circle" && renderProgressCircle(), general_layout.type === "bar" && renderProgressBar()), (general_icon.iconPosition === "rightOfTitle" || general_icon.iconPosition === "bellowTitle") && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon()), general_layout.enableDescription && general_layout.type !== "circle" && general_layout.type !== "bar" && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.RichText.Content, {
     tagName: "div",
     value: description,
     placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Description..."),
     className: "wcb-icon-box__description"
-  }), general_layout.enableCTAButton && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InnerBlocks.Content, null)), general_icon.iconPosition === "right" && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon());
+  }), general_layout.enableCTAButton && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.InnerBlocks.Content, null)), (general_icon.iconPosition === "right" || general_icon.iconPosition === "bottom") && general_layout.type !== "circle" && general_layout.type !== "bar" && renderIcon());
 }
 
 /***/ }),
@@ -9181,6 +9323,9 @@ const WcbIconBoxPanelIcon = ({
   }, {
     value: "bellowTitle",
     label: "Bellow Title"
+  }, {
+    value: "bottom",
+    label: "Bottom"
   }];
   const STACK_ON_DEMO = [{
     value: "none",
@@ -9233,7 +9378,7 @@ const WcbIconBoxPanelIcon = ({
         ...panelData,
         iconPosition: value
       };
-      if (iconPosition !== "left" && iconPosition !== "right") {
+      if (value !== "left" && value !== "right") {
         newData = {
           ...panelData,
           iconPosition: value,
@@ -9308,10 +9453,12 @@ const WCB_ICON_BOX_PANEL_LAYOUT_DEMO = {
   type: 'number',
   startNumber: '0',
   endNumber: '80',
+  totalNumber: '',
   decimalNumber: '0',
   numberPrefix: '',
   numberSuffix: '%',
   thousand: '',
+  animationType: 'easeOutCubic',
   animationDuration: '1500'
 };
 const WcbIconBoxPanelLayout = ({
@@ -9332,10 +9479,12 @@ const WcbIconBoxPanelLayout = ({
     type,
     startNumber,
     endNumber,
+    totalNumber,
     decimalNumber,
     numberPrefix,
     numberSuffix,
     thousand,
+    animationType,
     animationDuration
   } = panelData;
   const {
@@ -9403,6 +9552,17 @@ const WcbIconBoxPanelLayout = ({
         endNumber: value
       });
     }
+  }), (type === "circle" || type === "bar") && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Total Number", "boostify-blocks"),
+    type: "number",
+    value: totalNumber || endNumber,
+    help: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Total Number should be more than or equal to the Ending Number (or the Starting number in case you want to animate the Counter in reverse direction).", "boostify-blocks"),
+    onChange: value => {
+      setAttr__({
+        ...panelData,
+        totalNumber: value
+      });
+    }
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Decimal Places", "boostify-blocks"),
     type: "number",
@@ -9431,6 +9591,28 @@ const WcbIconBoxPanelLayout = ({
       setAttr__({
         ...panelData,
         numberSuffix: value
+      });
+    }
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SelectControl, {
+    label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Animation Type", "boostify-blocks"),
+    value: animationType,
+    options: [{
+      label: "Ease Out Cubic",
+      value: "easeOutCubic"
+    }, {
+      label: "Ease In Out Quad",
+      value: "easeInOutQuad"
+    }, {
+      label: "Ease In Out Cubic",
+      value: "easeInOutCubic"
+    }, {
+      label: "Ease Out Elastic",
+      value: "easeOutElastic"
+    }],
+    onChange: value => {
+      setAttr__({
+        ...panelData,
+        animationType: value
       });
     }
   }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextControl, {
@@ -9478,6 +9660,115 @@ const WcbIconBoxPanelLayout = ({
   })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WcbIconBoxPanelLayout);
+
+/***/ }),
+
+/***/ "./src/block-counter/WcbIconBoxPanel_StyleCircle.tsx":
+/*!***********************************************************!*\
+  !*** ./src/block-counter/WcbIconBoxPanel_StyleCircle.tsx ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CIRCLE_SIZE_DEFAULT: () => (/* binding */ CIRCLE_SIZE_DEFAULT),
+/* harmony export */   CIRCLE_SIZE_UNITS: () => (/* binding */ CIRCLE_SIZE_UNITS),
+/* harmony export */   WCB_ICON_BOX_PANEL_STYLE_CIRCLE_DEMO: () => (/* binding */ WCB_ICON_BOX_PANEL_STYLE_CIRCLE_DEMO),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../hooks/useGetDeviceType */ "./src/hooks/useGetDeviceType.ts");
+/* harmony import */ var _utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/getValueFromAttrsResponsives */ "./src/utils/getValueFromAttrsResponsives.ts");
+/* harmony import */ var _components_controls_MyLabelControl_MyLabelControl__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/controls/MyLabelControl/MyLabelControl */ "./src/components/controls/MyLabelControl/MyLabelControl.tsx");
+/* harmony import */ var _components_controls_MySpacingSizesControl_SpacingInputControl__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/controls/MySpacingSizesControl/SpacingInputControl */ "./src/components/controls/MySpacingSizesControl/SpacingInputControl.tsx");
+/* harmony import */ var _components_controls_ResetButton__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/controls/ResetButton */ "./src/components/controls/ResetButton.tsx");
+
+
+
+
+
+
+
+
+
+const WCB_ICON_BOX_PANEL_STYLE_CIRCLE_DEMO = {
+  circleSize: {
+    Desktop: "300px"
+  }
+};
+const CIRCLE_SIZE_DEFAULT = "300px";
+const CIRCLE_SIZE_UNITS = [{
+  value: "px",
+  label: "px",
+  default: 300
+}, {
+  value: "rem",
+  label: "rem",
+  default: 18.75
+}, {
+  value: "em",
+  label: "em",
+  default: 18.75
+}];
+const WcbIconBoxPanel_StyleCircle = ({
+  panelData = WCB_ICON_BOX_PANEL_STYLE_CIRCLE_DEMO,
+  setAttr__,
+  initialOpen,
+  onToggle,
+  opened
+}) => {
+  const deviceType = (0,_hooks_useGetDeviceType__WEBPACK_IMPORTED_MODULE_3__["default"])() || "Desktop";
+  const {
+    circleSize
+  } = panelData;
+  const {
+    currentDeviceValue: currentCircleSize
+  } = (0,_utils_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_4__["default"])(circleSize, deviceType);
+  const handleChange = value => {
+    setAttr__({
+      ...panelData,
+      circleSize: {
+        ...circleSize,
+        [deviceType]: value
+      }
+    });
+  };
+  const handleReset = () => {
+    setAttr__({
+      ...panelData,
+      circleSize: {
+        ...circleSize,
+        [deviceType]: CIRCLE_SIZE_DEFAULT
+      }
+    });
+  };
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.PanelBody, {
+    initialOpen: initialOpen,
+    onToggle: onToggle,
+    opened: opened,
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Circle", "boostify-blocks")
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "space-y-5"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "flex items-center justify-between mb-2"
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MyLabelControl_MyLabelControl__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    hasResponsive: true,
+    className: "mb-0"
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)("Circle size", "boostify-blocks")), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_ResetButton__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    onClick: handleReset
+  })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_controls_MySpacingSizesControl_SpacingInputControl__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    value: currentCircleSize || CIRCLE_SIZE_DEFAULT,
+    onChange: handleChange,
+    units: CIRCLE_SIZE_UNITS
+  }))));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WcbIconBoxPanel_StyleCircle);
 
 /***/ }),
 
@@ -10110,7 +10401,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WcbIconBoxPanel_StyleIcons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleIcons */ "./src/block-counter/WcbIconBoxPanel_StyleIcons.tsx");
 /* harmony import */ var _WcbIconBoxPanel_StyleDimension__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleDimension */ "./src/block-counter/WcbIconBoxPanel_StyleDimension.tsx");
 /* harmony import */ var _WcbIconBoxPanel_StyleProgress__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleProgress */ "./src/block-counter/WcbIconBoxPanel_StyleProgress.tsx");
-/* harmony import */ var _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/controls/MyMotionEffectControl/MyMotionEffectControl */ "./src/components/controls/MyMotionEffectControl/MyMotionEffectControl.tsx");
+/* harmony import */ var _WcbIconBoxPanel_StyleCircle__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./WcbIconBoxPanel_StyleCircle */ "./src/block-counter/WcbIconBoxPanel_StyleCircle.tsx");
+/* harmony import */ var _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/controls/MyMotionEffectControl/MyMotionEffectControl */ "./src/components/controls/MyMotionEffectControl/MyMotionEffectControl.tsx");
+
 
 
 
@@ -10176,6 +10469,10 @@ const blokc1Attrs = {
     type: "object",
     default: _WcbIconBoxPanel_StyleProgress__WEBPACK_IMPORTED_MODULE_9__.WCB_ICON_BOX_PANEL_STYLE_PROGRESS_DEMO
   },
+  style_circle: {
+    type: "object",
+    default: _WcbIconBoxPanel_StyleCircle__WEBPACK_IMPORTED_MODULE_10__.WCB_ICON_BOX_PANEL_STYLE_CIRCLE_DEMO
+  },
   style_dimension: {
     type: "object",
     default: _WcbIconBoxPanel_StyleDimension__WEBPACK_IMPORTED_MODULE_8__.WCB_ICON_BOX_PANEL_STYLE_DIMENSION_DEMO
@@ -10191,7 +10488,7 @@ const blokc1Attrs = {
   },
   advance_motionEffect: {
     type: "object",
-    default: _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_10__.MY_MOTION_EFFECT_DEMO
+    default: _components_controls_MyMotionEffectControl_MyMotionEffectControl__WEBPACK_IMPORTED_MODULE_11__.MY_MOTION_EFFECT_DEMO
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (blokc1Attrs);
@@ -13740,7 +14037,7 @@ const TYPOGRAPHY_CONTROL_DEMO = {
   textDecoration: undefined,
   textTransform: undefined,
   lineHeight: {
-    Desktop: undefined
+    Desktop: "1.5"
   },
   letterSpacing: {
     Desktop: undefined
