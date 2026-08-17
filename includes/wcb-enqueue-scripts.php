@@ -126,6 +126,13 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
+    // Enqueue the Form view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-form-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/form/boostify-blocks-form-view.js',
+         array( '@wordpress/interactivity' )
+    );
+    
     // Enqueue the Counter view script as a module
     wp_enqueue_script_module(
         'boostify-blocks-counter-view',
