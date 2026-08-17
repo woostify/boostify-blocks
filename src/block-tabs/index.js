@@ -36,6 +36,8 @@ registerBlockType(metadata.name, {
 	providesContext: {
 		"boostify-blocks/faq_general": "general_general",
 		"boostify-blocks/faq_icon": "general_icon",
+		"boostify-blocks/tabs/activeTabIndex": "activeTabIndex",
+		"boostify-blocks/tabs/tabContents": "tabContents",
 	},
 	icon: (
 		<svg

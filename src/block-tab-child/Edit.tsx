@@ -10,8 +10,6 @@ import { WcbAttrs } from "./attributes";
 import { EditProps } from "../block-container/Edit";
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
-import { WCB_FAQ_PANEL_ICON } from "../block-faq/WcbFaqPanelIcon";
-import { WCB_FAQ_PANEL_GENERAL } from "../block-faq/WcbFaqPanelGeneral";
 import { useSelect } from "@wordpress/data";
 import MyCacheProvider from "../components/MyCacheProvider";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
@@ -20,8 +18,8 @@ const Edit: FC<
 	EditProps<
 		WcbAttrs,
 		{
-			"boostify-blocks/faq_icon"?: WCB_FAQ_PANEL_ICON;
-			"boostify-blocks/faq_general"?: WCB_FAQ_PANEL_GENERAL;
+			"boostify-blocks/tabs/activeTabIndex"?: number;
+			"boostify-blocks/tabs/tabContents"?: string[];
 		}
 	>
 > = (props) => {
@@ -47,23 +45,19 @@ const Edit: FC<
 		[clientId]
 	);
 
-	//
-	useEffect(() => {
-		console.log(12, "------ FAQ CHILD setAttributes ON useEffect --------");
-		// setAttributes({
-		// 	enableSeparator: context["boostify-blocks/faq_general"]?.enableSeparator,
-		// });
-	}, [context["boostify-blocks/faq_general"], context["boostify-blocks/faq_icon"], blockIndex]);
+	const activeTabIndex = context["boostify-blocks/tabs/activeTabIndex"] ?? 0;
+	const tabContents = context["boostify-blocks/tabs/tabContents"] as string[] | undefined;
+	const savedContent = tabContents?.[blockIndex] || "";
+	const isActiveTab = blockIndex === activeTabIndex;
 
-	//
+	const DEFAULT_CONTENT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.";
+
 	const MY_TEMPLATE = [
 		[
 			"core/paragraph",
 			{
-				placeholder:
-					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
-				content:
-					"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+				placeholder: DEFAULT_CONTENT,
+				content: savedContent || DEFAULT_CONTENT,
 			},
 		],
 	];
@@ -74,12 +68,6 @@ const Edit: FC<
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
 		allowedBlocks: null,
 		template: MY_TEMPLATE,
-		// renderAppender: () => {
-		// 	if (!hasInnerBlocks) {
-		// 		return <InnerBlocks.ButtonBlockAppender />;
-		// 	}
-		// 	return isSelected ? <InnerBlocks.DefaultBlockAppender /> : null;
-		// },
 	});
 
 	return (
@@ -88,6 +76,7 @@ const Edit: FC<
 				{...wrapBlockProps}
 				className={`${wrapBlockProps?.className} wcb-tab-child__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
+				style={{ display: isActiveTab ? undefined : 'none' }}
 			>
 				<div {...innerBlocksProps} id={undefined} />
 			</div>
