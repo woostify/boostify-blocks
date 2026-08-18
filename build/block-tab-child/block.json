@@ -9,6 +9,10 @@
   "parent": [
     "boostify-blocks/tabs"
   ],
+  "usesContext": [
+    "boostify-blocks/tabs/activeTabIndex",
+    "boostify-blocks/tabs/tabContents"
+  ],
   "supports": {
     "html": false,
     "anchor": true,

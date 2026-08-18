@@ -43,7 +43,19 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 
 	//
-	const wrapBlockProps = useBlockProps.save({ className: "wcb-faq__wrap" });
+	const wrapBlockProps = useBlockProps.save({ 
+		className: "wcb-faq__wrap",
+		// Register this block's namespace with the Interactivity API
+		'data-wp-interactive': 'boostify-blocks/faq',
+		'data-wp-context': JSON.stringify({
+			showMultiple: general_general.showMultiple,
+			activeItem: '',
+			hasInteracted: false,
+		}),
+		// FAQ schema (JSON-LD) flag
+		'data-faq-schema': general_general.enableSchemaSupport ? 'true' : 'false',
+		'data-wp-init': 'callbacks.generateSchema',
+	});
 	// INNER BLOCKS
 	const innerBlockProps = useBlockProps.save();
 	const innerBlocksProps = useInnerBlocksProps.save(innerBlockProps);
