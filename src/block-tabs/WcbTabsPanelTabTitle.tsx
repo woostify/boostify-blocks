@@ -48,6 +48,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	initialOpen,
 	onToggle,
 	opened,
+	tabTitles,
 }) => {
 	const {
 		textAlignment,
@@ -61,9 +62,10 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	const OPTION_INIT_OPEN_TAB_DEMO: Option<
 		WCB_TABS_PANEL_TAB_TITLE["initOpenTab"]
 	>[] = [
-		{ value: "tab1", label: "Tab1" },
-		{ value: "tab2", label: "Tab2" },
-		{ value: "tab3", label: "Tab3" },
+		...tabTitles.map((_, i) => ({
+			value: `tab${i + 1}`,
+			label: `Tab ${i + 1}`,
+		})),
 	];
 
 	const PLANS_ICON_POS_DEMO: MyRadioItem<

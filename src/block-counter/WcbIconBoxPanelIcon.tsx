@@ -17,7 +17,8 @@ export interface WCB_ICON_BOX_PANEL_ICON {
 		| "right"
 		| "leftOfTitle"
 		| "rightOfTitle"
-		| "bellowTitle";
+		| "bellowTitle"
+		| "bottom";
 	stackOn: "none" | "tablet" | "mobile";
 	verticalAlignment: "top" | "middle";
 }
@@ -56,6 +57,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 		{ value: "leftOfTitle", label: "Left Of Title" },
 		{ value: "rightOfTitle", label: "Right Of Title" },
 		{ value: "bellowTitle", label: "Bellow Title" },
+		{ value: "bottom", label: "Bottom" },
 	];
 	const STACK_ON_DEMO: Option<WCB_ICON_BOX_PANEL_ICON["stackOn"]>[] = [
 		{ value: "none", label: "None" },
@@ -107,7 +109,7 @@ const WcbIconBoxPanelIcon: FC<Props> = ({
 									iconPosition:
 										value as WCB_ICON_BOX_PANEL_ICON["iconPosition"],
 								};
-								if (iconPosition !== "left" && iconPosition !== "right") {
+								if (value !== "left" && value !== "right") {
 									newData = {
 										...panelData,
 										iconPosition:

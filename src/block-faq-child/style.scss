@@ -2,3 +2,24 @@
 	width: 100%;
 	max-width: 100%;
 }
+
+// Accordion layout only
+.accordion-container .wcb-faq-child__wrap {
+	.ac-trigger {
+		cursor: pointer;
+	}
+
+	.ac-panel {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.4s ease;
+
+		&.is-open {
+			grid-template-rows: 1fr;
+		}
+
+		.ac-panel-inner {
+			overflow: hidden;
+		}
+	}
+}

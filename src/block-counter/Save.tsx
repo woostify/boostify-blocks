@@ -23,8 +23,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_desination,
         style_Icon,
         style_progress,
-        style_title,
-        general_icon,
+		style_circle,
+		style_title,
+		general_icon,
         style_dimension,
         advance_motionEffect,
     } = attributes;
@@ -40,8 +41,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
         style_desination,
         style_Icon,
         style_progress,
-        style_title,
-        general_icon,
+		style_circle,
+		style_title,
+		general_icon,
         style_dimension,
         advance_motionEffect,
     };
@@ -49,24 +51,94 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
     // Format number for static display (used in non-circle/bar layouts)
     const formatNumber = (num: string, decimalPlaces: string) => {
         const decimal = parseInt(decimalPlaces);
-        if (!decimal || isNaN(decimal)) return num;
-        return parseFloat(num).toFixed(decimal);
+        const fixed = parseFloat(num || "0").toFixed(
+            isNaN(decimal) || decimal < 0 ? 0 : decimal
+        );
+        const thousandSeparator = general_layout?.thousand || "";
+        if (!thousandSeparator) {
+            return fixed;
+        }
+        const parts = fixed.split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
+        return parts.join(".");
+    };
+
+    // Circle geometry constants (kept in sync with the editor)
+    const counterViewBoxSize = 300;
+    const counterRadius = counterViewBoxSize / 2;
+    const counterStroke = 5;
+    const counterNormalizedRadius = counterRadius - counterStroke * 2;
+    const counterCircumference = counterNormalizedRadius * 2 * Math.PI;
+
+    // Interactivity API context consumed by the counter view script
+    const counterContext = {
+        start: parseFloat(general_layout?.startNumber || "0"),
+        end: parseFloat(general_layout?.endNumber || "0"),
+        total: parseFloat(general_layout?.totalNumber || general_layout?.endNumber || "0"),
+        duration: parseInt(general_layout?.animationDuration || "1500") || 1500,
+        decimals: parseInt(general_layout?.decimalNumber || "0") || 0,
+        prefix: general_layout?.numberPrefix || "",
+        suffix: general_layout?.numberSuffix || "",
+        thousand: general_layout?.thousand || "",
+        mode: general_layout?.type || "number",
+        easing: general_layout?.animationType || "easeOutCubic",
+        circumference: counterCircumference,
+        current: formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber || "0"),
+        dashOffset: counterCircumference,
+        width: "0%",
+        animated: false,
     };
 
     // Render the progress circle structure
     const renderProgressCircle = () => {
-        const radius = 150;
-        const stroke = 5;
-        const normalizedRadius = radius - stroke * 2;
-        const circumference = normalizedRadius * 2 * Math.PI;
+        const radius = counterRadius;
+        const stroke = counterStroke;
+        const normalizedRadius = counterNormalizedRadius;
+        const circumference = counterCircumference;
+        const viewBoxSize = counterViewBoxSize;
+
+        const isIconBesideContent =
+            general_icon.iconPosition === "left" ||
+            general_icon.iconPosition === "right";
+
+        const isIconBesideTitle =
+            general_icon.iconPosition === "leftOfTitle" ||
+            general_icon.iconPosition === "rightOfTitle";
+
+        const iconEl = general_icon.enableIcon ? (
+            <div className="wcb-icon-box__icon">
+                <MyIconFull icon={general_icon.icon} />
+            </div>
+        ) : null;
+
+        const numberEl = (
+            <div className="wcb-icon-box__number">
+                <span>{general_layout.numberPrefix}</span>
+                <span className="wcb-icon-box__number-value" data-wp-text="context.current">
+                    {formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
+                </span>
+                <span>{general_layout.numberSuffix}</span>
+            </div>
+        );
+
+        const descriptionEl = general_layout.enableDescription ? (
+            <RichText.Content
+                tagName="div"
+                value={description}
+                placeholder={__("Description of box ...")}
+                className="wcb-icon-box__description"
+                style={{
+                    wordBreak: "break-word",
+                    maxWidth: "100%",
+                }}
+            />
+        ) : null;
 
         return (
             <div
                 className="wcb-icon-box__progress-circle-wrap"
                 style={{
                     position: "relative",
-                    width: `${radius * 2}px`,
-                    height: `${radius * 2}px`,
                 }}
                 data-start-number={general_layout?.startNumber || "0"}
                 data-end-number={general_layout?.endNumber || "0"}
@@ -75,9 +147,10 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 data-number-suffix={general_layout?.numberSuffix || ""}
             >
                 <svg
-                    height={radius * 2}
-                    width={radius * 2}
-                    style={{ transform: "rotate(-90deg)" }}
+                    className="wcb-icon-box__progress-circle-svg"
+                    viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
+                    width="100%"
+                    height="100%"
                 >
                     <circle
                         stroke="#e0e0e0"
@@ -94,51 +167,41 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                         strokeWidth={stroke}
                         strokeDasharray={`${circumference} ${circumference}`}
                         style={{ strokeDashoffset: circumference }} // Initially set to 0% progress
+                        data-wp-style--stroke-dashoffset="context.dashOffset"
                         r={normalizedRadius}
                         cx={radius}
                         cy={radius}
                     />
                 </svg>
-                <div
-                    style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        textAlign: "center",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "10px",
-                        maxWidth: `${radius * 1.5}px`,
-                        padding: "10px",
-                    }}
-                >
-                    {general_icon.enableIcon && (
-                        <div className="wcb-icon-box__icon">
-                            <MyIconFull icon={general_icon.icon} />
-                        </div>
-                    )}
-                    {/* <div className="wcb-icon-box__number-inside">
-                        {formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
-                        {general_layout.numberSuffix}
-                    </div> */}
-                    <div className="wcb-icon-box__number">
-						<span>{general_layout.numberPrefix}</span>
-						{formatNumber(general_layout?.startNumber || "0", general_layout?.decimalNumber)}
-						<span>{general_layout.numberSuffix}</span>
-					</div>
-                    {general_layout.enableDescription && (
-                        <RichText.Content
-                            tagName="div"
-                            value={description}
-                            placeholder={__("Description of box ...")}
-                            className="wcb-icon-box__description"
-                            style={{
-                                wordBreak: "break-word",
-                                maxWidth: "100%",
-                            }}
-                        />
+                <div className="wcb-icon-box__progress-circle-content">
+                    {isIconBesideContent ? (
+                        <>
+                            {general_icon.iconPosition === "left" && iconEl}
+                            <div className="wcb-icon-box__progress-circle-content-inner">
+                                {numberEl}
+                                {descriptionEl}
+                            </div>
+                            {general_icon.iconPosition === "right" && iconEl}
+                        </>
+                    ) : isIconBesideTitle ? (
+                        <>
+                            <div className="wcb-icon-box__progress-circle-content-row">
+                                {general_icon.iconPosition === "leftOfTitle" &&
+                                    iconEl}
+                                {numberEl}
+                                {general_icon.iconPosition === "rightOfTitle" &&
+                                    iconEl}
+                            </div>
+                            {descriptionEl}
+                        </>
+                    ) : (
+                        <>
+                            {general_icon.iconPosition === "top" && iconEl}
+                            {numberEl}
+                            {general_icon.iconPosition === "bellowTitle" && iconEl}
+                            {descriptionEl}
+                            {general_icon.iconPosition === "bottom" && iconEl}
+                        </>
                     )}
                 </div>
             </div>
@@ -156,35 +219,20 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 data-number-prefix={general_layout?.numberPrefix || ""}
                 data-number-suffix={general_layout?.numberSuffix || ""}
             >
-                <div
-                    style={{
-                        width: "100%",
-                        backgroundColor: "#e0e0e0",
-                        height: "100%",
-                        borderRadius: "5px",
-                        overflow: "hidden",
-                        position: "relative",
-                    }}
-                >
+                <div className="wcb-icon-box__progress-bar-track">
                     <div
                         className="wcb-icon-box__progress-bar"
+                        data-wp-style--width="context.width"
                         style={{
-                            width: "0%", // Initially set to 0% progress
-                            height: "100%",
+                            width: "0%",
                             backgroundColor: style_progress.progressColor,
-                            transition: "transparent",
-                            color: "white",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "end",
-                            paddingRight: "4px",
                         }}
                     >
                     <div className="wcb-icon-box__number" style={{
 							marginBottom: "0px"
 						}}>
 							<span>{general_layout.numberPrefix}</span>
-                            <span className="wcb-icon-box__number-value">0</span>
+                            <span className="wcb-icon-box__number-value" data-wp-text="context.current">0</span>
 							<span>{general_layout.numberSuffix}</span>
 						</div>
                     </div>
@@ -221,6 +269,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
     const wrapBlockProps = useBlockProps.save({
         className: "wcb-counter-box__wrap",
+        'data-wp-interactive': 'boostify-blocks/counter',
+        'data-wp-context': JSON.stringify(counterContext),
+        'data-wp-init': 'actions.init',
     });
 
     return (
@@ -264,7 +315,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                                     data-decimal-places={general_layout?.decimalNumber || "0"}
 								>
                                     <span>{general_layout.numberPrefix}</span>
-									<span className="wcb-icon-box__number-value">
+									<span className="wcb-icon-box__number-value" data-wp-text="context.current">
 										{formatNumber(general_layout.startNumber, general_layout?.decimalNumber)}
 									</span>
                                     <span>{general_layout.numberSuffix}</span>
@@ -295,7 +346,8 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
                 {general_layout.enableCTAButton && <InnerBlocks.Content />}
             </div>
 
-            {general_icon.iconPosition === "right" &&
+            {(general_icon.iconPosition === "right" ||
+                general_icon.iconPosition === "bottom") &&
                 general_layout.type !== "circle" &&
                 general_layout.type !== "bar" &&
                 renderIcon()}

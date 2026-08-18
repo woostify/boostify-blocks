@@ -1,4 +1,4 @@
-import { PanelBody, /*RangeControl,*/ ToggleControl } from "@wordpress/components";
+import { PanelBody /*RangeControl, ToggleControl*/ } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import React, { FC } from "react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
@@ -16,11 +16,6 @@ export interface WCB_TAGS_PANEL_GENERAL {
     layout: "accordion" | "grid";
     style: "horizontalStyle1" | "horizontalStyle2" | "verticalStyle1" | "verticalStyle2";
     headingTag: keyof HTMLElementTagNameMap;
-    collapseOtherItems: boolean;
-    expandFirstItem: boolean;
-    showMultiple: boolean;
-    enableSchemaSupport: boolean;
-    enableSeparator: boolean;
     // columns: HasResponsive<number>;
     textAlignment: TextAlignment;
 }
@@ -29,12 +24,7 @@ export const WCB_TAGS_PANEL_GENERAL_DEMO: WCB_TAGS_PANEL_GENERAL = {
     layout: "accordion",
     style: "horizontalStyle1",
     headingTag: "div",
-    collapseOtherItems: true,
     // columns: { Desktop: 2 },
-    enableSchemaSupport: true,
-    enableSeparator: true,
-    showMultiple: true,
-    expandFirstItem: true,
     textAlignment: "left",
 };
 
@@ -53,12 +43,7 @@ const WcbTabsPanelGeneral: FC<Props> = ({
     // const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
     const {
         textAlignment,
-        collapseOtherItems,
         // columns,
-        enableSchemaSupport,
-        enableSeparator,
-        showMultiple,
-        expandFirstItem,
         headingTag,
         style,
         layout,
@@ -70,34 +55,6 @@ const WcbTabsPanelGeneral: FC<Props> = ({
         { icon: "Accordion", name: "accordion" },
         { icon: "Grid", name: "grid" },
     ];
-
-    const renderCarouselToggleSettings = () => {
-        if (layout === "grid") return null;
-        return (
-            <>
-                <ToggleControl
-                    label="Collapse other items"
-                    help="Collapse all accordion elements during initialization"
-                    checked={collapseOtherItems}
-                    onChange={(checked) => setAttr__({ ...panelData, collapseOtherItems: checked })}
-                />
-                {collapseOtherItems && (
-                    <ToggleControl
-                        label="Expand first item"
-                        help="Show accordion first element during initialization"
-                        checked={expandFirstItem}
-                        onChange={(checked) => setAttr__({ ...panelData, expandFirstItem: checked })}
-                    />
-                )}
-                <ToggleControl
-                    label="Show multiple"
-                    help="Show multiple elements at the same time"
-                    checked={showMultiple}
-                    onChange={(checked) => setAttr__({ ...panelData, showMultiple: checked })}
-                />
-            </>
-        );
-    };
 
     const OPTION_STYLE_OPEN_TAB_DEMO: MySelectOption<WCB_TAGS_PANEL_GENERAL["style"]>[] = [
         { label: "Horizontal Style 1", value: "horizontalStyle1" },
@@ -133,19 +90,6 @@ const WcbTabsPanelGeneral: FC<Props> = ({
                     onChange={(value) => setAttr__({ ...panelData, layout: value as WCB_TAGS_PANEL_GENERAL["layout"] })}
                     value={layout}
                     plans={PLANS_DEMO}
-                />
-                {renderCarouselToggleSettings()}
-                <ToggleControl
-                    label="Enable schema support"
-                    help="Enable schema support"
-                    checked={enableSchemaSupport}
-                    onChange={(checked) => setAttr__({ ...panelData, enableSchemaSupport: checked })}
-                />
-                <ToggleControl
-                    label="Enable separator"
-                    help="Enable separator"
-                    checked={enableSeparator}
-                    onChange={(checked) => setAttr__({ ...panelData, enableSeparator: checked })}
                 />
                 {/* {layout === "grid" && (
                     <RangeControl

@@ -54,7 +54,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
     const ref = useRef<HTMLDivElement>(null);
     const wrapBlockProps = useBlockProps({ ref });
     const { tabIsOpen, tabAdvancesIsPanelOpen, tabGeneralIsPanelOpen, tabStylesIsPanelOpen, handleTogglePanel } = useSetBlockPanelInfo(uniqueId);
-    const [indexFocused, setIndexFocused] = useState(0);
+    const [indexFocused, setIndexFocused] = useState(activeTabIndex);
 
     const { childInnerBlocks } = useSelect(
         (select) => ({
@@ -77,6 +77,17 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
             setAttributes({ activeTabIndex: indexFocused });
         }
     }, [indexFocused, activeTabIndex, setAttributes]);
+
+    // Sync initOpenTab setting → activeTabIndex
+    useEffect(() => {
+        const match = general_tabTitle.initOpenTab?.match(/^tab(\d+)$/);
+        if (match) {
+            const tabNum = parseInt(match[1], 10) - 1;
+            if (tabNum >= 0 && tabNum < titles.length && tabNum !== activeTabIndex) {
+                setIndexFocused(tabNum);
+            }
+        }
+    }, [general_tabTitle.initOpenTab]);
 
 	// Synchronze number childInnerBlocks with titles and tabContents
     useEffect(() => {
@@ -120,14 +131,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
     }, [childInnerBlocks, titles.length, setAttributes]);
 
 
-    useEffect(() => {
-        const childs = document.querySelectorAll(`#block-${clientId} .wcb-tab-child__wrap`);
-        if (!childs || !childs.length) return;
-        Array.from(childs).forEach((item, index) => {
-            if (index !== indexFocused) item.setAttribute("hidden", "");
-            else item.removeAttribute("hidden");
-        });
-    }, [indexFocused, clientId]);
+    // Tab visibility in editor is now handled by child blocks via
+    // context "boostify-blocks/tabs/activeTabIndex" and hidden prop.
 
     const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
         switch (tab.name) {
@@ -316,7 +321,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
     const renderIcon = (index: number) => {
         if (!general_tabTitle.enableIcon) return null;
-        return general_tabTitle.icon ? <MyIconFull className={`wcb-tabs__icon ${activeTabIndex === index ? "wcb-tabs__icon-selected" : ""}`} icon={general_tabTitle.icon} /> : null;
+        return general_tabTitle.icon ? <MyIconFull className="wcb-tabs__icon" icon={general_tabTitle.icon} /> : null;
     };
 
     return (
@@ -327,13 +332,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
                 <div className="wcb-tabs__contents">
                     <div className="wcb-tabs__titles">
                         {titles.map((item, index) => (
-                            <div className={`wcb-tabs__title_inner relative group ${activeTabIndex === index ? "wcb-tabs__title_inner-selected" : ""}`} data-tab-index={item.dataTabIndex} key={item.id}>
+                            <div className={`wcb-tabs__title_inner relative group wcb-tabs__title_inner--icon-${general_tabTitle.iconPosition} ${activeTabIndex === index ? "is-active" : ""}`} data-tab-index={item.dataTabIndex} key={item.id}>
                                 {renderRemoveBtn(item, index)}
                                 {(general_tabTitle.iconPosition === "left" || general_tabTitle.iconPosition === "top") && renderIcon(index)}
                                 <RichText
                                     key={item.id}
                                     tagName="p"
-                                    className={`wcb-tabs__title ${activeTabIndex === index ? "wcb-tabs__title-selected" : ""}`}
+                                    className="wcb-tabs__title"
                                     value={item.title}
                                     onFocusCapture={() => setIndexFocused(index)}
                                     onChange={(value) => {
