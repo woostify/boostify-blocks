@@ -3,4 +3,8 @@
 .wcb-form__successMessageText,
 .wcb-form__errorMessageText {
 	display: none;
+
+	&.is-visible {
+		display: block;
+	}
 }
