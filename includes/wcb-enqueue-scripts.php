@@ -55,20 +55,32 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
-    wp_enqueue_script(
+    wp_enqueue_script_module(
         'boostify-blocks-buynow',
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-buynow.js',
-        array( 'jquery', 'boostify-blocks-tiny-slider' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
     );
 
-    wp_enqueue_script(
-        'boostify-blocks-product-quantity',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-product-quantity.js',
-        array(),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+    wp_enqueue_script_module(
+        'boostify-blocks-product-quantity-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/product-quantity/wcb-product-quantity-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-pre-order-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/pre-order/wcb-pre-order-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-quick-view-preview',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/quick-view/wcb-quick-view-preview.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
     );
 
     // Enqueue the Tabs view script as a module
@@ -104,8 +116,8 @@ function boostify_blocks_my_scripts_method()
             'boostify-blocks-buynow',
             'wcb_buynow_data',
             array(
-                'ajax_url'      => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
-                'redirect_delay' => 300,
+                'ajaxUrl'       => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
+                'redirectDelay' => 300,
             )
         );
     }
