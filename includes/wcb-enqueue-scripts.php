@@ -135,6 +135,30 @@ add_action( 'enqueue_block_editor_assets', function() {
         BOOSTIFY_BLOCKS_VERSION
     );
 
+    wp_add_inline_script(
+		'wp-edit-post',
+		'
+		wp.domReady( function() {
+			const icon = "' . esc_js(
+				plugins_url( 'public/images/bb-logo-icon.svg', BOOSTIFY_BLOCKS_FILE )
+			) . '";
+			function replaceLogo() {
+				const img = document.querySelector(
+					".edit-post-fullscreen-mode-close-site-icon__image"
+				);
+
+				if ( img ) {
+					img.src = icon;
+				}
+			}
+			replaceLogo();
+			new MutationObserver( replaceLogo ).observe( document.body, {
+				childList: true,
+				subtree: true
+			} );
+		} );
+		'
+	);
     // load the extension block
     wp_enqueue_style(
         'boostify-blocks-extensions',
