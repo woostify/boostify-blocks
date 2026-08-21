@@ -31,7 +31,6 @@ const MyToggle: FC<Props> = ({
 			<div className="flex-1 max-w-2xl">
 				<label
 					className="block text-base font-medium text-gray-700 select-none"
-					htmlFor={id}
 				>
 					{label}
 				</label>

@@ -4,6 +4,24 @@ import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendSt
 import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
 import { initCountDown } from "../block-countdown/FrontendScript";
+import { initAdvanceMotionEffect } from "../block-container/getAdvanveStyles";
+
+/**
+ * Helper: creates an init function for advance motion effect (animation)
+ * that runs independently of emotion CSS rendering, so it works even when
+ * file generation is enabled and inline CSS is skipped.
+ */
+const createMotionEffectInit = () => (el: Element, props: any) => {
+	const { uniqueId } = props;
+	if (uniqueId) {
+		initAdvanceMotionEffect({
+			advance_motionEffect: props.advance_motionEffect,
+			className: `.${uniqueId}[data-uniqueid=${uniqueId}]`,
+		});
+	}
+};
+
+const motionEffectInit = createMotionEffectInit();
 
 const classes: {
 	D: string;
@@ -103,11 +121,32 @@ const classes: {
 		C: React.lazy(() => import("../block-icon/GlobalCss")),
 	},
 ];
+declare global {
+	interface Window {
+		boostify_blocks_file_generation_enabled?: boolean;
+		boostify_blocks_file_css_loaded?: boolean;
+		boostify_blocks_fallback_css?: boolean;
+	}
+}
+
+/**
+ * When file generation is ON and a static CSS file was already enqueued,
+ * skip emotion <Global> rendering — CSS is served from the static file.
+ * Init functions (carousels, forms, counters) still need to run.
+ */
+const shouldSkipEmotionCss = (): boolean => {
+	return !!(
+		window.boostify_blocks_file_generation_enabled &&
+		window.boostify_blocks_file_css_loaded &&
+		!window.boostify_blocks_fallback_css
+	);
+};
+
 classes.forEach(({ D, C, F }) => {
 	const divs = document.querySelectorAll(D);
 
 	if (divs && divs.length) {
-		renderToDom(divs, C, F);
+		renderToDom(divs, C, F, shouldSkipEmotionCss());
 	}
 });
 
@@ -117,11 +156,13 @@ classes.forEach(({ D, C, F }) => {
  * @param {NodeListOf<Element>} divsToUpdate - The divs to update.
  * @param {React.LazyExoticComponent<React.NamedExoticComponent<any>>} GlobalCss - The GlobalCss component to render.
  * @param {(el: Element, props: any) => void} [funcRunOnEl] - Optional function to run on each element after rendering.
+ * @param {boolean} [skipCss] - If true, skip emotion CSS rendering (used when static CSS file is loaded).
  */
 function renderToDom(
 	divsToUpdate: NodeListOf<Element>,
 	GlobalCss: React.LazyExoticComponent<React.NamedExoticComponent<any>>,
-	funcRunOnEl?: (el: Element, props: any) => void
+	funcRunOnEl?: (el: Element, props: any) => void,
+	skipCss: boolean = false
 ) {
 	divsToUpdate.forEach((div) => {
 		const preEl = div.querySelector(
@@ -139,15 +180,23 @@ function renderToDom(
 		const props = JSON.parse(preEl?.innerText);
 		//
 
-		ReactDOM.render(
-			<Suspense fallback={<div />}>
-				<GlobalCss {...props} />
-			</Suspense>,
-			divRenderCssEl
-		);
+		// Skip emotion <Global> rendering when static CSS file is loaded.
+		// Init functions (carousels, forms, counters) still run.
+		if (!skipCss) {
+			ReactDOM.render(
+				<Suspense fallback={<div />}>
+					<GlobalCss {...props} />
+				</Suspense>,
+				divRenderCssEl
+			);
+		}
 
 		// run function if exits
 		funcRunOnEl && funcRunOnEl(div, props);
+
+		// Always run motion effect (animation) init, even when skipCss=true.
+		// This is separated from GlobalCss rendering so it works with file generation.
+		motionEffectInit(div, props);
 
 		//
 		div.classList.remove("wcb-update-div");

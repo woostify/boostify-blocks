@@ -74,6 +74,7 @@ function boostify_blocks_get_default_blocks_settings()
         'containerPadding'          => '10px',
         'enableTemplatesButton'     => 'true',
         'enableCopyPasteStyles'     => 'true',
+        'enableFileGeneration'      => 'false',
         'loadGoogleFontsLocally'    => 'false',
         'preloadLocalFonts'         => 'false',
         'allowOnlySelectedFonts'    => 'false',
