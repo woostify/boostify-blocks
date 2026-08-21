@@ -488,7 +488,8 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
     
     // Quantity input
-    if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "") && $attributes['general_addToCartBtn']['position'] !== "none") {
+    $has_quantity = boostify_blocks_block_products_has_quantity_feature($attributes);
+    if ($has_quantity) {
         $data->quantity_input = boostify_blocks_block_products_get_product_quantity();
     }
 
@@ -630,7 +631,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                 <a
                     href="' . $add_to_cart_url . '"
                     data-product_id="' . $product_id_attr . '"
-                    data-quantity="1"
+                    data-quantity="1"' . ($has_quantity ? ' data-wp-bind--data-quantity="context.quantity"' : '') . '
                     class="wcb-products__product--btnIconAddToCart--item add_to_cart_button ' . $ajax_class . '"
                     rel="nofollow"
                 ></a>';
@@ -671,9 +672,13 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $escaped_permalink = esc_url($data->permalink);
     $escaped_feat_classes = esc_attr($featuredClasses);
 
+    $quantity_interactivity_attrs = $has_quantity
+        ? " data-wp-interactive=\"boostify-blocks/product-quantity\" data-wp-context='{\"quantity\":1}' data-wp-watch=\"callbacks.syncQuantityJqueryData\""
+        : '';
+
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-		"<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\">
+		"<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\"{$quantity_interactivity_attrs}>
                 <div class=\"wcb-products__product-featured \">
                     <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
@@ -791,7 +796,37 @@ function boostify_blocks_block_products__get_countdown_html( $countdown_attrs ) 
  */
 function boostify_blocks_block_products__build_quick_view_html( $product_id_attr, $position ) {
 
-    $html  = '<button 
+    // Context for the Interactivity API store (see public/js/quick-view/wcb-quick-view-preview.js).
+    $preview_context = wp_json_encode(
+        array(
+            'productId' => (int) $product_id_attr,
+            'loading'   => false,
+            'loaded'    => false,
+            'galleryHtml' => '',
+        )
+    );
+
+    $html  = '<style>
+        .wcb-quick-view-hover-gallery {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            overflow: hidden;
+        }
+        .wcb-quick-view-hover-gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>';
+
+    $html .= '<div class="wcb-products__product-quickview-preview"'
+        . ' data-wp-interactive="boostify-blocks/quick-view-preview"'
+        . ' data-wp-context=\'' . esc_attr( $preview_context ) . '\''
+        . ' data-wp-on--mouseenter="actions.preloadGallery"'
+        . '>';
+
+    $html .= '<button
         class="wcb-products__product--quickViewBottomImage--item product-quick-view-btn"
         data-product_id="' . esc_attr( $product_id_attr ) . '"
         data-pid="' . esc_attr( $product_id_attr ) . '"
@@ -813,6 +848,10 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
     }
 
     $html .= '</button>';
+
+    $html .= '<div class="wcb-quick-view-hover-gallery" data-wp-bind--hidden="!context.loaded" data-wp-watch="callbacks.renderGallery"></div>';
+
+    $html .= '</div>';
 
     return $html;
 }
@@ -1046,11 +1085,32 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
     // Format the date to display (e.g., "January 29, 2026")
     $formatted_date = wp_date( 'F d, Y', strtotime( $preorder_date ) );
 
+    // Context for the Interactivity API store (see public/js/pre-order/wcb-pre-order-view.js).
+    $preorder_context = wp_json_encode(
+        array(
+            'endDate' => $preorder_date,
+            'closed'  => false,
+            'days'    => '00',
+            'hours'   => '00',
+            'minutes' => '00',
+            'seconds' => '00',
+        )
+    );
+
     $html = '<style>
         .wcb-products__product-preorder-message {
             color: #000000;
             font-size: 15px;
             font-weight: 400;
+        }
+        .wcb-products__product-preorder-countdown {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .wcb-products__product-preorder-countdown-item {
+            font-size: 13px;
+            font-weight: 600;
         }
     </style>';
     $html .= '<div class="wcb-products__product-preorder-badge">';
@@ -1059,7 +1119,17 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
     $html .= '<span aria-hidden="true">Pre-Order</span>';
     $html .= '</div>';
     $html .= '</div>';
-    $html .= '<div class="wcb-products__product-preorder-info">';
+    $html .= '<div class="wcb-products__product-preorder-info"'
+        . ' data-wp-interactive="boostify-blocks/pre-order"'
+        . ' data-wp-context=\'' . esc_attr( $preorder_context ) . '\''
+        . ' data-wp-init="callbacks.start"'
+        . '>';
+    $html .= '<div class="wcb-products__product-preorder-countdown" data-wp-bind--hidden="context.closed">';
+    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.days"></span>d</span>';
+    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.hours"></span>h</span>';
+    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.minutes"></span>m</span>';
+    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.seconds"></span>s</span>';
+    $html .= '</div>';
     $html .= '<span class="wcb-products__product-preorder-message">Available for Pre-Order - This item will be available on ' . esc_html( $formatted_date ) . '</span>';
     $html .= '</div>';
     $html .= '</div>';
@@ -1131,16 +1201,20 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
 
     $show_icon = $attributesFromBlock['general_addToCartBtn']['isShowIcon'] ?? true;
 
+    $has_quantity = boostify_blocks_block_products_has_quantity_feature($attributesFromBlock);
+    $quantity_bind_attr = $has_quantity ? ' data-wp-bind--data-quantity="context.quantity"' : '';
+
     $btn_markup = sprintf(
         '<a
             href="%s"
             data-product_id="%s"
-            data-quantity="1"
+            data-quantity="1"%s
             class="add_to_cart_button %s %s"
             rel="nofollow"
         >%s%s</a>',
         esc_url($product->add_to_cart_url()),
         esc_attr($product->get_id()),
+        $quantity_bind_attr,
         esc_attr($product_class),
         esc_attr($ajax_class),
         $show_icon ? $icon_markup : '',
@@ -1151,13 +1225,24 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
 }
 
 /**
+ * Whether the quantity stepper should be rendered for the given block attributes.
+ * @param array $attributes The block attributes.
+ * @return bool
+ */
+function boostify_blocks_block_products_has_quantity_feature($attributes)
+{
+    return boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "")
+        && ($attributes['general_addToCartBtn']['position'] ?? '') !== "none";
+}
+
+/**
  * Generate the HTML for the product quantity input.
  * @return string The generated HTML for the product quantity input.
  */
 function boostify_blocks_block_products_get_product_quantity()
-{   
+{
     $quantity_input = '<div class="wcb-products__quantity">'
-        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '">&minus;</button>'
+        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-minus" aria-label="' . esc_attr__( 'Decrease quantity', 'boostify-blocks' ) . '" data-wp-on--click="actions.decreaseQuantity">&minus;</button>'
         . '<input'
         . ' type="number"'
         . ' class="wcb-products__quantity-input input-text qty text"'
@@ -1168,8 +1253,10 @@ function boostify_blocks_block_products_get_product_quantity()
         . ' pattern="[0-9]*"'
         . ' inputmode="numeric"'
         . ' aria-label="' . esc_attr__( 'Quantity', 'boostify-blocks' ) . '"'
+        . ' data-wp-bind--value="context.quantity"'
+        . ' data-wp-on--input="actions.updateQuantityInput"'
         . '>'
-        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '">+</button>'
+        . '<button type="button" class="wcb-products__quantity-btn wcb-products__quantity-plus" aria-label="' . esc_attr__( 'Increase quantity', 'boostify-blocks' ) . '" data-wp-on--click="actions.increaseQuantity">+</button>'
         . '</div>';
     return '<div class="wcb-products__quantity-add-to-cart">' . $quantity_input . '</div>';
 }

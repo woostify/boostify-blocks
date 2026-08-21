@@ -55,20 +55,60 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
-    wp_enqueue_script(
+    wp_enqueue_script_module(
         'boostify-blocks-buynow',
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-buynow.js',
-        array( 'jquery', 'boostify-blocks-tiny-slider' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
     );
 
-    wp_enqueue_script(
-        'boostify-blocks-product-quantity',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-product-quantity.js',
-        array(),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+    wp_enqueue_script_module(
+        'boostify-blocks-product-quantity-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/product-quantity/wcb-product-quantity-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-pre-order-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/pre-order/wcb-pre-order-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-quick-view-preview',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/quick-view/wcb-quick-view-preview.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    // Enqueue the Tabs view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-tabs-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/tabs/boostify-blocks-tabs-view.js',
+        array( '@wordpress/interactivity' )
+    );
+    
+    // Enqueue the FAQ view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-faq-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/faq/boostify-blocks-faq-view.js',
+        array( '@wordpress/interactivity' )
+    );
+
+    // Enqueue the Form view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-form-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/form/boostify-blocks-form-view.js',
+         array( '@wordpress/interactivity' )
+    );
+    
+    // Enqueue the Counter view script as a module
+    wp_enqueue_script_module(
+        'boostify-blocks-counter-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/counter/boostify-blocks-counter-view.js',
+        array( '@wordpress/interactivity' )
     );
 
     if ( class_exists( 'WC_AJAX' ) ) {
@@ -76,8 +116,8 @@ function boostify_blocks_my_scripts_method()
             'boostify-blocks-buynow',
             'wcb_buynow_data',
             array(
-                'ajax_url'      => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
-                'redirect_delay' => 300,
+                'ajaxUrl'       => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
+                'redirectDelay' => 300,
             )
         );
     }

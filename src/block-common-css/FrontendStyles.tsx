@@ -1,13 +1,9 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
-import { initCarouselForWcbFaq } from "../block-faq/FrontendStyles";
-import { handleSubmitFormForWcbForm } from "../block-form/FrontendStyles";
 import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendStyles";
 import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
 import { initCountDown } from "../block-countdown/FrontendScript";
-import { initTabsForWcbTabs } from "../block-tabs/FrontendStyles";
-import { animateProgressElements } from "../block-counter/FrontendStyles";
 import { initAdvanceMotionEffect } from "../block-container/getAdvanveStyles";
 
 /**
@@ -60,12 +56,10 @@ const classes: {
 	{
 		D: ".wcb-faq__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-faq/GlobalCss")),
-		F: initCarouselForWcbFaq,
 	},
 	{
 		D: ".wcb-form__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-form/GlobalCss")),
-		F: handleSubmitFormForWcbForm,
 	},
 	{
 		D: ".wcb-heading__wrap.wcb-update-div",
@@ -100,12 +94,10 @@ const classes: {
 	{
 		D: ".wcb-tabs__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-tabs/GlobalCss")),
-		F: initTabsForWcbTabs,
 	},
 	{
 		D: ".wcb-counter-box__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-counter/GlobalCss")),
-		F: animateProgressElements,
 	},
 	{
 		D: ".wcb-slider__wrap.wcb-update-div",

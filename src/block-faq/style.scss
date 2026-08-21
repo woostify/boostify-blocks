@@ -1,13 +1,5 @@
 .wcb-faq-child__wrap {
 	@apply overflow-hidden;
-	&.active {
-		.wcb-icon-full.wcb-faq-child__icon--active {
-			display: block;
-		}
-		.wcb-icon-full.wcb-faq-child__icon--inactive {
-			display: none;
-		}
-	}
 }
 
 .wcb-faq-child__wrap,
@@ -37,13 +29,6 @@
 .wcb-faq-child__answer {
 	color: #4b5563;
 	@apply text-base;
-}
-
-.wcb-icon-full.wcb-faq-child__icon--active {
-	display: none;
-}
-.wcb-icon-full.wcb-faq-child__icon--inactive {
-	display: block;
 }
 
 .wcb-faq-child__question-text,
