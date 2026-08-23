@@ -396,26 +396,27 @@ const Edit: FC<Props> = (props) => {
 			case "Styles":
 				return (
 					<>
-						{style_layout && (
-							<WcbProductsPanel_StyleLayout
-								onToggle={() =>
-									handleTogglePanel("Styles", "_StyleLayout", true)
-								}
-								initialOpen={
-									tabStylesIsPanelOpen === "_StyleLayout" ||
-									tabStylesIsPanelOpen === "first"
-								}
-								opened={tabStylesIsPanelOpen === "_StyleLayout" || undefined}
-								//
-								setAttr__={(data) => {
-									setAttributes({ style_layout: data });
-								}}
-								panelData={style_layout}
-							/>
-						)}
 						{
 							general_layout?.isCustomizerGeneralLayout == true && (
+								
 								<>
+									{style_layout && (
+										<WcbProductsPanel_StyleLayout
+											onToggle={() =>
+												handleTogglePanel("Styles", "_StyleLayout", true)
+											}
+											initialOpen={
+												tabStylesIsPanelOpen === "_StyleLayout" ||
+												tabStylesIsPanelOpen === "first"
+											}
+											opened={tabStylesIsPanelOpen === "_StyleLayout" || undefined}
+											//
+											setAttr__={(data) => {
+												setAttributes({ style_layout: data });
+											}}
+											panelData={style_layout}
+										/>
+									)}
 									{general_featuredImage?.isShowFeaturedImage && style_featuredImage && (
 										<WcbProductsPanel_StyleFeaturedImage
 											onToggle={() =>
