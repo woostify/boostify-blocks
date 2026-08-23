@@ -1,0 +1,98 @@
+/*  */
+/*  */
+// Swiper's own core + module CSS is loaded separately (JS import in Edit.tsx
+// for the editor, wp_enqueue_style() in wcb-blocks-render-callback.php for the
+// frontend) - Sass @import can't inline a plain .css package here.
+.wcb-slider__wrap {
+	padding: 28px !important;
+
+	.swiper-pagination-bullet {
+		margin: 0 4px;
+		width: 8px;
+		height: 8px;
+	}
+
+	.swiper-button-prev,
+	.swiper-button-next {
+		z-index: 1000 !important;
+		color: black;
+		padding: 0.5rem;
+		width: unset;
+		height: unset;
+		// Swiper's own CSS vertically centers these using
+		// `margin-top: calc(0px - (var(--swiper-navigation-size) / 2))`, which
+		// assumes the default 44px box - since the box is sized to its content
+		// above (not 44px), re-center with a transform instead, matching how
+		// Slick's own theme CSS centers .slick-prev/.slick-next.
+		top: 50%;
+		margin-top: 0;
+		transform: translateY(-50%);
+		&:hover {
+			color: black;
+		}
+		// Swiper draws its own default arrow glyph via ::after - hide it since
+		// we render our own SVG icon inside the button (see Edit.tsx / Save.tsx).
+		&::after {
+			content: "";
+			display: none;
+		}
+		// Swiper's base CSS forces `fill: currentColor` on any svg inside these
+		// buttons, which overrides our icon's own `fill="none"` and turns its
+		// thin outline path into a solid filled shape - force it back off and
+		// draw the icon via stroke instead, like the original SVGs intend.
+		svg {
+			fill: none;
+			stroke: currentColor;
+		}
+	}
+
+	.swiper-wrapper {
+		min-width: 0px;
+		display: flex !important;
+		align-items: center;
+	}
+
+	.wcb-slider__wrap-items {
+		position: relative;
+		width: 100%;
+		max-width: 100%;
+		overflow: hidden;
+	}
+}
+
+.wcb-slider__item-inner {
+	width: 100%;
+}
+
+.wcb-slider-child__wrap {
+	width: 100%;
+	margin: auto;
+}
+
+.wcb-slider__item {
+	position: relative;
+	.wcb-slider__item-background {
+		position: relative;
+	}
+	.wcb-slider__item-wrap-inner {
+		display: flex;
+		justify-content: center; /* Center horizontally */
+		align-items: center; /* Center vertically */
+	}
+}
+
+.wcb-slider__item-image {
+	display: inline-flex;
+	align-items: flex-start;
+	flex-shrink: 0;
+}
+
+.wcb-slider__item-user {
+	display: inline-flex;
+	align-items: center;
+}
+
+.wcb-slider__wrap-items {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}

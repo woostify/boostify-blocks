@@ -111,6 +111,17 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
+    // Enqueue the Slider (Swiper) view script as a module. Unlike the other
+    // Interactivity stores above, this one bundles the `swiper` npm package
+    // (see webpack.view-modules.config.js), so it's built separately from
+    // `npm run build` rather than hand-written.
+    wp_enqueue_script_module(
+        'boostify-blocks-slider-swiper-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/slider-swiper/boostify-blocks-slider-swiper-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(
             'boostify-blocks-buynow',
