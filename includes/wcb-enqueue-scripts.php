@@ -32,14 +32,6 @@ function boostify_blocks_my_scripts_method()
     wp_enqueue_script('boostify-blocks-slicklib', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/slick/slick.min.js', ['jquery'], "1.8.0", false);
 
     wp_enqueue_script(
-        'boostify-blocks-countdown-lib',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/boostify-blocks-countdown.js',
-        array( 'jquery' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
-    );
-
-    wp_enqueue_script(
         'boostify-blocks-tiny-slider',
         'https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js',
         array( 'jquery' ),

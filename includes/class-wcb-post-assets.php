@@ -587,6 +587,9 @@ class WCB_Post_Assets {
 	 * Clears all cached CSS files, scans all posts and templates for Boostify blocks,
 	 * and regenerates CSS files for each.
 	 *
+	 * Optional POST field `debug` (truthy/falsy): include per-post block CSS
+	 * debug reports in the response. When omitted, defaults to WP_DEBUG.
+	 *
 	 * Requires: manage_options capability and valid nonce.
 	 *
 	 * @return void — sends JSON response and dies.
@@ -596,7 +599,12 @@ class WCB_Post_Assets {
 			wp_send_json_error( array( 'message' => 'Permission denied' ), 403 );
 		}
 
-		$result = $this->regenerate_all_assets();
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$with_debug = isset( $_POST['debug'] )
+			? filter_var( wp_unslash( $_POST['debug'] ), FILTER_VALIDATE_BOOLEAN )
+			: null;
+
+		$result = $this->regenerate_all_assets( $with_debug );
 		wp_send_json_success( $result );
 	}
 
@@ -663,7 +671,6 @@ class WCB_Post_Assets {
 			)
 		);
 	}
-
 	/**
 	 * Regenerate assets for ALL content containing Boostify blocks.
 	 *
@@ -673,9 +680,20 @@ class WCB_Post_Assets {
 	 * 3. Also scan FSE templates if block theme is active.
 	 * 4. Generate CSS file for each.
 	 *
+	 * @param bool|null $with_debug Optional. Collect a per-block CSS debug
+	 *                             report (via WCB_Block_Helper::debug_post_block_css)
+	 *                             for each scanned post into the result array
+	 *                             under 'debug_reports'.
+	 *                             null (default) => auto-detect: enabled when
+	 *                             WP_DEBUG is true, disabled otherwise.
 	 * @return array Result with count and status.
 	 */
-	public function regenerate_all_assets() {
+	public function regenerate_all_assets( $with_debug = null ) {
+		// Auto-detect debug mode from WP_DEBUG when not explicitly forced.
+		if ( null === $with_debug ) {
+			$with_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
+		}
+
 		// Step 1: Clear all existing files and meta.
 		$deleted_css = $this->delete_all_css_files();
 		$deleted_js  = $this->delete_all_js_files();
@@ -685,25 +703,38 @@ class WCB_Post_Assets {
 		$block_names  = $this->get_boostify_block_names();
 		$all_post_ids = $this->get_all_posts_with_blocks( $block_names );
 
+		$posts_regenerated_ids = array();
 		$regenerated = 0;
+
+		$posts_skipped_ids = array();
 		$skipped     = 0;
 
-		$posts_blocks = array();
+		$debug_reports = array();
 
 		// Step 3: Regenerate for each post.
 		foreach ( $all_post_ids as $post_id ) {
-
-			$content = get_post_field( 'post_content', $post_id );
-			$blocks = parse_blocks( $content );
-			if( !empty($blocks) ){
-				$posts_blocks[$post_id] = $blocks;
-			}
-
+			
 			$result = $this->regenerate_post_assets( $post_id );
 			if ( $result ) {
+				$posts_regenerated_ids[] = $post_id;
 				$regenerated++;
 			} else {
+				$posts_skipped_ids[] = $post_id;
 				$skipped++;
+			}
+
+			if ( $with_debug && class_exists( 'WCB_Block_Helper' ) ) {
+
+				$blocks_arr = array();
+				$content = get_post_field( 'post_content', $post_id );
+				$blocks = parse_blocks( $content );
+				if( !empty($blocks) ){
+					$blocks_arr['blocks_names'] = $blocks;
+				}
+
+				$blocks_arr['blocks_css'] = WCB_Block_Helper::debug_post_block_css( $post_id, '', false );
+
+				$debug_reports[ $post_id ] = $blocks_arr;
 			}
 		}
 
@@ -718,9 +749,11 @@ class WCB_Post_Assets {
 
 		return array(
 			'success'               => true,
-			'posts_blocks'			=> $posts_blocks,
+			'debug_reports'         => $debug_reports,
 			'files_cleared'         => $deleted,
+			'posts_regenerated_ids' => $posts_regenerated_ids,
 			'posts_regenerated'     => $regenerated,
+			'posts_skipped_ids'     => $posts_skipped_ids,
 			'posts_skipped'         => $skipped,
 			'templates_regenerated' => $template_regenerated,
 			'common_static_built'   => ! empty( $common_static_built ),
@@ -823,6 +856,7 @@ class WCB_Post_Assets {
 	 */
 	public function regenerate_post_assets( $post_id ) {
 		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
+
 		if ( empty( $css ) ) {
 			// No Boostify blocks in this post — delete file and meta.
 			$this->delete_css_file( $post_id );

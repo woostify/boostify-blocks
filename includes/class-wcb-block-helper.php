@@ -14,6 +14,133 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WCB_Block_Helper {
 
+	/**
+	 * Generate CSS from selectors array.
+	 * Mirrors UAGB_Helper::generate_css in Spectra.
+	 *
+	 * @param array  $selectors Array of selectors with their properties.
+	 * @param string $id        Base selector ID.
+	 * @return string Generated CSS.
+	 */
+	public static function generate_css( $selectors, $id ) {
+		$styling_css = '';
+
+		if ( empty( $selectors ) || ! is_array( $selectors ) ) {
+			return '';
+		}
+
+		foreach ( $selectors as $key => $value ) {
+			$css = '';
+
+			foreach ( $value as $property => $val ) {
+				if ( 'font-family' === $property && 'Default' === $val ) {
+					continue;
+				}
+
+				// Handle nested selectors (e.g., '.wp-block:has(...) { .wrap { margin: 0 } }').
+				if ( is_array( $val ) && self::is_associative_array( $val ) && ! is_int( $property ) ) {
+					$nested_css = '';
+					foreach ( $val as $nested_prop => $nested_val ) {
+						if ( ! empty( $nested_val ) || ( empty( $nested_val ) && 'content' === $nested_prop ) || 0 === $nested_val ) {
+							$nested_css .= $nested_prop . ': ' . self::sanitize_css_value( $nested_val ) . ';';
+						}
+					}
+					if ( ! empty( $nested_css ) ) {
+						$css .= ' { ' . $property . ' { ' . $nested_css . ' } }';
+					}
+					continue;
+				}
+
+				if ( ! empty( $val ) || ( empty( $val ) && 'content' === $property ) || 0 === $val ) {
+					if ( 'font-family' === $property ) {
+						$css .= $property . ': "' . self::sanitize_css_value( $val ) . '";';
+					} else {
+						if ( is_array( $val ) ) {
+							foreach ( $val as $index => $property_val ) {
+								$properties = is_string( $property_val ) ? $property_val : (string) $property_val;
+								$css       .= $property . ': ' . self::sanitize_css_value( $properties ) . ';';
+							}
+						} else {
+							$css .= $property . ': ' . self::sanitize_css_value( $val ) . ';';
+						}
+					}
+				}
+			}
+
+			if ( ! empty( $css ) ) {
+				// Check if $css already contains nested selectors.
+				if ( 0 === strpos( $css, ' {' ) ) {
+					$styling_css .= $id . $key . $css;
+				} else {
+					$styling_css     .= $id;
+					$styling_css     .= $key . '{';
+						$styling_css .= $css . '}';
+				}
+			}
+		}
+
+		return $styling_css;
+	}
+
+	/**
+	 * Check if an array is associative.
+	 *
+	 * @param array $arr Array to check.
+	 * @return bool True if associative.
+	 */
+	private static function is_associative_array( $arr ) {
+		if ( ! is_array( $arr ) || empty( $arr ) ) {
+			return false;
+		}
+		return array_keys( $arr ) !== range( 0, count( $arr ) - 1 );
+	}
+
+	/**
+	 * Generate all CSS for desktop, tablet, mobile.
+	 * Mirrors UAGB_Helper::generate_all_css in Spectra.
+	 *
+	 * @param array  $combined_selectors Array with 'desktop', 'tablet', 'mobile' keys.
+	 * @param string $id                 Base selector ID.
+	 * @return array Array with 'desktop', 'tablet', 'mobile' CSS.
+	 */
+	public static function generate_all_css( $combined_selectors, $id ) {
+		return array(
+			'desktop' => self::generate_css( $combined_selectors['desktop'], $id ),
+			'tablet'  => self::generate_css( $combined_selectors['tablet'], $id ),
+			'mobile'  => self::generate_css( $combined_selectors['mobile'], $id ),
+		);
+	}
+
+	/**
+	 * Sanitize a CSS property value to prevent rule injection.
+	 *
+	 * @param mixed $value Raw CSS value from block attributes.
+	 * @return mixed Sanitized value.
+	 */
+	public static function sanitize_css_value( $value ) {
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+		return str_replace( array( '{', '}', ';', '<', '>' ), '', $value );
+	}
+
+	/**
+	 * Get CSS value with unit.
+	 *
+	 * @param mixed  $value Value.
+	 * @param string $unit  Unit (px, em, etc).
+	 * @return string CSS value with unit.
+	 */
+	public static function get_css_value( $value, $unit = 'px' ) {
+		if ( '' === $value || null === $value ) {
+			return '';
+		}
+		if ( is_numeric( $value ) ) {
+			return $value . $unit;
+		}
+		return $value;
+	}
+
 	// =====================================================================
 	// BLOCK ATTRIBUTE HELPERS
 	// =====================================================================
@@ -78,12 +205,332 @@ class WCB_Block_Helper {
 		return array_replace_recursive( $default_values, $attrs );
 	}
 
+	/**
+	 * Optimize responsive values by cascading.
+	 * Mirrors checkResponsiveValueForOptimizeCSS in TypeScript.
+	 *
+	 * Desktop → Tablet → Mobile: if tablet equals desktop, remove tablet.
+	 * Tablet → Mobile: if mobile equals tablet, remove mobile.
+	 *
+	 * @param string|null $desktop Desktop value.
+	 * @param string|null $tablet  Tablet value.
+	 * @param string|null $mobile  Mobile value.
+	 * @return array Optimized values with keys: desktop_v, tablet_v, mobile_v.
+	 */
+	public static function optimize_responsive_values( $desktop, $tablet, $mobile ) {
+		// If desktop equals tablet, remove tablet (cascade down).
+		if ( $desktop !== null && $tablet !== null && $desktop === $tablet ) {
+			$tablet = null;
+		}
+		// If tablet equals mobile, remove mobile (cascade down).
+		if ( $tablet !== null && $mobile !== null && $tablet === $mobile ) {
+			$mobile = null;
+		}
+		// If desktop equals mobile (and tablet is null), remove mobile.
+		if ( $tablet === null && $desktop !== null && $mobile !== null && $desktop === $mobile ) {
+			$mobile = null;
+		}
+
+		return array(
+			'desktop_v' => $desktop,
+			'tablet_v'  => $tablet,
+			'mobile_v'  => $mobile,
+		);
+	}
+
+	/**
+	 * Get responsive value from attribute array.
+	 * Mirrors getValueFromAttrsResponsives in TypeScript.
+	 *
+	 * @param mixed $value Responsive value object or single value.
+	 * @return array With keys: Desktop, Tablet, Mobile.
+	 */
+	public static function get_responsive_value( $value ) {
+		if ( ! is_array( $value ) ) {
+			return array(
+				'Desktop' => $value,
+				'Tablet'  => $value,
+				'Mobile'  => $value,
+			);
+		}
+
+		$desktop = $value['Desktop'] ?? null;
+		$tablet  = $value['Tablet'] ?? $desktop;
+		$mobile  = $value['Mobile'] ?? $tablet;
+
+		return array(
+			'Desktop' => $desktop,
+			'Tablet'  => $tablet,
+			'Mobile'  => $mobile,
+		);
+	}
+
+	/**
+	 * Get typography CSS array from typography attribute.
+	 *
+	 * @param array $typo Typography attribute array.
+	 * @return array CSS properties array.
+	 */
+	public static function get_typography_css( $typo ) {
+		$css = array();
+
+		if ( empty( $typo ) || ! is_array( $typo ) ) {
+			return $css;
+		}
+
+		// Font size.
+		if ( ! empty( $typo['fontSizes'] ) ) {
+			$font_sizes = $typo['fontSizes'];
+			if ( is_array( $font_sizes ) ) {
+				$css['font-size'] = WCB_Block_Helper::get_css_value( $font_sizes['Desktop'] ?? '' );
+			} else {
+				$css['font-size'] = WCB_Block_Helper::get_css_value( $font_sizes );
+			}
+		}
+
+		// Appearance (font weight, font style).
+		if ( ! empty( $typo['appearance']['style'] ) && is_array( $typo['appearance']['style'] ) ) {
+			$s = $typo['appearance']['style'];
+			if ( ! empty( $s['fontWeight'] ) ) {
+				$css['font-weight'] = $s['fontWeight'];
+			}
+			if ( ! empty( $s['fontStyle'] ) ) {
+				$css['font-style'] = $s['fontStyle'];
+			}
+		}
+
+		// Text decoration.
+		if ( ! empty( $typo['textDecoration'] ) && 'undefined' !== $typo['textDecoration'] ) {
+			$css['text-decoration'] = $typo['textDecoration'];
+		}
+
+		// Text transform.
+		if ( ! empty( $typo['textTransform'] ) && 'undefined' !== $typo['textTransform'] ) {
+			$css['text-transform'] = $typo['textTransform'];
+		}
+
+		// Line height.
+		if ( ! empty( $typo['lineHeight'] ) ) {
+			$line_height = $typo['lineHeight'];
+			if ( is_array( $line_height ) ) {
+				$css['line-height'] = WCB_Block_Helper::get_css_value( $line_height['Desktop'] ?? '' );
+			} else {
+				$css['line-height'] = WCB_Block_Helper::get_css_value( $line_height );
+			}
+		}
+
+		// Letter spacing.
+		if ( ! empty( $typo['letterSpacing'] ) ) {
+			$letter_spacing = $typo['letterSpacing'];
+			if ( is_array( $letter_spacing ) ) {
+				$css['letter-spacing'] = WCB_Block_Helper::get_css_value( $letter_spacing['Desktop'] ?? '' );
+			} else {
+				$css['letter-spacing'] = WCB_Block_Helper::get_css_value( $letter_spacing );
+			}
+		}
+
+		// Font family - no quotes here, generate_css will add them.
+		if ( ! empty( $typo['fontFamily'] ) ) {
+			$css['font-family'] = $typo['fontFamily'];
+		}
+
+		return $css;
+	}
+
+	/**
+	 * Get background CSS array from background attribute.
+	 *
+	 * @param array $bg Background attribute array.
+	 * @return array CSS properties array.
+	 */
+	public static function get_background_css( $bg ) {
+		$css = array();
+
+		if ( empty( $bg ) || ! is_array( $bg ) ) {
+			return $css;
+		}
+
+		$bg_type = $bg['bgType'] ?? 'color';
+
+		// Image background.
+		if ( 'image' === $bg_type && ! empty( $bg['imageData'] ) ) {
+			$img_desktop = $bg['imageData']['Desktop'] ?? $bg['imageData'];
+			if ( ! empty( $img_desktop['mediaUrl'] ) ) {
+				$css['background-image'] = 'url(' . $img_desktop['mediaUrl'] . ')';
+			}
+			if ( ! empty( $bg['bgImageSize'] ) ) {
+				$size = $bg['bgImageSize'];
+				if ( is_array( $size ) ) {
+					$css['background-size'] = $size['Desktop'] ?? 'cover';
+				} else {
+					$css['background-size'] = $size;
+				}
+			}
+			if ( ! empty( $bg['bgImageRepeat'] ) ) {
+				$repeat = $bg['bgImageRepeat'];
+				if ( is_array( $repeat ) ) {
+					$css['background-repeat'] = $repeat['Desktop'] ?? 'no-repeat';
+				} else {
+					$css['background-repeat'] = $repeat;
+				}
+			}
+			if ( ! empty( $bg['bgImageAttachment'] ) ) {
+				$attachment = $bg['bgImageAttachment'];
+				if ( is_array( $attachment ) ) {
+					$css['background-attachment'] = $attachment['Desktop'] ?? 'scroll';
+				} else {
+					$css['background-attachment'] = $attachment;
+				}
+			}
+			if ( ! empty( $bg['focalPoint']['Desktop'] ) ) {
+				$fp = $bg['focalPoint']['Desktop'];
+				$x  = isset( $fp['x'] ) ? ( $fp['x'] * 100 ) . '%' : '50%';
+				$y  = isset( $fp['y'] ) ? ( $fp['y'] * 100 ) . '%' : '50%';
+				$css['background-position'] = $x . ' ' . $y;
+			}
+		}
+
+		// Gradient background.
+		if ( 'gradient' === $bg_type && ! empty( $bg['gradient'] ) ) {
+			$css['background'] = $bg['gradient'];
+		}
+
+		// Color background (always set as fallback for images too).
+		if ( ! empty( $bg['color'] ) ) {
+			$css['background-color'] = $bg['color'];
+		}
+
+		return $css;
+	}
+
+	/**
+	 * Get border CSS array from border attribute.
+	 *
+	 * @param array $border Border attribute array.
+	 * @return array CSS properties array.
+	 */
+	public static function get_border_css_array( $border ) {
+		$css = array();
+
+		if ( empty( $border ) || ! is_array( $border ) ) {
+			return $css;
+		}
+
+		$main = $border['mainSettings'] ?? null;
+		if ( ! empty( $main ) && is_array( $main ) ) {
+			// Check if 4-side border.
+			$is_4side = isset( $main['top'] ) || isset( $main['right'] ) || isset( $main['bottom'] ) || isset( $main['left'] );
+
+			if ( $is_4side ) {
+				$sides = array( 'top', 'right', 'bottom', 'left' );
+				foreach ( $sides as $side ) {
+					if ( ! empty( $main[ $side ] ) && is_array( $main[ $side ] ) ) {
+						$s = $main[ $side ];
+						$w = $s['width'] ?? '1px';
+						$st = $s['style'] ?? 'none';
+						$c  = $s['color'] ?? '';
+						if ( '' !== $c ) {
+							$css[ 'border-' . $side ] = $w . ' ' . $st . ' ' . $c;
+						}
+					}
+				}
+			} else {
+				// Single-side border.
+				$color = $main['color'] ?? '';
+				$style = $main['style'] ?? 'solid';
+				$width = $main['width'] ?? '1px';
+				if ( $color ) {
+					$css['border'] = $width . ' ' . $style . ' ' . $color;
+				}
+			}
+
+			// Hover border color.
+			if ( ! empty( $border['hoverColor'] ) ) {
+				$css['hover-border-color'] = $border['hoverColor'];
+			}
+		}
+
+		// Border radius.
+		if ( ! empty( $border['radius'] ) ) {
+			$radius = $border['radius'];
+			if ( is_array( $radius ) ) {
+				$css['border-radius'] = WCB_Block_Helper::get_css_value( $radius['Desktop'] ?? $radius );
+			} else {
+				$css['border-radius'] = WCB_Block_Helper::get_css_value( $radius );
+			}
+		}
+
+		return $css;
+	}
+
+	/**
+	 * Get advance CSS (responsive condition, z-index).
+	 *
+	 * @param array  $attrs    Block attributes.
+	 * @param string $selector Base selector.
+	 * @return array CSS properties array.
+	 */
+	public static function get_advance_css( $attrs, $selector ) {
+		$css = array();
+
+		$rc = $attrs['advance_responsiveCondition'] ?? array();
+		if ( ! empty( $rc['isHiddenOnDesktop'] ) ) {
+			$css[ '@media (min-width: 1025px) ' . $selector ]['display'] = 'none !important';
+		}
+		if ( ! empty( $rc['isHiddenOnTablet'] ) ) {
+			$css[ '@media (min-width: 768px) and (max-width: 1024px) ' . $selector ]['display'] = 'none !important';
+		}
+		if ( ! empty( $rc['isHiddenOnMobile'] ) ) {
+			$css[ '@media (max-width: 767px) ' . $selector ]['display'] = 'none !important';
+		}
+
+		$zi = $attrs['advance_zIndex'] ?? array();
+		$z  = is_array( $zi ) ? ( $zi['Desktop'] ?? '' ) : $zi;
+		if ( '' !== $z && null !== $z ) {
+			$css[ $selector ]['z-index'] = $z;
+		}
+
+		return $css;
+	}
+
+	/**
+	 * Parse a CSS string into an associative array.
+	 *
+	 * @param string $css_string CSS string like "color: red; font-size: 16px;"
+	 * @return array Associative array of property => value.
+	 */
+	public static function parse_css_string( $css_string ) {
+		$result = array();
+
+		if ( empty( trim( $css_string ) ) ) {
+			return $result;
+		}
+
+		$declarations = explode( ';', $css_string );
+		foreach ( $declarations as $declaration ) {
+			$declaration = trim( $declaration );
+			if ( empty( $declaration ) ) {
+				continue;
+			}
+			$parts = explode( ':', $declaration, 2 );
+			if ( count( $parts ) === 2 ) {
+				$property = trim( $parts[0] );
+				$value   = trim( $parts[1] );
+				if ( '' !== $property ) {
+					$result[ $property ] = $value;
+				}
+			}
+		}
+
+		return $result;
+	}
+
 	// =====================================================================
-	// SHARED CSS UTILITY METHODS
+	// CSS UTILITY METHODS
 	// =====================================================================
 
 	public static function css_responsive( $property, $value, $selector, $unit = '' ) {
-		if ( empty( $value ) && '0' !== $value ) {
+		if ( empty( $value ) && '0' !== $value && 0 !== $value ) {
 			return '';
 		}
 		$css = '';
@@ -262,13 +709,17 @@ class WCB_Block_Helper {
 	public static function css_responsive_spacing( $property, $values, $selector ) {
 		$css = '';
 
+		if ( ! is_array( $values ) ) {
+			return '';
+		}
+
 		// Cascade: Tablet → Desktop, Mobile → Tablet → Desktop.
 		$desktop = $values['Desktop'] ?? null;
 		$tablet  = $values['Tablet'] ?? $desktop;
 		$mobile  = $values['Mobile'] ?? $tablet;
 
 		// Base (mobile-first).
-		if ( $mobile ) {
+		if ( $mobile && is_array( $mobile ) ) {
 			$s = self::spacing_shorthand( $mobile );
 			if ( $s ) {
 				$css .= "$selector { $property: $s; }\n";
@@ -276,7 +727,7 @@ class WCB_Block_Helper {
 		}
 
 		// Tablet — only output if different from mobile.
-		if ( $tablet && self::spacing_shorthand( $tablet ) !== self::spacing_shorthand( $mobile ) ) {
+		if ( $tablet && is_array( $tablet ) && self::spacing_shorthand( $tablet ) !== self::spacing_shorthand( $mobile ) ) {
 			$s = self::spacing_shorthand( $tablet );
 			if ( $s ) {
 				$css .= "@media (min-width: 768px) { $selector { $property: $s; } }\n";
@@ -284,7 +735,7 @@ class WCB_Block_Helper {
 		}
 
 		// Desktop — only output if different from tablet.
-		if ( $desktop && self::spacing_shorthand( $desktop ) !== self::spacing_shorthand( $tablet ) ) {
+		if ( $desktop && is_array( $desktop ) && self::spacing_shorthand( $desktop ) !== self::spacing_shorthand( $tablet ) ) {
 			$s = self::spacing_shorthand( $desktop );
 			if ( $s ) {
 				$css .= "@media (min-width: 1025px) { $selector { $property: $s; } }\n";
@@ -302,7 +753,14 @@ class WCB_Block_Helper {
 		$r = $sides['right'] ?? '0';
 		$b = $sides['bottom'] ?? '0';
 		$l = $sides['left'] ?? '0';
-		if ( '' === $t && '' === $r && '' === $b && '' === $l ) {
+
+		// Convert empty strings to '0'.
+		$t = ( '' === $t ) ? '0' : $t;
+		$r = ( '' === $r ) ? '0' : $r;
+		$b = ( '' === $b ) ? '0' : $b;
+		$l = ( '' === $l ) ? '0' : $l;
+
+		if ( '0' === $t && '0' === $r && '0' === $b && '0' === $l ) {
 			return '';
 		}
 		return "$t $r $b $l";
@@ -496,6 +954,9 @@ class WCB_Block_Helper {
 				if ( null !== $desktop && '' !== $desktop && $desktop !== $tablet ) {
 					$css .= "@media (min-width: 1025px) { $selector { {$config['property']}: $desktop; } }\n";
 				}
+			} else {
+				// Output default value when no responsive value is set.
+				$css .= "$selector { {$config['property']}: {$config['default']}; }\n";
 			}
 		}
 
@@ -1023,6 +1484,10 @@ class WCB_Block_Helper {
 		}
 		if ( ! empty( $sc['textColor'] ) ) {
 			$css .= "$category_sel { color: {$sc['textColor']}; }\n";
+			$css .= "$category_sel a { color: {$sc['textColor']}; }\n";
+		}
+		if ( ! empty( $sc['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sc['marginBottom'], $category_sel );
 		}
 
 		// --- Price ---
@@ -1032,10 +1497,16 @@ class WCB_Block_Helper {
 		if ( ! empty( $sp['textColor'] ) ) {
 			$css .= "$price_sel { color: {$sp['textColor']}; }\n";
 		}
+		if ( ! empty( $sp['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sp['marginBottom'], $price_sel );
+		}
 
 		// --- Rating ---
 		if ( ! empty( $sr['color'] ) ) {
 			$css .= "$rating_sel { color: {$sr['color']}; }\n";
+		}
+		if ( ! empty( $sr['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sr['marginBottom'], $rating_sel );
 		}
 
 		// --- Featured Image ---
@@ -1046,12 +1517,21 @@ class WCB_Block_Helper {
 			$css .= "$selector .wcb-products__product-image-overlay { background-color: {$sf['backgroundOverlay']}; }\n";
 		}
 		if ( ! empty( $sf['border'] ) ) {
-			$css .= self::css_border( $sf['border'], $image_sel );
+			$css .= self::css_border_full( $sf['border'], "$image_sel .wcb-products__product-image-link" );
 		}
 
 		// --- Layout ---
 		if ( ! empty( $sl['textAlignment'] ) ) {
 			$css .= "$product_sel { text-align: {$sl['textAlignment']}; }\n";
+			// Alignment for rating stars and quantity.
+			$justify = 'center';
+			if ( 'left' === $sl['textAlignment'] ) {
+				$justify = 'flex-start';
+			} elseif ( 'right' === $sl['textAlignment'] ) {
+				$justify = 'flex-end';
+			}
+			$css .= "$selector .wcb-products__product-rating-wrap { justify-content: $justify; }\n";
+			$css .= "$selector .wcb-products__quantity-add-to-cart { align-items: $justify; }\n";
 		}
 		if ( ! empty( $sl['backgroundColor'] ) ) {
 			$css .= "$product_sel { background-color: {$sl['backgroundColor']}; }\n";
@@ -1066,15 +1546,29 @@ class WCB_Block_Helper {
 			$css .= self::css_responsive( 'row-gap', $sl['rowGap'], $list_sel );
 		}
 
+		// --- Product card base layout ---
+		$css .= "$product_sel { display: flex; flex-direction: column; position: relative; overflow: hidden; }\n";
+
 		// --- Sale Badge ---
 		if ( ! empty( $ss['typography'] ) ) {
 			$css .= self::css_typography( $ss['typography'], $sale_sel );
 		}
 		if ( ! empty( $ss['backgroundColor'] ) ) {
-			$css .= "$sale_sel { background-color: {$ss['backgroundColor']}; }\n";
+			$css .= "$selector .wcb-products__product-salebadge .wcb-products__product-onsale { background-color: {$ss['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $ss['textColor'] ) ) {
-			$css .= "$sale_sel { color: {$ss['textColor']}; }\n";
+			$css .= "$selector .wcb-products__product-salebadge .wcb-products__product-onsale { color: {$ss['textColor']}; }\n";
+		}
+		if ( ! empty( $ss['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $ss['marginBottom'], $sale_sel );
+		}
+		// Sale badge positioning.
+		if ( ! empty( $ss['position'] ) ) {
+			if ( 'top-left' === $ss['position'] ) {
+				$css .= "$selector .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge { position: absolute; left: 0.5rem; top: 0.5rem; z-index: 10; }\n";
+			} else {
+				$css .= "$selector .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge { position: absolute; right: 0.5rem; top: 0.5rem; z-index: 10; }\n";
+			}
 		}
 
 		// --- Out of Stock ---
@@ -1082,13 +1576,33 @@ class WCB_Block_Helper {
 			$css .= self::css_typography( $so['typography'], $out_of_stock_sel );
 		}
 		if ( ! empty( $so['backgroundColor'] ) ) {
-			$css .= "$out_of_stock_sel { background-color: {$so['backgroundColor']}; }\n";
+			$css .= "$selector .wcb-products__product-outofstock-badge .wcb-products__product-on-outofstock { background-color: {$so['backgroundColor']}; }\n";
 		}
 		if ( ! empty( $so['textColor'] ) ) {
-			$css .= "$out_of_stock_sel { color: {$so['textColor']}; }\n";
+			$css .= "$selector .wcb-products__product-outofstock-badge .wcb-products__product-on-outofstock { color: {$so['textColor']}; }\n";
+		}
+		// Out of stock positioning.
+		if ( ! empty( $so['position'] ) ) {
+			if ( 'top-left' === $so['position'] ) {
+				$css .= "$selector .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge { position: absolute; left: 0.5rem; top: 0.5rem; z-index: 10; }\n";
+			} elseif ( 'top-right' === $so['position'] ) {
+				$css .= "$selector .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge { position: absolute; right: 0.5rem; top: 0.5rem; z-index: 10; }\n";
+			} else {
+				$css .= "$selector .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge { display: none; }\n";
+			}
 		}
 
 		// --- Add to Cart ---
+		$add_cart_wrap_sel = "$selector .wcb-products__product-add-to-cart";
+		if ( ! empty( $sl['textAlignment'] ) ) {
+			$align_items = 'center';
+			if ( 'left' === $sl['textAlignment'] ) {
+				$align_items = 'flex-start';
+			} elseif ( 'right' === $sl['textAlignment'] ) {
+				$align_items = 'flex-end';
+			}
+			$css .= "$add_cart_wrap_sel { display: flex; flex-direction: column; align-items: $align_items; justify-content: center; }\n";
+		}
 		if ( ! empty( $sa['typography'] ) ) {
 			$css .= self::css_typography( $sa['typography'], $add_cart_sel );
 		}
@@ -1109,6 +1623,9 @@ class WCB_Block_Helper {
 		}
 		if ( ! empty( $sa['padding'] ) ) {
 			$css .= self::css_responsive_spacing( 'padding', $sa['padding'], $add_cart_sel );
+		}
+		if ( ! empty( $sa['marginBottom'] ) ) {
+			$css .= self::css_responsive( 'margin-bottom', $sa['marginBottom'], $add_cart_sel );
 		}
 		if ( ! empty( $sa['border'] ) ) {
 			$css .= self::css_border( $sa['border'], $add_cart_sel );
@@ -1135,6 +1652,9 @@ class WCB_Block_Helper {
 				}
 				if ( ! empty( $a['backgroundColor'] ) ) {
 					$css .= "$pagination_active { background-color: {$a['backgroundColor']}; }\n";
+				}
+				if ( ! empty( $a['border'] ) ) {
+					$css .= self::css_border( $a['border'], $pagination_active );
 				}
 			}
 			if ( ! empty( $sg['marginTop'] ) ) {
@@ -1311,12 +1831,68 @@ class WCB_Block_Helper {
 		}
 
 		// --- Layout (grid) ---
+		$list_css = '';
+		$has_list_style = false;
+
+		// Base grid display.
+		$list_css .= "display: grid; ";
+		$has_list_style = true;
+
+		if ( ! empty( $sl['numberOfColumn'] ) ) {
+			$nc = $sl['numberOfColumn'];
+			$nc_desktop = is_array( $nc ) ? ( $nc['Desktop'] ?? 3 ) : $nc;
+			$nc_tablet  = is_array( $nc ) ? ( $nc['Tablet'] ?? $nc_desktop ) : $nc_desktop;
+			$nc_mobile  = is_array( $nc ) ? ( $nc['Mobile'] ?? $nc_tablet ) : $nc_tablet;
+
+			$list_css .= "grid-template-columns: repeat($nc_mobile, minmax(0, 1fr)); ";
+
+			// Responsive grid columns.
+			if ( $nc_tablet !== $nc_mobile ) {
+				$css .= "@media (min-width: 768px) { $list_sel { grid-template-columns: repeat($nc_tablet, minmax(0, 1fr)); } }\n";
+			}
+			if ( $nc_desktop !== $nc_tablet ) {
+				$css .= "@media (min-width: 1025px) { $list_sel { grid-template-columns: repeat($nc_desktop, minmax(0, 1fr)); } }\n";
+			}
+		}
+
 		if ( ! empty( $sl['colunmGap'] ) ) {
-			$css .= self::css_responsive( 'column-gap', $sl['colunmGap'], $list_sel );
+			$col_gap = $sl['colunmGap'];
+			$cg_desktop = is_array( $col_gap ) ? ( $col_gap['Desktop'] ?? '' ) : $col_gap;
+			$cg_tablet  = is_array( $col_gap ) ? ( $col_gap['Tablet'] ?? $cg_desktop ) : $cg_desktop;
+			$cg_mobile  = is_array( $col_gap ) ? ( $col_gap['Mobile'] ?? $cg_tablet ) : $cg_tablet;
+
+			if ( '' !== $cg_mobile ) {
+				$list_css .= "column-gap: $cg_mobile; ";
+			}
+			if ( $cg_tablet !== $cg_mobile && '' !== $cg_tablet ) {
+				$css .= "@media (min-width: 768px) { $list_sel { column-gap: $cg_tablet; } }\n";
+			}
+			if ( $cg_desktop !== $cg_tablet && '' !== $cg_desktop ) {
+				$css .= "@media (min-width: 1025px) { $list_sel { column-gap: $cg_desktop; } }\n";
+			}
 		}
+
 		if ( ! empty( $sl['rowGap'] ) ) {
-			$css .= self::css_responsive( 'row-gap', $sl['rowGap'], $list_sel );
+			$row_gap = $sl['rowGap'];
+			$rg_desktop = is_array( $row_gap ) ? ( $row_gap['Desktop'] ?? '' ) : $row_gap;
+			$rg_tablet  = is_array( $row_gap ) ? ( $row_gap['Tablet'] ?? $rg_desktop ) : $rg_desktop;
+			$rg_mobile  = is_array( $row_gap ) ? ( $row_gap['Mobile'] ?? $rg_tablet ) : $rg_tablet;
+
+			if ( '' !== $rg_mobile ) {
+				$list_css .= "row-gap: $rg_mobile; ";
+			}
+			if ( $rg_tablet !== $rg_mobile && '' !== $rg_tablet ) {
+				$css .= "@media (min-width: 768px) { $list_sel { row-gap: $rg_tablet; } }\n";
+			}
+			if ( $rg_desktop !== $rg_tablet && '' !== $rg_desktop ) {
+				$css .= "@media (min-width: 1025px) { $list_sel { row-gap: $rg_desktop; } }\n";
+			}
 		}
+
+		if ( $has_list_style ) {
+			$css .= "$list_sel { $list_css}\n";
+		}
+
 		if ( ! empty( $sl['textAlignment'] ) ) {
 			$css .= "$card_sel { text-align: {$sl['textAlignment']}; }\n";
 		}
@@ -2378,15 +2954,98 @@ class WCB_Block_Helper {
 			return '';
 		}
 
-		// Merge block attributes with defaults to ensure all expected keys are present.
+		// Try to use frontend.css.php file if available.
+		// Merge with PHP attribute defaults first: Gutenberg omits attributes
+		// equal to their JS defaults when saving markup, so freshly inserted
+		// blocks arrive here with EMPTY style panels. Without the merge the
+		// generated CSS would miss all base styles for those blocks.
+		$frontend_css = self::get_frontend_css_from_file(
+			$block_name,
+			self::merge_with_defaults( $block_name, $attrs ),
+			$unique_id
+		);
+		if ( null !== $frontend_css ) {
+			return $frontend_css;
+		}
+
+		// Fallback to legacy CSS generation.
 		$merged_attrs = self::merge_with_defaults( $block_name, $attrs );
-
-		$selector = '.' . esc_attr( $unique_id ) . '[data-uniqueid="' . esc_attr( $unique_id ) . '"]';
-
-		$raw_css = self::process_block_by_type( $block_name, $merged_attrs, $selector, $unique_id );
+		$selector     = '.' . esc_attr( $unique_id ) . '[data-uniqueid="' . esc_attr( $unique_id ) . '"]';
+		$raw_css      = self::process_block_by_type( $block_name, $merged_attrs, $selector, $unique_id );
 
 		// Merge duplicate selectors within the same media context.
 		return self::merge_css_rules( $raw_css );
+	}
+
+	/**
+	 * Get frontend CSS from file if available.
+	 *
+	 * @param string $block_name Block name (e.g., 'boostify-blocks/heading').
+	 * @param array  $attr       Block attributes.
+	 * @param string $unique_id  Block unique ID.
+	 * @return string|null CSS string or null if file not found.
+	 */
+	public static function get_frontend_css_from_file( $block_name, $attr, $unique_id ) {
+		$short_name = basename( $block_name );
+		$file_path  = BOOSTIFY_BLOCKS_PATH . 'includes/blocks/block-' . $short_name . '/frontend.css.php';
+
+		if ( ! file_exists( $file_path ) ) {
+			return null;
+		}
+
+		// Make variables available to the included file.
+		$attr      = $attr;
+		$unique_id = $unique_id;
+
+		// Start output buffering.
+		ob_start();
+
+		// Include the file - it should return an array with desktop, tablet, mobile.
+		$result = include $file_path;
+
+		// Get the output buffer content.
+		$buffered = ob_get_clean();
+
+		// If the file returned an array, generate CSS from it.
+		if ( is_array( $result ) && isset( $result['desktop'] ) ) {
+			$css = '';
+
+			// Global responsive breakpoints (fall back to 768px / 1024px).
+			$settings_opts = get_option( 'boostify_blocks_settings_options', array() );
+			$media_tablet  = isset( $settings_opts['media_tablet'] ) ? (int) floatval( $settings_opts['media_tablet'] ) : 768;
+			$media_desktop = isset( $settings_opts['media_desktop'] ) ? (int) floatval( $settings_opts['media_desktop'] ) : 1024;
+			if ( $media_tablet <= 0 ) {
+				$media_tablet = 768;
+			}
+			if ( $media_desktop <= $media_tablet ) {
+				$media_desktop = $media_tablet + 1;
+			}
+
+			// Desktop CSS.
+			if ( ! empty( $result['desktop'] ) ) {
+				$css .= $result['desktop'];
+			}
+
+			// Tablet CSS (range: tablet breakpoint → desktop breakpoint - 1,
+			// matching the editor's mobile-first min-width queries).
+			if ( ! empty( $result['tablet'] ) ) {
+				$css .= '@media (max-width: ' . ( $media_desktop - 1 ) . 'px) {' . $result['tablet'] . '}';
+			}
+
+			// Mobile CSS.
+			if ( ! empty( $result['mobile'] ) ) {
+				$css .= '@media (max-width: ' . ( $media_tablet - 1 ) . 'px) {' . $result['mobile'] . '}';
+			}
+
+			return $css;
+		}
+
+		// If the file generated output directly.
+		if ( ! empty( $buffered ) ) {
+			return $buffered;
+		}
+
+		return null;
 	}
 
 	/**
@@ -2635,5 +3294,167 @@ class WCB_Block_Helper {
 
 		$blocks = parse_blocks( $post->post_content );
 		return self::extract_css_from_blocks( $blocks );
+	}
+
+	/**
+	 * Debug: build a per-block CSS report for a post.
+	 *
+	 * Runs the same pipeline as production (extract_css_from_blocks) and
+	 * reports, for each Boostify block: name, uniqueId, which generator was
+	 * used (frontend.css.php vs legacy) and the generated CSS split by
+	 * breakpoint. Optionally writes the report to the PHP error log.
+	 *
+	 * Usage:
+	 *   WCB_Block_Helper::debug_post_block_css( 123, 'button' );
+	 *   boostify_blocks_debug_post_css( 123, 'button', true ); // + error_log
+	 *
+	 * @param int    $post_id      Post ID.
+	 * @param string $block_filter Optional. Only include blocks whose name
+	 *                             contains this string (e.g. 'button').
+	 * @param bool   $log          Optional. Also write report to error_log
+	 *                             when WP_DEBUG is enabled. Default false.
+	 * @return string Human-readable report.
+	 */
+	public static function debug_post_block_css( $post_id, $block_filter = '', $log = false ) {
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			return sprintf( "Boostify Debug: post %d not found.\n", $post_id );
+		}
+
+		$settings_opts = get_option( 'boostify_blocks_settings_options', array() );
+		$media_tablet  = isset( $settings_opts['media_tablet'] ) ? (int) floatval( $settings_opts['media_tablet'] ) : 768;
+		$media_desktop = isset( $settings_opts['media_desktop'] ) ? (int) floatval( $settings_opts['media_desktop'] ) : 1024;
+
+		// Global settings relevant to button styling.
+		$global_lines = array();
+		foreach ( array( 'buttonInheritFromTheme' ) as $opt_key ) {
+			$global_lines[] = sprintf(
+				'  %-24s = %s',
+				$opt_key,
+				var_export( $settings_opts[ $opt_key ] ?? null, true ) // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+			);
+		}
+		$button_theme = $settings_opts['buttonTheme'] ?? array();
+		if ( is_array( $button_theme ) && $button_theme ) {
+			foreach ( $button_theme as $tk => $tv ) {
+				if ( is_scalar( $tv ) || null === $tv ) {
+					$global_lines[] = sprintf( '  buttonTheme.%-17s = %s', $tk, var_export( $tv, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+				}
+			}
+		}
+
+		$lines   = array();
+		$lines[] = '===== Boostify Blocks CSS Debug =====';
+		$lines[] = sprintf(
+			'Post #%d "%s" | media_tablet=%dpx media_desktop=%dpx',
+			$post_id,
+			get_the_title( $post ),
+			$media_tablet,
+			$media_desktop
+		);
+		$lines[] = 'Globals:';
+		$lines   = array_merge( $lines, $global_lines );
+
+		$total_blocks = 0;
+		$total_css    = 0;
+		self::debug_walk_blocks( parse_blocks( $post->post_content ), $block_filter, $lines, 0, $total_blocks, $total_css );
+
+		$lines[] = sprintf( '===== End: %d block(s), %d chars CSS =====', $total_blocks, $total_css );
+
+		$report = implode( "\n", $lines ) . "\n";
+
+		if ( $log && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( $report );
+		}
+
+		return $report;
+	}
+
+	/**
+	 * Recursively walk parsed blocks appending debug info to $lines.
+	 *
+	 * @param array  $blocks       Parsed blocks.
+	 * @param string $block_filter Name substring filter ('' = all).
+	 * @param array  $lines        Report lines (by reference).
+	 * @param int    $depth        Nesting depth.
+	 * @param int    $total_blocks Matched block counter (by reference).
+	 * @param int    $total_css    Total CSS length counter (by reference).
+	 * @return void
+	 */
+	private static function debug_walk_blocks( $blocks, $block_filter, &$lines, $depth, &$total_blocks, &$total_css ) {
+		foreach ( $blocks as $block ) {
+			$name = $block['blockName'] ?? '';
+
+			if ( empty( $name ) ) {
+				if ( ! empty( $block['innerBlocks'] ) ) {
+					self::debug_walk_blocks( $block['innerBlocks'], $block_filter, $lines, $depth, $total_blocks, $total_css );
+				}
+				continue;
+			}
+
+			if ( 0 !== strpos( $name, 'boostify-blocks/' ) ) {
+				continue;
+			}
+
+			$is_match = '' === $block_filter || false !== strpos( $name, $block_filter );
+
+			// Always recurse into inner blocks.
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				self::debug_walk_blocks( $block['innerBlocks'], $block_filter, $lines, $depth + 1, $total_blocks, $total_css );
+			}
+
+			if ( ! $is_match ) {
+				continue;
+			}
+
+			$attrs     = $block['attrs'] ?? array();
+			$unique_id = $attrs['uniqueId'] ?? '';
+			if ( empty( $unique_id ) ) {
+				$lines[] = sprintf( '%s[%s] skipped (no uniqueId)', str_repeat( '  ', $depth ), $name );
+				continue;
+			}
+
+			// Which generator will handle this block?
+			$short_name = basename( $name );
+			$file_path  = BOOSTIFY_BLOCKS_PATH . 'includes/blocks/block-' . $short_name . '/frontend.css.php';
+			$source     = file_exists( $file_path ) ? 'frontend.css.php' : 'legacy';
+
+			$css = self::generate_block_css( $block );
+
+			$indent = str_repeat( '  ', $depth + 1 );
+			$lines[] = sprintf(
+				'%s[%s] uniqueId=%s | source=%s | length=%d%s',
+				$indent,
+				$name,
+				$unique_id,
+				$source,
+				strlen( $css ),
+				empty( trim( $css ) ) ? ' | !! EMPTY CSS !!' : ''
+			);
+
+			// Split CSS into breakpoint segments for readability.
+			if ( '' !== trim( $css ) ) {
+				$total_blocks++;
+				$total_css += strlen( $css );
+
+				$segments = preg_split( '/(?=@media)/', $css );
+				foreach ( $segments as $segment ) {
+					$segment = trim( $segment );
+					if ( '' === $segment ) {
+						continue;
+					}
+					if ( 0 === strpos( $segment, '@media' ) ) {
+						$query = strstr( $segment, '{', true );
+						$body  = substr( $segment, strlen( $query ) + 1, -1 );
+						$lines[] = $indent . '[' . $query . ']';
+						$lines[] = $indent . '  ' . str_replace( "\n", ' ', $body );
+					} else {
+						$lines[] = $indent . '[desktop]';
+						$lines[] = $indent . '  ' . str_replace( "\n", ' ', $segment );
+					}
+				}
+			}
+		}
 	}
 }
