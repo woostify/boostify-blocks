@@ -21,11 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCB_Post_Assets {
 
 	/**
-	 * Directory name for generated assets, relative to the plugin's build path.
+	 * Directory name for generated assets in uploads directory.
 	 *
 	 * @var string
 	 */
-	const ASSETS_DIR = 'block-assets';
+	const ASSETS_DIR = 'boostify-blocks/assets';
 
 	/**
 	 * Meta key for page assets version tracking.
@@ -100,7 +100,7 @@ class WCB_Post_Assets {
 		$this->file_generation_enabled = isset( $settings['enableFileGeneration'] ) && 'true' === $settings['enableFileGeneration'];
 
 		// Frontend: conditionally enqueue generated CSS files.
-		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_enqueue_post_css' ), 20 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_post_css' ), 20 );
 
 		// When file generation is enabled, skip the inline JS-based CSS injection.
 		if ( $this->file_generation_enabled ) {
@@ -111,7 +111,7 @@ class WCB_Post_Assets {
 		add_action( 'save_post', array( $this, 'on_save_post' ), 20, 2 );
 
 		// Frontend: enqueue generated JS if present.
-		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_enqueue_post_js' ), 21 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_post_js' ), 21 );
 
 		// AJAX handlers for asset management.
 		add_action( 'wp_ajax_boostify_blocks_regenerate_assets', array( $this, 'ajax_regenerate_assets' ) );
@@ -120,12 +120,12 @@ class WCB_Post_Assets {
 		add_action( 'wp_ajax_nopriv_boostify_blocks_save_collected_css', array( $this, 'ajax_save_collected_css' ) );
 
 		// Ensure assets directory exists.
-		$this->maybe_create_assets_dir();
+		$this->ensure_assets_dir_exists();
 
 		// When file generation is enabled, bundle all block static styles into one file
 		// and dequeue individual style-index.css files to reduce HTTP requests.
 		if ( $this->file_generation_enabled ) {
-			add_action( 'wp_enqueue_scripts', array( $this, 'maybe_enqueue_common_static_css' ), 5 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_common_static_css' ), 5 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_individual_block_styles' ), 999 );
 		}
 	}
@@ -151,12 +151,26 @@ class WCB_Post_Assets {
 	}
 
 	/**
+	 * Get the assets upload directory info.
+	 *
+	 * @return array{dir: string, url: string}
+	 */
+	public function get_assets_upload_dir() {
+		$upload = wp_upload_dir();
+		return array(
+			'dir' => trailingslashit( $upload['basedir'] ) . self::ASSETS_DIR . '/',
+			'url' => trailingslashit( set_url_scheme( $upload['baseurl'] ) ) . self::ASSETS_DIR . '/',
+		);
+	}
+
+	/**
 	 * Get the assets directory path.
 	 *
 	 * @return string
 	 */
 	public function get_assets_dir() {
-		return BOOSTIFY_BLOCKS_PATH . 'build/' . self::ASSETS_DIR;
+		$paths = $this->get_assets_upload_dir();
+		return untrailingslashit( $paths['dir'] );
 	}
 
 	/**
@@ -165,7 +179,8 @@ class WCB_Post_Assets {
 	 * @return string
 	 */
 	public function get_assets_url() {
-		return BOOSTIFY_BLOCKS_URI . 'build/' . self::ASSETS_DIR;
+		$paths = $this->get_assets_upload_dir();
+		return untrailingslashit( $paths['url'] );
 	}
 
 	/**
@@ -211,7 +226,7 @@ class WCB_Post_Assets {
 	 * @return bool True on success.
 	 */
 	public function save_css_file( $post_id, $css ) {
-		$this->maybe_create_assets_dir();
+		$this->ensure_assets_dir_exists();
 
 		$file      = $this->get_css_file_path( $post_id );
 		$file_url  = $this->get_css_file_url( $post_id );
@@ -362,7 +377,7 @@ class WCB_Post_Assets {
 	 * - If file exists → enqueue <link>.
 	 * - If file missing → set fallback flag for inline CSS.
 	 */
-	public function maybe_enqueue_post_css() {
+	public function enqueue_post_css() {
 		if ( ! $this->file_generation_enabled ) {
 			return;
 		}
@@ -595,6 +610,10 @@ class WCB_Post_Assets {
 	 * @return void — sends JSON response and dies.
 	 */
 	public function ajax_regenerate_assets() {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid nonce' ), 403 );
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Permission denied' ), 403 );
 		}
@@ -617,6 +636,10 @@ class WCB_Post_Assets {
 	 * @return void — sends JSON response and dies.
 	 */
 	public function ajax_save_post_assets() {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid nonce' ), 403 );
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Permission denied' ), 403 );
 		}
@@ -784,28 +807,34 @@ class WCB_Post_Assets {
 			return array();
 		}
 
-		$like_clauses = array();
-		foreach ( $block_names as $name ) {
-			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
-			$like_clauses[] = $wpdb->prepare( 'post_content LIKE %s', '%' . $wpdb->esc_like( $name ) . '%' );
-		}
-
 		// Include all public post types.
 		$post_types = get_post_types( array( 'public' => true ) );
-		$post_types = array_unique( $post_types );
+		$post_types = array_values( array_unique( $post_types ) );
+
+		if ( empty( $post_types ) ) {
+			return array();
+		}
 
 		$post_type_placeholders = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+		$like_placeholders      = implode( ' OR ', array_fill( 0, count( $block_names ), 'post_content LIKE %s' ) );
+
+		$like_args = array();
+		foreach ( $block_names as $name ) {
+			$like_args[] = '%' . $wpdb->esc_like( $name ) . '%';
+		}
+
+		$query_args = array_merge( $post_types, $like_args );
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		$query = $wpdb->prepare(
-			"SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status NOT IN ('trash', 'auto-draft') AND post_type IN ($post_type_placeholders) AND (" . implode( ' OR ', $like_clauses ) . ') ORDER BY ID ASC',
-			...$post_types
+			"SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status NOT IN ('trash', 'auto-draft') AND post_type IN ($post_type_placeholders) AND ($like_placeholders) ORDER BY ID ASC",
+			...$query_args
 		);
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_col( $query );
 
-		return array_map( 'intval', $results );
+		return is_array( $results ) ? array_map( 'intval', $results ) : array();
 	}
 
 	/**
@@ -934,7 +963,7 @@ class WCB_Post_Assets {
 	 * @return bool True on success.
 	 */
 	public function save_js_file( $post_id, $js ) {
-		$this->maybe_create_assets_dir();
+		$this->ensure_assets_dir_exists();
 		$file = $this->get_js_file_path( $post_id );
 
 		if ( '' === trim( $js ) ) {
@@ -1124,7 +1153,7 @@ class WCB_Post_Assets {
 	/**
 	 * Conditionally enqueue generated JS file for the current request.
 	 */
-	public function maybe_enqueue_post_js() {
+	public function enqueue_post_js() {
 		if ( ! $this->file_generation_enabled ) {
 			return;
 		}
@@ -1226,7 +1255,7 @@ class WCB_Post_Assets {
 	 * @return string|false URL of the common CSS file, or false on failure.
 	 */
 	public function build_common_static_css() {
-		$this->maybe_create_assets_dir();
+		$this->ensure_assets_dir_exists();
 
 		$dir      = BOOSTIFY_BLOCKS_PATH . 'build/';
 		$out_file = $this->get_assets_dir() . '/custom-style-blocks.css';
@@ -1294,7 +1323,7 @@ class WCB_Post_Assets {
 	 * Replaces 37+ individual block style-index.css files with 1 merged file.
 	 * Called on wp_enqueue_scripts at priority 5 (before post CSS at 20).
 	 */
-	public function maybe_enqueue_common_static_css() {
+	public function enqueue_common_static_css() {
 		if ( ! $this->file_generation_enabled ) {
 			return;
 		}
@@ -1366,13 +1395,15 @@ class WCB_Post_Assets {
 	}
 
 	/**
-	 * Create the assets directory if it doesn't exist.
+	 * Ensure the assets directory exists.
 	 */
-	private function maybe_create_assets_dir() {
+	private function ensure_assets_dir_exists() {
 		$dir = $this->get_assets_dir();
 		if ( ! is_dir( $dir ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.dir_mkdir_dirname
 			wp_mkdir_p( $dir );
+		}
+		if ( is_dir( $dir ) && ! file_exists( $dir . '/index.php' ) ) {
 			// Add an index.php to prevent directory listing.
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 			file_put_contents( $dir . '/index.php', '<?php // Silence is golden.' );

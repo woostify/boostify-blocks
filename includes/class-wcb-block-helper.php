@@ -146,6 +146,22 @@ class WCB_Block_Helper {
 	// =====================================================================
 
 	/**
+	 * Normalize a block name to its canonical directory slug.
+	 *
+	 * Handles aliases like 'boostify-blocks/boostify-icon' → 'icon'.
+	 *
+	 * @param string $block_name Full block name (e.g., 'boostify-blocks/boostify-icon').
+	 * @return string Normalized slug (e.g., 'icon').
+	 */
+	public static function normalize_block_slug( $block_name ) {
+		$short_name = basename( $block_name );
+		if ( 'boostify-icon' === $short_name ) {
+			$short_name = 'icon';
+		}
+		return $short_name;
+	}
+
+	/**
 	 * Get a Block's Default Attributes.
 	 *
 	 * @param string $block_name Name of the block to retrieve defaults.
@@ -153,7 +169,8 @@ class WCB_Block_Helper {
 	 */
 	public static function get_block_default_attributes( $block_name ) {
 		// 'boostify-blocks/products' → 'block-products'
-		$short_name = basename( $block_name );
+		// 'boostify-blocks/boostify-icon' → 'block-icon'
+		$short_name = self::normalize_block_slug( $block_name );
 		$dir_name   = 'block-' . $short_name;
 
 		$assets_file = realpath( BOOSTIFY_BLOCKS_PATH . 'includes/blocks/' . $dir_name . '/attributes.php' );
@@ -1173,8 +1190,8 @@ class WCB_Block_Helper {
 	public static function process_block_by_type( $block_name, $attrs, $selector, $unique_id ) {
 		$css = '';
 
-		// Extract block type from block name (e.g., 'boostify-blocks/button' → 'button').
-		$block_type = explode( '/', $block_name )[1] ?? '';
+		// Extract normalized block type (e.g., 'boostify-blocks/boostify-icon' → 'icon').
+		$block_type = self::normalize_block_slug( $block_name );
 
 		// Convert block type to method name (e.g., 'button' → 'process_button_block').
 		$method = 'process_' . str_replace( '-', '_', $block_type ) . '_block';
@@ -2986,7 +3003,7 @@ class WCB_Block_Helper {
 	 * @return string|null CSS string or null if file not found.
 	 */
 	public static function get_frontend_css_from_file( $block_name, $attr, $unique_id ) {
-		$short_name = basename( $block_name );
+		$short_name = self::normalize_block_slug( $block_name );
 		$file_path  = BOOSTIFY_BLOCKS_PATH . 'includes/blocks/block-' . $short_name . '/frontend.css.php';
 
 		if ( ! file_exists( $file_path ) ) {
@@ -3416,7 +3433,7 @@ class WCB_Block_Helper {
 			}
 
 			// Which generator will handle this block?
-			$short_name = basename( $name );
+			$short_name = self::normalize_block_slug( $name );
 			$file_path  = BOOSTIFY_BLOCKS_PATH . 'includes/blocks/block-' . $short_name . '/frontend.css.php';
 			$source     = file_exists( $file_path ) ? 'frontend.css.php' : 'legacy';
 

@@ -2,6 +2,10 @@
 /**
  * Frontend CSS for Container Block.
  *
+ * Mirrors src/block-container/GlobalCss.tsx so every style rendered by the
+ * emotion <Global> component in the editor is also present in the
+ * generated per-post CSS files (asset generation).
+ *
  * @package Boostify_Blocks
  */
 
@@ -10,33 +14,322 @@
  * @var string $unique_id Block unique ID.
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 $selectors   = array();
 $t_selectors = array();
 $m_selectors = array();
 
-$wrap_class  = '.' . $unique_id;
-$inner_class = $wrap_class . ' .wcb-container__inner';
+$wrap_class    = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
+$inner_class   = $wrap_class . ' > .wcb-container__inner';
+$overlay_class = $wrap_class . ' > .wcb-OverlayBackgroundByBgControl';
 
-// --- Parent .wp-block margin reset ---
-$selectors[ '.wp-block:has(> .wcb-container__wrap' . $wrap_class . '[data-uniqueid="' . $unique_id . '"])' ] = array(
+// ---------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------
+
+/**
+ * Apply responsive property across desktop, tablet, and mobile buckets (Desktop-first).
+ */
+$apply_responsive_prop = function ( $sel, $prop, $value ) use ( &$selectors, &$t_selectors, &$m_selectors ) {
+	if ( empty( $value ) && '0' !== (string) $value ) {
+		return;
+	}
+
+	$d = is_array( $value ) ? ( $value['Desktop'] ?? '' ) : $value;
+	$t = is_array( $value ) ? ( $value['Tablet'] ?? $d ) : $value;
+	$m = is_array( $value ) ? ( $value['Mobile'] ?? $t ) : $value;
+
+	if ( '' !== $d && null !== $d ) {
+		$selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $d );
+	}
+	if ( '' !== $t && null !== $t && $t !== $d ) {
+		$t_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $t );
+	}
+	if ( '' !== $m && null !== $m && $m !== $t ) {
+		$m_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $m );
+	}
+};
+
+/**
+ * Apply responsive 4-side padding/margin dimension.
+ */
+$apply_dimension_box = function ( $sel, $type, $dim_data ) use ( &$selectors, &$t_selectors, &$m_selectors ) {
+	if ( empty( $dim_data ) ) {
+		return;
+	}
+
+	$normalize_sides = function ( $val ) {
+		if ( empty( $val ) && '0' !== (string) $val ) {
+			return array(
+				'top'    => '',
+				'right'  => '',
+				'bottom' => '',
+				'left'   => '',
+			);
+		}
+		if ( is_string( $val ) || is_numeric( $val ) ) {
+			return array(
+				'top'    => $val,
+				'right'  => $val,
+				'bottom' => $val,
+				'left'   => $val,
+			);
+		}
+		if ( is_array( $val ) ) {
+			return array(
+				'top'    => $val['top'] ?? '',
+				'right'  => $val['right'] ?? '',
+				'bottom' => $val['bottom'] ?? '',
+				'left'   => $val['left'] ?? '',
+			);
+		}
+		return array(
+			'top'    => '',
+			'right'  => '',
+			'bottom' => '',
+			'left'   => '',
+		);
+	};
+
+	$d_raw = is_array( $dim_data ) ? ( $dim_data['Desktop'] ?? ( isset( $dim_data['top'] ) ? $dim_data : '' ) ) : $dim_data;
+	$t_raw = is_array( $dim_data ) ? ( $dim_data['Tablet'] ?? $d_raw ) : $dim_data;
+	$m_raw = is_array( $dim_data ) ? ( $dim_data['Mobile'] ?? $t_raw ) : $dim_data;
+
+	$d = $normalize_sides( $d_raw );
+	$t = $normalize_sides( $t_raw );
+	$m = $normalize_sides( $m_raw );
+
+	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+		$prop = $type . '-' . $side;
+
+		$d_val = $d[ $side ];
+		$t_val = $t[ $side ];
+		$m_val = $m[ $side ];
+
+		if ( '' !== $d_val && null !== $d_val ) {
+			$selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $d_val );
+		}
+		if ( '' !== $t_val && null !== $t_val && $t_val !== $d_val ) {
+			$t_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $t_val );
+		}
+		if ( '' !== $m_val && null !== $m_val && $m_val !== $t_val ) {
+			$m_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $m_val );
+		}
+	}
+};
+
+/**
+ * Apply border and responsive border radius.
+ */
+$apply_border_styles = function ( $sel, $border_data ) use ( &$selectors, &$t_selectors, &$m_selectors ) {
+	if ( empty( $border_data ) || ! is_array( $border_data ) ) {
+		return;
+	}
+
+	$main = $border_data['mainSettings'] ?? null;
+	if ( ! empty( $main ) && is_array( $main ) ) {
+		$is_4side = isset( $main['top'] ) || isset( $main['right'] ) || isset( $main['bottom'] ) || isset( $main['left'] );
+		if ( $is_4side ) {
+			foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+				if ( ! empty( $main[ $side ] ) && is_array( $main[ $side ] ) ) {
+					$s  = $main[ $side ];
+					$w  = WCB_Block_Helper::get_css_value( $s['width'] ?? '1px' );
+					$st = $s['style'] ?? 'none';
+					$c  = $s['color'] ?? '';
+					if ( 'none' === $st ) {
+						$selectors[ $sel ][ 'border-' . $side ] = 'none';
+					} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) ) {
+						$selectors[ $sel ][ 'border-' . $side ] = trim( $w . ' ' . $st . ' ' . $c );
+					}
+				}
+			}
+		} else {
+			$w  = WCB_Block_Helper::get_css_value( $main['width'] ?? '1px' );
+			$st = $main['style'] ?? 'none';
+			$c  = $main['color'] ?? '';
+			if ( 'none' === $st ) {
+				$selectors[ $sel ]['border'] = 'none';
+			} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) ) {
+				$selectors[ $sel ]['border'] = trim( $w . ' ' . $st . ' ' . $c );
+			}
+		}
+
+		if ( ! empty( $border_data['hoverColor'] ) ) {
+			$selectors[ $sel . ':hover' ]['border-color'] = $border_data['hoverColor'];
+		}
+	}
+
+	// Border Radius.
+	$radius = $border_data['radius'] ?? null;
+	if ( ! empty( $radius ) ) {
+		$normalize_corners = function ( $val ) {
+			if ( empty( $val ) && '0' !== (string) $val ) {
+				return array(
+					'topLeft'     => '',
+					'topRight'    => '',
+					'bottomRight' => '',
+					'bottomLeft'  => '',
+				);
+			}
+			if ( is_string( $val ) || is_numeric( $val ) ) {
+				return array(
+					'topLeft'     => $val,
+					'topRight'    => $val,
+					'bottomRight' => $val,
+					'bottomLeft'  => $val,
+				);
+			}
+			if ( is_array( $val ) ) {
+				return array(
+					'topLeft'     => $val['topLeft'] ?? '',
+					'topRight'    => $val['topRight'] ?? '',
+					'bottomRight' => $val['bottomRight'] ?? '',
+					'bottomLeft'  => $val['bottomLeft'] ?? '',
+				);
+			}
+			return array(
+				'topLeft'     => '',
+				'topRight'    => '',
+				'bottomRight' => '',
+				'bottomLeft'  => '',
+			);
+		};
+
+		$d_raw = is_array( $radius ) ? ( $radius['Desktop'] ?? ( isset( $radius['topLeft'] ) ? $radius : '' ) ) : $radius;
+		$t_raw = is_array( $radius ) ? ( $radius['Tablet'] ?? $d_raw ) : $radius;
+		$m_raw = is_array( $radius ) ? ( $radius['Mobile'] ?? $t_raw ) : $radius;
+
+		$d_c = $normalize_corners( $d_raw );
+		$t_c = $normalize_corners( $t_raw );
+		$m_c = $normalize_corners( $m_raw );
+
+		$corner_props = array(
+			'topLeft'     => 'border-top-left-radius',
+			'topRight'    => 'border-top-right-radius',
+			'bottomRight' => 'border-bottom-right-radius',
+			'bottomLeft'  => 'border-bottom-left-radius',
+		);
+
+		foreach ( $corner_props as $ckey => $css_prop ) {
+			$d_v = $d_c[ $ckey ];
+			$t_v = $t_c[ $ckey ];
+			$m_v = $m_c[ $ckey ];
+
+			if ( '' !== $d_v && null !== $d_v ) {
+				$selectors[ $sel ][ $css_prop ] = WCB_Block_Helper::get_css_value( $d_v );
+			}
+			if ( '' !== $t_v && null !== $t_v && $t_v !== $d_v ) {
+				$t_selectors[ $sel ][ $css_prop ] = WCB_Block_Helper::get_css_value( $t_v );
+			}
+			if ( '' !== $m_v && null !== $m_v && $m_v !== $t_v ) {
+				$m_selectors[ $sel ][ $css_prop ] = WCB_Block_Helper::get_css_value( $m_v );
+			}
+		}
+	}
+};
+
+/**
+ * Tailwind shadow preset value.
+ */
+$tw_shadow_value = function ( $preset, $color = '' ) {
+	switch ( $preset ) {
+		case 'shadow-sm':
+			return '0 1px 2px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.05)' );
+		case 'shadow':
+			return '0 1px 3px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 1px 2px -1px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+		case 'shadow-md':
+			return '0 4px 6px -1px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 2px 4px -2px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+		case 'shadow-lg':
+			return '0 10px 15px -3px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 4px 6px -4px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+		case 'shadow-xl':
+			return '0 20px 25px -5px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 8px 10px -6px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+		case 'shadow-2xl':
+			return '0 25px 50px -12px ' . ( $color ? $color : 'rgb(0 0 0 / 0.25)' );
+		case 'shadow-inner':
+			return 'inset 0 2px 4px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.05)' );
+		default:
+			return '';
+	}
+};
+
+/**
+ * Build a box-shadow value from a Normal/Hover config object.
+ */
+$build_shadow_value = function ( $shadow ) use ( $tw_shadow_value ) {
+	if ( empty( $shadow ) || ! is_array( $shadow ) ) {
+		return '';
+	}
+
+	$color  = $shadow['color'] ?? '';
+	$preset = $shadow['presetClass'] ?? '';
+
+	if ( ! empty( $preset ) ) {
+		return $tw_shadow_value( $preset, $color );
+	}
+
+	if ( empty( $color ) ) {
+		return '';
+	}
+
+	return trim(
+		sprintf(
+			'%s %s %s %s %s %s',
+			WCB_Block_Helper::get_css_value( $shadow['horizontal'] ?? 0 ),
+			WCB_Block_Helper::get_css_value( $shadow['vertical'] ?? 0 ),
+			WCB_Block_Helper::get_css_value( $shadow['blur'] ?? 0 ),
+			WCB_Block_Helper::get_css_value( $shadow['spread'] ?? 0 ),
+			$color,
+			'inset' === ( $shadow['position'] ?? '' ) ? 'inset' : ''
+		)
+	);
+};
+
+// =====================================================================
+// 1. PARENT .wp-block MARGIN RESET & ALIGNMENT
+// =====================================================================
+$selectors[ '.wp-block:has(> .wcb-container__wrap' . $wrap_class . ')' ] = array(
 	'margin-top'    => '0 !important',
 	'margin-bottom' => '0 !important',
 );
 
-// --- Full/wide alignment ---
-$selectors[ '.wp-block[data-align="full"]:has(> .wcb-container__wrap' . $wrap_class . '[data-uniqueid="' . $unique_id . '"])' ] = array(
-	$wrap_class => array(
-		'margin-left'  => 'auto',
-		'margin-right' => 'auto',
-	),
+$selectors[ '.wp-block[data-align="full"]:has(> .wcb-container__wrap' . $wrap_class . ') ' . $wrap_class ] = array(
+	'margin-left'  => 'auto',
+	'margin-right' => 'auto',
 );
 
-// --- Container control ---
-$gc = $attr['general_container'] ?? array();
-$sc = $attr['styles_color'] ?? '';
+$selectors[ '.wp-block[data-align="wide"]:has(> .wcb-container__wrap' . $wrap_class . ')' ] = array(
+	'margin-left'  => '-8px',
+	'margin-right' => '-8px',
+);
+
+$selectors[ '.wp-block[data-align="wide"]:has(> .wcb-container__wrap' . $wrap_class . ') ' . $wrap_class ] = array(
+	'margin-left'  => 'auto',
+	'margin-right' => 'auto',
+);
+
+// =====================================================================
+// 2. CONTAINER CONTROL (Width, Min-Height, Overflow, Color)
+// =====================================================================
+$gc     = $attr['general_container'] ?? array();
+$sc     = $attr['styles_color'] ?? '';
+$global = WCB_Block_Helper::get_global_settings();
+
+// Wrap default display: flex (mirrors getAdvanveDivWrapStyles defaultDisplay: 'flex').
+$selectors[ $wrap_class ]['display']        = 'flex';
+$selectors[ $wrap_class ]['flex-direction'] = 'column';
+
+// Default global container padding.
+$container_padding = $global['containerPadding'] ?: '10px';
+$selectors[ $wrap_class ]['padding'] = $container_padding;
+
+if ( ! empty( $sc ) ) {
+	$selectors[ $wrap_class ]['color'] = $sc;
+}
 
 if ( ! empty( $gc ) ) {
-	$global    = self::get_global_settings();
 	$width_type     = $gc['containerWidthType'] ?? 'Full Width';
 	$content_w_type = $gc['contentWidthType'] ?? 'Boxed';
 	$overflow       = $gc['overflow'] ?? '';
@@ -44,235 +337,219 @@ if ( ! empty( $gc ) ) {
 	$min_height     = $gc['minHeight'] ?? array();
 	$content_box_w  = $gc['contentBoxWidth'] ?? array();
 
-	// --- Base wrap styles ---
-	$wrap_styles = '';
-
-	// Global container padding.
-	$container_padding = $global['containerPadding'] ?: '10px';
-	$wrap_styles .= 'padding: ' . $container_padding . '; ';
-
-	// Color.
-	if ( ! empty( $sc ) ) {
-		$wrap_styles .= 'color: ' . $sc . '; ';
-	}
-
-	// Overflow.
 	if ( ! empty( $overflow ) ) {
-		$wrap_styles .= 'overflow: ' . $overflow . '; ';
+		$selectors[ $wrap_class ]['overflow'] = $overflow;
 	}
 
-	// Custom Width (mobile value as base).
+	// Custom width (Desktop-first).
 	if ( 'Custom' === $width_type && ! empty( $custom_width ) && is_array( $custom_width ) ) {
-		$mw_desktop = $custom_width['Desktop'] ?? null;
-		$mw_tablet  = $custom_width['Tablet'] ?? $mw_desktop;
-		$mw_mobile  = $custom_width['Mobile'] ?? $mw_tablet;
+		$mw_d = $custom_width['Desktop'] ?? null;
+		$mw_t = $custom_width['Tablet'] ?? $mw_d;
+		$mw_m = $custom_width['Mobile'] ?? $mw_t;
 
-		if ( null !== $mw_mobile && '' !== $mw_mobile ) {
-			$wrap_styles .= 'max-width: ' . $mw_mobile . ' !important; width: ' . $mw_mobile . '; ';
+		if ( null !== $mw_d && '' !== $mw_d ) {
+			$selectors[ $wrap_class ]['max-width'] = $mw_d . ' !important';
+			$selectors[ $wrap_class ]['width']     = $mw_d;
+		}
+		if ( null !== $mw_t && '' !== $mw_t && $mw_t !== $mw_d ) {
+			$t_selectors[ $wrap_class ]['max-width'] = $mw_t . ' !important';
+			$t_selectors[ $wrap_class ]['width']     = $mw_t;
+		}
+		if ( null !== $mw_m && '' !== $mw_m && $mw_m !== $mw_t ) {
+			$m_selectors[ $wrap_class ]['max-width'] = $mw_m . ' !important';
+			$m_selectors[ $wrap_class ]['width']     = $mw_m;
 		}
 	}
 
-	// Min Height (mobile value as base).
+	// Min height (Desktop-first).
 	if ( ! empty( $min_height ) && is_array( $min_height ) ) {
-		$mh_desktop = $min_height['Desktop'] ?? null;
-		$mh_tablet  = $min_height['Tablet'] ?? $mh_desktop;
-		$mh_mobile  = $min_height['Mobile'] ?? $mh_tablet;
+		$mh_d = $min_height['Desktop'] ?? null;
+		$mh_t = $min_height['Tablet'] ?? $mh_d;
+		$mh_m = $min_height['Mobile'] ?? $mh_t;
 
-		if ( null !== $mh_mobile && '' !== $mh_mobile ) {
-			$wrap_styles .= 'min-height: ' . $mh_mobile . '; ';
+		if ( null !== $mh_d && '' !== $mh_d ) {
+			$selectors[ $wrap_class ]['min-height'] = WCB_Block_Helper::get_css_value( $mh_d );
+		}
+		if ( null !== $mh_t && '' !== $mh_t && $mh_t !== $mh_d ) {
+			$t_selectors[ $wrap_class ]['min-height'] = WCB_Block_Helper::get_css_value( $mh_t );
+		}
+		if ( null !== $mh_m && '' !== $mh_m && $mh_m !== $mh_t ) {
+			$m_selectors[ $wrap_class ]['min-height'] = WCB_Block_Helper::get_css_value( $mh_m );
 		}
 	}
 
-	if ( ! empty( trim( $wrap_styles ) ) ) {
-		$selectors[ $wrap_class ] = array_merge(
-			isset( $selectors[ $wrap_class ] ) ? $selectors[ $wrap_class ] : array(),
-			self::parse_css_string( $wrap_styles )
+	// .alignfull
+	if ( ! empty( $attr['align'] ) && 'full' === $attr['align'] ) {
+		$selectors[ $wrap_class . '.alignfull' ] = array(
+			'margin-left'  => 'calc(-50vw + 50%)',
+			'margin-right' => 'calc(-50vw + 50%)',
 		);
 	}
 
-	// --- Responsive max-width ---
-	if ( 'Custom' === $width_type && ! empty( $custom_width ) && is_array( $custom_width ) ) {
-		$mw_desktop = $custom_width['Desktop'] ?? null;
-		$mw_tablet  = $custom_width['Tablet'] ?? $mw_desktop;
-		$mw_mobile  = $custom_width['Mobile'] ?? $mw_tablet;
-
-		if ( null !== $mw_tablet && '' !== $mw_tablet && $mw_tablet !== $mw_mobile ) {
-			$t_selectors[ $wrap_class ]['max-width'] = $mw_tablet . ' !important';
-			$t_selectors[ $wrap_class ]['width']     = $mw_tablet;
-		}
-		if ( null !== $mw_desktop && '' !== $mw_desktop && $mw_desktop !== $mw_tablet ) {
-			$selectors[ $wrap_class ]['max-width'] = $mw_desktop . ' !important';
-			$selectors[ $wrap_class ]['width']     = $mw_desktop;
-		}
-	}
-
-	// --- Responsive min-height ---
-	if ( ! empty( $min_height ) && is_array( $min_height ) ) {
-		$mh_desktop = $min_height['Desktop'] ?? null;
-		$mh_tablet  = $min_height['Tablet'] ?? $mh_desktop;
-		$mh_mobile  = $min_height['Mobile'] ?? $mh_tablet;
-
-		if ( null !== $mh_tablet && '' !== $mh_tablet && $mh_tablet !== $mh_mobile ) {
-			$t_selectors[ $wrap_class ]['min-height'] = $mh_tablet;
-		}
-		if ( null !== $mh_desktop && '' !== $mh_desktop && $mh_desktop !== $mh_tablet ) {
-			$selectors[ $wrap_class ]['min-height'] = $mh_desktop;
-		}
-	}
-
-	// --- .alignfull ---
-	$selectors[ $wrap_class . '.alignfull' ] = array(
-		'margin-left'  => 'calc(-50vw + 50%)',
-		'margin-right' => 'calc(-50vw + 50%)',
-	);
-
-	// --- Content Box Width (inner container max-width) ---
-	$has_content_w = false;
-	if ( is_array( $content_box_w ) ) {
-		foreach ( array( 'Desktop', 'Tablet', 'Mobile' ) as $bp ) {
-			if ( ! empty( $content_box_w[ $bp ] ) ) {
-				$has_content_w = true;
-				break;
-			}
-		}
-	}
-	if ( ! $has_content_w && ! empty( $global['defaultContentWidth'] ) ) {
-		$content_box_w = array( 'Desktop' => $global['defaultContentWidth'] );
-	}
-
+	// Content box width (inner container max-width).
 	if ( 'Full Width' === $content_w_type ) {
 		$selectors[ $inner_class ]['max-width'] = '100%';
 	} elseif ( 'Boxed' === $content_w_type ) {
+		$has_content_w = false;
+		if ( is_array( $content_box_w ) ) {
+			foreach ( array( 'Desktop', 'Tablet', 'Mobile' ) as $bp ) {
+				if ( ! empty( $content_box_w[ $bp ] ) ) {
+					$has_content_w = true;
+					break;
+				}
+			}
+		}
+		if ( ! $has_content_w && ! empty( $global['defaultContentWidth'] ) ) {
+			$content_box_w = array( 'Desktop' => $global['defaultContentWidth'] );
+		}
+
 		if ( ! empty( $content_box_w ) && is_array( $content_box_w ) ) {
 			$gap = $global['containerElementsGap'] ?: '10px';
 
-			$cbw_desktop = $content_box_w['Desktop'] ?? '';
-			$cbw_tablet  = $content_box_w['Tablet'] ?? $cbw_desktop;
-			$cbw_mobile  = $content_box_w['Mobile'] ?? $cbw_tablet;
+			$cbw_d = $content_box_w['Desktop'] ?? '';
+			$cbw_t = $content_box_w['Tablet'] ?? $cbw_d;
+			$cbw_m = $content_box_w['Mobile'] ?? $cbw_t;
 
-			$inner_styles = '';
-			if ( '' !== $cbw_mobile && null !== $cbw_mobile ) {
-				$inner_styles .= 'max-width: ' . $cbw_mobile . '; ';
-			}
-			$inner_styles .= 'row-gap: ' . $gap . '; column-gap: ' . $gap . '; ';
+			$selectors[ $inner_class ]['row-gap']    = $gap;
+			$selectors[ $inner_class ]['column-gap'] = $gap;
 
-			if ( ! empty( trim( $inner_styles ) ) ) {
-				$selectors[ $inner_class ] = array_merge(
-					isset( $selectors[ $inner_class ] ) ? $selectors[ $inner_class ] : array(),
-					self::parse_css_string( $inner_styles )
-				);
+			if ( '' !== $cbw_d && null !== $cbw_d ) {
+				$selectors[ $inner_class ]['max-width'] = WCB_Block_Helper::get_css_value( $cbw_d );
 			}
-
-			if ( '' !== $cbw_tablet && null !== $cbw_tablet && $cbw_tablet !== $cbw_mobile ) {
-				$t_selectors[ $inner_class ]['max-width'] = $cbw_tablet;
+			if ( '' !== $cbw_t && null !== $cbw_t && $cbw_t !== $cbw_d ) {
+				$t_selectors[ $inner_class ]['max-width'] = WCB_Block_Helper::get_css_value( $cbw_t );
 			}
-			if ( '' !== $cbw_desktop && null !== $cbw_desktop && $cbw_desktop !== $cbw_tablet ) {
-				$selectors[ $inner_class ]['max-width'] = $cbw_desktop;
+			if ( '' !== $cbw_m && null !== $cbw_m && $cbw_m !== $cbw_t ) {
+				$m_selectors[ $inner_class ]['max-width'] = WCB_Block_Helper::get_css_value( $cbw_m );
 			}
 		}
 	}
-} elseif ( ! empty( $sc ) ) {
-	// Fallback: apply color even without container settings.
-	$selectors[ $wrap_class ]['color'] = $sc;
 }
 
-// --- Background ---
-if ( ! empty( $attr['styles_background'] ) ) {
-	$bg_css = self::get_background_css( $attr['styles_background'] );
-	if ( ! empty( $bg_css ) ) {
-		$selectors[ $wrap_class ] = array_merge(
-			isset( $selectors[ $wrap_class ] ) ? $selectors[ $wrap_class ] : array(),
-			$bg_css
+// =====================================================================
+// 3. BACKGROUND & OVERLAY (Color, Gradient, Image, Overlay)
+// =====================================================================
+if ( ! empty( $attr['styles_background'] ) && is_array( $attr['styles_background'] ) ) {
+	$bg = $attr['styles_background'];
+	$bg_type = $bg['bgType'] ?? 'color';
+
+	if ( 'color' === $bg_type && ! empty( $bg['color'] ) ) {
+		$selectors[ $wrap_class ]['background-color'] = $bg['color'];
+	} elseif ( 'gradient' === $bg_type && ! empty( $bg['gradient'] ) ) {
+		$selectors[ $wrap_class ]['background-image'] = $bg['gradient'];
+	} elseif ( 'image' === $bg_type ) {
+		$img_data = $bg['imageData'] ?? array();
+		$img_d    = is_array( $img_data ) ? ( $img_data['Desktop']['mediaUrl'] ?? '' ) : '';
+		$img_t    = is_array( $img_data ) ? ( $img_data['Tablet']['mediaUrl'] ?? $img_d ) : $img_d;
+		$img_m    = is_array( $img_data ) ? ( $img_data['Mobile']['mediaUrl'] ?? $img_t ) : $img_t;
+
+		if ( ! empty( $img_d ) ) {
+			$selectors[ $wrap_class ]['background-image'] = 'url(' . esc_url( $img_d ) . ')';
+		}
+		if ( ! empty( $img_t ) && $img_t !== $img_d ) {
+			$t_selectors[ $wrap_class ]['background-image'] = 'url(' . esc_url( $img_t ) . ')';
+		}
+		if ( ! empty( $img_m ) && $img_m !== $img_t ) {
+			$m_selectors[ $wrap_class ]['background-image'] = 'url(' . esc_url( $img_m ) . ')';
+		}
+
+		if ( ! empty( $bg['bgImageRepeat'] ) ) {
+			$apply_responsive_prop( $wrap_class, 'background-repeat', $bg['bgImageRepeat'] );
+		}
+		if ( ! empty( $bg['bgImageAttachment'] ) ) {
+			$apply_responsive_prop( $wrap_class, 'background-attachment', $bg['bgImageAttachment'] );
+		}
+		if ( ! empty( $bg['bgImageSize'] ) ) {
+			$apply_responsive_prop( $wrap_class, 'background-size', $bg['bgImageSize'] );
+		}
+		if ( ! empty( $bg['focalPoint'] ) && is_array( $bg['focalPoint'] ) ) {
+			$fp = $bg['focalPoint'];
+			$get_pos = function ( $point ) {
+				if ( ! is_array( $point ) ) {
+					return '';
+				}
+				$x = isset( $point['x'] ) ? ( (float) $point['x'] * 100 ) . '%' : '50%';
+				$y = isset( $point['y'] ) ? ( (float) $point['y'] * 100 ) . '%' : '50%';
+				return $x . ' ' . $y;
+			};
+
+			$pos_d = $get_pos( $fp['Desktop'] ?? array() );
+			$pos_t = $get_pos( $fp['Tablet'] ?? ( $fp['Desktop'] ?? array() ) );
+			$pos_m = $get_pos( $fp['Mobile'] ?? ( $fp['Tablet'] ?? ( $fp['Desktop'] ?? array() ) ) );
+
+			if ( '' !== $pos_d ) {
+				$selectors[ $wrap_class ]['background-position'] = $pos_d;
+			}
+			if ( '' !== $pos_t && $pos_t !== $pos_d ) {
+				$t_selectors[ $wrap_class ]['background-position'] = $pos_t;
+			}
+			if ( '' !== $pos_m && $pos_m !== $pos_t ) {
+				$m_selectors[ $wrap_class ]['background-position'] = $pos_m;
+			}
+		}
+	}
+
+	// Overlay (.wcb-OverlayBackgroundByBgControl)
+	$overlay_type = $bg['overlayType'] ?? 'none';
+	if ( 'color' === $overlay_type && ! empty( $bg['overlayColor'] ) ) {
+		$selectors[ $overlay_class ] = array(
+			'background-color' => $bg['overlayColor'],
+			'position'         => 'absolute',
+			'inset'            => '0',
+			'z-index'          => '0',
+		);
+	} elseif ( 'gradient' === $overlay_type && ! empty( $bg['overlayGradient'] ) ) {
+		$selectors[ $overlay_class ] = array(
+			'background-image' => $bg['overlayGradient'],
+			'position'         => 'absolute',
+			'inset'            => '0',
+			'z-index'          => '0',
 		);
 	}
 }
 
-// --- Border ---
+// =====================================================================
+// 4. BORDER & RADIUS (Wrap)
+// =====================================================================
 if ( ! empty( $attr['styles_border'] ) ) {
-	$border_css = self::get_border_css_array( $attr['styles_border'] );
-	if ( ! empty( $border_css ) ) {
-		$selectors[ $wrap_class ] = array_merge(
-			isset( $selectors[ $wrap_class ] ) ? $selectors[ $wrap_class ] : array(),
-			$border_css
-		);
+	$apply_border_styles( $wrap_class, $attr['styles_border'] );
+}
+
+// =====================================================================
+// 5. BOX SHADOW (Normal + Hover)
+// =====================================================================
+if ( ! empty( $attr['styles_boxShadow'] ) && is_array( $attr['styles_boxShadow'] ) ) {
+	$bs = $attr['styles_boxShadow'];
+	if ( ! empty( $bs['Normal'] ) ) {
+		$normal_shadow = $build_shadow_value( $bs['Normal'] );
+		if ( '' !== $normal_shadow ) {
+			$selectors[ $wrap_class ]['box-shadow'] = $normal_shadow;
+		}
+	}
+	if ( ! empty( $bs['Hover'] ) ) {
+		$hover_shadow = $build_shadow_value( $bs['Hover'] );
+		if ( '' !== $hover_shadow ) {
+			$selectors[ $wrap_class . ':hover' ]['box-shadow'] = $hover_shadow;
+		}
 	}
 }
 
-// --- Box shadow ---
-if ( ! empty( $attr['styles_boxShadow']['Normal']['color'] ) ) {
-	$shadow = $attr['styles_boxShadow']['Normal'];
-	$selectors[ $wrap_class ]['box-shadow'] = sprintf(
-		'%s %s %s %s %s %s',
-		self::get_css_value( $shadow['horizontal'] ?? 0 ),
-		self::get_css_value( $shadow['vertical'] ?? 0 ),
-		self::get_css_value( $shadow['blur'] ?? 0 ),
-		self::get_css_value( $shadow['spread'] ?? 0 ),
-		$shadow['color'],
-		'inset' === ( $shadow['position'] ?? '' ) ? 'inset' : ''
-	);
-}
-if ( ! empty( $attr['styles_boxShadow']['Hover']['color'] ) ) {
-	$shadow_h = $attr['styles_boxShadow']['Hover'];
-	$selectors[ $wrap_class . ':hover' ]['box-shadow'] = sprintf(
-		'%s %s %s %s %s %s',
-		self::get_css_value( $shadow_h['horizontal'] ?? 0 ),
-		self::get_css_value( $shadow_h['vertical'] ?? 0 ),
-		self::get_css_value( $shadow_h['blur'] ?? 0 ),
-		self::get_css_value( $shadow_h['spread'] ?? 0 ),
-		$shadow_h['color'],
-		'inset' === ( $shadow_h['position'] ?? '' ) ? 'inset' : ''
-	);
-}
-
-// --- Padding & Margin ---
-if ( ! empty( $attr['styles_dimensions'] ) ) {
+// =====================================================================
+// 6. DIMENSIONS (Margin & Padding on Wrap)
+// =====================================================================
+if ( ! empty( $attr['styles_dimensions'] ) && is_array( $attr['styles_dimensions'] ) ) {
 	$dim = $attr['styles_dimensions'];
-
-	// Padding.
 	if ( ! empty( $dim['padding'] ) ) {
-		$padding = $dim['padding'];
-		if ( is_array( $padding ) ) {
-			$p_desktop = $padding['Desktop'] ?? null;
-			$p_tablet  = $padding['Tablet'] ?? $p_desktop;
-			$p_mobile  = $padding['Mobile'] ?? $p_tablet;
-
-			if ( $p_mobile ) {
-				$selectors[ $wrap_class ]['padding-top']    = ( $p_mobile['top'] ?? '' ) ?: '0';
-				$selectors[ $wrap_class ]['padding-right']  = ( $p_mobile['right'] ?? '' ) ?: '0';
-				$selectors[ $wrap_class ]['padding-bottom'] = ( $p_mobile['bottom'] ?? '' ) ?: '0';
-				$selectors[ $wrap_class ]['padding-left']   = ( $p_mobile['left'] ?? '' ) ?: '0';
-			}
-			if ( $p_tablet && $p_tablet !== $p_mobile ) {
-				$t_selectors[ $wrap_class ]['padding-top']    = ( $p_tablet['top'] ?? '' ) ?: '0';
-				$t_selectors[ $wrap_class ]['padding-right']  = ( $p_tablet['right'] ?? '' ) ?: '0';
-				$t_selectors[ $wrap_class ]['padding-bottom'] = ( $p_tablet['bottom'] ?? '' ) ?: '0';
-				$t_selectors[ $wrap_class ]['padding-left']   = ( $p_tablet['left'] ?? '' ) ?: '0';
-			}
-			if ( $p_desktop && $p_desktop !== $p_tablet ) {
-				$selectors[ $wrap_class ]['padding-top']    = ( $p_desktop['top'] ?? '' ) ?: '0';
-				$selectors[ $wrap_class ]['padding-right']  = ( $p_desktop['right'] ?? '' ) ?: '0';
-				$selectors[ $wrap_class ]['padding-bottom'] = ( $p_desktop['bottom'] ?? '' ) ?: '0';
-				$selectors[ $wrap_class ]['padding-left']   = ( $p_desktop['left'] ?? '' ) ?: '0';
-			}
-		}
+		$apply_dimension_box( $wrap_class, 'padding', $dim['padding'] );
 	}
-
-	// Margin.
 	if ( ! empty( $dim['margin'] ) ) {
-		$margin = $dim['margin'];
-		if ( is_array( $margin ) ) {
-			$m_desktop = $margin['Desktop'] ?? null;
-			if ( $m_desktop ) {
-				$selectors[ $wrap_class ]['margin-top']    = $m_desktop['top'] ?? '';
-				$selectors[ $wrap_class ]['margin-right']  = $m_desktop['right'] ?? '';
-				$selectors[ $wrap_class ]['margin-bottom'] = $m_desktop['bottom'] ?? '';
-				$selectors[ $wrap_class ]['margin-left']   = $m_desktop['left'] ?? '';
-			}
-		}
+		$apply_dimension_box( $wrap_class, 'margin', $dim['margin'] );
 	}
 }
 
-// --- Flex properties + gap (on inner container) ---
+// =====================================================================
+// 7. FLEX PROPERTIES & GAP (on Inner Container)
+// =====================================================================
 $gfp      = $attr['general_flexProperties'] ?? array();
 $has_flex = ! empty( $gfp ) && is_array( $gfp );
 $has_gap  = ! empty( $attr['styles_dimensions'] ) && is_array( $attr['styles_dimensions'] ) && ( ! empty( $attr['styles_dimensions']['colunmGap'] ) || ! empty( $attr['styles_dimensions']['rowGap'] ) );
@@ -290,50 +567,67 @@ if ( $has_flex || $has_gap ) {
 	foreach ( $flex_props as $attr_key => $css_prop ) {
 		$value = $gfp[ $attr_key ] ?? null;
 		if ( ! empty( $value ) && is_array( $value ) ) {
-			$desktop = $value['Desktop'] ?? null;
-			$tablet  = $value['Tablet'] ?? $desktop;
-			$mobile  = $value['Mobile'] ?? $tablet;
+			$d_val = $value['Desktop'] ?? null;
+			$t_val = $value['Tablet'] ?? $d_val;
+			$m_val = $value['Mobile'] ?? $t_val;
 
-			if ( null !== $mobile && '' !== $mobile ) {
-				$selectors[ $inner_class ][ $css_prop ] = $mobile;
+			if ( null !== $d_val && '' !== $d_val ) {
+				$selectors[ $inner_class ][ $css_prop ] = $d_val;
 			}
-			if ( null !== $tablet && '' !== $tablet && $tablet !== $mobile ) {
-				$t_selectors[ $inner_class ][ $css_prop ] = $tablet;
+			if ( null !== $t_val && '' !== $t_val && $t_val !== $d_val ) {
+				$t_selectors[ $inner_class ][ $css_prop ] = $t_val;
 			}
-			if ( null !== $desktop && '' !== $desktop && $desktop !== $tablet ) {
-				$selectors[ $inner_class ][ $css_prop ] = $desktop;
+			if ( null !== $m_val && '' !== $m_val && $m_val !== $t_val ) {
+				$m_selectors[ $inner_class ][ $css_prop ] = $m_val;
 			}
-		} else {
-			// Default values.
-			$defaults = array(
-				'flexDirection'  => 'row',
-				'alignItems'     => 'stretch',
-				'justifyContent' => 'flex-start',
-				'flexWrap'       => 'nowrap',
-			);
-			$selectors[ $inner_class ][ $css_prop ] = $defaults[ $attr_key ];
+		} elseif ( ! empty( $value ) && is_string( $value ) ) {
+			$selectors[ $inner_class ][ $css_prop ] = $value;
 		}
 	}
 
-	// Gap.
+	// Responsive Column Gap.
 	if ( ! empty( $attr['styles_dimensions']['colunmGap'] ) ) {
-		$col_gap = $attr['styles_dimensions']['colunmGap'];
-		$cg      = is_array( $col_gap ) ? ( $col_gap['Desktop'] ?? '' ) : $col_gap;
-		if ( '' !== $cg ) {
-			$selectors[ $inner_class ]['column-gap'] = self::get_css_value( $cg );
+		$cg_val = $attr['styles_dimensions']['colunmGap'];
+		$cg_d   = is_array( $cg_val ) ? ( $cg_val['Desktop'] ?? '' ) : $cg_val;
+		$cg_t   = is_array( $cg_val ) ? ( $cg_val['Tablet'] ?? $cg_d ) : $cg_val;
+		$cg_m   = is_array( $cg_val ) ? ( $cg_val['Mobile'] ?? $cg_t ) : $cg_val;
+
+		if ( '' !== $cg_d && null !== $cg_d ) {
+			$selectors[ $inner_class ]['column-gap'] = WCB_Block_Helper::get_css_value( $cg_d );
+		}
+		if ( '' !== $cg_t && null !== $cg_t && $cg_t !== $cg_d ) {
+			$t_selectors[ $inner_class ]['column-gap'] = WCB_Block_Helper::get_css_value( $cg_t );
+		}
+		if ( '' !== $cg_m && null !== $cg_m && $cg_m !== $cg_t ) {
+			$m_selectors[ $inner_class ]['column-gap'] = WCB_Block_Helper::get_css_value( $cg_m );
 		}
 	}
+
+	// Responsive Row Gap.
 	if ( ! empty( $attr['styles_dimensions']['rowGap'] ) ) {
-		$row_gap = $attr['styles_dimensions']['rowGap'];
-		$rg      = is_array( $row_gap ) ? ( $row_gap['Desktop'] ?? '' ) : $row_gap;
-		if ( '' !== $rg ) {
-			$selectors[ $inner_class ]['row-gap'] = self::get_css_value( $rg );
+		$rg_val = $attr['styles_dimensions']['rowGap'];
+		$rg_d   = is_array( $rg_val ) ? ( $rg_val['Desktop'] ?? '' ) : $rg_val;
+		$rg_t   = is_array( $rg_val ) ? ( $rg_val['Tablet'] ?? $rg_d ) : $rg_val;
+		$rg_m   = is_array( $rg_val ) ? ( $rg_val['Mobile'] ?? $rg_t ) : $rg_val;
+
+		if ( '' !== $rg_d && null !== $rg_d ) {
+			$selectors[ $inner_class ]['row-gap'] = WCB_Block_Helper::get_css_value( $rg_d );
+		}
+		if ( '' !== $rg_t && null !== $rg_t && $rg_t !== $rg_d ) {
+			$t_selectors[ $inner_class ]['row-gap'] = WCB_Block_Helper::get_css_value( $rg_t );
+		}
+		if ( '' !== $rg_m && null !== $rg_m && $rg_m !== $rg_t ) {
+			$m_selectors[ $inner_class ]['row-gap'] = WCB_Block_Helper::get_css_value( $rg_m );
 		}
 	}
 }
 
-// --- Advance ---
-$selectors = array_merge( $selectors, self::get_advance_css( $attr, $wrap_class ) );
+// =====================================================================
+// 8. ADVANCE (responsive condition + z-index + motion effect)
+// =====================================================================
+$selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_class ) );
+
+// ---------------------------------------------------------------------
 
 $combined_selectors = array(
 	'desktop' => $selectors,
@@ -341,4 +635,6 @@ $combined_selectors = array(
 	'mobile'  => $m_selectors,
 );
 
-return self::generate_all_css( $combined_selectors, $wrap_class );
+return WCB_Block_Helper::generate_all_css( $combined_selectors, '' );
+
+
