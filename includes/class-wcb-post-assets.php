@@ -807,8 +807,15 @@ class WCB_Post_Assets {
 			return array();
 		}
 
+		$like_clauses = array();
+		foreach ( $block_names as $name ) {
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnquotedComplexPlaceholder
+			$like_clauses[] = $wpdb->prepare( 'post_content LIKE %s', '%' . $wpdb->esc_like( $name ) . '%' );
+		}
+
 		// Include all public post types.
 		$post_types = get_post_types( array( 'public' => true ) );
+		$post_types = array_unique( $post_types );
 		$post_types = array_values( array_unique( $post_types ) );
 
 		if ( empty( $post_types ) ) {
@@ -827,6 +834,8 @@ class WCB_Post_Assets {
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		$query = $wpdb->prepare(
+			"SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status NOT IN ('trash', 'auto-draft') AND post_type IN ($post_type_placeholders) AND (" . implode( ' OR ', $like_clauses ) . ') ORDER BY ID ASC',
+			...$post_types
 			"SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status NOT IN ('trash', 'auto-draft') AND post_type IN ($post_type_placeholders) AND ($like_placeholders) ORDER BY ID ASC",
 			...$query_args
 		);
@@ -834,6 +843,7 @@ class WCB_Post_Assets {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_col( $query );
 
+		return array_map( 'intval', $results );
 		return is_array( $results ) ? array_map( 'intval', $results ) : array();
 	}
 
