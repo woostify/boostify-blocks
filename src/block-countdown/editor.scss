@@ -6,3 +6,13 @@
     transform: scale(3);
     transform-origin: center;
 }
+
+// WordPress core adds `margin-bottom: 16px` to every non-last `.components-base-control`
+// inside `.block-editor-block-inspector` (block-editor/style.css), meant for controls
+// stacked vertically. The Day/Month/Year/Hours/Minutes fields inside the core
+// `DateTimePicker` (used by WCBDateTimePicker for the countdown end date) are laid out
+// horizontally but still carry that class, so they inherit the same bottom margin and
+// end up visually misaligned within their row. Zero it out for this widget only.
+.components-datetime__time .components-base-control {
+    margin-bottom: 0 !important;
+}
