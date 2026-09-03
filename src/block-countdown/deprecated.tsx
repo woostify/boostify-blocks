@@ -1,4 +1,6 @@
 import Save__011123 from "./Save__011123";
+import Save__300726 from "./Save__300726";
+import Save__050826 from "./Save__050826";
 import blokc1Attrs from "./attributes";
 
 const v1 = {};
@@ -7,7 +9,15 @@ const v3 = {
 	attributes: blokc1Attrs,
 	save: Save__011123,
 };
+const v4 = {
+	attributes: blokc1Attrs,
+	save: Save__300726,
+};
+const v5 = {
+	attributes: blokc1Attrs,
+	save: Save__050826,
+};
 
-const deprecated = [v3, v2, v1];
+const deprecated = [v5, v4, v3, v2, v1];
 
 export default deprecated;
