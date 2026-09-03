@@ -1,8 +1,20 @@
 import { __ } from "@wordpress/i18n";
-import { useBlockProps, InnerBlocks, // @ts-ignore
-	useInnerBlocksProps, BlockEdit as WPBlockEdit } from "@wordpress/block-editor";
-import { use, useDispatch, useSelect } from "@wordpress/data";
-import React, { useEffect, FC, useCallback, useRef, useState, useMemo } from "react";
+import {
+	useBlockProps,
+	InnerBlocks,
+	// @ts-ignore
+	useInnerBlocksProps,
+	BlockEdit as WPBlockEdit,
+} from "@wordpress/block-editor";
+import { useDispatch, useSelect } from "@wordpress/data";
+import React, {
+	useEffect,
+	FC,
+	useCallback,
+	useRef,
+	useState,
+	useMemo,
+} from "react";
 import { WcbAttrs } from "./attributes";
 import HOCInspectorControls, {
 	InspectorControlsTabs,
@@ -34,22 +46,22 @@ import "swiper/css";
 import "swiper/css/navigation";
 // @ts-ignore
 import "swiper/css/pagination";
-import converUniqueIdToAnphaKey, { converClientIdToUniqueClass } from "../utils/converUniqueIdToAnphaKey";
-export const SLIDER_ITEM_DEMO: string[] = ["boostify-blocks/slider-swiper-child"];
+import converUniqueIdToAnphaKey, {
+	converClientIdToUniqueClass,
+} from "../utils/converUniqueIdToAnphaKey";
 
-// Module-level (not per-render) so its reference never changes - swiper/react
-// destroys and recreates the whole Swiper instance whenever the `modules`
-// array it receives is a *new* reference, even if its contents are the same.
+export const SLIDER_ITEM_DEMO: string[] = [
+	"boostify-blocks/slider-swiper-child",
+];
+
+// Phải khớp với BREAKPOINT_TABLET / BREAKPOINT_DESKTOP bên frontend (view.js)
+const BREAKPOINT_TABLET = 768;
+const BREAKPOINT_DESKTOP = 1024;
+
+// Giữ reference cố định cho modules để swiper/react không destroy + recreate instance mỗi lần render
 const SWIPER_MODULES = [Navigation, Pagination, Autoplay];
 
-// swiper/react's own internal prop-sync effect can call swiper.update() on an
-// instance whose DOM element has already been torn down (observed inside the
-// Gutenberg block editor's frequent re-render cycles), which throws deep
-// inside Swiper because update() reads swiper.el.querySelectorAll(...)
-// unconditionally. Patch update() once, module-wide, to no-op when the
-// instance has no live element - Swiper's own update() already no-ops for
-// `swiper.destroyed`, this just extends that same guard to a torn-down `.el`,
-// which can occur before `destroyed` is set. Runs once per page load.
+// Patch update() của Swiper để tránh crash khi instance đã bị destroy trong editor
 if (!(SwiperCore.prototype as any).__wcbUpdateGuarded) {
 	const originalUpdate = SwiperCore.prototype.update;
 	SwiperCore.prototype.update = function (this: any, ...args: any[]) {
@@ -59,8 +71,15 @@ if (!(SwiperCore.prototype as any).__wcbUpdateGuarded) {
 	(SwiperCore.prototype as any).__wcbUpdateGuarded = true;
 }
 
-// Arrow icons for the custom prev/next navigation buttons (wired into Swiper
-// via navigation.prevEl/nextEl instead of react-slick's nextArrow/prevArrow props).
+// Module Navigation của Swiper CÓ THỂ tự chèn icon mũi tên mặc định vào nút
+// prev/next đang rỗng (addIcons: true, xem navigation.mjs#initButton), nhưng
+// nó tạo icon đó bằng `document.createElement()`/`appendChild` thuần - biến
+// `document` trong code của Swiper trỏ vào document của CỬA SỔ ADMIN (top
+// window), không phải document của iframe Gutenberg, nên việc gắn node vừa
+// tạo vào 1 nút đang nằm trong iframe sẽ thất bại âm thầm (frontend không có
+// iframe nên cơ chế mặc định này vẫn chạy đúng ở đó). Vì vậy phải tự vẽ icon
+// bằng React thay vì để Swiper tự chèn - React luôn tạo node đúng document
+// của nơi nó đang render, kể cả bên trong iframe.
 function ArrowIcon({ direction }: { direction: "next" | "prev" }) {
 	return (
 		<svg
@@ -82,6 +101,52 @@ function ArrowIcon({ direction }: { direction: "next" | "prev" }) {
 	);
 }
 
+// ============================================================
+// TỔNG QUAN LUỒNG XỬ LÝ CỦA COMPONENT Edit NÀY
+// ============================================================
+// 1. Đồng bộ số lượng slide con (innerBlocks) theo attribute
+//    general_general.numberofTestimonials - tự thêm/xoá block con
+//    "slider-swiper-child" cho khớp số lượng người dùng chọn trong panel.
+//
+// 2. Theo dõi block con nào đang được chọn (isParentSelected /
+//    selectedChildId) để: (a) hiện đúng InspectorControls (panel bên phải)
+//    của block cha hoặc block con tương ứng, (b) tự động slideTo() tới đúng
+//    slide khi người dùng click chọn 1 slide con trong list view/canvas.
+//
+// 3. Khởi tạo <Swiper> (từ swiper/react) với cấu hình lấy từ attributes -
+//    đây là phần PHỨC TẠP NHẤT của file, vì Gutenberg render canvas trong
+//    1 <iframe> riêng nhưng bundle JS của block lại chạy trong document của
+//    cửa sổ admin (top window). Hệ quả:
+//      - Không thể dùng document.querySelector('.class-nao-do') để lấy
+//        phần tử nav/pagination thật (querySelector chạy trên document admin,
+//        không "nhìn" vào bên trong iframe được).
+//      - Vì vậy: lúc khởi tạo <Swiper>, prop navigation/pagination vẫn phải
+//        truyền tạm 1 chuỗi selector (để Swiper tạo đúng cấu trúc module),
+//        nhưng chuỗi đó THẤT BẠI trong iframe - swiper.navigation.prevEl /
+//        swiper.pagination.el ban đầu sẽ rỗng.
+//      - reinitNavigationPagination() sau đó ghi đè lại el bằng REF THẬT của
+//        React (prevElRef/nextElRef/paginationRef - luôn đúng vì React tự
+//        gắn ref vào đúng DOM node, dù node đó nằm trong iframe hay không),
+//        rồi gọi lại init()/render()/update() của từng module để nó nhận
+//        đúng phần tử thật.
+//      - scheduleReinitNavigationPagination() bọc lần gọi đầu trong
+//        setTimeout (đẩy ra tick kế tiếp, đảm bảo React đã gắn xong toàn bộ
+//        ref của các div sibling trước khi chạy - xem thêm comment ngay tại
+//        hàm này), và có vòng lặp retry làm lưới an toàn cho các lần
+//        Gutenberg destroy/recreate lại instance Swiper giữa chừng.
+//      - Icon mũi tên (ArrowIcon) phải tự vẽ bằng React thay vì để Swiper tự
+//        chèn icon mặc định của nó - lý do xem comment ngay phía trên
+//        component ArrowIcon bên dưới (cũng là vấn đề iframe/document khác).
+//
+// 4. GlobalCss.tsx (render trong return() bên dưới) chịu trách nhiệm sinh CSS
+//    động (màu, size, khoảng cách...) từ toàn bộ style_* attributes, áp dụng
+//    cho cả block cha lẫn nav/dots của Swiper.
+//
+// 5. forceSliderRecalc() được gọi lại mỗi khi số slide/breakpoint/attributes
+//    đổi - vì Swiper cần update() lại snapGrid/kích thước slide, rồi render
+//    lại pagination bullet cho khớp, nếu không dots có thể hiện sai số lượng
+//    hoặc không hiện.
+// ============================================================
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const { attributes, setAttributes, clientId, isSelected } = props;
 	const {
@@ -106,11 +171,19 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const wrapBlockProps = useBlockProps({ ref });
 	const swiperRef = useRef<SwiperInstance | null>(null);
+
+	// ============================================================
+	// QUAN TRỌNG: Dùng ref thật thay vì selector string
+	// Vì Gutenberg canvas nằm trong <iframe>, document.querySelector
+	// từ cửa sổ admin không bao giờ tìm thấy element bên trong iframe.
+	// Ref của React thì gắn trực tiếp vào DOM node thật nên luôn đúng.
+	// ============================================================
 	const prevElRef = useRef<HTMLDivElement | null>(null);
 	const nextElRef = useRef<HTMLDivElement | null>(null);
-	// Debounce timer: prevents multiple rapid slideTo calls
-	// (canvas click triggers both handleChildSelect AND the useEffect simultaneously)
+	const paginationRef = useRef<HTMLDivElement | null>(null);
+
 	const slideNavTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 	const {
 		tabIsOpen,
 		tabAdvancesIsPanelOpen,
@@ -119,23 +192,21 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		handleTogglePanel,
 	} = useSetBlockPanelInfo(uniqueId);
 
-	// make uniqueid
 	const UNIQUE_ID = wrapBlockProps.id;
 	useEffect(() => {
 		setAttributes({
 			uniqueId: converUniqueIdToAnphaKey(UNIQUE_ID),
 		});
 	}, [UNIQUE_ID]);
-	
-	// Generate CSS-safe class from clientId for reliable parent identification
+
 	const parentCssClass = converClientIdToUniqueClass(clientId);
-	
+
 	const [isParentSelected, setIsParentSelected] = useState(true);
 	const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
-	const [deviceTypeState, setDeviceTypeState] = useState<ResponsiveDevices>("Desktop");
+	const [deviceTypeState, setDeviceTypeState] =
+		useState<ResponsiveDevices>("Desktop");
 	const [isChangeDeviceType, setIsChangeDeviceType] = useState<boolean>(false);
-	
-	// Persist selectedChildId across device type changes and UI reloads using localStorage
+
 	const getStoredSelectedChildId = (): string | null => {
 		try {
 			return localStorage.getItem(`wcb-slider-selected-child-${clientId}`);
@@ -143,11 +214,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			return null;
 		}
 	};
-	
+
 	const setStoredSelectedChildId = (childId: string | null) => {
 		try {
 			if (childId) {
-				localStorage.setItem(`wcb-slider-selected-child-${clientId}`, childId);
+				localStorage.setItem(
+					`wcb-slider-selected-child-${clientId}`,
+					childId
+				);
 			} else {
 				localStorage.removeItem(`wcb-slider-selected-child-${clientId}`);
 			}
@@ -156,22 +230,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	};
 
-	/**
-	 * Parent-Child Synchronization
-	 */
-	const { insertBlock, removeBlock, selectBlock, updateBlockListSettings } = useDispatch("core/block-editor");
+	const { insertBlock, removeBlock, selectBlock, updateBlockListSettings } =
+		useDispatch("core/block-editor");
 
-	// Gutenberg only allows inserting a block under `clientId` (canInsertBlockType)
-	// once `getBlockListSettings(clientId)` is populated - normally this happens
-	// as a side effect of mounting <InnerBlocks>/useInnerBlocksProps's returned
-	// children. But this block renders its own slide children manually (via
-	// WPBlockEdit below) instead of through <InnerBlocks>, and only spreads
-	// useInnerBlocksProps' return value onto the DOM in the "no children yet"
-	// branch of renderSliderContent - so that registration never happens once
-	// real slides exist, and insertBlock() silently no-ops from then on (it
-	// resolves without error, but nothing is actually added). Register the
-	// settings ourselves so inserting/removing slides keeps working regardless
-	// of which render branch is active.
 	useEffect(() => {
 		updateBlockListSettings(clientId, {
 			allowedBlocks: SLIDER_ITEM_DEMO,
@@ -179,35 +240,31 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		});
 	}, [clientId, updateBlockListSettings]);
 
-	// Last time a Slider setting (columns, carousel...) changed. These values go
-	// into the Swiper props below. When they change, Swiper moves slide DOM
-	// nodes around, and this can move a child's RichText (contenteditable)
-	// node too. Some browsers fire a real `focusin` for that move. Gutenberg's
-	// useFocusHandler (from useBlockProps() in the child) then calls
-	// selectBlock(childId), even though the user did not click anything. We use
-	// this timestamp to detect and ignore that fake selection.
 	const lastSliderSettingsChangeRef = useRef<number>(0);
 	useEffect(() => {
 		lastSliderSettingsChangeRef.current = Date.now();
 	}, [general_general, general_carousel]);
 
-	// Step 1: Get inner blocks + track which block is currently selected in the editor store.
-	// selectedBlockClientId updates whenever the user clicks a block — including via List View.
-	const { innerBlocks, selectedBlockClientId } = useSelect((select: any) => {
-		const { getBlocks, getSelectedBlockClientId } = select("core/block-editor");
-		return {
-			innerBlocks: getBlocks(clientId) || [],
-			selectedBlockClientId: getSelectedBlockClientId(),
-		};
-	}, [clientId]);
+	const { innerBlocks, selectedBlockClientId } = useSelect(
+		(select: any) => {
+			const { getBlocks, getSelectedBlockClientId } =
+				select("core/block-editor");
+			return {
+				innerBlocks: getBlocks(clientId) || [],
+				selectedBlockClientId: getSelectedBlockClientId(),
+			};
+		},
+		[clientId]
+	);
 
 	useEffect(() => {
 		if (deviceTypeState !== deviceType) {
 			setIsChangeDeviceType(true);
-			// Restore selectedChildId from localStorage when device type changes
 			const storedChildId = getStoredSelectedChildId();
 			if (storedChildId) {
-				const childExists = innerBlocks.some((block: any) => block.clientId === storedChildId);
+				const childExists = innerBlocks.some(
+					(block: any) => block.clientId === storedChildId
+				);
 				if (childExists) {
 					setSelectedChildId(storedChildId);
 					setIsParentSelected(false);
@@ -219,27 +276,17 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		setDeviceTypeState(deviceType);
 	}, [deviceType]);
 
-	// Keep innerBlocks in sync with "Number of Sliders" (numberofTestimonials).
-	// This single effect owns both creating the initial slides (currentNumber
-	// starts at 0 - e.g. a freshly inserted block) AND topping up/trimming slides
-	// whenever the count changes afterwards - including the very first time this
-	// runs after the block remounts from saved content (page reload). Previously
-	// this was split into two separate effects with slightly different guard
-	// conditions on the same [numberofTestimonials, innerBlocks.length]
-	// dependencies; keeping one effect avoids them racing each other and
-	// guarantees the "top up missing slides" branch always runs, regardless of
-	// whether currentNumber is 0 or already > 0 from a saved post.
 	useEffect(() => {
 		const targetNumber = general_general.numberofTestimonials || 3;
 		const currentNumber = innerBlocks.length;
 
 		if (currentNumber === targetNumber) {
-			// Force parent selection after adding inner blocks, and restore any
-			// previously selected child (e.g. after a device type change).
 			selectBlock(clientId);
 			const storedChildId = getStoredSelectedChildId();
 			if (storedChildId) {
-				const childExists = innerBlocks.some((block: any) => block.clientId === storedChildId);
+				const childExists = innerBlocks.some(
+					(block: any) => block.clientId === storedChildId
+				);
 				if (childExists) {
 					setSelectedChildId(storedChildId);
 					setIsParentSelected(false);
@@ -256,34 +303,32 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			if (currentNumber < targetNumber) {
 				const blocksToAdd = targetNumber - currentNumber;
 				for (let i = 0; i < blocksToAdd; i++) {
-					const newBlock = wp.blocks.createBlock("boostify-blocks/slider-swiper-child");
-					// updateSelection=false: avoid auto-selecting the new child, which would hijack the settings panel from the parent
+					const newBlock = wp.blocks.createBlock(
+						"boostify-blocks/slider-swiper-child"
+					);
 					insertBlock(newBlock, currentNumber + i, clientId, false);
 				}
 			} else if (currentNumber > targetNumber) {
 				const blocksToRemove = currentNumber - targetNumber;
-				const clientIdsToRemove = innerBlocks.slice(-blocksToRemove).map((block: any) => block.clientId);
+				const clientIdsToRemove = innerBlocks
+					.slice(-blocksToRemove)
+					.map((block: any) => block.clientId);
 				clientIdsToRemove.forEach((childClientId: any) => {
 					removeBlock(childClientId);
 				});
 			}
 
-			// Force parent selection after modifying inner blocks
 			selectBlock(clientId);
 			if (!isChangeDeviceType) {
 				setIsParentSelected(true);
 				setSelectedChildId(null);
 				setStoredSelectedChildId(null);
 			}
-		}, 100); // Small delay to prevent race conditions
+		}, 100);
 
 		return () => clearTimeout(timeoutId);
 	}, [general_general.numberofTestimonials, innerBlocks.length]);
 
-	// Navigate the slider carousel to the slide matching the given child clientId.
-	// Debounced: multiple calls within 100ms are collapsed into one slideTo,
-	// preventing the slider from sliding continuously when canvas click + useEffect
-	// both fire goToChildSlide in rapid succession.
 	const goToChildSlide = (childClientId: string) => {
 		const index = innerBlocks.findIndex(
 			(block: any) => block.clientId === childClientId
@@ -292,7 +337,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 		if (slideNavTimer.current) clearTimeout(slideNavTimer.current);
 		slideNavTimer.current = setTimeout(() => {
-			// speed 0 = no animation, equivalent to react-slick's slickGoTo(index, false)
 			const swiper = swiperRef.current;
 			if (swiper && swiper.el) {
 				swiper.slideTo(index, 0);
@@ -300,27 +344,17 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}, 100);
 	};
 
-	// Handle child selection (triggered by clicking a child on the canvas)
 	const handleChildSelect = (childClientId: string) => {
 		setIsParentSelected(false);
 		setSelectedChildId(childClientId);
 		setStoredSelectedChildId(childClientId);
-		// Also select the block in the editor store, so Gutenberg's own
-		// sidebar BlockCard (icon + title + description) shows "Slider child"
-		// too, not just the tabs we portal in below it. Without this, the
-		// store still thinks the parent Slider is selected, and the sidebar
-		// header and our tabs show different blocks.
 		selectBlock(childClientId);
-		// Navigate to the corresponding slide so canvas and panel stay in sync
 		goToChildSlide(childClientId);
 	};
 
-	// Step 2: Sync panel view with whatever block is selected in the editor store.
-	// Handles both List View clicks on children AND List View clicks on the parent itself.
 	useEffect(() => {
 		if (!selectedBlockClientId) return;
 
-		// Case A: The parent Slider block was selected (user clicked parent in List View).
 		if (selectedBlockClientId === clientId) {
 			setIsParentSelected(true);
 			setSelectedChildId(null);
@@ -328,16 +362,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			return;
 		}
 
-		// Case B: A child of this slider was selected (e.g., List View click on Slider child).
 		const isChildOfThisSlider = innerBlocks.some(
 			(block: any) => block.clientId === selectedBlockClientId
 		);
 
 		if (isChildOfThisSlider) {
-			// If we are on the parent panel and a Slider setting changed a moment
-			// ago, this "child selected" event is most likely the fake focusin
-			// described above, not a real click. Ignore it and put the store
-			// selection back on the parent.
 			const justChangedSliderSettings =
 				Date.now() - lastSliderSettingsChangeRef.current < 800;
 
@@ -353,36 +382,39 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			return;
 		}
 
-		// Case C: An unrelated block outside this slider was selected.
-		// Clear selectedChildId so the portal stops rendering stale slider settings.
 		setSelectedChildId(null);
 		setIsParentSelected(false);
 	}, [selectedBlockClientId]);
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
-		// Parent panel rendering (original logic)
 		switch (tab.name) {
 			case "General":
 				return (
 					<>
 						<WcbSlidersPanelGeneral
-							onToggle={() => handleTogglePanel("General", "Heading", true)}
+							onToggle={() =>
+								handleTogglePanel("General", "Heading", true)
+							}
 							initialOpen={
 								tabGeneralIsPanelOpen === "Heading" ||
 								tabGeneralIsPanelOpen === "first"
 							}
-							opened={tabGeneralIsPanelOpen === "Heading" || undefined}
+							opened={
+								tabGeneralIsPanelOpen === "Heading" || undefined
+							}
 							setAttr__={(data) => {
 								setAttributes({ general_general: data });
 							}}
 							panelData={general_general}
 						/>
 						<WcbSlidersPanelCarousel
-							onToggle={() => handleTogglePanel("General", "Carousel")}
-							initialOpen={
-								tabGeneralIsPanelOpen === "Carousel"
+							onToggle={() =>
+								handleTogglePanel("General", "Carousel")
 							}
-							opened={tabGeneralIsPanelOpen === "Carousel" || undefined}
+							initialOpen={tabGeneralIsPanelOpen === "Carousel"}
+							opened={
+								tabGeneralIsPanelOpen === "Carousel" || undefined
+							}
 							setAttr__={(data) => {
 								setAttributes({
 									general_carousel: data,
@@ -395,32 +427,35 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			case "Styles":
 				return (
 					<>
-						{/* <WcbSlidersPanel_StyleVerticalAlignment
-							onToggle={() => handleTogglePanel("Styles", "_StyleVerticalAlignment")}
-							initialOpen={tabStylesIsPanelOpen === "_StyleVerticalAlignment" ||
-								tabStylesIsPanelOpen === "first"}
-							opened={tabStylesIsPanelOpen === "_StyleVerticalAlignment" || undefined}
+						<WcbSlidersPanel_StyleBackground
+							onToggle={() =>
+								handleTogglePanel("Styles", "_StyleBackground")
+							}
+							initialOpen={
+								tabStylesIsPanelOpen === "_StyleBackground"
+							}
+							opened={
+								tabStylesIsPanelOpen === "_StyleBackground" ||
+								undefined
+							}
 							setAttr__={(data) => {
 								setAttributes({
-									style_verticalAlignment: data,
+									style_backgroundAndBorder: data,
 								});
-							}}
-							panelData={style_verticalAlignment || WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO} // Provide a default object if undefined
-						/> */}
-						<WcbSlidersPanel_StyleBackground
-							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}
-							initialOpen={tabStylesIsPanelOpen === "_StyleBackground"}
-							opened={tabStylesIsPanelOpen === "_StyleBackground" || undefined}
-							setAttr__={(data) => {
-								setAttributes({ style_backgroundAndBorder: data });
 							}}
 							panelData={style_backgroundAndBorder}
 						/>
 						<WcbSliderPanel_StyleBoxshadow
-							onToggle={() => handleTogglePanel("Styles", "_StyleBoxshadow")}
-							initialOpen={tabStylesIsPanelOpen === "_StyleBoxshadow"}
-							opened={tabStylesIsPanelOpen === "_StyleBoxshadow" || undefined}
-							//
+							onToggle={() =>
+								handleTogglePanel("Styles", "_StyleBoxshadow")
+							}
+							initialOpen={
+								tabStylesIsPanelOpen === "_StyleBoxshadow"
+							}
+							opened={
+								tabStylesIsPanelOpen === "_StyleBoxshadow" ||
+								undefined
+							}
 							setAttr__={(data) => {
 								setAttributes({
 									style_boxshadow: data,
@@ -429,18 +464,32 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							panelData={style_boxshadow}
 						/>
 						<WcbSlidersPanel_StyleArrowDots
-							onToggle={() => handleTogglePanel("Styles", "_StyleArrowDots")}
-							initialOpen={tabStylesIsPanelOpen === "_StyleArrowDots"}
-							opened={tabStylesIsPanelOpen === "_StyleArrowDots" || undefined}
+							onToggle={() =>
+								handleTogglePanel("Styles", "_StyleArrowDots")
+							}
+							initialOpen={
+								tabStylesIsPanelOpen === "_StyleArrowDots"
+							}
+							opened={
+								tabStylesIsPanelOpen === "_StyleArrowDots" ||
+								undefined
+							}
 							setAttr__={(data) => {
 								setAttributes({ style_arrowAndDots: data });
 							}}
 							panelData={style_arrowAndDots}
 						/>
 						<WcbSlidersPanel_StyleDimension
-							onToggle={() => handleTogglePanel("Styles", "_StyleDimension")}
-							initialOpen={tabStylesIsPanelOpen === "_StyleDimension"}
-							opened={tabStylesIsPanelOpen === "_StyleDimension" || undefined}
+							onToggle={() =>
+								handleTogglePanel("Styles", "_StyleDimension")
+							}
+							initialOpen={
+								tabStylesIsPanelOpen === "_StyleDimension"
+							}
+							opened={
+								tabStylesIsPanelOpen === "_StyleDimension" ||
+								undefined
+							}
 							setAttr__={(data) => {
 								setAttributes({ style_dimension: data });
 							}}
@@ -469,49 +518,40 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	};
 
-	// Use useMemo to prevent unnecessary template recreation
 	const innerBlocksTemplate: any[] = [
 		SLIDER_ITEM_DEMO,
 		SLIDER_ITEM_DEMO,
-		SLIDER_ITEM_DEMO
-	]
+		SLIDER_ITEM_DEMO,
+	];
 
-	const innerBlocksProps = useInnerBlocksProps(
-		{
-			allowedBlocks: SLIDER_ITEM_DEMO,
-			template: innerBlocksTemplate,
-			renderAppender: false,
-			orientation: 'horizontal',
-		}
-	);
+	const innerBlocksProps = useInnerBlocksProps({
+		allowedBlocks: SLIDER_ITEM_DEMO,
+		template: innerBlocksTemplate,
+		renderAppender: false,
+		orientation: "horizontal",
+	});
 
-	// Memoized child component to prevent multiple renders
 	const MemoizedChildBlock = useMemo(() => {
-		return React.memo(({ block, isSelected, onSelect, index}: any) => {
+		return React.memo(
+			({ block, isSelected, onSelect, index }: any) => {
 				return (
-				<div
-					key={index + "-"}
+					<div
+						key={index + "-"}
 						onClick={(e) => {
 							e.stopPropagation();
 							onSelect(block.clientId);
 						}}
 					>
-						{/* WPBlockEdit sets up BlockEditContextProvider so child's InspectorControls
-						    gets its own isSelected context, independent of the parent's context.
-						    mayDisplayControls must ALSO be passed explicitly: since WP 7.0,
-						    BlockEdit's InspectorControls Fill visibility is gated on this prop
-						    (normally computed and passed down by BlockListBlockProvider), not on
-						    isSelected alone. Because these children are mounted manually here
-						    instead of through the standard <BlockListBlock> pipeline, that
-						    computation never happens unless we provide it ourselves. */}
 						<WPBlockEdit
 							name={block.name}
 							attributes={block.attributes}
 							setAttributes={(newAttributes: any) => {
-								wp.data.dispatch("core/block-editor").updateBlockAttributes(
-									block.clientId,
-									newAttributes
-								);
+								wp.data
+									.dispatch("core/block-editor")
+									.updateBlockAttributes(
+										block.clientId,
+										newAttributes
+									);
 							}}
 							clientId={block.clientId}
 							isSelected={isSelected}
@@ -519,37 +559,33 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							index={index}
 						/>
 					</div>
-								// </div>
-					// 		</div>
-					// 	</div>
-					// </div>
 				);
 			},
 			(prevProps, nextProps) => {
-				// Only rerender when attributes or selection change
 				if (prevProps.isSelected !== nextProps.isSelected) return false;
-				if (prevProps.block.clientId !== nextProps.block.clientId) return false;
+				if (prevProps.block.clientId !== nextProps.block.clientId)
+					return false;
 
-				// compare attributes shallow
 				const prevAttrs = prevProps.block.attributes;
 				const nextAttrs = nextProps.block.attributes;
 
 				const keys = Object.keys({ ...prevAttrs, ...nextAttrs });
 				for (const key of keys) {
 					if (prevAttrs[key] !== nextAttrs[key]) {
-						return false; // rerender if any attribute differs
+						return false;
 					}
 				}
 
-				return true; // keep the same component if no changes
+				return true;
 			}
 		);
 	}, []);
 
 	useEffect(() => {
-		// Get all DOM slider wrapper
 		const sliders = document.querySelectorAll(".wcb-slider__wrap");
-		const sliderItemInner = document.querySelectorAll(".wcb-slider__item-inner");
+		const sliderItemInner = document.querySelectorAll(
+			".wcb-slider__item-inner"
+		);
 
 		sliders.forEach((slider) => {
 			const items = slider.querySelectorAll<HTMLElement>(
@@ -557,7 +593,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			);
 
 			if (items.length > 0) {
-				// Reset padding before calculating
 				items.forEach((item) => {
 					item.style.paddingTop = "";
 					item.style.paddingRight = "";
@@ -565,7 +600,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					item.style.paddingLeft = "";
 				});
 
-				// Find max padding value by site
 				let maxPaddingTop = 0;
 				let maxPaddingRight = 0;
 				let maxPaddingBottom = 0;
@@ -573,13 +607,24 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 				items.forEach((item) => {
 					const style = window.getComputedStyle(item);
-					maxPaddingTop = Math.max(maxPaddingTop, parseFloat(style.paddingTop));
-					maxPaddingRight = Math.max(maxPaddingRight, parseFloat(style.paddingRight));
-					maxPaddingBottom = Math.max(maxPaddingBottom, parseFloat(style.paddingBottom));
-					maxPaddingLeft = Math.max(maxPaddingLeft, parseFloat(style.paddingLeft));
+					maxPaddingTop = Math.max(
+						maxPaddingTop,
+						parseFloat(style.paddingTop)
+					);
+					maxPaddingRight = Math.max(
+						maxPaddingRight,
+						parseFloat(style.paddingRight)
+					);
+					maxPaddingBottom = Math.max(
+						maxPaddingBottom,
+						parseFloat(style.paddingBottom)
+					);
+					maxPaddingLeft = Math.max(
+						maxPaddingLeft,
+						parseFloat(style.paddingLeft)
+					);
 				});
 
-				// Assign padding for sync
 				items.forEach((item: any) => {
 					item.style.paddingTop = `${maxPaddingTop}px !important`;
 					item.style.paddingRight = `${maxPaddingRight}px !important`;
@@ -587,14 +632,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					item.style.paddingLeft = `${maxPaddingLeft}px !important`;
 				});
 
-				// Sync hight
 				let maxHeight = 0;
 				items.forEach((item) => {
-					// item.style.height = "auto"; // reset before calculating
 					maxHeight = Math.max(maxHeight, item.offsetHeight);
 				});
 
-				sliderItemInner.forEach((item:any) => {
+				sliderItemInner.forEach((item: any) => {
 					item.style.height = `${maxHeight}px`;
 					item.style.display = "flex";
 					item.style.alignItems = "center";
@@ -604,16 +647,29 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		});
 	});
 
-	// Recalculate Swiper dimensions after InnerBlocks render. Swiper exposes a
-	// public update() method, so unlike react-slick this needs no private-API
-	// hack (no slickGoTo dance + innerSlider.onWindowResized()). Guard against
-	// a stale ref: swiper/react may destroy+recreate the instance between
-	// renders, and a destroyed instance has all its own properties (including
-	// `.el`) deleted, so calling update() on it throws.
+	// ============================================================
+	// forceSliderRecalc: gọi update() + ép pagination render lại
+	// ============================================================
 	const forceSliderRecalc = useCallback(() => {
 		const swiper = swiperRef.current;
-		if (swiper && swiper.el) {
+		if (swiper && swiper.el && swiper.el.isConnected) {
 			swiper.update();
+
+			if (swiper.pagination) {
+				// Ép lại el từ ref thật trước khi render
+				if (
+					paginationRef.current &&
+					swiper.params.pagination &&
+					typeof swiper.params.pagination !== "boolean"
+				) {
+					swiper.params.pagination.el = paginationRef.current;
+					if (!swiper.pagination.el) {
+						swiper.pagination.init();
+					}
+				}
+				swiper.pagination.render();
+				swiper.pagination.update();
+			}
 		}
 	}, []);
 
@@ -623,14 +679,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	}, [innerBlocks.length, forceSliderRecalc]);
 
-	// Add resize handler to ensure slider always recalculates correctly
 	useEffect(() => {
 		const handleResize = () => {
 			forceSliderRecalc();
 		};
 
-		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
 	}, [forceSliderRecalc]);
 
 	const {
@@ -643,62 +698,194 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	} = general_carousel;
 	const { columns } = general_general;
 
-	const { currentDeviceValue: currentColumns } = getValueFromAttrsResponsives(
-		columns,
-		deviceType
-	);
+	const {
+		value_Desktop: columnsDesktop,
+		value_Tablet: columnsTablet,
+		value_Mobile: columnsMobile,
+	} = getValueFromAttrsResponsives(columns);
+
+	useEffect(() => {
+		forceSliderRecalc();
+	}, [columnsDesktop, columnsTablet, columnsMobile, forceSliderRecalc]);
+
+	useEffect(() => {
+		forceSliderRecalc();
+	}, [attributes, forceSliderRecalc]);
 
 	const showArrows = showArrowsDots !== "Dot";
 	const showDots = showArrowsDots !== "Arrow";
 
-	// Stable callback identities: swiper/react may treat a *new* function/object
-	// reference on these props as a reason to destroy and recreate the whole
-	// Swiper instance, even when the underlying value is unchanged.
-	const handleBeforeInit = useCallback((swiper: SwiperInstance) => {
-		if (swiper.params.navigation && typeof swiper.params.navigation !== "boolean") {
-			swiper.params.navigation.prevEl = prevElRef.current;
-			swiper.params.navigation.nextEl = nextElRef.current;
-		}
-	}, []);
+	// Selector scope dùng parentCssClass (có sẵn ngay từ clientId)
+	const swiperSelectorScope = `.${parentCssClass}`;
+
+	// ============================================================
+	// reinitNavigationPagination
+	// Đây là hàm quan trọng nhất để dots hiện ở Editor.
+	// Sau khi Swiper init xong, ta ghi đè prevEl / nextEl / pagination.el
+	// bằng ref thật (vì selector string fail trong iframe).
+	// Trả về true nếu thành công, false nếu ref chưa sẵn sàng → sẽ retry.
+	// ============================================================
+	const reinitNavigationPagination = useCallback(
+		(swiper: SwiperInstance | null) => {
+			if (
+				!swiper ||
+				swiper.destroyed ||
+				!swiper.el ||
+				!swiper.el.isConnected
+			) {
+				return false;
+			}
+
+			let ready = true;
+
+			// ----- Navigation (mũi tên) -----
+			if (
+				swiper.params.navigation &&
+				typeof swiper.params.navigation !== "boolean"
+			) {
+				if (!prevElRef.current || !nextElRef.current) {
+					ready = false;
+				} else {
+					const prevEl = prevElRef.current;
+					const nextEl = nextElRef.current;
+
+					if (
+						swiper.navigation.prevEl !== prevEl ||
+						swiper.navigation.nextEl !== nextEl
+					) {
+						swiper.navigation.destroy();
+						swiper.params.navigation.prevEl = prevEl;
+						swiper.params.navigation.nextEl = nextEl;
+						swiper.navigation.init();
+					}
+					swiper.navigation.update();
+				}
+			}
+
+			// ----- Pagination (dots) -----
+			if (
+				swiper.params.pagination &&
+				typeof swiper.params.pagination !== "boolean"
+			) {
+				if (!paginationRef.current) {
+					ready = false;
+				} else {
+					const paginationEl = paginationRef.current;
+
+					// Giống pattern của Spectra (setSwiperNavigationPagination trong
+					// wp-spectra-master/src/blocks/slider/render.js): luôn ép el về
+					// ref thật rồi init/render/update thẳng, không cần destroy()
+					// trước - Swiper's pagination.init() tự xử lý việc đổi el.
+					swiper.params.pagination.el = paginationEl;
+					swiper.params.pagination.clickable = true;
+					swiper.pagination.init();
+
+					// render() chính là chỗ tạo ra các <span class="swiper-pagination-bullet">
+					swiper.pagination.render();
+					swiper.pagination.update();
+				}
+			}
+
+			return ready;
+		},
+		[]
+	);
+
+	// ============================================================
+	// scheduleReinitNavigationPagination
+	// Lần thử đầu tiên bị đẩy ra setTimeout (giống pattern của Spectra ở
+	// wp-spectra-master/src/blocks/slider/render.js#setSwiperNavigationPagination):
+	// onAfterInit của swiper/react fire ngay trong callback ref gắn container,
+	// tức là TRƯỚC KHI React kịp gắn ref của các div sibling (nav/pagination).
+	// Đẩy ra 1 tick (setTimeout 0ms) đảm bảo commit của React đã xong hẳn nên
+	// hầu như luôn thành công ngay từ lần thử đầu.
+	// Vẫn giữ vòng retry phía sau làm lưới an toàn cho trường hợp Gutenberg
+	// destroy/recreate Swiper instance giữa chừng.
+	// ============================================================
+	const scheduleReinitNavigationPagination = useCallback(
+		(instanceOverride?: SwiperInstance | null) => {
+			let attempts = 0;
+			const maxAttempts = 15;
+			const retryDelay = 40; // ms
+
+			const tryReinit = () => {
+				// Lần đầu dùng instanceOverride (từ onAfterInit),
+				// các lần sau luôn lấy swiperRef.current mới nhất
+				const swiper =
+					attempts === 0
+						? instanceOverride ?? swiperRef.current
+						: swiperRef.current;
+
+				const done = reinitNavigationPagination(swiper);
+				attempts += 1;
+
+				if (!done && attempts < maxAttempts) {
+					setTimeout(tryReinit, retryDelay);
+				}
+			};
+
+			setTimeout(tryReinit);
+		},
+		[reinitNavigationPagination]
+	);
+
+	const handleAfterInit = useCallback(
+		(instance: SwiperInstance) => {
+			scheduleReinitNavigationPagination(instance);
+		},
+		[scheduleReinitNavigationPagination]
+	);
+
 	const handleSwiper = useCallback((instance: SwiperInstance) => {
 		swiperRef.current = instance;
 	}, []);
-	// Clear the ref as soon as swiper/react tears an instance down (e.g. to
-	// recreate it after certain prop changes), so nothing can call methods on
-	// it afterwards - a destroyed instance has its own properties (including
-	// `.el`) deleted, not just nulled.
+
 	const handleDestroy = useCallback(() => {
 		swiperRef.current = null;
 	}, []);
 
-	// Memoized so the object (and its nested navigation/pagination/autoplay
-	// objects) keeps the same reference across renders that don't actually
-	// change any of these values - passing a *new* object every render is
-	// exactly what was causing swiper/react to destroy + recreate the Swiper
-	// instance on every keystroke/selection change in the editor.
+	// ============================================================
+	// swiperCommonProps
+	// - Memo để tránh destroy/recreate instance không cần thiết
+	// - Truyền selector string cho navigation/pagination (giống Spectra)
+	//   dù selector sẽ fail trong iframe, nhưng giúp Swiper khởi tạo module đúng.
+	// - Việc bind thật sự được làm trong reinitNavigationPagination bằng ref.
+	// ============================================================
 	const swiperCommonProps = useMemo(
 		() => ({
 			modules: SWIPER_MODULES,
-			// Forced false in the editor (regardless of the "rewind" attribute, which
-			// still controls the real frontend carousel via view.js): Swiper's loop
-			// mode clones slides too, which would mount <WPBlockEdit> more than once
-			// for the same child slide, duplicating its InspectorControls panel in
-			// the sidebar whenever it's selected.
-			loop: false,
+			loop: false, // Bắt buộc false ở Editor để tránh clone slide → duplicate InspectorControls
 			speed: animationDuration || 500,
-			autoplay: isAutoPlay ? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause } : false,
-			slidesPerView: currentColumns || 1,
-			centeredSlides: true,
+			autoplay: isAutoPlay
+				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
+				: false,
+			slidesPerView: columnsMobile || 1,
+			breakpoints: {
+				[BREAKPOINT_TABLET]: {
+					slidesPerView: columnsTablet || columnsMobile || 1,
+				},
+				[BREAKPOINT_DESKTOP]: {
+					slidesPerView: columnsDesktop || columnsTablet || 1,
+				},
+			},
 			autoHeight: adaptiveHeight,
-			// The prevEl/nextEl keys must be present here (even while still null on
-			// the very first render, before the ref callbacks below have run) -
-			// swiper/react's own needsNavigation() check treats a navigation object
-			// *without* those keys as "no custom nav elements provided" and renders
-			// its own extra, iconless swiper-button-prev/next divs alongside ours.
-			// The real values get attached in onBeforeInit once the DOM is ready.
-			navigation: showArrows ? { prevEl: prevElRef.current, nextEl: nextElRef.current } : false,
-			pagination: showDots ? { clickable: true } : false,
-			onBeforeInit: handleBeforeInit,
+			navigation: showArrows
+				? {
+						prevEl: `${swiperSelectorScope} .swiper-button-prev`,
+						nextEl: `${swiperSelectorScope} .swiper-button-next`,
+				  }
+				: false,
+			// Quan trọng: truyền el bằng selector (giống Spectra)
+			// Dù selector fail trong iframe, module Pagination vẫn được khởi tạo đúng cấu trúc.
+			// Sau đó reinitNavigationPagination sẽ ghi đè el bằng paginationRef.current
+			pagination: showDots
+				? {
+						el: `${swiperSelectorScope} .swiper-pagination`,
+						clickable: true,
+				  }
+				: false,
+			allowTouchMove: false,
+			onAfterInit: handleAfterInit,
 			onSwiper: handleSwiper,
 			onDestroy: handleDestroy,
 		}),
@@ -707,17 +894,41 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			isAutoPlay,
 			autoplaySpeed,
 			hoverpause,
-			currentColumns,
+			columnsDesktop,
+			columnsTablet,
+			columnsMobile,
 			adaptiveHeight,
 			showArrows,
 			showDots,
-			handleBeforeInit,
+			swiperSelectorScope,
+			handleAfterInit,
 			handleSwiper,
 			handleDestroy,
 		]
 	);
 
+	// Khi toggle arrows / dots → reinit lại
+	useEffect(() => {
+		scheduleReinitNavigationPagination();
+	}, [showArrows, showDots, scheduleReinitNavigationPagination]);
+
+	// Khi số slide thay đổi → đợi React gắn xong ref rồi reinit
+	useEffect(() => {
+		if (innerBlocks.length > 0 && showDots) {
+			const t = setTimeout(() => {
+				scheduleReinitNavigationPagination();
+			}, 60);
+			return () => clearTimeout(t);
+		}
+	}, [innerBlocks.length, showDots, scheduleReinitNavigationPagination]);
+
 	const renderSliderContent = () => {
+		// ============================================================
+		// renderNav
+		// - Chỉ render DIV RỖNG + gắn ref
+		// - KHÔNG BAO GIỜ hard-code các <span class="swiper-pagination-bullet">
+		// - Swiper sẽ tự gọi pagination.render() để tạo bullets
+		// ============================================================
 		const renderNav = () => (
 			<>
 				{showArrows && (
@@ -730,11 +941,17 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						</div>
 					</>
 				)}
+
+				{/* CHỈ render div rỗng + ref. Swiper sẽ tự thêm class và bullets */}
+				{showDots && (
+					<div
+						className="swiper-pagination"
+						ref={paginationRef}
+					></div>
+				)}
 			</>
 		);
 
-		// If no inner blocks or blocks count doesn't match target, show template
-		// If no inner blocks, show template
 		if (innerBlocks.length === 0) {
 			return (
 				<div className="wcb-slider__wrap-items">
@@ -748,19 +965,21 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			);
 		}
 
-		// Show slider with individual child blocks
 		return (
 			<div className="wcb-slider__wrap-items">
 				<Swiper {...swiperCommonProps}>
 					{innerBlocks.map((block: any, index: number) => {
-						const isChildSelected = !isParentSelected && (selectedChildId != null && selectedChildId === block.clientId);
+						const isChildSelected =
+							!isParentSelected &&
+							selectedChildId != null &&
+							selectedChildId === block.clientId;
 						return (
 							<SwiperSlide key={block.clientId}>
 								<MemoizedChildBlock
 									block={block}
 									isSelected={isChildSelected}
 									onSelect={handleChildSelect}
-									index={index + 1} // Pass index to child for unique identification
+									index={index + 1}
 								/>
 							</SwiperSlide>
 						);
@@ -807,30 +1026,26 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		advance_motionEffect,
 	]);
 
-	const handleParentClick = useCallback((e: React.MouseEvent) => {
-		if (e.target === e.currentTarget && !isParentSelected) {
-			selectBlock(clientId);
-			setIsParentSelected(true);
-			setSelectedChildId(null);
-			// Clear the stored selection when parent is selected
-			setStoredSelectedChildId(null);
-		}
-	}, [isParentSelected, clientId]);
+	const handleParentClick = useCallback(
+		(e: React.MouseEvent) => {
+			if (e.target === e.currentTarget && !isParentSelected) {
+				selectBlock(clientId);
+				setIsParentSelected(true);
+				setSelectedChildId(null);
+				setStoredSelectedChildId(null);
+			}
+		},
+		[isParentSelected, clientId]
+	);
 
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-slider__wrap ${uniqueId} ${parentCssClass}`}
+				className={`${wrapBlockProps?.className} wcb-slider__wrap wcb-slider-swiper__wrap ${uniqueId} ${parentCssClass}`}
 				data-uniqueid={uniqueId}
 				onClick={handleParentClick}
 			>
-				{/* CONTROL SETTINGS - only the parent's own settings. When a child slide
-				    is selected, that child's own Edit component (block-slider-child/Edit.tsx,
-				    mounted via WPBlockEdit below) renders its own <InspectorControls> directly,
-				    since only a Fill whose BlockEditContext clientId matches the truly selected
-				    block is shown by Gutenberg - a Fill rendered from here (the parent) would be
-				    filtered out whenever a child is the actual selected block. */}
 				{isParentSelected && (
 					<HOCInspectorControls
 						renderTabPanels={renderTabBodyPanels}
@@ -838,10 +1053,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					/>
 				)}
 
-				{/* CSS IN JS */}
 				<GlobalCss {...WcbAttrsForSave()} />
 
-				{/* CHILD CONTENT */}
 				{renderSliderContent()}
 			</div>
 		</MyCacheProvider>

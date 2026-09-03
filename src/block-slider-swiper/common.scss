@@ -30,19 +30,48 @@
 		&:hover {
 			color: black;
 		}
-		// Swiper draws its own default arrow glyph via ::after - hide it since
-		// we render our own SVG icon inside the button (see Edit.tsx / Save.tsx).
+		// Swiper's Navigation module CÓ THỂ tự chèn icon mũi tên mặc định vào
+		// nút rỗng (addIcons: true, mặc định bật) - nhưng nó tạo thẻ <svg> bằng
+		// `document.createElement()` của CỬA SỔ ADMIN (top window), không phải
+		// document của iframe Gutenberg, nên appendChild vào nút (nằm trong
+		// iframe) thất bại âm thầm - CHỈ xảy ra trong Editor, vì frontend
+		// không có iframe nên cơ chế mặc định của Swiper vẫn chạy tốt ở đó.
+		// => Vì vậy phải tự vẽ icon bằng React (component ArrowIcon trong
+		// Edit.tsx / Save.tsx) thay vì để Swiper tự chèn - React luôn tạo node
+		// đúng document của nơi nó đang render, kể cả bên trong iframe.
+		//
+		// Rule `::after` bên dưới KHÔNG liên quan gì tới lý do trên - nó chặn
+		// một lỗi xung đột CSS khác: plugin wp-spectra-master (Spectra) đăng ký
+		// stylesheet riêng của họ (`uagb-swiper-css`, dựa trên Swiper v8 cũ) mà
+		// KHÔNG gắn cờ `skipEditor`, nên CSS đó vẫn bị load vào Editor dù trang
+		// không hề chứa block Spectra nào. CSS gốc của Swiper v8 vẽ mũi tên
+		// bằng font-icon qua `::after` (`content:'prev'/'next';
+		// font-family:swiper-icons`) - vì tên class của Swiper dùng chung,
+		// không có namespace theo từng plugin, nên rule đó vẫn match luôn vào
+		// nút của mình, tạo ra 1 glyph thừa chồng lên SVG mình tự vẽ.
+		// `.wcb-slider__wrap` giúp selector này có độ đặc hiệu cao hơn selector
+		// không-scope của Spectra nên luôn thắng, bất kể thứ tự load CSS.
 		&::after {
-			content: "";
-			display: none;
+			content: none;
 		}
-		// Swiper's base CSS forces `fill: currentColor` on any svg inside these
-		// buttons, which overrides our icon's own `fill="none"` and turns its
-		// thin outline path into a solid filled shape - force it back off and
-		// draw the icon via stroke instead, like the original SVGs intend.
 		svg {
+			// ArrowIcon tự vẽ dùng nét outline (stroke), không tô đặc (fill) -
+			// ép fill:none để tắt rule `fill: currentColor` mà CSS gốc của
+			// Swiper gán mặc định cho mọi svg bên trong nút prev/next, tránh
+			// icon bị tô sai kiểu (đặc thay vì outline mảnh).
 			fill: none;
 			stroke: currentColor;
+			// Kích thước fallback (khớp giá trị mặc định arrowSize của Style
+			// panel) để icon không phụ thuộc hoàn toàn vào rule size do
+			// GlobalCss chèn động. CSS gốc của Swiper set
+			// `svg { width:100%; height:100% }`, nhưng nút lại có
+			// `width: unset` (co theo nội dung) - svg 100% không có kích
+			// thước tham chiếu cố định nên có thể co về ~0px nếu rule động
+			// chưa kịp thắng trong cascade (vd trước khi GlobalCss mount ở
+			// frontend).
+			width: 1.25rem;
+			height: 1.25rem;
+			flex-shrink: 0;
 		}
 	}
 

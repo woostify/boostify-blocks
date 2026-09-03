@@ -68,7 +68,6 @@ store(NAMESPACE, {
 							pauseOnMouseEnter: !!context.hoverpause,
 					  }
 					: false,
-				centeredSlides: true,
 				autoHeight: !!context.adaptiveHeight,
 				slidesPerView: columns.mobile || 1,
 				navigation:

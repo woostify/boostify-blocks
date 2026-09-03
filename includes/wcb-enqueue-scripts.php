@@ -111,16 +111,15 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
-    // Enqueue the Slider (Swiper) view script as a module. Unlike the other
-    // Interactivity stores above, this one bundles the `swiper` npm package
-    // (see webpack.view-modules.config.js), so it's built separately from
-    // `npm run build` rather than hand-written.
-    wp_enqueue_script_module(
-        'boostify-blocks-slider-swiper-view',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/slider-swiper/boostify-blocks-slider-swiper-view.js',
-        array( '@wordpress/interactivity' ),
-        BOOSTIFY_BLOCKS_VERSION
-    );
+    // Slider (Swiper) no longer uses the Interactivity API for its frontend
+    // init - data-wp-init proved unreliable, so it now uses the same plain-JS
+    // dispatch pattern as the Slick-based Slider block: initCarouselForWcbSliderSwiper()
+    // in src/block-slider-swiper/FrontendStyles.tsx, run by
+    // block-common-css/FrontendStyles.tsx's classes.forEach dispatcher (bundled
+    // into build/block-common-css/FrontendStyles.js, already enqueued via
+    // boostify_blocks_enqueue_script_block_commoncss_frontend_styles() below).
+    // public/js/slider-swiper/boostify-blocks-slider-swiper-view.js is no
+    // longer loaded; left on disk unused in case of rollback.
 
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(

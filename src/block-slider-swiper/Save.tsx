@@ -15,31 +15,10 @@ import { WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO } from "./WcbSlider
 import { RESPONSIVE_CONDITON_DEMO } from "../components/controls/MyResponsiveConditionControl/MyResponsiveConditionControl";
 import { Z_INDEX_DEMO } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectControl/MyMotionEffectControl";
-import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 // @ts-ignore
 import "./style.scss";
 
 export interface WcbAttrsForSave extends WcbAttrs {}
-
-const NAMESPACE = "boostify-blocks/slider-swiper";
-
-// Arrow icons for the custom prev/next navigation buttons, matching the
-// ones rendered in Edit.tsx so editor/frontend stay visually consistent.
-function ArrowIcon({ direction }: { direction: "next" | "prev" }) {
-	return (
-		<svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-			<path
-				strokeLinecap="round"
-				strokeLinejoin="round"
-				d={
-					direction === "next"
-						? "M8.25 4.5l7.5 7.5-7.5 7.5"
-						: "M15.75 19.5L8.25 12l7.5-7.5"
-				}
-			/>
-		</svg>
-	);
-}
 
 export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
@@ -79,47 +58,23 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	};
 
 	const blockProps = useBlockProps.save({
-		className: `wcb-slider__wrap ${uniqueId} wcb-update-div`,
+		// wcb-slider-swiper__wrap distinguishes this block from the legacy
+		// Slick-based Slider block, which reuses the exact same
+		// "wcb-slider__wrap ... wcb-update-div" class string - without a
+		// distinguishing class, block-common-css/FrontendStyles.tsx's
+		// querySelectorAll(".wcb-slider__wrap.wcb-update-div") can't tell the
+		// two apart. wcb-update-div itself is what that same dispatcher scans
+		// for on page load to mount this block's GlobalCss and run
+		// initCarouselForWcbSliderSwiper() (../block-slider-swiper/FrontendStyles.tsx)
+		// - the same plain-JS pattern block-slider uses, instead of the
+		// WordPress Interactivity API this block used to rely on.
+		className: `wcb-slider__wrap wcb-slider-swiper__wrap ${uniqueId} wcb-update-div`,
 		"data-uniqueid": uniqueId,
 	});
 
-	const {
-		animationDuration,
-		autoplaySpeed,
-		hoverpause,
-		isAutoPlay,
-		rewind,
-		showArrowsDots,
-		adaptiveHeight,
-	} = newAttrForSave.general_carousel;
-	const { columns } = newAttrForSave.general_general;
-
-	const {
-		value_Desktop: columnsDesktop,
-		value_Tablet: columnsTablet,
-		value_Mobile: columnsMobile,
-	} = getValueFromAttrsResponsives(columns);
-
+	const { showArrowsDots } = newAttrForSave.general_carousel;
 	const showArrows = showArrowsDots !== "Dot";
 	const showDots = showArrowsDots !== "Arrow";
-
-	// Config read by callbacks.initSwiper (view.js) to build the Swiper
-	// instance - the Interactivity API equivalent of the old FrontendStyles.tsx
-	// jQuery init props.
-	const swiperContext = {
-		rewind,
-		animationDuration: animationDuration || 500,
-		isAutoPlay,
-		autoplaySpeed,
-		hoverpause,
-		adaptiveHeight,
-		showArrowsDots,
-		columns: {
-			desktop: columnsDesktop || 1,
-			tablet: columnsTablet || columnsDesktop || 1,
-			mobile: columnsMobile || columnsTablet || columnsDesktop || 1,
-		},
-	};
 
 	return (
 		<div {...blockProps}>
@@ -133,25 +88,20 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			<GlobalCss {...newAttrForSave} />
 
 			{/* Slider structure - Swiper markup baked in at save time, initialised
-			    on the frontend via the Interactivity API store (view.js). */}
-			<div
-				className="wcb-slider__wrap-items swiper"
-				data-wp-interactive={NAMESPACE}
-				data-wp-context={JSON.stringify(swiperContext)}
-				data-wp-init="callbacks.initSwiper"
-			>
+			    on the frontend by initCarouselForWcbSliderSwiper() (reads this
+			    same markup + the <pre data-wcb-block-attrs> JSON above via the
+			    block-common-css/FrontendStyles.tsx dispatcher). */}
+			<div className="wcb-slider__wrap-items swiper">
 				<div className="swiper-wrapper">
 					<InnerBlocks.Content />
 				</div>
 
+				{/* Div rỗng - Swiper's Navigation module tự chèn SVG mũi tên mặc
+				    định của nó (addIcons: true), giống cách Spectra làm. */}
 				{showArrows && (
 					<>
-						<div className="swiper-button-prev">
-							<ArrowIcon direction="prev" />
-						</div>
-						<div className="swiper-button-next">
-							<ArrowIcon direction="next" />
-						</div>
+						<div className="swiper-button-prev"></div>
+						<div className="swiper-button-next"></div>
 					</>
 				)}
 
