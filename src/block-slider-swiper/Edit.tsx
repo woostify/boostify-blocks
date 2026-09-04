@@ -61,6 +61,126 @@ const BREAKPOINT_DESKTOP = 1024;
 // Giữ reference cố định cho modules để swiper/react không destroy + recreate instance mỗi lần render
 const SWIPER_MODULES = [Navigation, Pagination, Autoplay];
 
+// Patch mount() của Swiper để hỗ trợ element trong Gutenberg iframe (cross-realm DOM node)
+// Swiper gốc kiểm tra `initialEl instanceof HTMLElement`. Trong Gutenberg iframe,
+// element thuộc document của iframe nên `instanceof topWindow.HTMLElement` bị false,
+// khiến mount() trả về false và Swiper không bao giờ khởi tạo (không tính width, không gán class active).
+if (!(SwiperCore.prototype as any).__wcbMountGuarded) {
+	SwiperCore.prototype.mount = function (this: any, element?: any) {
+		if (this.mounted) return true;
+		if (typeof document === "undefined") return false;
+
+		const initialEl = element ?? this.params.el;
+		let el: any = null;
+
+		if (typeof initialEl === "string") {
+			el = document.querySelector(initialEl);
+			if (!el) {
+				const iframes = document.querySelectorAll("iframe");
+				for (let i = 0; i < iframes.length; i++) {
+					try {
+						const iframeDoc = iframes[i].contentDocument;
+						if (iframeDoc) {
+							el = iframeDoc.querySelector(initialEl);
+							if (el) break;
+						}
+					} catch {
+						// Ignore cross-origin error
+					}
+				}
+			}
+		} else if (
+			initialEl &&
+			(initialEl.nodeType === 1 || initialEl instanceof HTMLElement)
+		) {
+			el = initialEl;
+		}
+
+		if (!el) {
+			return false;
+		}
+
+		el.swiper = this;
+		const parent = el.parentNode;
+		if (
+			parent &&
+			parent.host &&
+			parent.host.nodeName ===
+			(this.params.swiperElementNodeName || "").toUpperCase()
+		) {
+			this.isElement = true;
+		}
+
+		const getWrapperSelector = () => {
+			return `.${(this.params.wrapperClass || "swiper-wrapper")
+				.trim()
+				.split(/\s+/)
+				.join(".")}`;
+		};
+
+		const getWrapper = () => {
+			if (el && el.shadowRoot) {
+				return el.shadowRoot.querySelector(getWrapperSelector());
+			}
+			const children = Array.from(el.children || []);
+			return (
+				children.find((c: any) =>
+					c.matches ? c.matches(getWrapperSelector()) : false
+				) || null
+			);
+		};
+
+		let wrapperEl: any = getWrapper();
+		if (!wrapperEl && this.params.createElements) {
+			const ownerDoc = el.ownerDocument || document;
+			wrapperEl = ownerDoc.createElement("div");
+			wrapperEl.className = this.params.wrapperClass || "swiper-wrapper";
+			el.appendChild(wrapperEl);
+			Array.from(el.children).forEach((slideEl: any) => {
+				if (
+					slideEl !== wrapperEl &&
+					slideEl.matches?.(
+						`.${this.params.slideClass || "swiper-slide"}`
+					)
+				) {
+					wrapperEl.appendChild(slideEl);
+				}
+			});
+		}
+
+		const host = this.isElement ? el.parentNode.host : null;
+		const ownerWin = el.ownerDocument?.defaultView || window;
+		const getDirStyle = (target: any, prop: string) => {
+			try {
+				return ownerWin
+					.getComputedStyle(target, null)
+					.getPropertyValue(prop);
+			} catch {
+				return "";
+			}
+		};
+
+		const isRtl =
+			(el.dir || "").toLowerCase() === "rtl" ||
+			getDirStyle(el, "direction") === "rtl";
+
+		Object.assign(this, {
+			el,
+			wrapperEl,
+			slidesEl: this.isElement && !host?.slideSlots ? host : wrapperEl,
+			hostEl: this.isElement ? host : el,
+			mounted: true,
+			rtl: isRtl,
+			rtlTranslate: this.params.direction === "horizontal" && isRtl,
+			wrongRTL: wrapperEl
+				? getDirStyle(wrapperEl, "display") === "-webkit-box"
+				: false,
+		});
+		return true;
+	};
+	(SwiperCore.prototype as any).__wcbMountGuarded = true;
+}
+
 // Patch update() của Swiper để tránh crash khi instance đã bị destroy trong editor
 if (!(SwiperCore.prototype as any).__wcbUpdateGuarded) {
 	const originalUpdate = SwiperCore.prototype.update;
@@ -147,6 +267,32 @@ function ArrowIcon({ direction }: { direction: "next" | "prev" }) {
 //    lại pagination bullet cho khớp, nếu không dots có thể hiện sai số lượng
 //    hoặc không hiện.
 // ============================================================
+// equalizeItemHeights: đồng bộ chiều cao các slide con
+// Đảm bảo tất cả slide mở rộng hết cỡ và có chiều cao đồng đều
+// ============================================================
+function equalizeItemHeights(wrap: HTMLElement | null) {
+	if (!wrap) return;
+
+	const items = wrap.querySelectorAll<HTMLElement>(
+		".wcb-slider-child__item-inner, .wcb-slider__item-inner"
+	);
+	if (!items.length) return;
+
+	items.forEach((el) => {
+		el.style.height = "auto";
+	});
+
+	let maxHeight = 0;
+	items.forEach((el) => {
+		maxHeight = Math.max(maxHeight, el.offsetHeight || 0);
+	});
+	if (maxHeight > 0) {
+		items.forEach((el) => {
+			el.style.height = `${maxHeight}px`;
+		});
+	}
+}
+
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const { attributes, setAttributes, clientId, isSelected } = props;
 	const {
@@ -582,78 +728,119 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	}, []);
 
 	useEffect(() => {
-		const sliders = document.querySelectorAll(".wcb-slider__wrap");
-		const sliderItemInner = document.querySelectorAll(
-			".wcb-slider__item-inner"
+		const container = ref.current;
+		if (!container) return;
+
+		const items = container.querySelectorAll<HTMLElement>(
+			".wcb-slider-child__item-inner"
 		);
 
-		sliders.forEach((slider) => {
-			const items = slider.querySelectorAll<HTMLElement>(
-				".wcb-slider-child__item-inner"
-			);
+		if (items.length > 0) {
+			items.forEach((item) => {
+				item.style.paddingTop = "";
+				item.style.paddingRight = "";
+				item.style.paddingBottom = "";
+				item.style.paddingLeft = "";
+			});
 
-			if (items.length > 0) {
-				items.forEach((item) => {
-					item.style.paddingTop = "";
-					item.style.paddingRight = "";
-					item.style.paddingBottom = "";
-					item.style.paddingLeft = "";
-				});
+			let maxPaddingTop = 0;
+			let maxPaddingRight = 0;
+			let maxPaddingBottom = 0;
+			let maxPaddingLeft = 0;
 
-				let maxPaddingTop = 0;
-				let maxPaddingRight = 0;
-				let maxPaddingBottom = 0;
-				let maxPaddingLeft = 0;
+			items.forEach((item) => {
+				const style = window.getComputedStyle(item);
+				maxPaddingTop = Math.max(
+					maxPaddingTop,
+					parseFloat(style.paddingTop) || 0
+				);
+				maxPaddingRight = Math.max(
+					maxPaddingRight,
+					parseFloat(style.paddingRight) || 0
+				);
+				maxPaddingBottom = Math.max(
+					maxPaddingBottom,
+					parseFloat(style.paddingBottom) || 0
+				);
+				maxPaddingLeft = Math.max(
+					maxPaddingLeft,
+					parseFloat(style.paddingLeft) || 0
+				);
+			});
 
-				items.forEach((item) => {
-					const style = window.getComputedStyle(item);
-					maxPaddingTop = Math.max(
-						maxPaddingTop,
-						parseFloat(style.paddingTop)
-					);
-					maxPaddingRight = Math.max(
-						maxPaddingRight,
-						parseFloat(style.paddingRight)
-					);
-					maxPaddingBottom = Math.max(
-						maxPaddingBottom,
-						parseFloat(style.paddingBottom)
-					);
-					maxPaddingLeft = Math.max(
-						maxPaddingLeft,
-						parseFloat(style.paddingLeft)
-					);
-				});
+			items.forEach((item: any) => {
+				if (maxPaddingTop) item.style.paddingTop = `${maxPaddingTop}px !important`;
+				if (maxPaddingRight) item.style.paddingRight = `${maxPaddingRight}px !important`;
+				if (maxPaddingBottom) item.style.paddingBottom = `${maxPaddingBottom}px !important`;
+				if (maxPaddingLeft) item.style.paddingLeft = `${maxPaddingLeft}px !important`;
+			});
+		}
+	}, [innerBlocks.length]);
+	const {
+		animationDuration,
+		autoplaySpeed,
+		hoverpause,
+		isAutoPlay,
+		showArrowsDots,
+		adaptiveHeight,
+	} = general_carousel;
+	const { columns } = general_general;
 
-				items.forEach((item: any) => {
-					item.style.paddingTop = `${maxPaddingTop}px !important`;
-					item.style.paddingRight = `${maxPaddingRight}px !important`;
-					item.style.paddingBottom = `${maxPaddingBottom}px !important`;
-					item.style.paddingLeft = `${maxPaddingLeft}px !important`;
-				});
+	const {
+		value_Desktop: columnsDesktop,
+		value_Tablet: columnsTablet,
+		value_Mobile: columnsMobile,
+		currentDeviceValue: currentColumns,
+	} = getValueFromAttrsResponsives(columns, deviceType);
 
-				let maxHeight = 0;
-				items.forEach((item) => {
-					maxHeight = Math.max(maxHeight, item.offsetHeight);
-				});
-
-				sliderItemInner.forEach((item: any) => {
-					item.style.height = `${maxHeight}px`;
-					item.style.display = "flex";
-					item.style.alignItems = "center";
-					item.style.justifyContent = "center";
-				});
-			}
-		});
-	});
+	const activeCols =
+		Number(currentColumns) ||
+		(deviceType === "Mobile"
+			? Number(columnsMobile)
+			: deviceType === "Tablet"
+				? Number(columnsTablet)
+				: Number(columnsDesktop)) ||
+		1;
 
 	// ============================================================
 	// forceSliderRecalc: gọi update() + ép pagination render lại
+	// Cập nhật trực tiếp params.breakpoints và params.slidesPerView
+	// vào instance Swiper để khi thay đổi columns ở sidebar, slider
+	// trong editor lập tức đổi theo mà không cần reload trang.
 	// ============================================================
 	const forceSliderRecalc = useCallback(() => {
 		const swiper = swiperRef.current;
-		if (swiper && swiper.el && swiper.el.isConnected) {
+		if (swiper && !swiper.destroyed && swiper.el && swiper.el.isConnected) {
+			equalizeItemHeights(ref.current);
+
+			const colsDesk = Number(columnsDesktop) || 1;
+			const colsTab = Number(columnsTablet) || colsDesk;
+			const colsMob = Number(columnsMobile) || colsTab;
+
+			const newBreakpoints = {
+				[BREAKPOINT_TABLET]: {
+					slidesPerView: colsTab,
+				},
+				[BREAKPOINT_DESKTOP]: {
+					slidesPerView: colsDesk,
+				},
+			};
+
+			// Cập nhật breakpoints mới
+			swiper.params.breakpoints = newBreakpoints;
+			if (swiper.originalParams) {
+				swiper.originalParams.breakpoints = { ...newBreakpoints };
+				swiper.originalParams.slidesPerView = colsMob;
+			}
+
+			// Trong editor, hiển thị số columns tương ứng với thiết bị đang xem/chỉnh sửa
+			swiper.params.slidesPerView = activeCols;
+
+			swiper.currentBreakpoint = undefined;
 			swiper.update();
+			if (swiper.updateAutoHeight) {
+				swiper.updateAutoHeight();
+			}
 
 			if (swiper.pagination) {
 				// Ép lại el từ ref thật trước khi render
@@ -671,13 +858,101 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				swiper.pagination.update();
 			}
 		}
-	}, []);
+	}, [columnsDesktop, columnsTablet, columnsMobile, activeCols]);
+
+	// Progressive recalculation để đảm bảo kích thước slider tự mở rộng
+	// đúng khi các block con (RichText, Button, GlobalCss) lần lượt mount xong
+	const progressiveSliderRecalc = useCallback(
+		(instance?: SwiperInstance | null) => {
+			const delays = [50, 150, 300, 500, 800, 1200, 1800, 2500];
+			delays.forEach((delay) => {
+				setTimeout(() => {
+					const swiper =
+						instance && !instance.destroyed && instance.el && instance.el.isConnected
+							? instance
+							: swiperRef.current;
+					if (
+						swiper &&
+						!swiper.destroyed &&
+						swiper.el &&
+						swiper.el.isConnected
+					) {
+						equalizeItemHeights(ref.current);
+						swiper.update();
+						if (swiper.updateAutoHeight) {
+							swiper.updateAutoHeight();
+						}
+					}
+				}, delay);
+			});
+		},
+		[]
+	);
 
 	useEffect(() => {
 		if (innerBlocks.length > 0) {
 			forceSliderRecalc();
+			progressiveSliderRecalc();
 		}
+	}, [innerBlocks.length, forceSliderRecalc, progressiveSliderRecalc]);
+
+	useEffect(() => {
+		const container = ref.current;
+		if (!container || typeof ResizeObserver === "undefined") return;
+
+		let rafId: number | null = null;
+		const ro = new ResizeObserver(() => {
+			if (rafId) cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame(() => {
+				forceSliderRecalc();
+			});
+		});
+
+		ro.observe(container);
+
+		const swiperEl = container.querySelector(".swiper");
+		if (swiperEl) ro.observe(swiperEl);
+
+		const wrapperEl = container.querySelector(".swiper-wrapper");
+		if (wrapperEl) ro.observe(wrapperEl);
+
+		const slides = container.querySelectorAll(".swiper-slide");
+		slides.forEach((slide) => ro.observe(slide));
+
+		const innerItems = container.querySelectorAll(
+			".wcb-slider-child__wrap, .wcb-slider-child__item, .wcb-slider-child__item-inner, .wcb-slider-child__content, .wcb-slider-child__btn-inner"
+		);
+		innerItems.forEach((item) => ro.observe(item));
+
+		return () => {
+			if (rafId) cancelAnimationFrame(rafId);
+			ro.disconnect();
+		};
 	}, [innerBlocks.length, forceSliderRecalc]);
+
+	useEffect(() => {
+		const container = ref.current;
+		if (!container || typeof MutationObserver === "undefined") return;
+
+		let timer: ReturnType<typeof setTimeout> | null = null;
+		const mo = new MutationObserver(() => {
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => {
+				forceSliderRecalc();
+			}, 60);
+		});
+
+		mo.observe(container, {
+			childList: true,
+			subtree: true,
+			characterData: true,
+		});
+
+		return () => {
+			if (timer) clearTimeout(timer);
+			mo.disconnect();
+		};
+	}, [forceSliderRecalc]);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -688,25 +963,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return () => window.removeEventListener("resize", handleResize);
 	}, [forceSliderRecalc]);
 
-	const {
-		animationDuration,
-		autoplaySpeed,
-		hoverpause,
-		isAutoPlay,
-		showArrowsDots,
-		adaptiveHeight,
-	} = general_carousel;
-	const { columns } = general_general;
-
-	const {
-		value_Desktop: columnsDesktop,
-		value_Tablet: columnsTablet,
-		value_Mobile: columnsMobile,
-	} = getValueFromAttrsResponsives(columns);
-
 	useEffect(() => {
 		forceSliderRecalc();
-	}, [columnsDesktop, columnsTablet, columnsMobile, forceSliderRecalc]);
+	}, [columnsDesktop, columnsTablet, columnsMobile, activeCols, forceSliderRecalc]);
 
 	useEffect(() => {
 		forceSliderRecalc();
@@ -832,13 +1091,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const handleAfterInit = useCallback(
 		(instance: SwiperInstance) => {
 			scheduleReinitNavigationPagination(instance);
+			progressiveSliderRecalc(instance);
 		},
-		[scheduleReinitNavigationPagination]
+		[scheduleReinitNavigationPagination, progressiveSliderRecalc]
 	);
 
-	const handleSwiper = useCallback((instance: SwiperInstance) => {
-		swiperRef.current = instance;
-	}, []);
+	const handleSwiper = useCallback(
+		(instance: SwiperInstance) => {
+			swiperRef.current = instance;
+			progressiveSliderRecalc(instance);
+		},
+		[progressiveSliderRecalc]
+	);
 
 	const handleDestroy = useCallback(() => {
 		swiperRef.current = null;
@@ -854,12 +1118,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const swiperCommonProps = useMemo(
 		() => ({
 			modules: SWIPER_MODULES,
+			observer: true,
+			observeParents: true,
+			observeSlideChildren: true,
 			loop: false, // Bắt buộc false ở Editor để tránh clone slide → duplicate InspectorControls
 			speed: animationDuration || 500,
 			autoplay: isAutoPlay
 				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
 				: false,
-			slidesPerView: columnsMobile || 1,
+			slidesPerView: activeCols || columnsMobile || 1,
 			breakpoints: {
 				[BREAKPOINT_TABLET]: {
 					slidesPerView: columnsTablet || columnsMobile || 1,
@@ -871,18 +1138,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			autoHeight: adaptiveHeight,
 			navigation: showArrows
 				? {
-						prevEl: `${swiperSelectorScope} .swiper-button-prev`,
-						nextEl: `${swiperSelectorScope} .swiper-button-next`,
-				  }
+					prevEl: `${swiperSelectorScope} .swiper-button-prev`,
+					nextEl: `${swiperSelectorScope} .swiper-button-next`,
+				}
 				: false,
 			// Quan trọng: truyền el bằng selector (giống Spectra)
 			// Dù selector fail trong iframe, module Pagination vẫn được khởi tạo đúng cấu trúc.
 			// Sau đó reinitNavigationPagination sẽ ghi đè el bằng paginationRef.current
 			pagination: showDots
 				? {
-						el: `${swiperSelectorScope} .swiper-pagination`,
-						clickable: true,
-				  }
+					el: `${swiperSelectorScope} .swiper-pagination`,
+					clickable: true,
+				}
 				: false,
 			allowTouchMove: false,
 			onAfterInit: handleAfterInit,
@@ -897,6 +1164,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			columnsDesktop,
 			columnsTablet,
 			columnsMobile,
+			activeCols,
 			adaptiveHeight,
 			showArrows,
 			showDots,

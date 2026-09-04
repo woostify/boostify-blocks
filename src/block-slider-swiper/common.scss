@@ -15,7 +15,6 @@
 	.swiper-button-prev,
 	.swiper-button-next {
 		z-index: 1000 !important;
-		color: black;
 		padding: 0.5rem;
 		width: unset;
 		height: unset;
@@ -27,9 +26,8 @@
 		top: 50%;
 		margin-top: 0;
 		transform: translateY(-50%);
-		&:hover {
-			color: black;
-		}
+		cursor: pointer;
+
 		// Swiper's Navigation module CÓ THỂ tự chèn icon mũi tên mặc định vào
 		// nút rỗng (addIcons: true, mặc định bật) - nhưng nó tạo thẻ <svg> bằng
 		// `document.createElement()` của CỬA SỔ ADMIN (top window), không phải
@@ -54,6 +52,7 @@
 		&::after {
 			content: none;
 		}
+
 		svg {
 			// ArrowIcon tự vẽ dùng nét outline (stroke), không tô đặc (fill) -
 			// ép fill:none để tắt rule `fill: currentColor` mà CSS gốc của
@@ -100,13 +99,17 @@
 
 .wcb-slider__item {
 	position: relative;
+
 	.wcb-slider__item-background {
 		position: relative;
 	}
+
 	.wcb-slider__item-wrap-inner {
 		display: flex;
-		justify-content: center; /* Center horizontally */
-		align-items: center; /* Center vertically */
+		justify-content: center;
+		/* Center horizontally */
+		align-items: center;
+		/* Center vertically */
 	}
 }
 

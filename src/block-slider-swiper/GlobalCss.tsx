@@ -8,7 +8,7 @@ import getStyleBackground from "../utils/getStyleBackground";
 import getBoxShadowStyles from "../utils/getBoxShadowStyles";
 import { WcbAttrsForSave } from "./Save";
 
-interface Props extends WcbAttrsForSave {}
+interface Props extends WcbAttrsForSave { }
 
 const GlobalCss: FC<Props> = (attrs) => {
 	const {
@@ -97,18 +97,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 						isWithRadius: true,
 					}),
 					{
-						// Nested (not string-concatenated as `${SWIPER_ARROW} svg`):
-						// SWIPER_ARROW is itself a comma-joined selector list
-						// ("...swiper-button-prev, ...swiper-button-next"), and
-						// appending " svg" to that whole string only attaches svg
-						// to the last item - producing
-						// ".swiper-button-prev, .swiper-button-next svg", which
-						// applies width/height directly to the prev *button* box
-						// instead of its icon, shrinking the whole button to
-						// 20x20px while next kept its full 38x38px box with only
-						// its icon resized. Nesting lets Emotion distribute `svg`
-						// across every selector in the list correctly.
 						[`${SWIPER_ARROW}`]: {
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							backgroundColor: style_arrowAndDots.backgroundColor,
+							color: style_arrowAndDots.color,
+							cursor: "pointer",
 							svg: {
 								width: style_arrowAndDots.arrowSize,
 								height: style_arrowAndDots.arrowSize,
@@ -141,17 +136,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 					{
 						[`${SWIPER_DOTS}`]: {
 							position: "absolute",
-							bottom: style_arrowAndDots.dotsMarginTop.Desktop,
+							bottom: style_arrowAndDots.dotsMarginTop?.Desktop || "0px",
 						}
 					},
 					{
 						[`${SWIPER_PREV}`]: {
-							left: style_arrowAndDots.arrowDistance.Desktop,
+							left: style_arrowAndDots.arrowDistance?.Desktop || "0px",
 						}
-					}
-					,{
+					},
+					{
 						[`${SWIPER_NEXT}`]: {
-							right: style_arrowAndDots.arrowDistance.Desktop,
+							right: style_arrowAndDots.arrowDistance?.Desktop || "0px",
 						}
 					}
 				]}

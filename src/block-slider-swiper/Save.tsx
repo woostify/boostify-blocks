@@ -18,7 +18,7 @@ import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectCont
 // @ts-ignore
 import "./style.scss";
 
-export interface WcbAttrsForSave extends WcbAttrs {}
+export interface WcbAttrsForSave extends WcbAttrs { }
 
 export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
@@ -96,12 +96,36 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 					<InnerBlocks.Content />
 				</div>
 
-				{/* Div rỗng - Swiper's Navigation module tự chèn SVG mũi tên mặc
-				    định của nó (addIcons: true), giống cách Spectra làm. */}
 				{showArrows && (
 					<>
-						<div className="swiper-button-prev"></div>
-						<div className="swiper-button-next"></div>
+						<div className="swiper-button-prev">
+							<svg
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M15.75 19.5L8.25 12l7.5-7.5"
+								/>
+							</svg>
+						</div>
+						<div className="swiper-button-next">
+							<svg
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M8.25 4.5l7.5 7.5-7.5 7.5"
+								/>
+							</svg>
+						</div>
 					</>
 				)}
 
