@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
 import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendStyles";
 import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
-import { initCarouselForWcbSliderSwiper } from "../block-slider-swiper/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
 
 const classes: {
@@ -94,12 +93,14 @@ const classes: {
 		F: initCarouselForWcbSliders,
 	},
 	{
-		// Swiper-based Slider block - same dispatch pattern as block-slider
-		// above, just with initCarouselForWcbSliderSwiper() calling
-		// `new window.Swiper(...)` instead of `$(...).slick(...)`.
+		// Swiper-based Slider block - only needs GlobalCss (dynamic
+		// color/size/spacing CSS) rendered here. Swiper itself is
+		// initialised separately via the Interactivity API store (public/js/
+		// slider-swiper/boostify-blocks-slider-swiper-view.js), reading
+		// data-wp-context straight off the saved markup - no F callback
+		// needed for this entry.
 		D: ".wcb-slider-swiper__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-slider-swiper/GlobalCss")),
-		F: initCarouselForWcbSliderSwiper,
 	},
 	{
 		D: ".wcb-slider-child__wrap.wcb-update-div",

@@ -64,10 +64,9 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		// distinguishing class, block-common-css/FrontendStyles.tsx's
 		// querySelectorAll(".wcb-slider__wrap.wcb-update-div") can't tell the
 		// two apart. wcb-update-div itself is what that same dispatcher scans
-		// for on page load to mount this block's GlobalCss and run
-		// initCarouselForWcbSliderSwiper() (../block-slider-swiper/FrontendStyles.tsx)
-		// - the same plain-JS pattern block-slider uses, instead of the
-		// WordPress Interactivity API this block used to rely on.
+		// for on page load to mount this block's GlobalCss (dynamic
+		// color/size/spacing CSS from style_* attributes) - Swiper init
+		// itself is handled separately below via the Interactivity API.
 		className: `wcb-slider__wrap wcb-slider-swiper__wrap ${uniqueId} wcb-update-div`,
 		"data-uniqueid": uniqueId,
 	});
@@ -75,6 +74,21 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const { showArrowsDots } = newAttrForSave.general_carousel;
 	const showArrows = showArrowsDots !== "Dot";
 	const showDots = showArrowsDots !== "Arrow";
+
+	// State the Interactivity store (public/js/slider-swiper/
+	// boostify-blocks-slider-swiper-view.js) needs to configure `new
+	// Swiper(...)` on the frontend - kept separate from the <pre
+	// data-wcb-block-attrs> JSON above, which is only for GlobalCss.
+	const swiperContext = {
+		rewind: newAttrForSave.general_carousel.rewind,
+		animationDuration: newAttrForSave.general_carousel.animationDuration,
+		autoplaySpeed: newAttrForSave.general_carousel.autoplaySpeed,
+		isAutoPlay: newAttrForSave.general_carousel.isAutoPlay,
+		hoverpause: newAttrForSave.general_carousel.hoverpause,
+		showArrowsDots,
+		adaptiveHeight: newAttrForSave.general_carousel.adaptiveHeight,
+		columns: newAttrForSave.general_general.columns,
+	};
 
 	return (
 		<div {...blockProps}>
@@ -88,10 +102,15 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			<GlobalCss {...newAttrForSave} />
 
 			{/* Slider structure - Swiper markup baked in at save time, initialised
-			    on the frontend by initCarouselForWcbSliderSwiper() (reads this
-			    same markup + the <pre data-wcb-block-attrs> JSON above via the
-			    block-common-css/FrontendStyles.tsx dispatcher). */}
-			<div className="wcb-slider__wrap-items swiper">
+			    on the frontend by the Interactivity API store (public/js/
+			    slider-swiper/boostify-blocks-slider-swiper-view.js), reading
+			    swiperContext via data-wp-context. */}
+			<div
+				className="wcb-slider__wrap-items swiper"
+				data-wp-interactive="boostify-blocks/slider-swiper"
+				data-wp-context={JSON.stringify(swiperContext)}
+				data-wp-init="callbacks.initSwiper"
+			>
 				<div className="swiper-wrapper">
 					<InnerBlocks.Content />
 				</div>
