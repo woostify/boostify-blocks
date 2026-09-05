@@ -376,8 +376,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	};
 
-	const { insertBlock, removeBlock, selectBlock, updateBlockListSettings } =
-		useDispatch("core/block-editor");
+	const {
+		insertBlocks,
+		removeBlocks,
+		selectBlock,
+		updateBlockListSettings,
+	} = useDispatch("core/block-editor");
 
 	useEffect(() => {
 		updateBlockListSettings(clientId, {
@@ -446,22 +450,43 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 
 		const timeoutId = setTimeout(() => {
-			if (currentNumber < targetNumber) {
-				const blocksToAdd = targetNumber - currentNumber;
-				for (let i = 0; i < blocksToAdd; i++) {
-					const newBlock = wp.blocks.createBlock(
-						"boostify-blocks/slider-swiper-child"
-					);
-					insertBlock(newBlock, currentNumber + i, clientId, false);
-				}
-			} else if (currentNumber > targetNumber) {
-				const blocksToRemove = currentNumber - targetNumber;
-				const clientIdsToRemove = innerBlocks
+			// Đọc lại danh sách block MỚI NHẤT từ store thay vì dùng
+			// `innerBlocks`/`currentNumber` đã chụp lúc effect này chạy.
+			// Nếu trong lúc chờ 100ms có một thay đổi khác (vd: đổi cột khiến
+			// text reflow → block con re-render) cũng làm effect này chạy lại,
+			// dùng snapshot cũ để tính clientId cần xoá/insert-index có thể
+			// nhắm vào block đã bị xoá/thêm bởi lần chạy khác → Gutenberg còn
+			// clientId "ma" trong block order → core crash
+			// "Cannot read properties of null (reading 'name')" khi duyệt qua.
+			const latestBlocks =
+				wp.data.select("core/block-editor").getBlocks(clientId) || [];
+			const latestNumber = latestBlocks.length;
+
+			if (latestNumber < targetNumber) {
+				const blocksToAdd = targetNumber - latestNumber;
+				const newBlocks = Array.from({ length: blocksToAdd }, () =>
+					wp.blocks.createBlock("boostify-blocks/slider-swiper-child")
+				);
+				// Chèn cả lô trong 1 dispatch thay vì gọi insertBlock() lặp lại
+				// nhiều lần - tránh nhiều lần cập nhật store xen kẽ nhau.
+				insertBlocks(newBlocks, latestNumber, clientId, false);
+			} else if (latestNumber > targetNumber) {
+				const blocksToRemove = latestNumber - targetNumber;
+				const clientIdsToRemove = latestBlocks
 					.slice(-blocksToRemove)
 					.map((block: any) => block.clientId);
-				clientIdsToRemove.forEach((childClientId: any) => {
-					removeBlock(childClientId);
-				});
+				// Xoá cả lô trong 1 dispatch (selectPrevious=false) thay vì gọi
+				// removeBlock() lặp lại từng cái: removeBlock() mặc định tự
+				// chọn lại 1 block "trước đó" sau mỗi lần xoá, nên khi xoá
+				// nhiều block liên tiếp trong forEach, nó có thể tự chọn ngay
+				// vào 1 block KHÁC cũng sắp bị xoá ở lượt kế tiếp trong cùng
+				// forEach - đúng lúc đó Gutenberg (BlockActions) đọc lại
+				// getBlocksByClientId() cho clientId vừa bị xoá, trả về null,
+				// và crash "Cannot read properties of null (reading 'name')"
+				// khi duyệt .every(). removeBlocks() xoá nguyên lô, chỉ 1 lần
+				// cập nhật store, rồi selectBlock(clientId) bên dưới tự chọn
+				// lại block cha - không cần Gutenberg tự chọn hộ.
+				removeBlocks(clientIdsToRemove, false);
 			}
 
 			selectBlock(clientId);
@@ -895,6 +920,22 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			progressiveSliderRecalc();
 		}
 	}, [innerBlocks.length, forceSliderRecalc, progressiveSliderRecalc]);
+
+	// Đổi số DÒNG TEXT (gõ nội dung khiến chữ xuống hàng) không đổi SỐ LƯỢNG
+	// slide con, nên effect trên (khoá theo innerBlocks.length) không chạy
+	// lại. `innerBlocks` (nguyên mảng, không phải .length) đổi reference mỗi
+	// khi 1 thuộc tính bất kỳ của BẤT KỲ slide con nào đổi (kể cả gõ text),
+	// vì getBlocks() trả về mảng/object mới phản ánh state mới nhất - dùng nó
+	// làm dependency để bắt đúng lúc cần tính lại chiều cao chung (max) của
+	// slider, không phụ thuộc vào MutationObserver quan sát DOM bên trong
+	// iframe của canvas Editor (vốn có thể trễ/không ổn định).
+	useEffect(() => {
+		if (innerBlocks.length === 0) return;
+		const t = setTimeout(() => {
+			forceSliderRecalc();
+		}, 60);
+		return () => clearTimeout(t);
+	}, [innerBlocks, forceSliderRecalc]);
 
 	useEffect(() => {
 		const container = ref.current;
