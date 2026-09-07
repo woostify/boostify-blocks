@@ -80,9 +80,27 @@ const classes: {
 		C: React.lazy(() => import("../block-counter/GlobalCss")),
 	},
 	{
-		D: ".wcb-slider__wrap.wcb-update-div",
+		// :not(.wcb-slider-swiper__wrap) excludes the newer Swiper-based Slider
+		// block, which reuses this same "wcb-slider__wrap ... wcb-update-div"
+		// class string. Without the exclusion this entry's Slick-targeting
+		// GlobalCss and jQuery Slick init (initCarouselForWcbSliders) would
+		// also match and run against the Swiper block's markup, silently
+		// producing no arrow/dot CSS (wrong selectors: .slick-prev/.slick-dots)
+		// and corrupting its DOM via Slick's carousel init - see the dedicated
+		// entry below for the correct component.
+		D: ".wcb-slider__wrap.wcb-update-div:not(.wcb-slider-swiper__wrap)",
 		C: React.lazy(() => import("../block-slider/GlobalCss")),
 		F: initCarouselForWcbSliders,
+	},
+	{
+		// Swiper-based Slider block - only needs GlobalCss (dynamic
+		// color/size/spacing CSS) rendered here. Swiper itself is
+		// initialised separately via the Interactivity API store (public/js/
+		// slider-swiper/boostify-blocks-slider-swiper-view.js), reading
+		// data-wp-context straight off the saved markup - no F callback
+		// needed for this entry.
+		D: ".wcb-slider-swiper__wrap.wcb-update-div",
+		C: React.lazy(() => import("../block-slider-swiper/GlobalCss")),
 	},
 	{
 		D: ".wcb-slider-child__wrap.wcb-update-div",
