@@ -37,6 +37,7 @@ require plugin_dir_path(__FILE__) . 'includes/wcb-all-patterns-data.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-enqueue-scripts.php';
 require plugin_dir_path(__FILE__) . 'includes/woo/index.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-dashboard-settings-options.php';
+require plugin_dir_path(__FILE__) . 'includes/class-wcb-post-assets.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-ajax-for-dashboard-page.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-blocks-render-callback.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-register-blocks.php';

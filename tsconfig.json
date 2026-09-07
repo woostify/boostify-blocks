@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "strict": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "types": [
+            "@wordpress/block-editor",
+            "@wordpress/blocks", 
+            "@wordpress/components",
+            "@wordpress/element",
+            "@wordpress/hooks",
+            "@wordpress/i18n",
+            "jquery",
+            "lodash",
+            "node"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "build",
+        "vendor"
+    ]
+}

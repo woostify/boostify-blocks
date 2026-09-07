@@ -271,41 +271,33 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	const getDivWrapStyles_Rating = (): CSSObject => {
 		const {
-			value_mobile: marginTop_mobile,
-			value_tablet: marginTop_tablet,
-			value_desktop: marginTop_desktop,
+			value_mobile: marginBottom_mobile,
+			value_tablet: marginBottom_tablet,
+			value_desktop: marginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_pagination?.marginTop,
+			cssProperty: style_rating?.marginBottom,
 		});
 		const {
-			mobile_v: marginTop_mobile_new,
-			tablet_v: marginTop_tablet_new,
-			desktop_v: marginTop_desktop_new,
+			mobile_v: marginBottom_mobile_new,
+			tablet_v: marginBottom_tablet_new,
+			desktop_v: marginBottom_desktop_new,
 		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: marginTop_mobile,
-			tablet_v: marginTop_tablet,
-			desktop_v: marginTop_desktop,
+			mobile_v: marginBottom_mobile,
+			tablet_v: marginBottom_tablet,
+			desktop_v: marginBottom_desktop,
 		});
 		return {
-			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-				marginTop: marginTop_mobile_new ?? undefined,
-				justifyContent: style_pagination?.justifyContent,
-				[`.page-numbers`]: {
-					color: style_pagination?.mainStyle?.Normal?.color,
-					backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
-				},
-				[`.page-numbers.current`]: {
-					color: style_pagination?.mainStyle?.Active?.color,
-					backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
-				},
-				[`@media (min-width: ${media_tablet})`]: marginTop_tablet_new
+			[`${WRAP_CLASSNAME} .wcb-products__product-rating`]: {
+				marginBottom: marginBottom_mobile_new ?? undefined,
+				color: style_rating?.color,
+				[`@media (min-width: ${media_tablet})`]: marginBottom_tablet_new
 					? {
-							marginTop: marginTop_tablet_new,
+							marginBottom: marginBottom_tablet_new,
 					  }
 					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginTop_desktop_new
+				[`@media (min-width: ${media_desktop})`]: marginBottom_desktop_new
 					? {
-							marginTop: marginTop_desktop_new,
+							marginBottom: marginBottom_desktop_new,
 					  }
 					: undefined,
 			},
