@@ -1,8 +1,8 @@
 <?php
 /**
- * Frontend CSS for Image Block.
+ * Frontend CSS for Icon List Block.
  *
- * Mirrors src/block-image/GlobalCss.tsx so every style rendered by the
+ * Mirrors src/block-icon-list/GlobalCss.tsx so every style rendered by the
  * emotion <Global> component in the editor is also present in the
  * generated per-post CSS files (asset generation).
  *
@@ -22,12 +22,14 @@ $selectors   = array();
 $t_selectors = array();
 $m_selectors = array();
 
-$wrap_sel    = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
-$figure_sel  = $wrap_sel . '.wp-block-wcb-image';
-$img_sel     = $wrap_sel . ' img';
-$cap_sel     = $wrap_sel . ' figcaption.wp-element-caption';
-$ov_bg_sel   = $wrap_sel . ' .wcb-image__overlay-bg';
-$ov_wrap_sel = $wrap_sel . ' .wcb-image__overlay-wrap';
+$wrap_sel        = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
+$inner_sel       = $wrap_sel . ' .wcb-icon-list__icon-wrap';
+$content_sel     = $wrap_sel . ' .wcb-icon-list__content';
+$icon_sel        = $wrap_sel . ' .wcb-icon-list__icon';
+$icon_full_sel   = $wrap_sel . ' .wcb-icon-full';
+$heading_sel     = $wrap_sel . ' .wcb-icon-list__heading';
+$designation_sel = $wrap_sel . ' .wcb-icon-list__designation';
+$title_wrap_sel  = $wrap_sel . ' .wcb-icon-list__content-title-wrap';
 
 // ---------------------------------------------------------------------
 // Helpers
@@ -239,221 +241,196 @@ $apply_border_styles = function ( $sel, $border_data ) use ( &$selectors, &$t_se
 };
 
 /**
- * Tailwind shadow preset value.
+ * Apply typography (font-family, appearance, text-transform, text-decoration,
+ * responsive font-size, line-height, letter-spacing).
  */
-$tw_shadow_value = function ( $preset, $color = '' ) {
-	switch ( $preset ) {
-		case 'shadow-sm':
-			return '0 1px 2px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.05)' );
-		case 'shadow':
-			return '0 1px 3px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 1px 2px -1px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
-		case 'shadow-md':
-			return '0 4px 6px -1px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 2px 4px -2px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
-		case 'shadow-lg':
-			return '0 10px 15px -3px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 4px 6px -4px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
-		case 'shadow-xl':
-			return '0 20px 25px -5px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 8px 10px -6px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
-		case 'shadow-2xl':
-			return '0 25px 50px -12px ' . ( $color ? $color : 'rgb(0 0 0 / 0.25)' );
-		case 'shadow-inner':
-			return 'inset 0 2px 4px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.05)' );
+$apply_typography = function ( $sel, $typo ) use ( &$selectors, &$t_selectors, &$m_selectors, $apply_responsive_prop ) {
+	if ( empty( $typo ) || ! is_array( $typo ) ) {
+		return;
+	}
+
+	if ( ! empty( $typo['fontFamily'] ) ) {
+		$selectors[ $sel ]['font-family'] = $typo['fontFamily'];
+	}
+
+	if ( ! empty( $typo['appearance']['style'] ) && is_array( $typo['appearance']['style'] ) ) {
+		$s = $typo['appearance']['style'];
+		if ( ! empty( $s['fontWeight'] ) ) {
+			$selectors[ $sel ]['font-weight'] = $s['fontWeight'];
+		}
+		if ( ! empty( $s['fontStyle'] ) ) {
+			$selectors[ $sel ]['font-style'] = $s['fontStyle'];
+		}
+	}
+
+	if ( ! empty( $typo['textDecoration'] ) && 'undefined' !== $typo['textDecoration'] ) {
+		$selectors[ $sel ]['text-decoration'] = $typo['textDecoration'];
+	}
+
+	if ( ! empty( $typo['textTransform'] ) && 'undefined' !== $typo['textTransform'] ) {
+		$selectors[ $sel ]['text-transform'] = $typo['textTransform'];
+	}
+
+	if ( ! empty( $typo['fontSizes'] ) ) {
+		$apply_responsive_prop( $sel, 'font-size', $typo['fontSizes'], 'px' );
+	}
+	if ( ! empty( $typo['lineHeight'] ) ) {
+		$apply_responsive_prop( $sel, 'line-height', $typo['lineHeight'], '' );
+	}
+	if ( ! empty( $typo['letterSpacing'] ) ) {
+		$apply_responsive_prop( $sel, 'letter-spacing', $typo['letterSpacing'], 'px' );
+	}
+};
+
+// =====================================================================
+// 1. LAYOUT & INNER CONTAINER (mirrors GlobalCss.tsx lines 72-139)
+// =====================================================================
+$gl  = $attr['general_layout'] ?? array();
+$gi  = $attr['general_icon'] ?? array();
+$sdm = $attr['style_dimension'] ?? array();
+
+$layout = $gl['layout'] ?? 'vertical';
+$flex_dir = ( 'vertical' === $layout ) ? 'column' : 'row';
+
+$selectors[ $inner_sel ]['display']        = 'flex';
+$selectors[ $inner_sel ]['flex-direction'] = $flex_dir;
+
+$selectors[ $content_sel ]['display']        = 'flex';
+$selectors[ $content_sel ]['flex-direction'] = $flex_dir;
+
+// Text alignment converted to flex alignment on $content_sel.
+$get_flex_alignment = function ( $alignment ) {
+	switch ( $alignment ) {
+		case 'center':
+			return 'center';
+		case 'right':
+			return 'flex-end';
+		case 'left':
 		default:
-			return '';
+			return 'flex-start';
 	}
 };
 
-/**
- * Build a box-shadow value from a Normal/Hover config object.
- */
-$build_shadow_value = function ( $shadow ) use ( $tw_shadow_value ) {
-	if ( empty( $shadow ) || ! is_array( $shadow ) ) {
-		return '';
-	}
+$align_prop = ( 'vertical' === $layout ) ? 'align-items' : 'justify-content';
+$ta_raw     = $gl['textAlignment'] ?? array();
+$ta_d       = is_array( $ta_raw ) ? ( $ta_raw['Desktop'] ?? 'left' ) : ( $ta_raw ?: 'left' );
+$ta_t       = is_array( $ta_raw ) ? ( $ta_raw['Tablet'] ?? $ta_d ) : $ta_d;
+$ta_m       = is_array( $ta_raw ) ? ( $ta_raw['Mobile'] ?? $ta_t ) : $ta_t;
 
-	$color  = $shadow['color'] ?? '';
-	$preset = $shadow['presetClass'] ?? '';
+$flex_align_d = $get_flex_alignment( $ta_d );
+$flex_align_t = $get_flex_alignment( $ta_t );
+$flex_align_m = $get_flex_alignment( $ta_m );
 
-	if ( ! empty( $preset ) ) {
-		return $tw_shadow_value( $preset, $color );
-	}
-
-	if ( empty( $color ) ) {
-		return '';
-	}
-
-	return trim(
-		sprintf(
-			'%s %s %s %s %s %s',
-			WCB_Block_Helper::get_css_value( $shadow['horizontal'] ?? 0 ),
-			WCB_Block_Helper::get_css_value( $shadow['vertical'] ?? 0 ),
-			WCB_Block_Helper::get_css_value( $shadow['blur'] ?? 0 ),
-			WCB_Block_Helper::get_css_value( $shadow['spread'] ?? 0 ),
-			$color,
-			'inset' === ( $shadow['position'] ?? '' ) ? 'inset' : ''
-		)
-	);
-};
-
-// =====================================================================
-// 1. IMAGE WRAP (Display, Padding, Margin, Alignment)
-// =====================================================================
-$gs = $attr['general_settings'] ?? array();
-$si = $attr['style_image'] ?? array();
-
-$selectors[ $wrap_sel ]['display'] = 'flex';
-
-// Alignment (Desktop-first).
-if ( ! empty( $gs['alignment'] ) ) {
-	$apply_responsive_prop( $wrap_sel, 'justify-content', $gs['alignment'] );
+$selectors[ $content_sel ][ $align_prop ] = $flex_align_d;
+if ( $flex_align_t !== $flex_align_d ) {
+	$t_selectors[ $content_sel ][ $align_prop ] = $flex_align_t;
+}
+if ( $flex_align_m !== $flex_align_t ) {
+	$m_selectors[ $content_sel ][ $align_prop ] = $flex_align_m;
 }
 
-if ( ! empty( $si['padding'] ) ) {
-	$apply_dimension_box( $wrap_sel, 'padding', $si['padding'] );
-	$apply_dimension_box( $ov_wrap_sel, 'padding', $si['padding'] );
+// Vertical Alignment.
+if ( 'middle' === ( $gi['verticalAlignment'] ?? 'top' ) ) {
+	$selectors[ $inner_sel . ', ' . $content_sel ]['align-self'] = 'center';
 }
-if ( ! empty( $si['margin'] ) ) {
-	$apply_dimension_box( $wrap_sel, 'margin', $si['margin'] );
+
+// Icon position & title wrap.
+$icon_pos = $gi['iconPosition'] ?? 'leftOfTitle';
+$selectors[ $inner_sel ]['order'] = ( 'leftOfTitle' === $icon_pos ) ? '0' : '2';
+
+if ( 'leftOfTitle' === $icon_pos || 'rightOfTitle' === $icon_pos ) {
+	$selectors[ $title_wrap_sel ]['display'] = 'flex';
+}
+
+// Gap between items.
+if ( ! empty( $sdm['gapBetweenItems'] ) ) {
+	$apply_responsive_prop( $inner_sel, 'gap', $sdm['gapBetweenItems'] );
+}
+
+// Wrap Padding & Margin.
+if ( ! empty( $sdm['padding'] ) ) {
+	$apply_dimension_box( $wrap_sel, 'padding', $sdm['padding'] );
+}
+if ( ! empty( $sdm['margin'] ) ) {
+	$apply_dimension_box( $wrap_sel, 'margin', $sdm['margin'] );
 }
 
 // =====================================================================
-// 2. IMAGE ELEMENT (Width, Height, Object-Fit, Border, Radius, Shadow)
+// 2. ICON STYLES (mirrors GlobalCss.tsx lines 158-191)
 // =====================================================================
-if ( ! empty( $gs['width'] ) ) {
-	$apply_responsive_prop( $img_sel, 'width', $gs['width'] );
-}
-if ( ! empty( $gs['height'] ) ) {
-	$apply_responsive_prop( $img_sel, 'height', $gs['height'] );
-}
-if ( ! empty( $gs['objectFit'] ) ) {
-	$apply_responsive_prop( $img_sel, 'object-fit', $gs['objectFit'] );
-}
+$enable_icon = $gi['enableIcon'] ?? true;
+if ( $enable_icon ) {
+	$si = $attr['style_Icon'] ?? array();
 
-if ( ! empty( $si['border'] ) ) {
-	$apply_border_styles( $img_sel, $si['border'] );
-	// Overlay border-radius matches image border-radius.
-	if ( ! empty( $si['border']['radius'] ) ) {
-		$apply_border_styles( $ov_bg_sel, array( 'radius' => $si['border']['radius'] ) );
+	// Icon Margin & Padding.
+	if ( ! empty( $si['dimensions']['margin'] ) ) {
+		$apply_dimension_box( $icon_sel, 'margin', $si['dimensions']['margin'] );
 	}
-}
+	if ( ! empty( $si['dimensions']['padding'] ) ) {
+		$apply_dimension_box( $icon_sel, 'padding', $si['dimensions']['padding'] );
+	}
 
-if ( ! empty( $si['boxShadow'] ) && is_array( $si['boxShadow'] ) ) {
-	$bs = $si['boxShadow'];
-	if ( ! empty( $bs['Normal'] ) ) {
-		$normal_shadow = $build_shadow_value( $bs['Normal'] );
-		if ( '' !== $normal_shadow ) {
-			$selectors[ $img_sel ]['box-shadow'] = $normal_shadow;
-		}
+	// Icon Border & Radius.
+	if ( ! empty( $si['border'] ) ) {
+		$apply_border_styles( $icon_sel, $si['border'] );
 	}
-	if ( ! empty( $bs['Hover'] ) ) {
-		$hover_shadow = $build_shadow_value( $bs['Hover'] );
-		if ( '' !== $hover_shadow ) {
-			$selectors[ $img_sel . ':hover' ]['box-shadow'] = $hover_shadow;
-		}
-	}
-}
 
-$sd = $attr['style_dimension'] ?? array();
-if ( ! empty( $sd['margin'] ) ) {
-	$apply_dimension_box( $img_sel, 'margin', $sd['margin'] );
-}
-if ( ! empty( $sd['padding'] ) ) {
-	$apply_dimension_box( $img_sel, 'padding', $sd['padding'] );
-}
+	// Icon Size (width & font-size).
+	if ( ! empty( $si['iconSize'] ) ) {
+		$apply_responsive_prop( $icon_full_sel, 'width', $si['iconSize'] );
+		$apply_responsive_prop( $icon_full_sel, 'font-size', $si['iconSize'] );
+	}
 
-// =====================================================================
-// 3. OVERLAY (Layout, Background)
-// =====================================================================
-$layout = $gs['layout'] ?? 'normal';
-$so     = $attr['style_overlay'] ?? array();
-if ( 'overlay' === $layout ) {
-	if ( ! empty( $gs['contentAlignment'] ) ) {
-		$selectors[ $ov_bg_sel ]['justify-content'] = $gs['contentAlignment'];
+	// Icon Color & Hover.
+	if ( ! empty( $si['color'] ) ) {
+		$selectors[ $icon_full_sel ]['color'] = $si['color'];
 	}
-	if ( ! empty( $so['backgroundColor'] ) ) {
-		$selectors[ $ov_bg_sel ]['background-color'] = $so['backgroundColor'];
-	}
-	if ( ! empty( $so['backgroundColorHover'] ) ) {
-		$selectors[ $ov_bg_sel . ':hover' ]['background-color'] = $so['backgroundColorHover'];
+	if ( ! empty( $si['hoverColor'] ) ) {
+		$selectors[ $icon_full_sel . ':hover' ]['color'] = $si['hoverColor'];
 	}
 }
 
 // =====================================================================
-// 4. HOVER IMAGE EFFECTS
+// 3. TITLE / HEADING (mirrors GlobalCss.tsx lines 193-216)
 // =====================================================================
-$hover_img = $gs['hoverImage'] ?? 'static';
-if ( 'zoomin' === $hover_img ) {
-	$selectors[ $img_sel ]['transition']               = 'transform 0.3s ease-in-out';
-	$selectors[ $wrap_sel . ':hover img' ]['transform'] = 'scale(1.05)';
-} elseif ( 'slide' === $hover_img ) {
-	$selectors[ $img_sel ]['transition']               = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
-	$selectors[ $wrap_sel . ':hover img' ]['transform'] = 'translateX(-20px)';
-} elseif ( 'grayscale' === $hover_img ) {
-	$selectors[ $img_sel ]['transition']            = 'filter 0.3s ease-in-out';
-	$selectors[ $wrap_sel . ':hover img' ]['filter'] = 'grayscale(100%)';
-} elseif ( 'blur' === $hover_img ) {
-	$selectors[ $img_sel ]['transition']            = 'filter 0.3s ease-in-out';
-	$selectors[ $wrap_sel . ':hover img' ]['filter'] = 'blur(2px)';
-}
+$enable_title = $gl['enableTitle'] ?? true;
+if ( $enable_title ) {
+	$st = $attr['style_title'] ?? array();
 
-// =====================================================================
-// 5. CAPTION
-// =====================================================================
-if ( 'overlay' !== $layout ) {
-	$sc = $attr['style_caption'] ?? array();
-	if ( ! empty( $gs['captionAlignment'] ) ) {
-		$apply_responsive_prop( $cap_sel, 'text-align', $gs['captionAlignment'] );
+	if ( ! empty( $st['typography'] ) ) {
+		$apply_typography( $heading_sel, $st['typography'] );
 	}
-	if ( ! empty( $sc['typography'] ) ) {
-		$typo = $sc['typography'];
-		if ( ! empty( $typo['fontFamily'] ) ) {
-			$selectors[ $cap_sel ]['font-family'] = $typo['fontFamily'];
-		}
-		if ( ! empty( $typo['appearance']['style'] ) && is_array( $typo['appearance']['style'] ) ) {
-			$s = $typo['appearance']['style'];
-			if ( ! empty( $s['fontWeight'] ) ) {
-				$selectors[ $cap_sel ]['font-weight'] = $s['fontWeight'];
-			}
-			if ( ! empty( $s['fontStyle'] ) ) {
-				$selectors[ $cap_sel ]['font-style'] = $s['fontStyle'];
-			}
-		}
-		if ( ! empty( $typo['fontSizes'] ) ) {
-			$apply_responsive_prop( $cap_sel, 'font-size', $typo['fontSizes'] );
-		}
-		if ( ! empty( $typo['lineHeight'] ) ) {
-			$apply_responsive_prop( $cap_sel, 'line-height', $typo['lineHeight'] );
-		}
-		if ( ! empty( $typo['letterSpacing'] ) ) {
-			$apply_responsive_prop( $cap_sel, 'letter-spacing', $typo['letterSpacing'] );
-		}
+	if ( ! empty( $st['marginBottom'] ) ) {
+		$apply_responsive_prop( $heading_sel, 'margin-bottom', $st['marginBottom'] );
 	}
-	if ( ! empty( $sc['margin'] ) ) {
-		$apply_dimension_box( $cap_sel, 'margin', $sc['margin'] );
+	if ( ! empty( $st['textColor'] ) ) {
+		$selectors[ $heading_sel ]['color'] = $st['textColor'];
 	}
-	if ( ! empty( $sc['textColor'] ) ) {
-		$selectors[ $cap_sel ]['color'] = $sc['textColor'];
+	if ( ! empty( $st['textColorHover'] ) ) {
+		$selectors[ $heading_sel . ':hover' ]['color'] = $st['textColorHover'];
 	}
 }
 
 // =====================================================================
-// 6. FIGURE ALIGNMENT (fallback classes)
+// 4. DESIGNATION / PREFIX (mirrors GlobalCss.tsx lines 219-239)
 // =====================================================================
-$selectors[ $figure_sel . '.alignright' ] = array(
-	'margin-left'  => 'auto',
-	'margin-right' => '0',
-);
-$selectors[ $figure_sel . '.alignleft' ]  = array(
-	'margin-left'  => '0',
-	'margin-right' => 'auto',
-);
-$selectors[ $figure_sel . '.aligncenter' ] = array(
-	'margin-left'  => 'auto',
-	'margin-right' => 'auto',
-	'text-align'   => 'center',
-);
+$enable_prefix = $gl['enablePrefix'] ?? false;
+if ( $enable_prefix ) {
+	$sd = $attr['style_desination'] ?? array();
+
+	if ( ! empty( $sd['typography'] ) ) {
+		$apply_typography( $designation_sel, $sd['typography'] );
+	}
+	if ( ! empty( $sd['marginBottom'] ) ) {
+		$apply_responsive_prop( $designation_sel, 'margin-bottom', $sd['marginBottom'] );
+	}
+	if ( ! empty( $sd['textColor'] ) ) {
+		$selectors[ $designation_sel ]['color'] = $sd['textColor'];
+	}
+}
 
 // =====================================================================
-// 7. ADVANCE (responsive condition + z-index)
+// 5. ADVANCE (responsive condition + motion effect + z-index)
 // =====================================================================
 $selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 

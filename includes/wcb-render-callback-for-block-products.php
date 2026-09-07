@@ -923,7 +923,7 @@ function boostify_blocks_block_products_get_image_html($product, $attributes = [
  * @param string $link The URL to link the product title to.
  * @return string The generated HTML for the product title, wrapped in the specified heading tag and linked to the product page.
  */
-function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link)
+function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link = "")
 {
     if (empty($headingTag)) {
         $headingTag = 'div';

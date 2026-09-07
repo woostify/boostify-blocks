@@ -326,13 +326,13 @@ class WCB_Block_Helper {
 			$css['text-transform'] = $typo['textTransform'];
 		}
 
-		// Line height.
+		// Line height (unitless in CSS).
 		if ( ! empty( $typo['lineHeight'] ) ) {
 			$line_height = $typo['lineHeight'];
 			if ( is_array( $line_height ) ) {
-				$css['line-height'] = WCB_Block_Helper::get_css_value( $line_height['Desktop'] ?? '' );
+				$css['line-height'] = WCB_Block_Helper::get_css_value( $line_height['Desktop'] ?? '', '' );
 			} else {
-				$css['line-height'] = WCB_Block_Helper::get_css_value( $line_height );
+				$css['line-height'] = WCB_Block_Helper::get_css_value( $line_height, '' );
 			}
 		}
 

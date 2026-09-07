@@ -38,9 +38,13 @@ $link_sel     = $wrap_sel . ' a';
 /**
  * Apply responsive property across desktop, tablet, and mobile buckets.
  */
-$apply_responsive_prop = function ( $sel, $prop, $value ) use ( &$selectors, &$t_selectors, &$m_selectors ) {
+$apply_responsive_prop = function ( $sel, $prop, $value, $unit = 'px' ) use ( &$selectors, &$t_selectors, &$m_selectors ) {
 	if ( empty( $value ) && '0' !== (string) $value ) {
 		return;
+	}
+
+	if ( 'line-height' === $prop || 'z-index' === $prop || 'opacity' === $prop ) {
+		$unit = '';
 	}
 
 	$d = is_array( $value ) ? ( $value['Desktop'] ?? '' ) : $value;
@@ -48,13 +52,13 @@ $apply_responsive_prop = function ( $sel, $prop, $value ) use ( &$selectors, &$t
 	$m = is_array( $value ) ? ( $value['Mobile'] ?? $t ) : $value;
 
 	if ( '' !== $d && null !== $d ) {
-		$selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $d );
+		$selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $d, $unit );
 	}
 	if ( '' !== $t && null !== $t && $t !== $d ) {
-		$t_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $t );
+		$t_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $t, $unit );
 	}
 	if ( '' !== $m && null !== $m && $m !== $t ) {
-		$m_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $m );
+		$m_selectors[ $sel ][ $prop ] = WCB_Block_Helper::get_css_value( $m, $unit );
 	}
 };
 
