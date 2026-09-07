@@ -97,6 +97,23 @@ function boostify_blocks_block_testimonials_render_callback($attributes, $conten
 }
 
 //============================================= block 1 ===============================================================
+function boostify_blocks_block_testimonials_swiper_render_callback($attributes, $content)
+{
+    if (!is_admin()) {
+        // Enqueue Swiper's bundled core + navigation/pagination module
+        // styles/script - same vendored bundle and handle the Slider
+        // (Swiper) block uses (boostify_blocks_block_slider_swiper_render_callback()
+        // above); wp_enqueue_style()/wp_enqueue_script() dedupe by handle,
+        // so enqueuing it again here is safe whether or not that block is
+        // also on the page.
+        wp_enqueue_style( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.css', array(), BOOSTIFY_BLOCKS_VERSION );
+        wp_enqueue_script( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.js', array(), BOOSTIFY_BLOCKS_VERSION, true );
+    }
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
+    return $content;
+}
+
+//============================================= block 1 ===============================================================
 function boostify_blocks_block_form_render_callback($attributes, $content)
 // NOTE: reCAPTCHA keys may not be set yet; update after configuration.
 // This section requires JS for AJAX and reCAPTCHA functionality.
