@@ -122,6 +122,18 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
+    // Enqueue the Testimonials (Swiper) view script as a module. Reads the
+    // vendored global `Swiper` (enqueued as a classic script in
+    // boostify_blocks_block_testimonials_swiper_render_callback(), includes/
+    // wcb-blocks-render-callback.php) and configures it from the
+    // data-wp-context baked into the saved block markup (src/
+    // block-testimonials-swiper/Save.tsx).
+    wp_enqueue_script_module(
+        'boostify-blocks-testimonials-swiper-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/testimonials-swiper/boostify-blocks-testimonials-swiper-view.js',
+        array( '@wordpress/interactivity' )
+    );
+
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(
             'boostify-blocks-buynow',
