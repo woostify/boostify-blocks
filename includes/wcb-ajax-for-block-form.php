@@ -81,7 +81,12 @@ add_action('wp_ajax_boostify_blocks_get_product_gallery', 'boostify_blocks_get_p
 add_action('wp_ajax_nopriv_boostify_blocks_get_product_gallery', 'boostify_blocks_get_product_gallery_init');
 function boostify_blocks_get_product_gallery_init()
 {
-    $product_id = $_POST['product_id'] ?? 0;
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_form_nonce' ) ) {
+        wp_send_json_error( 'Invalid nonce' );
+        wp_die();
+    }
+
+    $product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
     if (!$product_id) {
         wp_send_json_error('Invalid product ID');
         wp_die();

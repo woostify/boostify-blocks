@@ -31,12 +31,11 @@ function boostify_blocks_my_scripts_method()
     // TODO: Consider conditionally enqueuing only when the testimonials block is used.
     wp_enqueue_script('boostify-blocks-slicklib', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/slick/slick.min.js', ['jquery'], "1.8.0", false);
 
-    wp_enqueue_script(
-        'boostify-blocks-countdown-lib',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/boostify-blocks-countdown.js',
-        array( 'jquery' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+    wp_enqueue_script_module(
+        'boostify-blocks-countdown-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/countdown/boostify-blocks-countdown-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
     );
 
     wp_enqueue_script(
@@ -55,20 +54,32 @@ function boostify_blocks_my_scripts_method()
         true
     );
 
-    wp_enqueue_script(
+    wp_enqueue_script_module(
         'boostify-blocks-buynow',
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-buynow.js',
-        array( 'jquery', 'boostify-blocks-tiny-slider' ),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
     );
 
-    wp_enqueue_script(
-        'boostify-blocks-product-quantity',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/wcb-product-quantity.js',
-        array(),
-        BOOSTIFY_BLOCKS_VERSION,
-        true
+    wp_enqueue_script_module(
+        'boostify-blocks-product-quantity-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/product-quantity/wcb-product-quantity-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-pre-order-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/pre-order/wcb-pre-order-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script_module(
+        'boostify-blocks-quick-view-preview',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/quick-view/wcb-quick-view-preview.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
     );
 
     // Enqueue the Tabs view script as a module
@@ -99,13 +110,25 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
+    // Enqueue the Slider (Swiper) view script as a module. Reads the
+    // vendored global `Swiper` (enqueued as a classic script in
+    // boostify_blocks_block_slider_swiper_render_callback(), includes/
+    // wcb-blocks-render-callback.php) and configures it from the
+    // data-wp-context baked into the saved block markup (src/
+    // block-slider-swiper/Save.tsx).
+    wp_enqueue_script_module(
+        'boostify-blocks-slider-swiper-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/slider-swiper/boostify-blocks-slider-swiper-view.js',
+        array( '@wordpress/interactivity' )
+    );
+
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(
             'boostify-blocks-buynow',
             'wcb_buynow_data',
             array(
-                'ajax_url'      => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
-                'redirect_delay' => 300,
+                'ajaxUrl'       => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
+                'redirectDelay' => 300,
             )
         );
     }

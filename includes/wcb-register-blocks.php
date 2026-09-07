@@ -451,5 +451,22 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                 "view_script_handles" => []
             ]
         );
+
+        // SLIDER (SWIPER) BLOCK
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider-swiper',
+            [
+                "render_callback"     => "boostify_blocks_block_slider_swiper_render_callback",
+                "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/slider-swiper'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
+            ]
+        );
+        // SLIDER (SWIPER) CHILD
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider-swiper-child',
+            [
+                "view_script_handles" => []
+            ]
+        );
     }
 }

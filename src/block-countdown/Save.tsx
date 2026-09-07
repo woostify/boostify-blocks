@@ -120,6 +120,24 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	return classes.join(" ");
 	};
 
+	// Context for the Interactivity API store (see public/js/countdown/boostify-blocks-countdown-view.js).
+	const countdownContext = {
+		timerType: general_date.timerType,
+		endDateTime: general_date.date,
+		evergreenDays: general_date.evergreenDays ?? 0,
+		evergreenHrs: general_date.evergreenHrs ?? 0,
+		evergreenMinutes: general_date.evergreenMinutes ?? 0,
+		resetDays: general_date.resetDays ?? 30,
+		campaignKey: general_date.campaignID || uniqueId,
+		showDays: general_date.show_day,
+		showHours: general_date.show_hour,
+		showMinutes: general_date.show_minute,
+		days: 0,
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+	};
+
 	return (
 		<SaveCommon
 			{...wrapBlockProps}
@@ -128,44 +146,57 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		>
 			{/* CHILD CONTENT  */}
 
-			<div className={getLayoutClasses()}>
+			<div
+				className={getLayoutClasses()}
+				data-wp-interactive="boostify-blocks/countdown"
+				data-wp-context={JSON.stringify(countdownContext)}
+				data-wp-init="callbacks.start"
+			>
 				{general_date.show_day && (
 					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-day"></div>
-						<RichText.Content
-							tagName='div'
-							value={daylabel}
-							className="wcb-countdown__label wcb-countdown__daylabel"
-						/>
+						<div className="wcb-countdown__number wcb-countdown-day" data-wp-text="context.days"></div>
+						{general_date.enableLabel && (
+							<RichText.Content
+								tagName='div'
+								value={daylabel}
+								className="wcb-countdown__label wcb-countdown__daylabel"
+							/>
+						)}
 					</div>
 				)}
 				{general_date.show_hour && (
 					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-hrs"></div>
-						<RichText.Content
-							tagName='div'
-							value={hrslabel}
-							className="wcb-countdown__label wcb-countdown__hrslabel"
-						/>
+						<div className="wcb-countdown__number wcb-countdown-hrs" data-wp-text="context.hours"></div>
+						{general_date.enableLabel && (
+							<RichText.Content
+								tagName='div'
+								value={hrslabel}
+								className="wcb-countdown__label wcb-countdown__hrslabel"
+							/>
+						)}
 					</div>
 				)}
 				{general_date.show_minute && (
 					<div className="wcb-countdown__box">
-						<div className="wcb-countdown__number wcb-countdown-mins"></div>
-						<RichText.Content
-							tagName='div'
-							value={minlabel}
-							className="wcb-countdown__label wcb-countdown__minlabel"
-						/>
+						<div className="wcb-countdown__number wcb-countdown-mins" data-wp-text="context.minutes"></div>
+						{general_date.enableLabel && (
+							<RichText.Content
+								tagName='div'
+								value={minlabel}
+								className="wcb-countdown__label wcb-countdown__minlabel"
+							/>
+						)}
 					</div>
 				)}
 				<div className="wcb-countdown__box">
-					<div className="wcb-countdown__number wcb-countdown-secs"></div>
-					<RichText.Content
-						tagName='div'
-						value={seclabel}
-						className="wcb-countdown__label wcb-countdown__seclabel"
-					/>
+					<div className="wcb-countdown__number wcb-countdown-secs" data-wp-text="context.seconds"></div>
+					{general_date.enableLabel && (
+						<RichText.Content
+							tagName='div'
+							value={seclabel}
+							className="wcb-countdown__label wcb-countdown__seclabel"
+						/>
+					)}
 				</div>
 			</div>
 		</SaveCommon>
