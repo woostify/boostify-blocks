@@ -163,6 +163,24 @@ function boostify_blocks_block_slider_render_callback($attributes, $content)
     return $content;
 }
 
+//============================================= block 1 ===============================================================
+function boostify_blocks_block_slider_swiper_render_callback($attributes, $content)
+{
+    if (!is_admin()) {
+        // Enqueue Swiper's bundled core + navigation/pagination module styles/script.
+        // Vendored the same way public/slick/* is for the original Slider block; the
+        // classic script below exposes a global `Swiper`, which the Interactivity
+        // store (public/js/slider-swiper/boostify-blocks-slider-swiper-view.js,
+        // enqueued as a script module in wcb-enqueue-scripts.php) reads from
+        // `window.Swiper`. Module scripts always run after classic scripts have
+        // finished executing, so load order between the two is safe.
+        wp_enqueue_style( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.css', array(), BOOSTIFY_BLOCKS_VERSION );
+        wp_enqueue_script( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.js', array(), BOOSTIFY_BLOCKS_VERSION, true );
+    }
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
+    return $content;
+}
+
 if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_styles')) :
     function boostify_blocks_enqueue_script_block_commoncss_frontend_styles($deps = ['wp-element', 'jquery'])
     {

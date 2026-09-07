@@ -1,34 +1,10 @@
 /**
- * Load preview gallery when hovering the Quick View button
+ * Load preview gallery when hovering the Quick View button.
+ * Handled by the Interactivity API store in
+ * public/js/quick-view/wcb-quick-view-preview.js — see the
+ * `data-wp-interactive="boostify-blocks/quick-view-preview"` wrapper
+ * rendered around the button in wcb-render-callback-for-block-products.php.
  */
-jQuery(document).on('mouseenter', '.product-quick-view-btn', function () {
-    const $btn = jQuery(this);
-    const productId = $btn.data('product_id');
-
-    // Prevent multiple AJAX calls
-    if ($btn.data('loaded')) return;
-
-    // Load product gallery via AJAX
-    jQuery.post({
-        action: 'wcb_get_product_gallery',
-        product_id: productId,
-    }, function (res) {
-        // Inject gallery HTML
-        $btn.closest('.wcb-products__product')
-            .find('.wcb-quick-view-hover-gallery')
-            .html(res.html);
-
-        // Init Tiny Slider
-        tns({
-            container: '.wcb-quick-view-hover-gallery',
-            items: 1,
-            autoplay: true,
-        });
-
-        // Mark gallery as loaded
-        $btn.data('loaded', true);
-    });
-});
 
 
 /**
