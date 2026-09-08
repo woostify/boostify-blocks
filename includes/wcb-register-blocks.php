@@ -294,6 +294,16 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             ]
         );
 
+        // TESTIMONIALS (SWIPER) BLOCK
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-testimonials-swiper',
+            [
+                "render_callback"     => "boostify_blocks_block_testimonials_swiper_render_callback",
+                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/testimonials-swiper'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
+            ]
+        );
+
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-buttons',
             [

@@ -68,6 +68,18 @@ const classes: {
 		F: initCarouselForWcbTestimonials,
 	},
 	{
+		// Testimonials (Swiper) block - only needs GlobalCss (dynamic
+		// color/size/spacing CSS) rendered here. Swiper itself is
+		// initialised separately via the Interactivity API store (public/js/
+		// testimonials-swiper/boostify-blocks-testimonials-swiper-view.js),
+		// reading data-wp-context straight off the saved markup - no F
+		// callback needed for this entry. Uses its own distinct wrapper
+		// class (not "wcb-testimonials__wrap"), so unlike the Slick/Swiper
+		// Slider blocks there's no selector collision to guard against.
+		D: ".wcb-testimonials-swiper__wrap.wcb-update-div",
+		C: React.lazy(() => import("../block-testimonials-swiper/GlobalCss")),
+	},
+	{
 		D: ".wcb-countdown__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-countdown/GlobalCss")),
 	},
