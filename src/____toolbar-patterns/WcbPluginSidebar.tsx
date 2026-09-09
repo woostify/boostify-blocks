@@ -22,9 +22,9 @@ import { __ } from "@wordpress/i18n";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import HelpText from "../components/controls/HelpText";
 
-const WcbPluginSidebar = (props) => {
+const WcbPluginSidebar = (props: any) => {
 	const [mycolors, setMyColor] = useState(
-		window.boostify_blocks_global_variables.customColorPallete || []
+		window.boostify_blocks_global_variables?.customColorPallete || []
 	);
 
 	const [updateStatus, setUpdateStatus] = useState<
@@ -42,7 +42,7 @@ const WcbPluginSidebar = (props) => {
 		defaultPalette,
 		colorGradientSettings,
 		mycolors,
-		nweww: window.boostify_blocks_global_variables.customColorPallete,
+		nweww: window.boostify_blocks_global_variables?.customColorPallete,
 	});
 
 	// update save setting to database options via ajax
@@ -58,7 +58,7 @@ const WcbPluginSidebar = (props) => {
 
 		const data = {
 			action: "boostify_blocks_dashboard_update_settings",
-			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
+			nonce: window.boostify_blocks_frontend_ajax_object?.nonce,
 			settings: newSettings,
 		};
 		setUpdateStatus("loading");
@@ -113,14 +113,14 @@ const WcbPluginSidebar = (props) => {
 				<PanelBody title={__("Color Palette", "boostify-blocks")} initialOpen={true}>
 					<PanelRow>
 						<div className="flex flex-col gap-4">
-							{colorGradientSettings?.colors?.map((item, index) => {
+							{colorGradientSettings?.colors?.map((item: any, index: any) => {
 								return (
 									<div key={index} className="flex flex-col gap-2">
 										<h2 className="uppercase text-[11px] font-medium m-0">
 											{item.name}
 										</h2>
 										<div className="flex flex-wrap gap-2.5">
-											{item.colors?.map((item, j) => (
+											{item.colors?.map((item: any, j: any) => (
 												<ColorIndicator
 													key={j}
 													colorValue={item.color}

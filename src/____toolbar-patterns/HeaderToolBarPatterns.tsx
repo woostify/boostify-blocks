@@ -2,20 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Button, Modal, Spinner } from "@wordpress/components";
 import {
 	ArrowDownOnSquareIcon,
-	ArrowDownOnSquareStackIcon,
 	ArrowTopRightOnSquareIcon,
 	ArrowUpRightIcon,
 	CheckIcon,
 	ClipboardIcon,
-	KeyIcon,
-	LightBulbIcon,
-	LinkIcon,
+	HeartIcon,
+	MagnifyingGlassIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import { gql, useLazyQuery } from "@apollo/client";
 import { GET_WCB_BLOCKS } from "./constant";
 import { Edge, Edge2, Node, WcbBlocksRoot } from "./type";
-import * as copy from "copy-to-clipboard";
+import copy from "copy-to-clipboard";
 import { useTimeoutFn } from "react-use";
 import { useSelect, useDispatch } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
@@ -31,9 +30,14 @@ const HeaderToolBarPatterns = () => {
 
 	const [currentCategorySelected, setCurrentCategorySelected] =
 		useState<string>("");
-	const [currentPricingPackage, setCurrentPricingPackage] = useState<
-		"free" | "pro" | "all"
-	>("all");
+	const [currentTab, setCurrentTab] = useState<"patterns" | "page" | "favorites">(
+		"patterns"
+	);
+	const [searchTerm, setSearchTerm] = useState<string>("");
+	const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+	const [togglingFavoriteId, setTogglingFavoriteId] = useState<number | null>(
+		null
+	);
 
 	// CONSTS
 	const [loadGreeting, { called, loading, data }] =
@@ -70,9 +74,58 @@ const HeaderToolBarPatterns = () => {
 	const openModal = () => {
 		setOpen(true);
 		!called && loadGreeting();
+
+		if (typeof jQuery === "function") {
+			jQuery.post(
+				(window as any).ajaxurl,
+				{
+					action: "boostify_blocks_get_favorite_patterns",
+					nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
+				},
+				function (response: { data?: number[] }) {
+					if (response?.data) {
+						setFavoriteIds(response.data);
+					}
+				}
+			);
+		}
 	};
 	const closeModal = () => {
 		setOpen(false);
+	};
+
+	const toggleFavorite = (databaseId: number) => {
+		if (typeof jQuery !== "function" || togglingFavoriteId) {
+			return;
+		}
+
+		const wasFavorite = favoriteIds.includes(databaseId);
+		setFavoriteIds((prev) =>
+			wasFavorite ? prev.filter((id) => id !== databaseId) : [...prev, databaseId]
+		);
+		setTogglingFavoriteId(databaseId);
+
+		jQuery
+			// @ts-ignore
+			.post((window as any).ajaxurl, {
+				action: "boostify_blocks_toggle_favorite_pattern",
+				nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
+				patternId: databaseId,
+			})
+			.done(function (response: { data?: number[] }) {
+				if (response?.data) {
+					setFavoriteIds(response.data);
+				}
+			})
+			.fail(function () {
+				// revert optimistic update on failure
+				setFavoriteIds((prev) =>
+					wasFavorite ? [...prev, databaseId] : prev.filter((id) => id !== databaseId)
+				);
+			})
+			.always(function () {
+				setTogglingFavoriteId(null);
+			});
 	};
 
 	const insertWcbBlocks = (content: string) => {
@@ -156,25 +209,49 @@ const HeaderToolBarPatterns = () => {
 					(item) => item.node.id === currentCategorySelected
 			  );
 
-		let isIncludePricingPackage = false;
-		if (!currentPricingPackage || currentPricingPackage === "all") {
-			isIncludePricingPackage = true;
-		} else {
-			isIncludePricingPackage = post.wcbBlocksPricingPackages.edges.some(
-				(item) => item.node.name === currentPricingPackage
-			);
-		}
+		const isIncludeTab =
+			currentTab === "favorites" ? favoriteIds.includes(post.databaseId) : true;
+
+		const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+		const isMatchSearch = !normalizedSearchTerm
+			? true
+			: post.title.toLowerCase().includes(normalizedSearchTerm) ||
+			  post.wcbBlocksCategories.edges.some((item) =>
+					item.node.name.toLowerCase().includes(normalizedSearchTerm)
+			  ) ||
+			  post.wcbBlocksTags.edges.some((item) =>
+					item.node.name.toLowerCase().includes(normalizedSearchTerm)
+			  );
 
 		// CHECK FILTER
-		if (!isIncludeCategorySelected || !isIncludePricingPackage) {
+		if (!isIncludeCategorySelected || !isIncludeTab || !isMatchSearch) {
 			return null;
 		}
+
+		const isFavorite = favoriteIds.includes(post.databaseId);
 
 		return (
 			<li key={post.id}>
 				<div className="group relative before:absolute before:-inset-2.5 before:rounded-[20px] before:bg-gray-100/60 before:opacity-0 hover:before:opacity-100">
 					<div className="relative aspect-[2/1] overflow-hidden rounded-lg bg-gray-100 ring-1 ring-gray-900/10">
 						{renderImportBtns(post)}
+
+						<button
+							type="button"
+							onClick={(e) => {
+								e.preventDefault();
+								toggleFavorite(post.databaseId);
+							}}
+							aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+							aria-pressed={isFavorite}
+							className="absolute bottom-2 right-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow hover:bg-white transition-colors"
+						>
+							{isFavorite ? (
+								<HeartIconSolid className="h-4 w-4 text-red-500" />
+							) : (
+								<HeartIcon className="h-4 w-4 text-slate-600" />
+							)}
+						</button>
 
 						{post.featuredImage?.node.sourceUrl && (
 							<img
@@ -206,90 +283,104 @@ const HeaderToolBarPatterns = () => {
 		);
 	};
 
-	const renderFreeProTab = () => {
+	const renderTopTabs = () => {
+		const tabs: { key: typeof currentTab; label: string }[] = [
+			{ key: "patterns", label: "Patterns" },
+			{ key: "page", label: "Page" },
+			{ key: "favorites", label: "Favorites" },
+		];
+
 		return (
 			<div
-				className="flex space-x-1 rounded-lg bg-slate-100 p-0.5"
+				className="flex h-full items-center gap-6"
 				role="tablist"
 				aria-orientation="horizontal"
 			>
-				<button
-					className={`flex items-center rounded-md py-[0.4375rem] pl-2 pr-2 text-sm font-semibold lg:pr-3 ${
-						currentPricingPackage === "all" ? "bg-white shadow" : ""
-					}`}
-					id="headlessui-tabs-tab-all"
-					role="tab"
-					type="button"
-					aria-selected={currentPricingPackage === "all" ? "true" : undefined}
-					onClick={() => setCurrentPricingPackage("all")}
-				>
-					<LinkIcon className="w-4 h-4" />
-					<span className="ml-2 text-slate-900">All</span>
-				</button>
-				<button
-					className={`flex items-center rounded-md py-[0.4375rem] pl-2 pr-2 text-sm font-semibold lg:pr-3 ${
-						currentPricingPackage === "free" ? "bg-white shadow" : ""
-					}`}
-					id="headlessui-tabs-tab-free"
-					role="tab"
-					type="button"
-					aria-selected={currentPricingPackage === "free" ? "true" : undefined}
-					onClick={() => setCurrentPricingPackage("free")}
-				>
-					<LightBulbIcon className="w-4 h-4" />
-					<span className="ml-2 text-slate-900">Free</span>
-				</button>
-				{/* <button
-					className={`flex items-center rounded-md py-[0.4375rem] pl-2 pr-2 text-sm font-semibold lg:pr-3 ${
-						currentPricingPackage === "pro" ? "bg-white shadow" : ""
-					}`}
-					id="headlessui-tabs-tab-pro"
-					role="tab"
-					type="button"
-					aria-selected={currentPricingPackage === "pro" ? "true" : undefined}
-					onClick={() => setCurrentPricingPackage("pro")}
-				>
-					<KeyIcon className="w-4 h-4" />
-					<span className="ml-2 text-slate-600">Pro</span>
-				</button> */}
+				{tabs.map((tab) => {
+					const isActive = currentTab === tab.key;
+
+					return (
+						<button
+							key={tab.key}
+							type="button"
+							role="tab"
+							aria-selected={isActive}
+							onClick={() => setCurrentTab(tab.key)}
+							className={`relative flex h-full items-center gap-1.5 text-sm font-medium transition-colors ${
+								isActive
+									? "text-slate-900 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-slate-900"
+									: "text-slate-500 hover:text-slate-800"
+							}`}
+						>
+							{tab.key === "favorites" &&
+								(isActive ? (
+									<HeartIconSolid className="h-4 w-4 text-red-500" />
+								) : (
+									<HeartIcon className="h-4 w-4" />
+								))}
+							{tab.label}
+						</button>
+					);
+				})}
 			</div>
 		);
 	};
 
-	const renderSelectCategories = () => {
-		return (
-			<div className="relative block">
-				<select
-					className="form-select h-9 w-full rounded-lg border-0 bg-transparent bg-none p-0 pl-3.5 pr-[1.875rem] font-medium text-slate-900 focus:shadow-none focus-visible:ring-2 focus-visible:ring-sky-500 text-sm"
-					onChange={(e) => {
-						setCurrentCategorySelected(e.currentTarget.value);
-					}}
-				>
-					<option selected value="">
-						All categories
-					</option>
-					{Object.values(categoriesEdge).map((item) => (
-						<option key={item.id} value={item.id}>
-							{item.name}
-						</option>
-					))}
-				</select>
+	const renderCategoryList = () => {
+		const categories = Object.values(categoriesEdge);
 
-				<svg
-					aria-hidden="true"
-					viewBox="0 0 8 6"
-					width="8"
-					height="6"
-					fill="none"
-					className="pointer-events-none absolute inset-y-0 right-3.5 h-full stroke-slate-500"
+		return (
+			<div className="flex flex-col gap-0.5" role="list">
+				<button
+					type="button"
+					onClick={() => setCurrentCategorySelected("")}
+					className={`rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${
+						!currentCategorySelected
+							? "bg-sky-50 text-sky-700"
+							: "text-slate-600 hover:bg-slate-100"
+					}`}
 				>
-					<path
-						d="M7 1.5l-3 3-3-3"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					></path>
-				</svg>
+					All
+				</button>
+				{categories.map((item) => (
+					<button
+						key={item.id}
+						type="button"
+						onClick={() => setCurrentCategorySelected(item.id)}
+						className={`rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${
+							currentCategorySelected === item.id
+								? "bg-sky-50 text-sky-700"
+								: "text-slate-600 hover:bg-slate-100"
+						}`}
+					>
+						{item.name}
+					</button>
+				))}
+			</div>
+		);
+	};
+
+	const renderSearchInput = () => {
+		return (
+			<div className="relative w-full p-0.5">
+				<MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+				<input
+					type="text"
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.currentTarget.value)}
+					placeholder="Search patterns..."
+					className="h-9 w-full rounded-lg border-0 bg-slate-100 pl-9 pr-8 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+				/>
+				{searchTerm && (
+					<button
+						type="button"
+						onClick={() => setSearchTerm("")}
+						aria-label="Clear search"
+						className="absolute right-2 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-slate-400 hover:text-slate-600"
+					>
+						<XMarkIcon className="h-3.5 w-3.5" />
+					</button>
+				)}
 			</div>
 		);
 	};
@@ -314,18 +405,58 @@ const HeaderToolBarPatterns = () => {
 				</svg>
 				<h3 className="mt-2 text-sm font-semibold text-gray-900">No items!</h3>
 				<p className="mt-1 text-sm text-gray-500">
-					Please try filtering another way.
+					{currentTab === "favorites"
+						? "You haven't favorited any patterns yet."
+						: "Please try filtering another way."}
+				</p>
+			</div>
+		);
+	};
+
+	const renderNoData = () => {
+		return (
+			<div className="text-center">
+				<svg
+					className="mx-auto h-12 w-12 text-gray-400"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					aria-hidden="true"
+				>
+					<path
+						vectorEffect="non-scaling-stroke"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						strokeWidth={2}
+						d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+					/>
+				</svg>
+				<h3 className="mt-2 text-sm font-semibold text-gray-900">No data</h3>
+				<p className="mt-1 text-sm text-gray-500">
+					There are no page templates yet.
 				</p>
 			</div>
 		);
 	};
 
 	const renderContent = () => {
+		if (currentTab === "page") {
+			return (
+				<div className="flex flex-1 items-center justify-center">{renderNoData()}</div>
+			);
+		}
+
+		const renderedCards = patternsEdge.map(renderCardItem).filter(Boolean);
+
+		if (!renderedCards.length) {
+			return (
+				<div className="flex flex-1 items-center justify-center">{renderEmpty()}</div>
+			);
+		}
+
 		return (
 			<ul className="col-span-3 grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-3 2xl:grid-cols-4 xl:gap-x-8">
-				{patternsEdge && patternsEdge.length
-					? patternsEdge.map(renderCardItem)
-					: renderEmpty()}
+				{renderedCards}
 			</ul>
 		);
 	};
@@ -338,42 +469,59 @@ const HeaderToolBarPatterns = () => {
 				isFullScreen
 				__experimentalHideHeader
 			>
-				<div className="grid grid-cols-[1fr,auto] items-center">
-					<div className="col-span-2 md:col-span-1 flex min-w-0">
-						<h2 className="truncate text-base font-medium leading-7 text-slate-900">
-							Woostify Pattern Library
-						</h2>
-						<p className="ml-3 whitespace-nowrap rounded-lg bg-slate-100 py-0.5 px-2 text-xs font-semibold leading-6 text-slate-700 block">
-							{data ? patternsEdge.length : ""} patterns
-						</p>
-					</div>
-					<div className="pt-5 md:pt-0 col-span-2 md:col-span-1 md:ml-6 flex items-center">
-						{/* {renderFreeProTab()} */}
-						{/* <div className="ml-6 mr-3 h-5 w-px bg-slate-900/10 block"></div> */}
-						{renderSelectCategories()}
-						<a
-							href="https://boostifyblocks.com/"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="relative ml-2 h-9 w-9 items-center justify-center flex"
-						>
-							<ArrowTopRightOnSquareIcon className="w-4 h-4" />
-						</a>
-						<button
-							type="button"
-							onClick={closeModal}
-							className="relative ml-2 h-9 w-9 items-center justify-center flex hover:bg-gray-200 rounded-md transition-colors"
-							aria-label="Close modal"
-						>
-							<XMarkIcon className="w-4 h-4" />
-						</button>
-					</div>
+				<div className="flex h-full min-h-0 flex-col">
+					{/* Top bar: logo/title, tabs, actions */}
+					<div className="flex flex-shrink-0 flex-wrap items-center justify-between gap-y-3 border-b border-slate-200 pb-4">
+						<div className="flex min-w-0 items-center">
+							<Logo className="h-5 w-5 text-slate-900" />
+							<h2 className="ml-2 truncate text-base font-medium leading-7 text-slate-900">
+								Templates
+							</h2>
+							<p className="ml-3 whitespace-nowrap rounded-lg bg-slate-100 py-0.5 px-2 text-xs font-semibold leading-6 text-slate-700 block">
+								{data ? patternsEdge.length : ""} patterns
+							</p>
+						</div>
 
-					<div className="col-span-2 min-w-0">
-						<div className="mt-5 pt-6 border-t border-slate-200 focus:outline-none w-full h-full ">
-							{called && loading ? <Spinner /> : renderContent()}
+						<div className="h-9">{renderTopTabs()}</div>
+
+						<div className="flex items-center">
+							<a
+								href="https://boostifyblocks.com/"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="relative ml-2 h-9 w-9 items-center justify-center flex hover:bg-gray-100 rounded-md transition-colors"
+							>
+								<ArrowTopRightOnSquareIcon className="w-4 h-4" />
+							</a>
+							<button
+								type="button"
+								onClick={closeModal}
+								className="relative ml-2 h-9 w-9 items-center justify-center flex hover:bg-gray-200 rounded-md transition-colors"
+								aria-label="Close modal"
+							>
+								<XMarkIcon className="w-4 h-4" />
+							</button>
 						</div>
 					</div>
+
+					{/* Body: sidebar (search + categories) + pattern grid */}
+					{called && loading ? (
+						<div className="flex flex-1 min-h-0 items-center justify-center">
+							<Spinner />
+						</div>
+					) : (
+						<div className="flex flex-1 min-h-0 gap-6 pt-6">
+							<div className="hidden w-56 flex-shrink-0 flex-col gap-4 overflow-y-auto pr-2 sm:flex">
+								{renderSearchInput()}
+								{renderCategoryList()}
+							</div>
+
+							<div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+								<div className="mb-4 sm:hidden">{renderSearchInput()}</div>
+								{renderContent()}
+							</div>
+						</div>
+					)}
 				</div>
 			</Modal>
 		);
