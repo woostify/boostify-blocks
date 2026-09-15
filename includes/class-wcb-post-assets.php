@@ -35,6 +35,13 @@ class WCB_Post_Assets {
 	const PAGE_ASSETS_META_KEY = '_wcb_page_assets';
 
 	/**
+	 * Default cooldown time (in seconds) before re-attempting failed asset regeneration on front-end.
+	 *
+	 * @var int
+	 */
+	const REGENERATE_COOLDOWN = 3600;
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var WCB_Post_Assets|null
@@ -118,6 +125,12 @@ class WCB_Post_Assets {
 		add_action( 'wp_ajax_boostify_blocks_save_post_assets', array( $this, 'ajax_save_post_assets' ) );
 		add_action( 'wp_ajax_boostify_blocks_save_collected_css', array( $this, 'ajax_save_collected_css' ) );
 		add_action( 'wp_ajax_nopriv_boostify_blocks_save_collected_css', array( $this, 'ajax_save_collected_css' ) );
+		add_action( 'wp_ajax_boostify_blocks_get_fallback_posts', array( $this, 'ajax_get_fallback_posts' ) );
+
+		// WP-CLI command registration.
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			\WP_CLI::add_command( 'boostify-blocks fallback-status', array( $this, 'cli_fallback_status' ) );
+		}
 
 		// Ensure assets directory exists.
 		$this->ensure_assets_dir_exists();
@@ -238,8 +251,8 @@ class WCB_Post_Assets {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 				error_log( 'Boostify Blocks: CSS generation returned empty for post ' . $post_id . '. Keeping existing file.' );
 			}
-			// Still delete the meta so it will be regenerated on next visit.
-			delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );
+			// Record generation failure in meta to avoid re-running on every frontend hit.
+			$this->update_page_assets_meta( $post_id, true );
 			return false;
 		}
 
@@ -251,7 +264,7 @@ class WCB_Post_Assets {
 			$old_css = file_get_contents( $file );
 			if ( $old_css === $css ) {
 				// Content unchanged — update meta to prevent unnecessary regeneration.
-				$this->update_page_assets_meta( $post_id );
+				$this->update_page_assets_meta( $post_id, false );
 				$this->assets_file_handler = array( 'css_url' => $file_url );
 				return true;
 			}
@@ -262,7 +275,7 @@ class WCB_Post_Assets {
 		$result = file_put_contents( $file, $css, LOCK_EX );
 
 		if ( false !== $result ) {
-			$this->update_page_assets_meta( $post_id );
+			$this->update_page_assets_meta( $post_id, false );
 			$this->assets_file_handler = array( 'css_url' => $file_url );
 			return true;
 		}
@@ -271,18 +284,71 @@ class WCB_Post_Assets {
 	}
 
 	/**
-	 * Update the page assets meta for version tracking.
+	 * Update the page assets meta for version and generation tracking.
 	 *
-	 * Pattern from UAGB: stores version so we know when to regenerate.
+	 * Pattern from UAGB: stores version and generation status so we know when to regenerate.
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int  $post_id           Post ID.
+	 * @param bool $generation_failed Whether generation failed. Default false.
 	 */
-	private function update_page_assets_meta( $post_id ) {
+	private function update_page_assets_meta( $post_id, $generation_failed = false ) {
 		$meta = array(
-			'wcb_version' => BOOSTIFY_BLOCKS_VERSION,
-			'updated_at'  => time(),
+			'wcb_version'       => BOOSTIFY_BLOCKS_VERSION,
+			'updated_at'        => time(),
+			'generation_failed' => (bool) $generation_failed,
+			'last_attempt'      => time(),
 		);
 		update_post_meta( $post_id, self::PAGE_ASSETS_META_KEY, $meta );
+	}
+
+	/**
+	 * Get the cooldown period in seconds for failed regeneration attempts.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return int Cooldown in seconds.
+	 */
+	public function get_regenerate_cooldown( $post_id = 0 ) {
+		$settings = get_option( 'boostify_blocks_settings_options', array() );
+		$cooldown = isset( $settings['asset_regenerate_cooldown'] ) && is_numeric( $settings['asset_regenerate_cooldown'] )
+			? absint( $settings['asset_regenerate_cooldown'] )
+			: self::REGENERATE_COOLDOWN;
+
+		return (int) apply_filters( 'boostify_blocks_asset_regeneration_cooldown', $cooldown, $post_id );
+	}
+
+	/**
+	 * Determine if on-the-fly regeneration should be attempted for a post.
+	 *
+	 * Blocks on-the-fly attempts when a recent attempt failed within the cooldown
+	 * window on the current plugin version.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool True if regeneration should be attempted, false to skip.
+	 */
+	public function should_attempt_regeneration( $post_id ) {
+		$meta = get_post_meta( $post_id, self::PAGE_ASSETS_META_KEY, true );
+
+		if ( empty( $meta ) || ! is_array( $meta ) ) {
+			return true;
+		}
+
+		// If version changed, always allow retry.
+		if ( empty( $meta['wcb_version'] ) || BOOSTIFY_BLOCKS_VERSION !== $meta['wcb_version'] ) {
+			return true;
+		}
+
+		// If generation previously failed on this version:
+		if ( ! empty( $meta['generation_failed'] ) ) {
+			$last_attempt = isset( $meta['last_attempt'] ) ? absint( $meta['last_attempt'] ) : 0;
+			$cooldown     = $this->get_regenerate_cooldown( $post_id );
+
+			// Within cooldown window: do NOT re-attempt.
+			if ( ( time() - $last_attempt ) < $cooldown ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -292,7 +358,7 @@ class WCB_Post_Assets {
 	 * Returns true if:
 	 *   - No cached meta exists
 	 *   - Version has changed
-	 *   - CSS file is missing
+	 *   - CSS file is missing (unless in failure cooldown)
 	 *
 	 * @param int $post_id Post ID.
 	 * @return bool True if regeneration is needed.
@@ -309,6 +375,11 @@ class WCB_Post_Assets {
 		if ( BOOSTIFY_BLOCKS_VERSION !== $meta['wcb_version'] ) {
 			delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );
 			return true;
+		}
+
+		// Generation failed previously — respect cooldown.
+		if ( ! empty( $meta['generation_failed'] ) ) {
+			return $this->should_attempt_regeneration( $post_id );
 		}
 
 		// CSS file missing — regenerate.
@@ -405,7 +476,21 @@ class WCB_Post_Assets {
 		} else {
 			// File missing — attempt to generate on-the-fly for this request.
 			if ( 'post' === $this->request_context ) {
+				// Cooldown check: if recent generation failed on this version, skip heavy regeneration.
+				if ( ! $this->should_attempt_regeneration( $post_id ) ) {
+					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+						error_log( sprintf(
+							'[Boostify Blocks] Skipped on-the-fly CSS regeneration for post %d (cooldown active). Using fallback.',
+							$post_id
+						) );
+					}
+					$this->fallback_css = true;
+					return;
+				}
+
 				$this->regenerate_post_assets( $post_id );
+
 				// Try again after generation.
 				if ( $this->css_file_exists( $file_id ) ) {
 					wp_enqueue_style(
@@ -694,6 +779,181 @@ class WCB_Post_Assets {
 			)
 		);
 	}
+
+	/**
+	 * Recursively extract unique block names from parsed blocks.
+	 *
+	 * @param array $blocks Parsed blocks array.
+	 * @param array $names  Accumulator array.
+	 * @return array Unique block names.
+	 */
+	public function extract_block_names( array $blocks, array &$names = array() ) {
+		foreach ( $blocks as $block ) {
+			if ( ! empty( $block['blockName'] ) ) {
+				$names[ $block['blockName'] ] = true;
+			}
+			if ( ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
+				$this->extract_block_names( $block['innerBlocks'], $names );
+			}
+		}
+		return array_keys( $names );
+	}
+
+	/**
+	 * Get report of all posts where asset generation has failed.
+	 *
+	 * Queries posts with meta key _wcb_page_assets that have generation_failed = true.
+	 *
+	 * @return array List of posts with details (post_id, title, permalink, blocks_used, last_attempt).
+	 */
+	public function get_fallback_posts_report() {
+		global $wpdb;
+
+		$results = array();
+
+		if ( isset( $wpdb ) && ! empty( $wpdb->postmeta ) ) {
+			// Query directly for speed across large datasets.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$results = $wpdb->get_results(
+				"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_wcb_page_assets' AND meta_value LIKE '%\"generation_failed\";b:1%'",
+				ARRAY_A
+			);
+		} else {
+			// Fallback if $wpdb is unavailable.
+			$posts = get_posts(
+				array(
+					'post_type'      => 'any',
+					'post_status'    => 'any',
+					'posts_per_page' => 200,
+					'meta_query'     => array(
+						array(
+							'key'     => '_wcb_page_assets',
+							'value'   => '"generation_failed";b:1',
+							'compare' => 'LIKE',
+						),
+					),
+				)
+			);
+			if ( ! empty( $posts ) ) {
+				foreach ( $posts as $p ) {
+					$results[] = array(
+						'post_id'    => $p->ID,
+						'meta_value' => get_post_meta( $p->ID, '_wcb_page_assets', true ),
+					);
+				}
+			}
+		}
+
+		$report = array();
+
+		if ( ! empty( $results ) ) {
+			foreach ( $results as $row ) {
+				$post_id = (int) $row['post_id'];
+				$meta    = is_array( $row['meta_value'] ) ? $row['meta_value'] : maybe_unserialize( $row['meta_value'] );
+
+				if ( empty( $meta['generation_failed'] ) ) {
+					continue;
+				}
+
+				$post = get_post( $post_id );
+				if ( ! $post ) {
+					continue;
+				}
+
+				$blocks      = $this->get_blocks_from_post( $post_id );
+				$blocks_used = $this->extract_block_names( $blocks );
+
+				$last_attempt_ts        = ! empty( $meta['last_attempt'] ) ? (int) $meta['last_attempt'] : 0;
+				$last_attempt_formatted = 'N/A';
+				if ( $last_attempt_ts ) {
+					$last_attempt_formatted = function_exists( 'wp_date' )
+						? wp_date( 'Y-m-d H:i:s', $last_attempt_ts )
+						: ( function_exists( 'date_i18n' ) ? date_i18n( 'Y-m-d H:i:s', $last_attempt_ts ) : date( 'Y-m-d H:i:s', $last_attempt_ts ) );
+				}
+
+				$report[] = array(
+					'post_id'                => $post_id,
+					'title'                  => get_the_title( $post_id ),
+					'permalink'              => get_permalink( $post_id ),
+					'blocks_used'            => $blocks_used,
+					'last_attempt'           => $last_attempt_formatted,
+					'last_attempt_timestamp' => $last_attempt_ts,
+				);
+			}
+		}
+
+		return $report;
+	}
+
+	/**
+	 * AJAX endpoint: Get list of posts currently falling back.
+	 *
+	 * Action: wp_ajax_boostify_blocks_get_fallback_posts
+	 */
+	public function ajax_get_fallback_posts() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unauthorized user.', 'boostify-blocks' ) ), 403 );
+		}
+
+		$report = $this->get_fallback_posts_report();
+
+		wp_send_json_success(
+			array(
+				'count' => count( $report ),
+				'posts' => $report,
+			)
+		);
+	}
+
+	/**
+	 * WP-CLI command: Display fallback status and optionally force regeneration.
+	 *
+	 * Command: wp boostify-blocks fallback-status [--regenerate]
+	 *
+	 * @param array $args       Command positional arguments.
+	 * @param array $assoc_args Command associative arguments / flags.
+	 */
+	public function cli_fallback_status( $args, $assoc_args ) {
+		$force_regenerate = isset( $assoc_args['regenerate'] );
+
+		$report = $this->get_fallback_posts_report();
+
+		if ( empty( $report ) ) {
+			\WP_CLI::success( 'No posts are currently failing asset generation (no fallbacks active).' );
+			return;
+		}
+
+		\WP_CLI::line( sprintf( 'Found %d post(s) with failed asset generation:', count( $report ) ) );
+
+		if ( $force_regenerate ) {
+			\WP_CLI::line( 'Forcing asset regeneration for all failed posts (bypassing cooldown)...' );
+			foreach ( $report as $item ) {
+				$post_id = $item['post_id'];
+				\WP_CLI::line( sprintf( 'Regenerating Post #%d ("%s")...', $post_id, $item['title'] ) );
+				$result = $this->regenerate_post_assets( $post_id );
+				if ( ! empty( $result['success'] ) ) {
+					\WP_CLI::success( sprintf( 'Post #%d regenerated successfully.', $post_id ) );
+				} else {
+					$err = ! empty( $result['error'] ) ? $result['error'] : 'Unknown error / empty CSS';
+					\WP_CLI::warning( sprintf( 'Post #%d failed again: %s', $post_id, $err ) );
+				}
+			}
+			return;
+		}
+
+		$table_data = array();
+		foreach ( $report as $item ) {
+			$table_data[] = array(
+				'Post ID'      => $item['post_id'],
+				'Title'        => $item['title'],
+				'Blocks Used'  => implode( ', ', $item['blocks_used'] ),
+				'Last Attempt' => $item['last_attempt'],
+			);
+		}
+
+		\WP_CLI\Utils\format_items( 'table', $table_data, array( 'Post ID', 'Title', 'Blocks Used', 'Last Attempt' ) );
+	}
+
 	/**
 	 * Regenerate assets for ALL content containing Boostify blocks.
 	 *
@@ -888,9 +1148,20 @@ class WCB_Post_Assets {
 		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
 
 		if ( empty( $css ) ) {
-			// No Boostify blocks in this post — delete file and meta.
-			$this->delete_css_file( $post_id );
-			$this->delete_js_file( $post_id );
+			// Remove stale asset files if any.
+			$file_css = $this->get_css_file_path( $post_id );
+			if ( file_exists( $file_css ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				unlink( $file_css );
+			}
+			$file_js = $this->get_js_file_path( $post_id );
+			if ( file_exists( $file_js ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				unlink( $file_js );
+			}
+
+			// Record failure state in meta to avoid re-running on every frontend hit.
+			$this->update_page_assets_meta( $post_id, true );
 			return false;
 		}
 
