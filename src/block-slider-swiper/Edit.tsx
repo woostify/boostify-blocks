@@ -54,17 +54,16 @@ export const SLIDER_ITEM_DEMO: string[] = [
 	"boostify-blocks/slider-swiper-child",
 ];
 
-// Phải khớp với BREAKPOINT_TABLET / BREAKPOINT_DESKTOP bên frontend (view.js)
+// Must match BREAKPOINT_TABLET / BREAKPOINT_DESKTOP on the frontend (view.js)
 const BREAKPOINT_TABLET = 768;
 const BREAKPOINT_DESKTOP = 1024;
 
-// Giữ reference cố định cho modules để swiper/react không destroy + recreate instance mỗi lần render
+// Stable reference so swiper/react doesn't destroy+recreate the instance on every render
 const SWIPER_MODULES = [Navigation, Pagination, Autoplay];
 
-// Patch mount() của Swiper để hỗ trợ element trong Gutenberg iframe (cross-realm DOM node)
-// Swiper gốc kiểm tra `initialEl instanceof HTMLElement`. Trong Gutenberg iframe,
-// element thuộc document của iframe nên `instanceof topWindow.HTMLElement` bị false,
-// khiến mount() trả về false và Swiper không bao giờ khởi tạo (không tính width, không gán class active).
+// Patch Swiper's mount() to support elements inside the Gutenberg iframe (cross-realm DOM node).
+// Swiper's original check `initialEl instanceof HTMLElement` is false for iframe elements
+// (different HTMLElement class per realm), so mount() always returns false and never initializes.
 if (!(SwiperCore.prototype as any).__wcbMountGuarded) {
 	SwiperCore.prototype.mount = function (this: any, element?: any) {
 		if (this.mounted) return true;
@@ -181,7 +180,7 @@ if (!(SwiperCore.prototype as any).__wcbMountGuarded) {
 	(SwiperCore.prototype as any).__wcbMountGuarded = true;
 }
 
-// Patch update() của Swiper để tránh crash khi instance đã bị destroy trong editor
+// Patch Swiper's update() to avoid crashing when the instance was already destroyed in the editor
 if (!(SwiperCore.prototype as any).__wcbUpdateGuarded) {
 	const originalUpdate = SwiperCore.prototype.update;
 	SwiperCore.prototype.update = function (this: any, ...args: any[]) {
@@ -191,15 +190,12 @@ if (!(SwiperCore.prototype as any).__wcbUpdateGuarded) {
 	(SwiperCore.prototype as any).__wcbUpdateGuarded = true;
 }
 
-// Module Navigation của Swiper CÓ THỂ tự chèn icon mũi tên mặc định vào nút
-// prev/next đang rỗng (addIcons: true, xem navigation.mjs#initButton), nhưng
-// nó tạo icon đó bằng `document.createElement()`/`appendChild` thuần - biến
-// `document` trong code của Swiper trỏ vào document của CỬA SỔ ADMIN (top
-// window), không phải document của iframe Gutenberg, nên việc gắn node vừa
-// tạo vào 1 nút đang nằm trong iframe sẽ thất bại âm thầm (frontend không có
-// iframe nên cơ chế mặc định này vẫn chạy đúng ở đó). Vì vậy phải tự vẽ icon
-// bằng React thay vì để Swiper tự chèn - React luôn tạo node đúng document
-// của nơi nó đang render, kể cả bên trong iframe.
+// Swiper's Navigation module can auto-insert a default arrow icon into empty
+// prev/next buttons (addIcons: true), but it uses the admin (top window)
+// `document`, not the Gutenberg iframe's document, so attaching to a button
+// inside the iframe silently fails (frontend has no iframe, so it works there).
+// Draw the icon with React instead - React always creates nodes in the
+// correct document, iframe or not.
 function ArrowIcon({ direction }: { direction: "next" | "prev" }) {
 	return (
 		<svg
@@ -222,53 +218,46 @@ function ArrowIcon({ direction }: { direction: "next" | "prev" }) {
 }
 
 // ============================================================
-// TỔNG QUAN LUỒNG XỬ LÝ CỦA COMPONENT Edit NÀY
+// OVERVIEW of this Edit component
 // ============================================================
-// 1. Đồng bộ số lượng slide con (innerBlocks) theo attribute
-//    general_general.numberofTestimonials - tự thêm/xoá block con
-//    "slider-swiper-child" cho khớp số lượng người dùng chọn trong panel.
+// 1. Syncs child slide count (innerBlocks) with
+//    general_general.numberofTestimonials - adds/removes
+//    "slider-swiper-child" blocks to match the panel value.
 //
-// 2. Theo dõi block con nào đang được chọn (isParentSelected /
-//    selectedChildId) để: (a) hiện đúng InspectorControls (panel bên phải)
-//    của block cha hoặc block con tương ứng, (b) tự động slideTo() tới đúng
-//    slide khi người dùng click chọn 1 slide con trong list view/canvas.
+// 2. Tracks which child block is selected (isParentSelected /
+//    selectedChildId) to: (a) show the right InspectorControls for the
+//    parent or the matching child, (b) slideTo() the right slide when a
+//    child is selected in list view/canvas.
 //
-// 3. Khởi tạo <Swiper> (từ swiper/react) với cấu hình lấy từ attributes -
-//    đây là phần PHỨC TẠP NHẤT của file, vì Gutenberg render canvas trong
-//    1 <iframe> riêng nhưng bundle JS của block lại chạy trong document của
-//    cửa sổ admin (top window). Hệ quả:
-//      - Không thể dùng document.querySelector('.class-nao-do') để lấy
-//        phần tử nav/pagination thật (querySelector chạy trên document admin,
-//        không "nhìn" vào bên trong iframe được).
-//      - Vì vậy: lúc khởi tạo <Swiper>, prop navigation/pagination vẫn phải
-//        truyền tạm 1 chuỗi selector (để Swiper tạo đúng cấu trúc module),
-//        nhưng chuỗi đó THẤT BẠI trong iframe - swiper.navigation.prevEl /
-//        swiper.pagination.el ban đầu sẽ rỗng.
-//      - reinitNavigationPagination() sau đó ghi đè lại el bằng REF THẬT của
-//        React (prevElRef/nextElRef/paginationRef - luôn đúng vì React tự
-//        gắn ref vào đúng DOM node, dù node đó nằm trong iframe hay không),
-//        rồi gọi lại init()/render()/update() của từng module để nó nhận
-//        đúng phần tử thật.
-//      - scheduleReinitNavigationPagination() bọc lần gọi đầu trong
-//        setTimeout (đẩy ra tick kế tiếp, đảm bảo React đã gắn xong toàn bộ
-//        ref của các div sibling trước khi chạy - xem thêm comment ngay tại
-//        hàm này), và có vòng lặp retry làm lưới an toàn cho các lần
-//        Gutenberg destroy/recreate lại instance Swiper giữa chừng.
-//      - Icon mũi tên (ArrowIcon) phải tự vẽ bằng React thay vì để Swiper tự
-//        chèn icon mặc định của nó - lý do xem comment ngay phía trên
-//        component ArrowIcon bên dưới (cũng là vấn đề iframe/document khác).
+// 3. Initializes <Swiper> (swiper/react) from attributes - the trickiest
+//    part, since Gutenberg renders the canvas in its own <iframe> while the
+//    block's JS runs in the admin (top window) document:
+//      - document.querySelector() from admin can't see into the iframe, so
+//        navigation/pagination still get a selector string on init (so
+//        Swiper builds the right module structure), which fails silently
+//        inside the iframe - swiper.navigation.prevEl / pagination.el start
+//        out empty.
+//      - reinitNavigationPagination() then overwrites el with the real React
+//        refs (prevElRef/nextElRef/paginationRef, always correct regardless
+//        of iframe), and re-runs each module's init()/render()/update().
+//      - scheduleReinitNavigationPagination() defers the first attempt via
+//        setTimeout (so React has finished attaching sibling refs) and
+//        retries as a safety net for Gutenberg destroying/recreating the
+//        Swiper instance mid-flight.
+//      - ArrowIcon is drawn with React instead of Swiper's default icon -
+//        see the comment above the ArrowIcon component (another
+//        iframe/document mismatch).
 //
-// 4. GlobalCss.tsx (render trong return() bên dưới) chịu trách nhiệm sinh CSS
-//    động (màu, size, khoảng cách...) từ toàn bộ style_* attributes, áp dụng
-//    cho cả block cha lẫn nav/dots của Swiper.
+// 4. GlobalCss.tsx (rendered below) generates dynamic CSS (color, size,
+//    spacing...) from the style_* attributes, for both the parent block and
+//    Swiper's nav/dots.
 //
-// 5. forceSliderRecalc() được gọi lại mỗi khi số slide/breakpoint/attributes
-//    đổi - vì Swiper cần update() lại snapGrid/kích thước slide, rồi render
-//    lại pagination bullet cho khớp, nếu không dots có thể hiện sai số lượng
-//    hoặc không hiện.
+// 5. forceSliderRecalc() reruns whenever slide count/breakpoints/attributes
+//    change, since Swiper needs to update() its snapGrid/slide sizes and
+//    re-render pagination bullets to match.
 // ============================================================
-// equalizeItemHeights: đồng bộ chiều cao các slide con
-// Đảm bảo tất cả slide mở rộng hết cỡ và có chiều cao đồng đều
+// equalizeItemHeights: syncs child slide heights so all slides expand
+// fully and stay the same height
 // ============================================================
 function equalizeItemHeights(wrap: HTMLElement | null) {
 	if (!wrap) return;
@@ -318,12 +307,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const wrapBlockProps = useBlockProps({ ref });
 	const swiperRef = useRef<SwiperInstance | null>(null);
 
-	// ============================================================
-	// QUAN TRỌNG: Dùng ref thật thay vì selector string
-	// Vì Gutenberg canvas nằm trong <iframe>, document.querySelector
-	// từ cửa sổ admin không bao giờ tìm thấy element bên trong iframe.
-	// Ref của React thì gắn trực tiếp vào DOM node thật nên luôn đúng.
-	// ============================================================
+	// Use real React refs instead of selector strings: the canvas is inside
+	// an <iframe>, so document.querySelector from admin can't see into it,
+	// while a ref always points to the actual DOM node.
 	const prevElRef = useRef<HTMLDivElement | null>(null);
 	const nextElRef = useRef<HTMLDivElement | null>(null);
 	const paginationRef = useRef<HTMLDivElement | null>(null);
@@ -450,14 +436,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 
 		const timeoutId = setTimeout(() => {
-			// Đọc lại danh sách block MỚI NHẤT từ store thay vì dùng
-			// `innerBlocks`/`currentNumber` đã chụp lúc effect này chạy.
-			// Nếu trong lúc chờ 100ms có một thay đổi khác (vd: đổi cột khiến
-			// text reflow → block con re-render) cũng làm effect này chạy lại,
-			// dùng snapshot cũ để tính clientId cần xoá/insert-index có thể
-			// nhắm vào block đã bị xoá/thêm bởi lần chạy khác → Gutenberg còn
-			// clientId "ma" trong block order → core crash
-			// "Cannot read properties of null (reading 'name')" khi duyệt qua.
+			// Re-read the LATEST blocks from the store instead of the
+			// `innerBlocks`/`currentNumber` snapshot captured when this effect
+			// ran. If another change fires this effect again during the 100ms
+			// wait, using the stale snapshot could target a clientId already
+			// removed/added elsewhere, leaving a "ghost" clientId in block
+			// order and crashing core with "Cannot read properties of null
+			// (reading 'name')".
 			const latestBlocks =
 				wp.data.select("core/block-editor").getBlocks(clientId) || [];
 			const latestNumber = latestBlocks.length;
@@ -467,25 +452,22 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				const newBlocks = Array.from({ length: blocksToAdd }, () =>
 					wp.blocks.createBlock("boostify-blocks/slider-swiper-child")
 				);
-				// Chèn cả lô trong 1 dispatch thay vì gọi insertBlock() lặp lại
-				// nhiều lần - tránh nhiều lần cập nhật store xen kẽ nhau.
+				// Insert the whole batch in one dispatch instead of repeated
+				// insertBlock() calls, to avoid interleaved store updates.
 				insertBlocks(newBlocks, latestNumber, clientId, false);
 			} else if (latestNumber > targetNumber) {
 				const blocksToRemove = latestNumber - targetNumber;
 				const clientIdsToRemove = latestBlocks
 					.slice(-blocksToRemove)
 					.map((block: any) => block.clientId);
-				// Xoá cả lô trong 1 dispatch (selectPrevious=false) thay vì gọi
-				// removeBlock() lặp lại từng cái: removeBlock() mặc định tự
-				// chọn lại 1 block "trước đó" sau mỗi lần xoá, nên khi xoá
-				// nhiều block liên tiếp trong forEach, nó có thể tự chọn ngay
-				// vào 1 block KHÁC cũng sắp bị xoá ở lượt kế tiếp trong cùng
-				// forEach - đúng lúc đó Gutenberg (BlockActions) đọc lại
-				// getBlocksByClientId() cho clientId vừa bị xoá, trả về null,
-				// và crash "Cannot read properties of null (reading 'name')"
-				// khi duyệt .every(). removeBlocks() xoá nguyên lô, chỉ 1 lần
-				// cập nhật store, rồi selectBlock(clientId) bên dưới tự chọn
-				// lại block cha - không cần Gutenberg tự chọn hộ.
+				// Remove the whole batch in one dispatch (selectPrevious=false)
+				// instead of repeated removeBlock() calls: removeBlock()
+				// auto-selects a "previous" block after each removal, which in
+				// a forEach loop could select a block that's about to be
+				// removed next - Gutenberg then reads a stale clientId and
+				// crashes with "Cannot read properties of null (reading
+				// 'name')". removeBlocks() removes the batch in one store
+				// update; selectBlock(clientId) below reselects the parent.
 				removeBlocks(clientIdsToRemove, false);
 			}
 
@@ -801,6 +783,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			});
 		}
 	}, [innerBlocks.length]);
+	
 	const {
 		animationDuration,
 		autoplaySpeed,
@@ -827,12 +810,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				: Number(columnsDesktop)) ||
 		1;
 
-	// ============================================================
-	// forceSliderRecalc: gọi update() + ép pagination render lại
-	// Cập nhật trực tiếp params.breakpoints và params.slidesPerView
-	// vào instance Swiper để khi thay đổi columns ở sidebar, slider
-	// trong editor lập tức đổi theo mà không cần reload trang.
-	// ============================================================
+	// forceSliderRecalc: calls update() and forces pagination to re-render.
+	// Writes params.breakpoints/slidesPerView directly onto the Swiper
+	// instance so sidebar column changes apply instantly without reload.
 	const forceSliderRecalc = useCallback(() => {
 		const swiper = swiperRef.current;
 		if (swiper && !swiper.destroyed && swiper.el && swiper.el.isConnected) {
@@ -851,14 +831,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				},
 			};
 
-			// Cập nhật breakpoints mới
 			swiper.params.breakpoints = newBreakpoints;
 			if (swiper.originalParams) {
 				swiper.originalParams.breakpoints = { ...newBreakpoints };
 				swiper.originalParams.slidesPerView = colsMob;
 			}
 
-			// Trong editor, hiển thị số columns tương ứng với thiết bị đang xem/chỉnh sửa
+			// In the editor, show the column count for the device being edited
 			swiper.params.slidesPerView = activeCols;
 
 			swiper.currentBreakpoint = undefined;
@@ -868,7 +847,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			}
 
 			if (swiper.pagination) {
-				// Ép lại el từ ref thật trước khi render
+				// Force el back to the real ref before rendering
 				if (
 					paginationRef.current &&
 					swiper.params.pagination &&
@@ -885,8 +864,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	}, [columnsDesktop, columnsTablet, columnsMobile, activeCols]);
 
-	// Progressive recalculation để đảm bảo kích thước slider tự mở rộng
-	// đúng khi các block con (RichText, Button, GlobalCss) lần lượt mount xong
+	// Progressive recalculation so the slider resizes correctly as child
+	// blocks (RichText, Button, GlobalCss) finish mounting one by one
 	const progressiveSliderRecalc = useCallback(
 		(instance?: SwiperInstance | null) => {
 			const delays = [50, 150, 300, 500, 800, 1200, 1800, 2500];
@@ -921,14 +900,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 	}, [innerBlocks.length, forceSliderRecalc, progressiveSliderRecalc]);
 
-	// Đổi số DÒNG TEXT (gõ nội dung khiến chữ xuống hàng) không đổi SỐ LƯỢNG
-	// slide con, nên effect trên (khoá theo innerBlocks.length) không chạy
-	// lại. `innerBlocks` (nguyên mảng, không phải .length) đổi reference mỗi
-	// khi 1 thuộc tính bất kỳ của BẤT KỲ slide con nào đổi (kể cả gõ text),
-	// vì getBlocks() trả về mảng/object mới phản ánh state mới nhất - dùng nó
-	// làm dependency để bắt đúng lúc cần tính lại chiều cao chung (max) của
-	// slider, không phụ thuộc vào MutationObserver quan sát DOM bên trong
-	// iframe của canvas Editor (vốn có thể trễ/không ổn định).
+	// Text wrapping from typing doesn't change slide COUNT, so the effect
+	// above (keyed on innerBlocks.length) won't rerun. `innerBlocks` (the
+	// array itself, not .length) gets a new reference whenever any child
+	// attribute changes, since getBlocks() always returns a fresh array -
+	// use it as a dependency to catch when max height needs recalculating,
+	// without relying on a MutationObserver inside the canvas iframe (which
+	// can be laggy/unreliable).
 	useEffect(() => {
 		if (innerBlocks.length === 0) return;
 		const t = setTimeout(() => {
@@ -1015,16 +993,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const showArrows = showArrowsDots !== "Dot";
 	const showDots = showArrowsDots !== "Arrow";
 
-	// Selector scope dùng parentCssClass (có sẵn ngay từ clientId)
+	// Selector scope from parentCssClass (available right away from clientId)
 	const swiperSelectorScope = `.${parentCssClass}`;
 
-	// ============================================================
-	// reinitNavigationPagination
-	// Đây là hàm quan trọng nhất để dots hiện ở Editor.
-	// Sau khi Swiper init xong, ta ghi đè prevEl / nextEl / pagination.el
-	// bằng ref thật (vì selector string fail trong iframe).
-	// Trả về true nếu thành công, false nếu ref chưa sẵn sàng → sẽ retry.
-	// ============================================================
+	// reinitNavigationPagination: the key function for dots to show in the
+	// editor. After Swiper inits, overwrite prevEl/nextEl/pagination.el with
+	// the real refs (selector strings fail in the iframe). Returns true on
+	// success, false if refs aren't ready yet (caller retries).
 	const reinitNavigationPagination = useCallback(
 		(swiper: SwiperInstance | null) => {
 			if (
@@ -1038,7 +1013,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 			let ready = true;
 
-			// ----- Navigation (mũi tên) -----
+			// ----- Navigation (arrows) -----
 			if (
 				swiper.params.navigation &&
 				typeof swiper.params.navigation !== "boolean"
@@ -1072,15 +1047,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				} else {
 					const paginationEl = paginationRef.current;
 
-					// Giống pattern của Spectra (setSwiperNavigationPagination trong
-					// wp-spectra-master/src/blocks/slider/render.js): luôn ép el về
-					// ref thật rồi init/render/update thẳng, không cần destroy()
-					// trước - Swiper's pagination.init() tự xử lý việc đổi el.
+					// Same pattern as Spectra (setSwiperNavigationPagination in
+					// wp-spectra-master/src/blocks/slider/render.js): force el to
+					// the real ref then init/render/update directly, no destroy()
+					// needed - pagination.init() handles the el swap itself.
 					swiper.params.pagination.el = paginationEl;
 					swiper.params.pagination.clickable = true;
 					swiper.pagination.init();
 
-					// render() chính là chỗ tạo ra các <span class="swiper-pagination-bullet">
+					// render() creates the <span class="swiper-pagination-bullet"> elements
 					swiper.pagination.render();
 					swiper.pagination.update();
 				}
@@ -1091,17 +1066,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		[]
 	);
 
-	// ============================================================
-	// scheduleReinitNavigationPagination
-	// Lần thử đầu tiên bị đẩy ra setTimeout (giống pattern của Spectra ở
-	// wp-spectra-master/src/blocks/slider/render.js#setSwiperNavigationPagination):
-	// onAfterInit của swiper/react fire ngay trong callback ref gắn container,
-	// tức là TRƯỚC KHI React kịp gắn ref của các div sibling (nav/pagination).
-	// Đẩy ra 1 tick (setTimeout 0ms) đảm bảo commit của React đã xong hẳn nên
-	// hầu như luôn thành công ngay từ lần thử đầu.
-	// Vẫn giữ vòng retry phía sau làm lưới an toàn cho trường hợp Gutenberg
-	// destroy/recreate Swiper instance giữa chừng.
-	// ============================================================
+	// scheduleReinitNavigationPagination: the first attempt is deferred via
+	// setTimeout (same pattern as Spectra's setSwiperNavigationPagination),
+	// since swiper/react's onAfterInit fires inside the container ref
+	// callback, BEFORE React attaches sibling refs (nav/pagination). A 0ms
+	// setTimeout waits for React's commit to finish, so the first attempt
+	// almost always succeeds. The retry loop is a safety net for Gutenberg
+	// destroying/recreating the Swiper instance mid-flight.
 	const scheduleReinitNavigationPagination = useCallback(
 		(instanceOverride?: SwiperInstance | null) => {
 			let attempts = 0;
@@ -1109,8 +1080,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			const retryDelay = 40; // ms
 
 			const tryReinit = () => {
-				// Lần đầu dùng instanceOverride (từ onAfterInit),
-				// các lần sau luôn lấy swiperRef.current mới nhất
+				// First attempt uses instanceOverride (from onAfterInit),
+				// later attempts always use the latest swiperRef.current
 				const swiper =
 					attempts === 0
 						? instanceOverride ?? swiperRef.current
@@ -1149,20 +1120,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		swiperRef.current = null;
 	}, []);
 
-	// ============================================================
 	// swiperCommonProps
-	// - Memo để tránh destroy/recreate instance không cần thiết
-	// - Truyền selector string cho navigation/pagination (giống Spectra)
-	//   dù selector sẽ fail trong iframe, nhưng giúp Swiper khởi tạo module đúng.
-	// - Việc bind thật sự được làm trong reinitNavigationPagination bằng ref.
-	// ============================================================
+	// - Memoized to avoid unnecessary instance destroy/recreate
+	// - Passes a selector string for navigation/pagination (like Spectra) so
+	//   Swiper builds the module structure correctly, even though it fails
+	//   in the iframe - the real binding happens via ref in reinitNavigationPagination.
 	const swiperCommonProps = useMemo(
 		() => ({
 			modules: SWIPER_MODULES,
 			observer: true,
 			observeParents: true,
 			observeSlideChildren: true,
-			loop: false, // Bắt buộc false ở Editor để tránh clone slide → duplicate InspectorControls
+			loop: false, // Must be false in the editor to avoid cloned slides duplicating InspectorControls
 			speed: animationDuration || 500,
 			autoplay: isAutoPlay
 				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
@@ -1183,9 +1152,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					nextEl: `${swiperSelectorScope} .swiper-button-next`,
 				}
 				: false,
-			// Quan trọng: truyền el bằng selector (giống Spectra)
-			// Dù selector fail trong iframe, module Pagination vẫn được khởi tạo đúng cấu trúc.
-			// Sau đó reinitNavigationPagination sẽ ghi đè el bằng paginationRef.current
+			// Selector el (like Spectra): fails in the iframe but still lets
+			// the Pagination module init with the right structure;
+			// reinitNavigationPagination later overwrites el with paginationRef.current
 			pagination: showDots
 				? {
 					el: `${swiperSelectorScope} .swiper-pagination`,
@@ -1216,12 +1185,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		]
 	);
 
-	// Khi toggle arrows / dots → reinit lại
+	// Reinit when arrows/dots are toggled
 	useEffect(() => {
 		scheduleReinitNavigationPagination();
 	}, [showArrows, showDots, scheduleReinitNavigationPagination]);
 
-	// Khi số slide thay đổi → đợi React gắn xong ref rồi reinit
+	// Reinit when slide count changes, after React attaches refs
 	useEffect(() => {
 		if (innerBlocks.length > 0 && showDots) {
 			const t = setTimeout(() => {
@@ -1232,12 +1201,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	}, [innerBlocks.length, showDots, scheduleReinitNavigationPagination]);
 
 	const renderSliderContent = () => {
-		// ============================================================
-		// renderNav
-		// - Chỉ render DIV RỖNG + gắn ref
-		// - KHÔNG BAO GIỜ hard-code các <span class="swiper-pagination-bullet">
-		// - Swiper sẽ tự gọi pagination.render() để tạo bullets
-		// ============================================================
+		// renderNav: only renders an empty div + ref, never hard-codes
+		// <span class="swiper-pagination-bullet"> - Swiper's pagination.render() creates those
 		const renderNav = () => (
 			<>
 				{showArrows && (
@@ -1251,7 +1216,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					</>
 				)}
 
-				{/* CHỈ render div rỗng + ref. Swiper sẽ tự thêm class và bullets */}
+				{/* Empty div + ref only; Swiper adds classes and bullets itself */}
 				{showDots && (
 					<div
 						className="swiper-pagination"
