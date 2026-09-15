@@ -286,15 +286,15 @@ const GlobalCss: FC<Props> = (attrs) => {
                     styles={[
                         getTypographyStyles({
                             typography: style_desination.typography,
-                            className: `${WRAP_CLASSNAME} .wcb-icon-box__number`,
+                            className: `${WRAP_CLASSNAME} .wcb-icon-box__designation`,
                         }),
                         getStyleObjectFromResponsiveAttr({
-                            className: `${WRAP_CLASSNAME} .wcb-icon-box__number`,
+                            className: `${WRAP_CLASSNAME} .wcb-icon-box__designation`,
                             value: style_desination.marginBottom,
                             prefix: "marginBottom",
                         }),
                         {
-                            [`${WRAP_CLASSNAME} .wcb-icon-box__number`]: {
+                            [`${WRAP_CLASSNAME} .wcb-icon-box__designation`]: {
                                 color: style_desination.textColor,
                             },
                         },

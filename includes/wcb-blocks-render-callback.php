@@ -97,6 +97,23 @@ function boostify_blocks_block_testimonials_render_callback($attributes, $conten
 }
 
 //============================================= block 1 ===============================================================
+function boostify_blocks_block_testimonials_swiper_render_callback($attributes, $content)
+{
+    if (!is_admin()) {
+        // Enqueue Swiper's bundled core + navigation/pagination module
+        // styles/script - same vendored bundle and handle the Slider
+        // (Swiper) block uses (boostify_blocks_block_slider_swiper_render_callback()
+        // above); wp_enqueue_style()/wp_enqueue_script() dedupe by handle,
+        // so enqueuing it again here is safe whether or not that block is
+        // also on the page.
+        wp_enqueue_style( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.css', array(), BOOSTIFY_BLOCKS_VERSION );
+        wp_enqueue_script( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.js', array(), BOOSTIFY_BLOCKS_VERSION, true );
+    }
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
+    return $content;
+}
+
+//============================================= block 1 ===============================================================
 function boostify_blocks_block_form_render_callback($attributes, $content)
 // NOTE: reCAPTCHA keys may not be set yet; update after configuration.
 // This section requires JS for AJAX and reCAPTCHA functionality.
@@ -163,6 +180,24 @@ function boostify_blocks_block_slider_render_callback($attributes, $content)
     return $content;
 }
 
+//============================================= block 1 ===============================================================
+function boostify_blocks_block_slider_swiper_render_callback($attributes, $content)
+{
+    if (!is_admin()) {
+        // Enqueue Swiper's bundled core + navigation/pagination module styles/script.
+        // Vendored the same way public/slick/* is for the original Slider block; the
+        // classic script below exposes a global `Swiper`, which the Interactivity
+        // store (public/js/slider-swiper/boostify-blocks-slider-swiper-view.js,
+        // enqueued as a script module in wcb-enqueue-scripts.php) reads from
+        // `window.Swiper`. Module scripts always run after classic scripts have
+        // finished executing, so load order between the two is safe.
+        wp_enqueue_style( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.css', array(), BOOSTIFY_BLOCKS_VERSION );
+        wp_enqueue_script( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.js', array(), BOOSTIFY_BLOCKS_VERSION, true );
+    }
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
+    return $content;
+}
+
 if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_styles')) :
     function boostify_blocks_enqueue_script_block_commoncss_frontend_styles($deps = ['wp-element', 'jquery'])
     {
@@ -170,6 +205,28 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
             $asset     = require BOOSTIFY_BLOCKS_PATH . 'build/block-common-css/FrontendStyles.asset.php';
             $asset_ver = $asset['version'] ?? BOOSTIFY_BLOCKS_VERSION;
             wp_enqueue_script('boostify-blocks-commoncss-frontend', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/FrontendStyles.js', $deps, $asset_ver, true);
+
+            // When file generation is enabled, signal the JS.
+            // boostify_blocks_file_css_loaded: true if a static CSS file was enqueued → skip inline CSS injection.
+            // boostify_blocks_file_generation_enabled: true if the setting is ON → collect CSS for saving.
+            // boostify_blocks_fallback_css: true if file should exist but doesn't → inject inline CSS anyway.
+            if (class_exists('WCB_Post_Assets')) {
+                $assets = WCB_Post_Assets::instance();
+                if ($assets->is_file_generation_enabled()) {
+                    wp_add_inline_script(
+                        'boostify-blocks-commoncss-frontend',
+                        'window.boostify_blocks_file_generation_enabled = true;' .
+                        'window.boostify_blocks_file_css_loaded = ' . ($assets->is_file_css_enqueued() ? 'true' : 'false') . ';' .
+                        'window.boostify_blocks_fallback_css = ' . ($assets->is_fallback_css() ? 'true' : 'false') . ';' .
+                        'window.boostify_blocks_post_id = ' . intval(get_queried_object_id()) . ';' .
+                        'window.boostify_blocks_ajax_object = ' . wp_json_encode(array(
+                            'ajaxurl' => admin_url('admin-ajax.php'),
+                            'nonce'   => wp_create_nonce('boostifyblocks_dashboard_settings_nonce'),
+                        )) . ';',
+                        'before'
+                    );
+                }
+            }
 
             // Expose theme defaults on the frontend so JS helpers can read them.
             static $boostify_blocks_theme_defaults_enqueued = false;
