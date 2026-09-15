@@ -168,32 +168,47 @@ $apply_border_styles = function ( $sel, $border_data ) use ( &$selectors, &$t_se
 	}
 
 	$main = $border_data['mainSettings'] ?? null;
+	// Fallback if border properties are passed flat without mainSettings wrapper.
+	if ( empty( $main ) && ( isset( $border_data['width'] ) || isset( $border_data['style'] ) || isset( $border_data['color'] ) || isset( $border_data['top'] ) || isset( $border_data['right'] ) || isset( $border_data['bottom'] ) || isset( $border_data['left'] ) ) ) {
+		$main = $border_data;
+	}
+
 	if ( ! empty( $main ) && is_array( $main ) ) {
 		$is_4side = isset( $main['top'] ) || isset( $main['right'] ) || isset( $main['bottom'] ) || isset( $main['left'] );
 		if ( $is_4side ) {
 			foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 				if ( ! empty( $main[ $side ] ) && is_array( $main[ $side ] ) ) {
 					$s  = $main[ $side ];
-					$w  = $s['width'] ?? '1px';
-					$st = $s['style'] ?? 'none';
+					$w  = WCB_Block_Helper::get_css_value( $s['width'] ?? '1px' );
+					$st = $s['style'] ?? '';
 					$c  = $s['color'] ?? '';
-					if ( '' !== $c ) {
-						$selectors[ $sel ][ 'border-' . $side ] = $w . ' ' . $st . ' ' . $c;
+					if ( 'none' === $st ) {
+						$selectors[ $sel ][ 'border-' . $side ] = 'none';
+					} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) || ! empty( $s['width'] ) ) {
+						if ( empty( $st ) ) {
+							$st = 'solid';
+						}
+						$selectors[ $sel ][ 'border-' . $side ] = trim( $w . ' ' . $st . ' ' . $c );
 					}
 				}
 			}
 		} else {
-			$w  = $main['width'] ?? '1px';
-			$st = $main['style'] ?? 'none';
+			$w  = WCB_Block_Helper::get_css_value( $main['width'] ?? '1px' );
+			$st = $main['style'] ?? '';
 			$c  = $main['color'] ?? '';
-			if ( '' !== $c ) {
-				$selectors[ $sel ]['border'] = $w . ' ' . $st . ' ' . $c;
+			if ( 'none' === $st ) {
+				$selectors[ $sel ]['border'] = 'none';
+			} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) || ! empty( $main['width'] ) ) {
+				if ( empty( $st ) ) {
+					$st = 'solid';
+				}
+				$selectors[ $sel ]['border'] = trim( $w . ' ' . $st . ' ' . $c );
 			}
 		}
+	}
 
-		if ( ! empty( $border_data['hoverColor'] ) ) {
-			$selectors[ $sel . ':hover' ]['border-color'] = $border_data['hoverColor'];
-		}
+	if ( ! empty( $border_data['hoverColor'] ) ) {
+		$selectors[ $sel . ':hover' ]['border-color'] = $border_data['hoverColor'];
 	}
 
 	// Border Radius.
@@ -341,11 +356,13 @@ if ( ! empty( $attr['styles_separator'] ) ) {
 
 	// Border style.
 	if ( ! empty( $sep['border'] ) && is_array( $sep['border'] ) ) {
-		$w  = $sep['border']['width'] ?? '1px';
+		$w  = WCB_Block_Helper::get_css_value( $sep['border']['width'] ?? '1px' );
 		$st = $sep['border']['style'] ?? 'solid';
 		$c  = $sep['border']['color'] ?? '#d1d5db';
-		if ( '' !== $c ) {
-			$selectors[ $sep_sel ]['border'] = $w . ' ' . $st . ' ' . $c;
+		if ( 'none' === $st ) {
+			$selectors[ $sep_sel ]['border'] = 'none';
+		} else {
+			$selectors[ $sep_sel ]['border'] = trim( $w . ' ' . $st . ' ' . $c );
 		}
 	}
 

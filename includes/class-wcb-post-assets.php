@@ -104,7 +104,7 @@ class WCB_Post_Assets {
 		require_once BOOSTIFY_BLOCKS_PATH . 'includes/class-wcb-block-helper.php';
 
 		$settings = get_option( 'boostify_blocks_settings_options', array() );
-		$this->file_generation_enabled = isset( $settings['enableFileGeneration'] ) && 'true' === $settings['enableFileGeneration'];
+		$this->file_generation_enabled = ! empty( $settings['enableFileGeneration'] ) && ( 'true' === $settings['enableFileGeneration'] || true === $settings['enableFileGeneration'] || '1' === (string) $settings['enableFileGeneration'] );
 
 		// Frontend: conditionally enqueue generated CSS files.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_post_css' ), 20 );

@@ -195,6 +195,9 @@ if ( $final_is_inherit ) {
 	// ==============================================================
 	$sbd = $attr['style_border'] ?? array();
 	$main = is_array( $sbd ) ? ( $sbd['mainSettings'] ?? null ) : null;
+	if ( empty( $main ) && is_array( $sbd ) && ( isset( $sbd['width'] ) || isset( $sbd['style'] ) || isset( $sbd['color'] ) || isset( $sbd['top'] ) || isset( $sbd['right'] ) || isset( $sbd['bottom'] ) || isset( $sbd['left'] ) ) ) {
+		$main = $sbd;
+	}
 
 	if ( ! empty( $main ) && is_array( $main ) ) {
 		$is_4side = isset( $main['top'] ) || isset( $main['right'] ) || isset( $main['bottom'] ) || isset( $main['left'] );
@@ -203,20 +206,30 @@ if ( $final_is_inherit ) {
 			foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 				if ( ! empty( $main[ $side ] ) && is_array( $main[ $side ] ) ) {
 					$s  = $main[ $side ];
-					$w  = $s['width'] ?? '1px';
-					$st = $s['style'] ?? 'none';
+					$w  = WCB_Block_Helper::get_css_value( $s['width'] ?? '1px' );
+					$st = $s['style'] ?? '';
 					$c  = $s['color'] ?? '';
-					if ( '' !== $c ) {
-						$selectors[ $btn_sel ][ 'border-' . $side ] = $w . ' ' . $st . ' ' . $c;
+					if ( 'none' === $st ) {
+						$selectors[ $btn_sel ][ 'border-' . $side ] = 'none';
+					} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) || ! empty( $s['width'] ) ) {
+						if ( empty( $st ) ) {
+							$st = 'solid';
+						}
+						$selectors[ $btn_sel ][ 'border-' . $side ] = trim( $w . ' ' . $st . ' ' . $c );
 					}
 				}
 			}
 		} else {
 			$color = $main['color'] ?? '';
-			$style = $main['style'] ?? 'solid';
-			$width = $main['width'] ?? '1px';
-			if ( '' !== $color ) {
-				$selectors[ $btn_sel ]['border'] = $width . ' ' . $style . ' ' . $color;
+			$style = $main['style'] ?? '';
+			$width = WCB_Block_Helper::get_css_value( $main['width'] ?? '1px' );
+			if ( 'none' === $style ) {
+				$selectors[ $btn_sel ]['border'] = 'none';
+			} elseif ( '' !== $color || ( '' !== $style && 'none' !== $style ) || ! empty( $main['width'] ) ) {
+				if ( empty( $style ) ) {
+					$style = 'solid';
+				}
+				$selectors[ $btn_sel ]['border'] = trim( $width . ' ' . $style . ' ' . $color );
 			}
 		}
 

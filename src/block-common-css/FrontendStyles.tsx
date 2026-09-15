@@ -204,30 +204,31 @@ function renderToDom(
 		if (!preEl || !preEl.innerText || !divRenderCssEl) {
 			return;
 		}
-		//
-		const props = JSON.parse(preEl?.innerText);
-		//
+		try {
+			const props = JSON.parse(preEl?.innerText);
 
-		// Skip emotion <Global> rendering when static CSS file is loaded.
-		// Init functions (carousels, forms, counters) still run.
-		if (!skipCss) {
-			ReactDOM.render(
-				<Suspense fallback={<div />}>
-					<GlobalCss {...props} />
-				</Suspense>,
-				divRenderCssEl
-			);
+			// Skip emotion <Global> rendering when static CSS file is loaded.
+			// Init functions (carousels, forms, counters) still run.
+			if (!skipCss) {
+				ReactDOM.render(
+					<Suspense fallback={<div />}>
+						<GlobalCss {...props} />
+					</Suspense>,
+					divRenderCssEl
+				);
+			}
+
+			// run function if exits
+			funcRunOnEl && funcRunOnEl(div, props);
+
+			// Always run motion effect (animation) init, even when skipCss=true.
+			// This is separated from GlobalCss rendering so it works with file generation.
+			motionEffectInit(div, props);
+		} catch (err) {
+			console.error("Boostify Blocks render error:", err);
+		} finally {
+			div.classList.remove("wcb-update-div");
+			preEl.remove();
 		}
-
-		// run function if exits
-		funcRunOnEl && funcRunOnEl(div, props);
-
-		// Always run motion effect (animation) init, even when skipCss=true.
-		// This is separated from GlobalCss rendering so it works with file generation.
-		motionEffectInit(div, props);
-
-		//
-		div.classList.remove("wcb-update-div");
-		preEl.remove();
 	});
 }

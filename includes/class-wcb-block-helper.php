@@ -631,23 +631,7 @@ class WCB_Block_Helper {
 	}
 
 	public static function css_border( $border, $selector ) {
-		if ( empty( $border ) || ! is_array( $border ) ) {
-			return '';
-		}
-		$css  = '';
-		$main = $border['mainSettings'] ?? null;
-		if ( ! empty( $main ) && is_array( $main ) ) {
-			$color = $main['color'] ?? '';
-			$style = $main['style'] ?? 'solid';
-			$width = $main['width'] ?? '1px';
-			if ( $color ) {
-				$css .= "$selector { border: $width $style $color; }\n";
-			}
-		}
-		if ( ! empty( $border['radius'] ) ) {
-			$css .= self::css_responsive( 'border-radius', $border['radius'], $selector, 'px' );
-		}
-		return $css;
+		return self::css_border_full( $border, $selector );
 	}
 
 	/**
@@ -663,10 +647,13 @@ class WCB_Block_Helper {
 			return '';
 		}
 
-		$css        = '';
-		$main       = $border['mainSettings'] ?? null;
+		$css         = '';
+		$main        = $border['mainSettings'] ?? null;
+		if ( empty( $main ) && ( isset( $border['width'] ) || isset( $border['style'] ) || isset( $border['color'] ) || isset( $border['top'] ) || isset( $border['right'] ) || isset( $border['bottom'] ) || isset( $border['left'] ) ) ) {
+			$main = $border;
+		}
 		$hover_color = $border['hoverColor'] ?? '';
-		$radius     = $border['radius'] ?? null;
+		$radius      = $border['radius'] ?? null;
 
 		if ( ! empty( $main ) && is_array( $main ) ) {
 			// Check if 4-side border (has 'top', 'right', 'bottom', or 'left').
@@ -676,29 +663,39 @@ class WCB_Block_Helper {
 				$sides = array( 'top', 'right', 'bottom', 'left' );
 				foreach ( $sides as $side ) {
 					if ( ! empty( $main[ $side ] ) && is_array( $main[ $side ] ) ) {
-						$s = $main[ $side ];
-						$w = $s['width'] ?? '1px';
-						$st = $s['style'] ?? 'none';
+						$s  = $main[ $side ];
+						$w  = self::get_css_value( $s['width'] ?? '1px' );
+						$st = $s['style'] ?? '';
 						$c  = $s['color'] ?? '';
-						if ( '' !== $c ) {
-							$css .= "$selector { border-$side: $w $st $c; }\n";
+						if ( 'none' === $st ) {
+							$css .= "$selector { border-$side: none; }\n";
+						} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) || ! empty( $s['width'] ) ) {
+							if ( empty( $st ) ) {
+								$st = 'solid';
+							}
+							$css .= "$selector { border-$side: " . trim( $w . ' ' . $st . ' ' . $c ) . "; }\n";
 						}
 					}
 				}
 			} else {
 				// Single-side border.
 				$color = $main['color'] ?? '';
-				$style = $main['style'] ?? 'solid';
-				$width = $main['width'] ?? '1px';
-				if ( $color ) {
-					$css .= "$selector { border: $width $style $color; }\n";
+				$style = $main['style'] ?? '';
+				$width = self::get_css_value( $main['width'] ?? '1px' );
+				if ( 'none' === $style ) {
+					$css .= "$selector { border: none; }\n";
+				} elseif ( '' !== $color || ( '' !== $style && 'none' !== $style ) || ! empty( $main['width'] ) ) {
+					if ( empty( $style ) ) {
+						$style = 'solid';
+					}
+					$css .= "$selector { border: " . trim( $width . ' ' . $style . ' ' . $color ) . "; }\n";
 				}
 			}
+		}
 
-			// Hover border color.
-			if ( ! empty( $hover_color ) ) {
-				$css .= "$selector:hover { border-color: $hover_color; }\n";
-			}
+		// Hover border color.
+		if ( ! empty( $hover_color ) ) {
+			$css .= "$selector:hover { border-color: $hover_color; }\n";
 		}
 
 		// Border radius.
