@@ -33,11 +33,11 @@ const GlobalCss: FC<Props> = (attrs) => {
     // ------------------- WRAP DIV
     const getDivWrapStyles = (): CSSObject[] => {
         const isIconBesideContent =
-            general_icon.iconPosition === "left" ||
-            general_icon.iconPosition === "right";
+            general_icon?.iconPosition === "left" ||
+            general_icon?.iconPosition === "right";
         const isIconBesideTitle =
-            general_icon.iconPosition === "leftOfTitle" ||
-            general_icon.iconPosition === "rightOfTitle";
+            general_icon?.iconPosition === "leftOfTitle" ||
+            general_icon?.iconPosition === "rightOfTitle";
 
         // Convert text alignment to flex alignment for horizontal layouts.
         const getFlexAlignment = (alignment?: string | null) => {
@@ -53,7 +53,7 @@ const GlobalCss: FC<Props> = (attrs) => {
         };
 
         const { value_Desktop, value_Tablet, value_Mobile } =
-            getValueFromAttrsResponsives(general_layout.textAlignment);
+            getValueFromAttrsResponsives(general_layout?.textAlignment);
 
         const justifyContentResponsive = {
             justifyContent: getFlexAlignment(value_Mobile),
@@ -86,43 +86,43 @@ const GlobalCss: FC<Props> = (attrs) => {
         return [
             getStyleObjectFromResponsiveAttr({
                 className: WRAP_CLASSNAME,
-                value: general_layout.textAlignment,
+                value: general_layout?.textAlignment,
                 prefix: "textAlign",
             }),
 
-            ...(general_layout.type === "number" && isIconBesideContent
+            ...(general_layout?.type === "number" && isIconBesideContent
                 ? [horizontalJustifyStyles]
                 : []),
-            ...(general_layout.type === "number" && isIconBesideTitle
+            ...(general_layout?.type === "number" && isIconBesideTitle
                 ? [titleJustifyStyles]
                 : []),
 
             {
                 [`${WRAP_CLASSNAME}`]: {
                     display:
-                        general_icon.iconPosition === "left" ||
-                        general_icon.iconPosition === "right"
+                        general_icon?.iconPosition === "left" ||
+                        general_icon?.iconPosition === "right"
                             ? "flex"
                             : "block",
                     flexDirection:
-                        general_icon.stackOn === "mobile" ||
-                        general_icon.stackOn === "tablet"
-                            ? general_icon.iconPosition === "right"
+                        general_icon?.stackOn === "mobile" ||
+                        general_icon?.stackOn === "tablet"
+                            ? general_icon?.iconPosition === "right"
                                 ? "column-reverse"
                                 : "column"
                             : undefined,
 
                     ".wcb-icon-box__icon-wrap, .wcb-icon-box__content": {
                         alignSelf:
-                            general_icon.verticalAlignment === "middle"
+                            general_icon?.verticalAlignment === "middle"
                                 ? "center"
                                 : undefined,
                     },
 
                     ".wcb-icon-box__content-title-wrap": {
                         display:
-                            general_icon.iconPosition === "leftOfTitle" ||
-                            general_icon.iconPosition === "rightOfTitle"
+                            general_icon?.iconPosition === "leftOfTitle" ||
+                            general_icon?.iconPosition === "rightOfTitle"
                                 ? "flex"
                                 : "block",
                     },
@@ -205,7 +205,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
                     [`@media (min-width: ${media_tablet})`]: {
                         flexDirection:
-                            general_icon.stackOn === "mobile" ? "row" : undefined,
+                            general_icon?.stackOn === "mobile" ? "row" : undefined,
                     },
 
                     [`@media (min-width: ${media_desktop})`]: {
@@ -232,7 +232,7 @@ const GlobalCss: FC<Props> = (attrs) => {
             />
 
             {/* --------- CIRCLE --------- */}
-            {general_layout.type === "circle" ? (
+            {general_layout?.type === "circle" ? (
                 <Global
                     styles={[
                         getStyleObjectFromResponsiveAttr({
@@ -246,33 +246,33 @@ const GlobalCss: FC<Props> = (attrs) => {
             ) : null}
 
             {/* --------- ICON --------- */}
-            {general_icon.enableIcon ? (
+            {general_icon?.enableIcon ? (
                 <Global
                     styles={[
                         getPaddingMarginStyles({
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__icon-wrap`,
-                            margin: style_Icon.dimensions?.margin,
+                            margin: style_Icon?.dimensions?.margin,
                         }),
                         getPaddingMarginStyles({
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__icon-wrap`,
-                            padding: style_Icon.dimensions?.padding,
+                            padding: style_Icon?.dimensions?.padding,
                         }),
                         getBorderStyles({
-                            border: style_Icon.border,
+                            border: style_Icon?.border,
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__icon`,
                             isWithRadius: true,
                         }),
                         getStyleObjectFromResponsiveAttr({
                             className: `${WRAP_CLASSNAME} .wcb-icon-full`,
-                            value: style_Icon.iconSize,
+                            value: style_Icon?.iconSize,
                             prefix: "width",
                             prefix_2: "fontSize",
                         }),
                         {
                             [`${WRAP_CLASSNAME} .wcb-icon-full`]: {
-                                color: style_Icon.color,
+                                color: style_Icon?.color,
                                 ":hover": {
-                                    color: style_Icon.hoverColor,
+                                    color: style_Icon?.hoverColor,
                                 },
                             },
                         },
@@ -281,21 +281,21 @@ const GlobalCss: FC<Props> = (attrs) => {
             ) : null}
 
             {/* --------- DESIGNATION --------- */}
-            {general_layout.enablePrefix ? (
+            {general_layout?.enablePrefix ? (
                 <Global
                     styles={[
                         getTypographyStyles({
-                            typography: style_desination.typography,
+                            typography: style_desination?.typography,
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__designation`,
                         }),
                         getStyleObjectFromResponsiveAttr({
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__designation`,
-                            value: style_desination.marginBottom,
+                            value: style_desination?.marginBottom,
                             prefix: "marginBottom",
                         }),
                         {
                             [`${WRAP_CLASSNAME} .wcb-icon-box__designation`]: {
-                                color: style_desination.textColor,
+                                color: style_desination?.textColor,
                             },
                         },
                     ]}
@@ -303,21 +303,21 @@ const GlobalCss: FC<Props> = (attrs) => {
             ) : null}
 
             {/* --------- TITLE --------- */}
-            {general_layout.enableTitle ? (
+            {general_layout?.enableTitle ? (
                 <Global
                     styles={[
                         getTypographyStyles({
-                            typography: style_title.typography,
+                            typography: style_title?.typography,
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__number`,
                         }),
                         getStyleObjectFromResponsiveAttr({
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__number`,
-                            value: style_title.marginBottom,
+                            value: style_title?.marginBottom,
                             prefix: "marginBottom",
                         }),
                         {
                             [`${WRAP_CLASSNAME} .wcb-icon-box__number`]: {
-                                color: style_title.textColor,
+                                color: style_title?.textColor,
                             },
                         },
                     ]}
@@ -325,21 +325,21 @@ const GlobalCss: FC<Props> = (attrs) => {
             ) : null}
 
             {/* --------- DESCRIPTION --------- */}
-            {general_layout.enableDescription ? (
+            {general_layout?.enableDescription ? (
                 <Global
                     styles={[
                         getTypographyStyles({
-                            typography: style_description.typography,
+                            typography: style_description?.typography,
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__description`,
                         }),
                         getStyleObjectFromResponsiveAttr({
                             className: `${WRAP_CLASSNAME} .wcb-icon-box__description`,
-                            value: style_description.marginBottom,
+                            value: style_description?.marginBottom,
                             prefix: "marginBottom",
                         }),
                         {
                             [`${WRAP_CLASSNAME} .wcb-icon-box__description`]: {
-                                color: style_description.textColor,
+                                color: style_description?.textColor,
                             },
                         },
                     ]}

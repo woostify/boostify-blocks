@@ -274,7 +274,7 @@ if ( ! empty( $sd['textColor'] ) ) {
 // =====================================================================
 // 4. ADVANCE (responsive condition + z-index)
 // =====================================================================
-$selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 
 // ---------------------------------------------------------------------
 
