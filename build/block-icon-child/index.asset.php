@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 <?php return array('dependencies' => array('jquery', 'lodash', 'react', 'wp-api', 'wp-block-editor', 'wp-blocks', 'wp-components', 'wp-data', 'wp-element', 'wp-i18n', 'wp-primitives'), 'version' => '28c0a7b18052f0096794');
-=======
-<?php return array('dependencies' => array('jquery', 'lodash', 'react', 'wp-api', 'wp-block-editor', 'wp-blocks', 'wp-components', 'wp-data', 'wp-element', 'wp-i18n', 'wp-primitives'), 'version' => 'da9f807dab5f203d97c8');
->>>>>>> efe78cd8 (update text heading modal popup to Templates)
