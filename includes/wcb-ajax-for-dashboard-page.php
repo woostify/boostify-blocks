@@ -31,6 +31,12 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
     $newBlocksStatus = array_merge($boostify_block_status_init, $blocksStatus);
 
     update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
+
+    if ( class_exists( 'WCB_Post_Assets' ) ) {
+        WCB_Post_Assets::instance()->delete_all_css_files();
+        WCB_Post_Assets::instance()->delete_all_js_files();
+    }
+
     $array_result = array(
         'data' => $newBlocksStatus,
         'message' => 'your message'
@@ -79,6 +85,12 @@ function boostify_blocks_ajax_dashboard_update_settings()
 
     if ( function_exists( 'boostify_blocks_maybe_clear_font_cache' ) ) {
         boostify_blocks_maybe_clear_font_cache( $old_settings, $settings );
+    }
+
+    // Clear all generated post CSS and JS files so they regenerate with the updated settings on next request
+    if ( class_exists( 'WCB_Post_Assets' ) ) {
+        WCB_Post_Assets::instance()->delete_all_css_files();
+        WCB_Post_Assets::instance()->delete_all_js_files();
     }
 
     $array_result = array(

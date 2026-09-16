@@ -113,7 +113,7 @@ $layout_global = function_exists( 'boostify_blocks_get_layout_global_settings' )
 	: array();
 
 $theme_defaults = array(
-	'backgroundColor'      => '#0284c7',
+	'backgroundColor'      => '#0073aa',
 	'backgroundColorHover' => '#3a3a3a',
 	'textColor'            => '#ffffff',
 	'textColorHover'       => '#ffffff',
@@ -151,11 +151,7 @@ if ( $final_is_inherit ) {
 } else {
 	// ==============================================================
 	// 2. BACKGROUND COLOR & GRADIENT (normal + hover)
-	// Falls back to global buttonTheme colors when unset.
 	// ==============================================================
-	
-	$selectors[ $btn_sel ]['background-color'] = $theme['backgroundColor'];
-
 	$sbg = $attr['style_background'] ?? array();
 
 	if ( ! empty( $sbg['normal'] ) && is_array( $sbg['normal'] ) ) {
@@ -169,25 +165,6 @@ if ( $final_is_inherit ) {
 			isset( $selectors[ $btn_sel . ':hover' ] ) ? $selectors[ $btn_sel . ':hover' ] : array(),
 			WCB_Block_Helper::get_background_css( $sbg['hover'] )
 		);
-	}
-
-	// Global fallback (only when "Button - Inherit From Theme" setting is ON):
-	// no explicit color AND no gradient on this state.
-	if ( $inherit_global ) {
-		if ( empty( $selectors[ $btn_sel ]['background-color'] ) && empty( $selectors[ $btn_sel ]['background'] ) ) {
-			if ( ! empty( $theme_fallback['backgroundColor'] ) ) {
-				$selectors[ $btn_sel ]['background-color'] = $theme_fallback['backgroundColor'];
-			}
-		}
-		$hover_state_sel = $btn_sel . ':hover';
-		if (
-			empty( $selectors[ $hover_state_sel ]['background-color'] ) &&
-			empty( $selectors[ $hover_state_sel ]['background'] )
-		) {
-			if ( ! empty( $theme_fallback['backgroundColorHover'] ) ) {
-				$selectors[ $hover_state_sel ]['background-color'] = $theme_fallback['backgroundColorHover'];
-			}
-		}
 	}
 
 	// ==============================================================
@@ -238,19 +215,10 @@ if ( $final_is_inherit ) {
 		}
 	}
 
-	// Global fallback (only when "Button - Inherit From Theme" setting is ON):
-	// text/icon colors default to theme text colors.
-	if ( $inherit_global ) {
-		$txt_color       = '' !== ( $attr['style_text']['color'] ?? '' ) ? $attr['style_text']['color'] : $theme_fallback['textColor'];
-		$txt_hover_color = '' !== ( $attr['style_text']['hoverColor'] ?? '' ) ? $attr['style_text']['hoverColor'] : $theme_fallback['textColorHover'];
-		$icon_color      = '' !== ( $attr['style_icon']['color'] ?? '' ) ? $attr['style_icon']['color'] : $theme_fallback['textColor'];
-		$icon_hover_color = '' !== ( $attr['style_icon']['hoverColor'] ?? '' ) ? $attr['style_icon']['hoverColor'] : $theme_fallback['textColorHover'];
-	} else {
-		$txt_color       = $attr['style_text']['color'] ?? '';
-		$txt_hover_color = $attr['style_text']['hoverColor'] ?? '';
-		$icon_color      = $attr['style_icon']['color'] ?? '';
-		$icon_hover_color = $attr['style_icon']['hoverColor'] ?? '';
-	}
+	$txt_color       = $attr['style_text']['color'] ?? '';
+	$txt_hover_color = $attr['style_text']['hoverColor'] ?? '';
+	$icon_color      = $attr['style_icon']['color'] ?? '';
+	$icon_hover_color = $attr['style_icon']['hoverColor'] ?? '';
 }
 
 // Text & icon colors (+ hover).
@@ -458,10 +426,6 @@ if ( ! empty( $radius ) ) {
 	}
 }
 
-if ( $inherit_global && ! $has_radius_value && '' !== ( $theme_fallback['borderRadius'] ?? '' ) && '0' !== (string) $theme_fallback['borderRadius'] ) {
-	$selectors[ $btn_sel ]['border-radius'] = $theme_fallback['borderRadius'];
-}
-
 if ( $has_radius_value ) {
 	$normalize_corners = function ( $radius_value ) {
 		if ( is_string( $radius_value ) ) {
@@ -523,7 +487,7 @@ if ( $has_radius_value ) {
 // =====================================================================
 // 9. ADVANCE (responsive condition + z-index)
 // =====================================================================
-$selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 
 // ---------------------------------------------------------------------
 

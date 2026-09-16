@@ -218,8 +218,8 @@ if ( ! empty( $typo ) ) {
 	$fill_falsy = function ( $map ) {
 		$map = is_array( $map ) ? $map : array();
 		$d   = $map['Desktop'] ?? null;
-		$t   = ( $map['Tablet'] ?: null ) ?: $d;
-		$m   = ( $map['Mobile'] ?: null ) ?: $t;
+		$t   = ( ! empty( $map['Tablet'] ) ? $map['Tablet'] : null ) ?: $d;
+		$m   = ( ! empty( $map['Mobile'] ) ? $map['Mobile'] : null ) ?: $t;
 		return array(
 			'Desktop' => $d,
 			'Tablet'  => $t,
@@ -266,19 +266,22 @@ $zi = $responsive_optimize(
 );
 
 $hiddendecl = function ( $is_hidden ) {
-	if ( '' === $is_hidden ) {
-		return '';
-	}
-	return $is_hidden ? 'display:none !important;' : 'display:block;';
+	return ! empty( $is_hidden ) ? 'display:none !important;' : '';
 };
 
-$adv_des = $decl( 'z-index', $zi['Desktop'] ) . $hiddendecl( $rc['isHiddenOnDesktop'] ?? '' );
-$adv_tab = $decl( 'z-index', $zi['Tablet'] ) . $hiddendecl( $rc['isHiddenOnTablet'] ?? '' );
-$adv_mob = $decl( 'z-index', $zi['Mobile'] ) . $hiddendecl( $rc['isHiddenOnMobile'] ?? '' );
+$adv_des = $decl( 'z-index', $zi['Desktop'] ?? null ) . $hiddendecl( $rc['isHiddenOnDesktop'] ?? false );
+$adv_tab = $decl( 'z-index', $zi['Tablet'] ?? null ) . $hiddendecl( $rc['isHiddenOnTablet'] ?? false );
+$adv_mob = $decl( 'z-index', $zi['Mobile'] ?? null ) . $hiddendecl( $rc['isHiddenOnMobile'] ?? false );
 
-$css .= $media( '(min-width:' . $media_desktop . 'px)', $rule( $wrap, $adv_des ) );
-$css .= $media( '(min-width:' . $media_tablet . 'px) and (max-width:' . $media_desktop . 'px)', $rule( $wrap, $adv_tab ) );
-$css .= $media( '(max-width:' . $media_tablet . 'px)', $rule( $wrap, $adv_mob ) );
+if ( ! empty( $adv_des ) ) {
+	$css .= $media( '(min-width:' . ( $media_desktop + 1 ) . 'px)', $rule( $wrap, $adv_des ) );
+}
+if ( ! empty( $adv_tab ) ) {
+	$css .= $media( '(min-width:' . $media_tablet . 'px) and (max-width:' . $media_desktop . 'px)', $rule( $wrap, $adv_tab ) );
+}
+if ( ! empty( $adv_mob ) ) {
+	$css .= $media( '(max-width:' . ( $media_tablet - 1 ) . 'px)', $rule( $wrap, $adv_mob ) );
+}
 
 // Return as-is in the "desktop" bucket: get_frontend_css_from_file appends
 // this string verbatim (tablet/mobile left empty so no max-width wrapping).

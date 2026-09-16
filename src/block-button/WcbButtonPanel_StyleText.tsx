@@ -48,6 +48,7 @@ interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_BUTTON_PANEL_STYLE_TEXT;
 	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_TEXT) => void;
+	isInheritFromTheme?: boolean;
 }
 
 const WcbButtonPanel_StyleText: FC<Props> = ({
@@ -56,10 +57,10 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 	initialOpen,
 	onToggle,
 	opened,
+	isInheritFromTheme,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	const { typography, color, hoverColor } = panelData;
-	const wcb_global_variables = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 		
 	return (
 		<PanelBody
@@ -79,7 +80,7 @@ const WcbButtonPanel_StyleText: FC<Props> = ({
 					}}
 				/>
 
-				{wcb_global_variables.buttonInheritFromTheme !== "true" && (
+				{!isInheritFromTheme && (
 				<MyDisclosure defaultOpen label={__("Colors", "boostify-blocks")}>
 					<MyColorPicker
 						onChange={(color) => {

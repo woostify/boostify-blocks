@@ -625,7 +625,7 @@ if ( $has_flex || $has_gap ) {
 // =====================================================================
 // 8. ADVANCE (responsive condition + z-index + motion effect)
 // =====================================================================
-$selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_class ) );
+$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_class ) );
 
 // ---------------------------------------------------------------------
 

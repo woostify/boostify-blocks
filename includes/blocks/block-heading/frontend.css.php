@@ -431,7 +431,7 @@ if ( ! empty( $attr['styles_subHeading'] ) ) {
 // =====================================================================
 // 10. ADVANCE (responsive condition + z-index + motion effect)
 // =====================================================================
-$selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 
 // ---------------------------------------------------------------------
 

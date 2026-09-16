@@ -384,7 +384,7 @@ if ( ! empty( $attr['general_icon']['enableLink'] ) ) {
 // =====================================================================
 // 9. ADVANCE (responsive condition + z-index + motion effect)
 // =====================================================================
-$selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $content_sel ) );
+$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $content_sel ) );
 
 // ---------------------------------------------------------------------
 

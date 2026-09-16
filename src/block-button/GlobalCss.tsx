@@ -40,11 +40,26 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const inheritFromTheme = buttonInheritFromTheme === "true" ? true : false;
 	const finalIsInheritFromTheme = isInheritFromTheme === undefined ? inheritFromTheme : isInheritFromTheme;
 	// Button Theme Style
-	const background_color = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.backgroundColor : buttonTheme?.backgroundColor}`;
-	const background_color_hover = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.backgroundColorHover : buttonTheme?.backgroundColorHover}`;
-	const text_color = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.textColor : buttonTheme?.textColor}`;
-	const text_color_hover = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.textColorHover : buttonTheme?.textColorHover}`;
-	const border_radius = `${finalIsInheritFromTheme ? themeLayoutGlobal?.buttonTheme?.borderRadius : buttonTheme?.borderRadius}`;
+	const background_color =
+		themeLayoutGlobal?.buttonTheme?.backgroundColor ||
+		buttonTheme?.backgroundColor ||
+		"#0073aa";
+	const background_color_hover =
+		themeLayoutGlobal?.buttonTheme?.backgroundColorHover ||
+		buttonTheme?.backgroundColorHover ||
+		"#3a3a3a";
+	const text_color =
+		themeLayoutGlobal?.buttonTheme?.textColor ||
+		buttonTheme?.textColor ||
+		"#ffffff";
+	const text_color_hover =
+		themeLayoutGlobal?.buttonTheme?.textColorHover ||
+		buttonTheme?.textColorHover ||
+		"#ffffff";
+	const border_radius =
+		themeLayoutGlobal?.buttonTheme?.borderRadius ||
+		buttonTheme?.borderRadius ||
+		"50px";
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-button__main`;
@@ -145,19 +160,27 @@ const GlobalCss: FC<Props> = (attrs) => {
 					}),
 					{
 						[BUTTON_TEXT]: {
-							color: `${finalIsInheritFromTheme? text_color : style_text.color}`,
+							...(finalIsInheritFromTheme
+								? { color: text_color }
+								: (style_text?.color ? { color: style_text.color } : {})),
 						},
 						[BUTTON_ICON]: {
-							color: `${finalIsInheritFromTheme ? text_color : style_icon.color}`,
+							...(finalIsInheritFromTheme
+								? { color: text_color }
+								: (style_icon?.color ? { color: style_icon.color } : {})),
 						},
 						// BUTTON HOVER
 						[BUTTON_CLASSNAME]: {
 							":hover": {
 								".wcb-button__text": {
-									color: `${finalIsInheritFromTheme ? text_color_hover : style_text.hoverColor}`,
+									...(finalIsInheritFromTheme
+										? { color: text_color_hover }
+										: (style_text?.hoverColor ? { color: style_text.hoverColor } : {})),
 								},
 								".wcb-button__icon": {
-									color: `${finalIsInheritFromTheme ? text_color_hover : style_icon.hoverColor}`,
+									...(finalIsInheritFromTheme
+										? { color: text_color_hover }
+										: (style_icon?.hoverColor ? { color: style_icon.hoverColor } : {})),
 								},
 							},
 						},

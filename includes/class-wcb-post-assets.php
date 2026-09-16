@@ -96,6 +96,15 @@ class WCB_Post_Assets {
 	}
 
 	/**
+	 * Alias for instance() for compatibility.
+	 *
+	 * @return WCB_Post_Assets
+	 */
+	public static function get_instance() {
+		return self::instance();
+	}
+
+	/**
 	 * Constructor. Hooks into WordPress.
 	 */
 	private function __construct() {
@@ -418,23 +427,23 @@ class WCB_Post_Assets {
 		$dir   = $this->get_assets_dir();
 		$count = 0;
 
-		if ( ! is_dir( $dir ) ) {
-			return 0;
-		}
-
-		$files = glob( $dir . '/post-*.css' );
-		if ( is_array( $files ) ) {
-			foreach ( $files as $file ) {
-				// Extract post ID from filename for meta cleanup.
-				if ( preg_match( '/post-(\d+)\.css/', basename( $file ), $matches ) ) {
-					delete_post_meta( intval( $matches[1] ), self::PAGE_ASSETS_META_KEY );
-				}
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				if ( unlink( $file ) ) {
-					$count++;
+		if ( is_dir( $dir ) ) {
+			$files = glob( $dir . '/post-*.css' );
+			if ( is_array( $files ) ) {
+				foreach ( $files as $file ) {
+					// Extract post ID from filename for meta cleanup.
+					if ( preg_match( '/post-(\d+)\.css/', basename( $file ), $matches ) ) {
+						delete_post_meta( intval( $matches[1] ), self::PAGE_ASSETS_META_KEY );
+					}
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					if ( unlink( $file ) ) {
+						$count++;
+					}
 				}
 			}
 		}
+
+		delete_post_meta_by_key( self::PAGE_ASSETS_META_KEY );
 
 		return $count;
 	}
@@ -464,7 +473,8 @@ class WCB_Post_Assets {
 		$file_id = $this->get_css_file_id_for_request( $post_id );
 
 		if ( $this->css_file_exists( $file_id ) ) {
-			$version = ( 'post' === $this->request_context ? get_post_modified_time( 'U', false, $post_id ) : time() ) ?: BOOSTIFY_BLOCKS_VERSION;
+			$file_path = $this->get_css_file_path( $file_id );
+			$version   = file_exists( $file_path ) ? filemtime( $file_path ) : ( ( 'post' === $this->request_context ? get_post_modified_time( 'U', false, $post_id ) : time() ) ?: BOOSTIFY_BLOCKS_VERSION );
 			wp_enqueue_style(
 				'boostify-blocks-' . $file_id,
 				$this->get_css_file_url( $file_id ),
@@ -493,11 +503,13 @@ class WCB_Post_Assets {
 
 				// Try again after generation.
 				if ( $this->css_file_exists( $file_id ) ) {
+					$file_path = $this->get_css_file_path( $file_id );
+					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : BOOSTIFY_BLOCKS_VERSION;
 					wp_enqueue_style(
 						'boostify-blocks-' . $file_id,
 						$this->get_css_file_url( $file_id ),
 						array( 'boostify-blocks-frontend-css' ),
-						BOOSTIFY_BLOCKS_VERSION
+						$version
 					);
 					$this->file_css_enqueued  = true;
 					$this->assets_file_handler = array( 'css_url' => $this->get_css_file_url( $file_id ) );
@@ -1438,11 +1450,13 @@ class WCB_Post_Assets {
 		$file_id = $this->get_css_file_id_for_request( $post_id );
 
 		if ( $this->js_file_exists( $file_id ) ) {
+			$file_path = $this->get_js_file_path( $file_id );
+			$version   = file_exists( $file_path ) ? filemtime( $file_path ) : BOOSTIFY_BLOCKS_VERSION;
 			wp_enqueue_script(
 				'boostify-blocks-js-' . $file_id,
 				$this->get_js_file_url( $file_id ),
 				array( 'jquery' ),
-				BOOSTIFY_BLOCKS_VERSION,
+				$version,
 				true
 			);
 		}

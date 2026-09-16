@@ -490,15 +490,29 @@ class WCB_Block_Helper {
 	public static function get_advance_css( $attrs, $selector ) {
 		$css = array();
 
+		$settings_opts = get_option( 'boostify_blocks_settings_options', array() );
+		$media_tablet  = isset( $settings_opts['media_tablet'] ) ? (int) floatval( $settings_opts['media_tablet'] ) : 768;
+		$media_desktop = isset( $settings_opts['media_desktop'] ) ? (int) floatval( $settings_opts['media_desktop'] ) : 1024;
+		if ( $media_tablet <= 0 ) {
+			$media_tablet = 768;
+		}
+		if ( $media_desktop <= $media_tablet ) {
+			$media_desktop = $media_tablet + 1;
+		}
+
+		$desktop_mq = '@media (min-width: ' . ( $media_desktop + 1 ) . 'px)';
+		$tablet_mq  = '@media (min-width: ' . $media_tablet . 'px) and (max-width: ' . $media_desktop . 'px)';
+		$mobile_mq  = '@media (max-width: ' . ( $media_tablet - 1 ) . 'px)';
+
 		$rc = $attrs['advance_responsiveCondition'] ?? array();
 		if ( ! empty( $rc['isHiddenOnDesktop'] ) ) {
-			$css[ '@media (min-width: 1025px) ' . $selector ]['display'] = 'none !important';
+			$css[ $desktop_mq ][ $selector ]['display'] = 'none !important';
 		}
 		if ( ! empty( $rc['isHiddenOnTablet'] ) ) {
-			$css[ '@media (min-width: 768px) and (max-width: 1024px) ' . $selector ]['display'] = 'none !important';
+			$css[ $tablet_mq ][ $selector ]['display'] = 'none !important';
 		}
 		if ( ! empty( $rc['isHiddenOnMobile'] ) ) {
-			$css[ '@media (max-width: 767px) ' . $selector ]['display'] = 'none !important';
+			$css[ $mobile_mq ][ $selector ]['display'] = 'none !important';
 		}
 
 		$zi = $attrs['advance_zIndex'] ?? array();
@@ -885,14 +899,25 @@ class WCB_Block_Helper {
 	public static function css_advance( $attrs, $selector ) {
 		$css = '';
 		$rc  = $attrs['advance_responsiveCondition'] ?? array();
+
+		$settings_opts = get_option( 'boostify_blocks_settings_options', array() );
+		$media_tablet  = isset( $settings_opts['media_tablet'] ) ? (int) floatval( $settings_opts['media_tablet'] ) : 768;
+		$media_desktop = isset( $settings_opts['media_desktop'] ) ? (int) floatval( $settings_opts['media_desktop'] ) : 1024;
+		if ( $media_tablet <= 0 ) {
+			$media_tablet = 768;
+		}
+		if ( $media_desktop <= $media_tablet ) {
+			$media_desktop = $media_tablet + 1;
+		}
+
 		if ( ! empty( $rc['isHiddenOnDesktop'] ) ) {
-			$css .= "@media (min-width: 1025px) { $selector { display: none !important; } }\n";
+			$css .= '@media (min-width: ' . ( $media_desktop + 1 ) . "px) { $selector { display: none !important; } }\n";
 		}
 		if ( ! empty( $rc['isHiddenOnTablet'] ) ) {
-			$css .= "@media (min-width: 768px) and (max-width: 1024px) { $selector { display: none !important; } }\n";
+			$css .= "@media (min-width: {$media_tablet}px) and (max-width: {$media_desktop}px) { $selector { display: none !important; } }\n";
 		}
 		if ( ! empty( $rc['isHiddenOnMobile'] ) ) {
-			$css .= "@media (max-width: 767px) { $selector { display: none !important; } }\n";
+			$css .= '@media (max-width: ' . ( $media_tablet - 1 ) . "px) { $selector { display: none !important; } }\n";
 		}
 		$zi = $attrs['advance_zIndex'] ?? array();
 		$z  = is_array( $zi ) ? ( $zi['Desktop'] ?? '' ) : $zi;

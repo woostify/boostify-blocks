@@ -454,7 +454,7 @@ if ( $enable_desc ) {
 // =====================================================================
 // 7. ADVANCE (responsive condition + motion effect + z-index)
 // =====================================================================
-$selectors = array_merge( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 
 // ---------------------------------------------------------------------
 
