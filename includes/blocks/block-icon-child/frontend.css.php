@@ -2,21 +2,29 @@
 /**
  * Frontend CSS for Icon List Item (Child) Block.
  *
- * Mirrors src/block-icon-child/GlobalCssChild.tsx so every style rendered by the
- * emotion <Global> component in the editor is also present in the
- * generated per-post CSS files (asset generation).
+ * Mirrors src/block-icon-child/GlobalCssChild.tsx.
+ *
+ * OPTIMIZATION:
+ * Child blocks inherit their default styling (icon size, icon colors, title typography,
+ * text colors, layout alignment) directly from the parent Icon List block.
+ * To avoid CSS bloat and unnecessary override rules, this file ONLY generates CSS
+ * for properties that are explicitly customized on this specific child item ($raw_attrs).
+ * If a property is not customized, it is left to inherit from the parent block.
  *
  * @package Boostify_Blocks
  */
 
 /**
- * @var mixed[] $attr Block attributes.
- * @var string $unique_id Block unique ID.
+ * @var mixed[]      $attr      Merged block attributes.
+ * @var string       $unique_id Block unique ID.
+ * @var mixed[]|null $raw_attrs Raw block attributes before merging with defaults.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$raw = ( isset( $raw_attrs ) && is_array( $raw_attrs ) ) ? $raw_attrs : $attr;
 
 $selectors   = array();
 $t_selectors = array();
@@ -26,9 +34,8 @@ $wrap_sel        = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"][data
 $icon_wrap_sel   = $wrap_sel . ' .wcb-icon-list__icon-wrap';
 $icon_sel        = $wrap_sel . ' .wcb-icon-list__icon';
 $icon_full_sel   = $wrap_sel . ' .wcb-icon-full';
-$content_sel     = $wrap_sel . ' .wcb-icon-list__content';
-$title_wrap_sel  = $wrap_sel . ' .wcb-icon-list__content-title-wrap';
 $heading_sel     = $wrap_sel . ' .wcb-icon-list__heading';
+$designation_sel = $wrap_sel . ' .wcb-icon-list__designation';
 
 // ---------------------------------------------------------------------
 // Helpers
@@ -138,9 +145,7 @@ $apply_border_styles = function ( $sel, $border_data ) use ( &$selectors, &$t_se
 					$w  = WCB_Block_Helper::get_css_value( $s['width'] ?? '1px' );
 					$st = $s['style'] ?? 'none';
 					$c  = $s['color'] ?? '';
-					if ( 'none' === $st ) {
-						$selectors[ $sel ][ 'border-' . $side ] = 'none';
-					} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) ) {
+					if ( 'none' !== $st && ( '' !== $c || '' !== $st ) ) {
 						$selectors[ $sel ][ 'border-' . $side ] = trim( $w . ' ' . $st . ' ' . $c );
 					}
 				}
@@ -149,9 +154,7 @@ $apply_border_styles = function ( $sel, $border_data ) use ( &$selectors, &$t_se
 			$w  = WCB_Block_Helper::get_css_value( $main['width'] ?? '1px' );
 			$st = $main['style'] ?? 'none';
 			$c  = $main['color'] ?? '';
-			if ( 'none' === $st ) {
-				$selectors[ $sel ]['border'] = 'none';
-			} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) ) {
+			if ( 'none' !== $st && ( '' !== $c || '' !== $st ) ) {
 				$selectors[ $sel ]['border'] = trim( $w . ' ' . $st . ' ' . $c );
 			}
 		}
@@ -269,82 +272,99 @@ $apply_typography = function ( $sel, $typo ) use ( &$selectors, &$t_selectors, &
 
 // =====================================================================
 // 1. CHILD WRAP DIV & ITEM SPECIFIC STYLES
+// Only output if customized on this child block.
 // =====================================================================
-$gl  = $attr['general_layout'] ?? array();
-$gi  = $attr['general_icon'] ?? array();
-$sdm = $attr['style_dimension'] ?? array();
+$raw_gi  = $raw['general_icon'] ?? array();
+$raw_sdm = $raw['style_dimension'] ?? array();
 
-if ( 'middle' === ( $gi['verticalAlignment'] ?? 'top' ) ) {
+if ( isset( $raw_gi['verticalAlignment'] ) && 'middle' === $raw_gi['verticalAlignment'] ) {
 	$selectors[ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__icon-wrap, ' . $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content' ]['align-self'] = 'center';
 }
 
-$icon_pos = $gi['iconPosition'] ?? 'leftOfTitle';
-$selectors[ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__icon-wrap' ]['order'] = ( 'leftOfTitle' === $icon_pos ) ? '0' : '2';
+if ( isset( $raw_gi['iconPosition'] ) ) {
+	$icon_pos = $raw_gi['iconPosition'];
+	$selectors[ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__icon-wrap' ]['order'] = ( 'leftOfTitle' === $icon_pos ) ? '0' : '2';
 
-if ( 'leftOfTitle' === $icon_pos || 'rightOfTitle' === $icon_pos ) {
-	$selectors[ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content-title-wrap' ]['display'] = 'flex';
+	if ( 'leftOfTitle' === $icon_pos || 'rightOfTitle' === $icon_pos ) {
+		$selectors[ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content-title-wrap' ]['display'] = 'flex';
+	}
 }
 
-if ( ! empty( $sdm['padding'] ) ) {
-	$apply_dimension_box( $wrap_sel, 'padding', $sdm['padding'] );
+if ( ! empty( $raw_sdm['padding'] ) ) {
+	$apply_dimension_box( $wrap_sel, 'padding', $raw_sdm['padding'] );
 }
-if ( ! empty( $sdm['margin'] ) ) {
-	$apply_dimension_box( $wrap_sel, 'margin', $sdm['margin'] );
+if ( ! empty( $raw_sdm['margin'] ) ) {
+	$apply_dimension_box( $wrap_sel, 'margin', $raw_sdm['margin'] );
 }
 
 // =====================================================================
 // 2. CHILD ICON STYLES
+// Only output if customized on this child block.
 // =====================================================================
-$enable_icon = $gi['enableIcon'] ?? true;
-if ( $enable_icon ) {
-	$si = $attr['style_Icon'] ?? array();
-
-	if ( ! empty( $si['dimensions']['margin'] ) ) {
-		$apply_dimension_box( $icon_wrap_sel, 'margin', $si['dimensions']['margin'] );
+$raw_si = $raw['style_Icon'] ?? null;
+if ( ! empty( $raw_si ) && is_array( $raw_si ) ) {
+	if ( ! empty( $raw_si['dimensions']['margin'] ) ) {
+		$apply_dimension_box( $icon_wrap_sel, 'margin', $raw_si['dimensions']['margin'] );
 	}
-	if ( ! empty( $si['dimensions']['padding'] ) ) {
-		$apply_dimension_box( $icon_sel, 'padding', $si['dimensions']['padding'] );
+	if ( ! empty( $raw_si['dimensions']['padding'] ) ) {
+		$apply_dimension_box( $icon_sel, 'padding', $raw_si['dimensions']['padding'] );
 	}
-	if ( ! empty( $si['border'] ) ) {
-		$apply_border_styles( $icon_sel, $si['border'] );
+	if ( ! empty( $raw_si['border'] ) ) {
+		$apply_border_styles( $icon_sel, $raw_si['border'] );
 	}
-	if ( ! empty( $si['iconSize'] ) ) {
-		$apply_responsive_prop( $icon_full_sel, 'width', $si['iconSize'] );
-		$apply_responsive_prop( $icon_full_sel, 'font-size', $si['iconSize'] );
+	if ( ! empty( $raw_si['iconSize'] ) ) {
+		$apply_responsive_prop( $icon_full_sel, 'width', $raw_si['iconSize'] );
+		$apply_responsive_prop( $icon_full_sel, 'font-size', $raw_si['iconSize'] );
 	}
-	if ( ! empty( $si['color'] ) ) {
-		$selectors[ $icon_full_sel ]['color'] = $si['color'];
+	if ( ! empty( $raw_si['color'] ) ) {
+		$selectors[ $icon_full_sel ]['color'] = $raw_si['color'];
 	}
-	if ( ! empty( $si['hoverColor'] ) ) {
-		$selectors[ $icon_full_sel . ':hover' ]['color'] = $si['hoverColor'];
+	if ( ! empty( $raw_si['hoverColor'] ) ) {
+		$selectors[ $icon_full_sel . ':hover' ]['color'] = $raw_si['hoverColor'];
 	}
 }
 
 // =====================================================================
 // 3. CHILD TITLE / HEADING
+// Only output if customized on this child block.
 // =====================================================================
-$enable_title = $gl['enableTitle'] ?? true;
-if ( $enable_title ) {
-	$st = $attr['style_title'] ?? array();
-
-	if ( ! empty( $st['typography'] ) ) {
-		$apply_typography( $heading_sel, $st['typography'] );
+$raw_st = $raw['style_title'] ?? null;
+if ( ! empty( $raw_st ) && is_array( $raw_st ) ) {
+	if ( ! empty( $raw_st['typography'] ) ) {
+		$apply_typography( $heading_sel, $raw_st['typography'] );
 	}
-	if ( ! empty( $st['marginBottom'] ) ) {
-		$apply_responsive_prop( $heading_sel, 'margin-bottom', $st['marginBottom'] );
+	if ( ! empty( $raw_st['marginBottom'] ) ) {
+		$apply_responsive_prop( $heading_sel, 'margin-bottom', $raw_st['marginBottom'] );
 	}
-	if ( ! empty( $st['textColor'] ) ) {
-		$selectors[ $heading_sel ]['color'] = $st['textColor'];
+	if ( ! empty( $raw_st['textColor'] ) ) {
+		$selectors[ $heading_sel ]['color'] = $raw_st['textColor'];
 	}
-	if ( ! empty( $st['textColorHover'] ) ) {
-		$selectors[ $heading_sel . ':hover' ]['color'] = $st['textColorHover'];
+	if ( ! empty( $raw_st['textColorHover'] ) ) {
+		$selectors[ $heading_sel . ':hover' ]['color'] = $raw_st['textColorHover'];
 	}
 }
 
 // =====================================================================
-// 4. ADVANCE
+// 4. CHILD PREFIX / DESIGNATION
+// Only output if customized on this child block.
 // =====================================================================
-$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+$raw_sd = $raw['style_desination'] ?? null;
+if ( ! empty( $raw_sd ) && is_array( $raw_sd ) ) {
+	if ( ! empty( $raw_sd['typography'] ) ) {
+		$apply_typography( $designation_sel, $raw_sd['typography'] );
+	}
+	if ( ! empty( $raw_sd['marginBottom'] ) ) {
+		$apply_responsive_prop( $designation_sel, 'margin-bottom', $raw_sd['marginBottom'] );
+	}
+	if ( ! empty( $raw_sd['textColor'] ) ) {
+		$selectors[ $designation_sel ]['color'] = $raw_sd['textColor'];
+	}
+}
+
+// =====================================================================
+// 5. ADVANCE
+// =====================================================================
+$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $raw, $wrap_sel ) );
 
 // ---------------------------------------------------------------------
 
@@ -355,4 +375,3 @@ $combined_selectors = array(
 );
 
 return WCB_Block_Helper::generate_all_css( $combined_selectors, '' );
-

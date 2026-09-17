@@ -18,6 +18,12 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+// Global asset version constant for cache busting.
+if ( ! defined( 'BOOSTIFY_BLOCKS_ASSET_VER' ) ) {
+	define( 'BOOSTIFY_BLOCKS_ASSET_VER', get_option( 'boostify_blocks_asset_version', BOOSTIFY_BLOCKS_VERSION ) );
+}
+
 class WCB_Post_Assets {
 
 	/**
@@ -105,6 +111,38 @@ class WCB_Post_Assets {
 	}
 
 	/**
+	 * Get the global asset version timestamp.
+	 *
+	 * Mirrors WP-Spectra pattern: UAGB_ASSET_VER / __uagb_asset_version.
+	 *
+	 * @return string Asset version timestamp or plugin version.
+	 */
+	public static function get_global_asset_version() {
+		// Prefer the dynamic option value for freshness within the current request lifecycle.
+		$ver = get_option( 'boostify_blocks_asset_version' );
+		if ( ! empty( $ver ) ) {
+			return (string) apply_filters( 'boostify_blocks_asset_version', (string) $ver );
+		}
+		if ( defined( 'BOOSTIFY_BLOCKS_ASSET_VER' ) ) {
+			return (string) apply_filters( 'boostify_blocks_asset_version', BOOSTIFY_BLOCKS_ASSET_VER );
+		}
+		return (string) apply_filters( 'boostify_blocks_asset_version', BOOSTIFY_BLOCKS_VERSION );
+	}
+
+	/**
+	 * Invalidate all assets by updating the global asset version timestamp.
+	 *
+	 * Eliminates mass unlinking of physical files on disk.
+	 *
+	 * @return int New timestamp version.
+	 */
+	public static function update_global_asset_version() {
+		$version = time();
+		update_option( 'boostify_blocks_asset_version', $version );
+		return $version;
+	}
+
+	/**
 	 * Constructor. Hooks into WordPress.
 	 */
 	private function __construct() {
@@ -167,6 +205,12 @@ class WCB_Post_Assets {
 		}
 		if ( ! $this->file_generation_enabled ) {
 			return;
+		}
+
+		// When a Reusable Block (Synced Pattern) or Template Part is modified:
+		// Bump global asset version timestamp so all posts referencing this block will regenerate CSS on next hit.
+		if ( ! empty( $post ) && ( 'wp_block' === $post->post_type || 'wp_template_part' === $post->post_type ) ) {
+			self::update_global_asset_version();
 		}
 
 		$this->regenerate_post_assets( $post_id );
@@ -303,6 +347,7 @@ class WCB_Post_Assets {
 	private function update_page_assets_meta( $post_id, $generation_failed = false ) {
 		$meta = array(
 			'wcb_version'       => BOOSTIFY_BLOCKS_VERSION,
+			'asset_version'     => self::get_global_asset_version(),
 			'updated_at'        => time(),
 			'generation_failed' => (bool) $generation_failed,
 			'last_attempt'      => time(),
@@ -346,6 +391,12 @@ class WCB_Post_Assets {
 			return true;
 		}
 
+		// If global asset version changed, always allow retry.
+		$global_ver = self::get_global_asset_version();
+		if ( ! empty( $meta['asset_version'] ) && $global_ver !== (string) $meta['asset_version'] ) {
+			return true;
+		}
+
 		// If generation previously failed on this version:
 		if ( ! empty( $meta['generation_failed'] ) ) {
 			$last_attempt = isset( $meta['last_attempt'] ) ? absint( $meta['last_attempt'] ) : 0;
@@ -363,11 +414,16 @@ class WCB_Post_Assets {
 	/**
 	 * Determine if a post's assets should be regenerated.
 	 *
-	 * Pattern from UAGB: allow_assets_generation().
+	 * Pattern from UAGB / WP-Spectra: allow_assets_generation().
 	 * Returns true if:
 	 *   - No cached meta exists
-	 *   - Version has changed
+	 *   - Plugin version has changed
+	 *   - Global asset version (settings/options timestamp) has changed
 	 *   - CSS file is missing (unless in failure cooldown)
+	 *
+	 * Note: We do NOT delete files or meta prematurely here.
+	 * save_css_file() overwrites files safely upon successful generation,
+	 * ensuring zero 404 windows for CDN and browser cache.
 	 *
 	 * @param int $post_id Post ID.
 	 * @return bool True if regeneration is needed.
@@ -380,9 +436,15 @@ class WCB_Post_Assets {
 			return true;
 		}
 
-		// Version changed — regenerate.
+		// Plugin version changed — regenerate.
 		if ( BOOSTIFY_BLOCKS_VERSION !== $meta['wcb_version'] ) {
-			delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );
+			return true;
+		}
+
+		// Global asset version changed (dashboard options/settings updated) — regenerate.
+		$global_asset_ver = self::get_global_asset_version();
+		$post_asset_ver   = isset( $meta['asset_version'] ) ? (string) $meta['asset_version'] : '';
+		if ( ! empty( $global_asset_ver ) && $global_asset_ver !== $post_asset_ver ) {
 			return true;
 		}
 
@@ -472,9 +534,12 @@ class WCB_Post_Assets {
 		// Use a consistent file name based on post ID or template slug.
 		$file_id = $this->get_css_file_id_for_request( $post_id );
 
-		if ( $this->css_file_exists( $file_id ) ) {
+		// Check if file exists and assets are still valid (no version mismatch or settings update).
+		$needs_regeneration = ( 'post' === $this->request_context ) ? $this->should_regenerate_post_assets( $post_id ) : false;
+
+		if ( ! $needs_regeneration && $this->css_file_exists( $file_id ) ) {
 			$file_path = $this->get_css_file_path( $file_id );
-			$version   = file_exists( $file_path ) ? filemtime( $file_path ) : ( ( 'post' === $this->request_context ? get_post_modified_time( 'U', false, $post_id ) : time() ) ?: BOOSTIFY_BLOCKS_VERSION );
+			$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
 			wp_enqueue_style(
 				'boostify-blocks-' . $file_id,
 				$this->get_css_file_url( $file_id ),
@@ -484,27 +549,42 @@ class WCB_Post_Assets {
 			$this->file_css_enqueued    = true;
 			$this->assets_file_handler   = array( 'css_url' => $this->get_css_file_url( $file_id ) );
 		} else {
-			// File missing — attempt to generate on-the-fly for this request.
+			// File missing OR needs regeneration (global asset version or plugin version updated).
 			if ( 'post' === $this->request_context ) {
 				// Cooldown check: if recent generation failed on this version, skip heavy regeneration.
 				if ( ! $this->should_attempt_regeneration( $post_id ) ) {
 					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 						error_log( sprintf(
-							'[Boostify Blocks] Skipped on-the-fly CSS regeneration for post %d (cooldown active). Using fallback.',
+							'[Boostify Blocks] Skipped on-the-fly CSS regeneration for post %d (cooldown active).',
 							$post_id
 						) );
+					}
+					// If old file exists, serve it to avoid broken UI and prevent 404.
+					if ( $this->css_file_exists( $file_id ) ) {
+						$file_path = $this->get_css_file_path( $file_id );
+						$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
+						wp_enqueue_style(
+							'boostify-blocks-' . $file_id,
+							$this->get_css_file_url( $file_id ),
+							array( 'boostify-blocks-frontend-css' ),
+							$version
+						);
+						$this->file_css_enqueued  = true;
+						$this->assets_file_handler = array( 'css_url' => $this->get_css_file_url( $file_id ) );
+						return;
 					}
 					$this->fallback_css = true;
 					return;
 				}
 
+				// Regenerate safely — writes over existing file without deleting first.
 				$this->regenerate_post_assets( $post_id );
 
-				// Try again after generation.
+				// Enqueue regenerated file.
 				if ( $this->css_file_exists( $file_id ) ) {
 					$file_path = $this->get_css_file_path( $file_id );
-					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : BOOSTIFY_BLOCKS_VERSION;
+					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
 					wp_enqueue_style(
 						'boostify-blocks-' . $file_id,
 						$this->get_css_file_url( $file_id ),
@@ -989,10 +1069,9 @@ class WCB_Post_Assets {
 			$with_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
 		}
 
-		// Step 1: Clear all existing files and meta.
-		$deleted_css = $this->delete_all_css_files();
-		$deleted_js  = $this->delete_all_js_files();
-		$deleted     = $deleted_css + $deleted_js;
+		// Step 1: Bump global asset version timestamp to invalidate client/CDN caches safely.
+		self::update_global_asset_version();
+		$deleted = 0;
 
 		// Step 2: Get all post IDs across all post types.
 		$block_names  = $this->get_boostify_block_names();
@@ -1381,7 +1460,7 @@ class WCB_Post_Assets {
 	 * @param array $blocks Parsed blocks.
 	 * @return array Map of block_type => [uniqueId, ...].
 	 */
-	private function collect_js_block_info( $blocks ) {
+	private function collect_js_block_info( $blocks, &$seen_refs = array() ) {
 		$result = array();
 
 		$js_blocks = array(
@@ -1408,9 +1487,28 @@ class WCB_Post_Assets {
 				}
 			}
 
+			// Support Reusable Blocks (Synced Patterns) in JS dependency collection.
+			if ( 'core/block' === $name ) {
+				$ref_id = isset( $block['attrs']['ref'] ) ? absint( $block['attrs']['ref'] ) : 0;
+				if ( $ref_id && ! in_array( $ref_id, $seen_refs, true ) ) {
+					$seen_refs[] = $ref_id;
+					$ref_post    = get_post( $ref_id );
+					if ( $ref_post && ! empty( $ref_post->post_content ) ) {
+						$reusable_blocks = parse_blocks( $ref_post->post_content );
+						$inner           = $this->collect_js_block_info( $reusable_blocks, $seen_refs );
+						foreach ( $inner as $k => $ids ) {
+							if ( ! isset( $result[ $k ] ) ) {
+								$result[ $k ] = array();
+							}
+							$result[ $k ] = array_merge( $result[ $k ], $ids );
+						}
+					}
+				}
+			}
+
 			// Recurse into inner blocks.
 			if ( ! empty( $block['innerBlocks'] ) ) {
-				$inner = $this->collect_js_block_info( $block['innerBlocks'] );
+				$inner = $this->collect_js_block_info( $block['innerBlocks'], $seen_refs );
 				foreach ( $inner as $k => $ids ) {
 					if ( ! isset( $result[ $k ] ) ) {
 						$result[ $k ] = array();
@@ -1451,7 +1549,7 @@ class WCB_Post_Assets {
 
 		if ( $this->js_file_exists( $file_id ) ) {
 			$file_path = $this->get_js_file_path( $file_id );
-			$version   = file_exists( $file_path ) ? filemtime( $file_path ) : BOOSTIFY_BLOCKS_VERSION;
+			$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
 			wp_enqueue_script(
 				'boostify-blocks-js-' . $file_id,
 				$this->get_js_file_url( $file_id ),
