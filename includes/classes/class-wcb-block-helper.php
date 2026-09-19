@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Load pure CSS utility class.
-require_once BOOSTIFY_BLOCKS_PATH . 'includes/class-wcb-css-utility.php';
+require_once BOOSTIFY_BLOCKS_PATH . 'includes/classes/class-wcb-css-utility.php';
 
 class WCB_Block_Helper extends WCB_CSS_Utility {
 

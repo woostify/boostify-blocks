@@ -24,6 +24,7 @@ return array(
 	'general_preset' => array(
 		'type'    => 'object',
 		'default' => array(
+			'preset' => '',
 		),
 	),
 	
@@ -33,6 +34,15 @@ return array(
 	'general_general' => array(
 		'type'    => 'object',
 		'default' => array(
+			'layout'              => 'accordion',
+			'headingTag'          => 'div',
+			'collapseOtherItems'  => true,
+			'columns'             => array( 'Desktop' => 2 ),
+			'enableSchemaSupport' => true,
+			'enableSeparator'     => true,
+			'showMultiple'        => true,
+			'expandFirstItem'     => true,
+			'textAlignment'       => 'left',
 		),
 	),
 	
@@ -42,6 +52,26 @@ return array(
 	'general_icon' => array(
 		'type'    => 'object',
 		'default' => array(
+			'enableIcon'   => true,
+			'inactiveIcon' => array(
+				'type'      => 'icon',
+				'iconName'  => 'lni-plus',
+				'imageData' => array(
+					'mediaId'  => 0,
+					'mediaUrl' => '',
+				),
+				'svgCode'   => '',
+			),
+			'iconPosition' => 'right',
+			'icon'         => array(
+				'type'      => 'icon',
+				'iconName'  => 'lni-minus',
+				'imageData' => array(
+					'mediaId'  => 0,
+					'mediaUrl' => '',
+				),
+				'svgCode'   => '',
+			),
 		),
 	),
 	
@@ -51,6 +81,23 @@ return array(
 	'style_container' => array(
 		'type'    => 'object',
 		'default' => array(
+			'background'  => array(
+				'bgType'   => 'color',
+				'color'    => '',
+				'gradient' => 'linear-gradient(104deg, rgb(93, 206, 231) 0%, rgb(244, 119, 127) 100%)',
+			),
+			'border'      => array(
+				'mainSettings' => null,
+				'hoverColor'   => '',
+				'radius'       => array(
+					'Desktop' => '0',
+					'Tablet'  => '0',
+					'Mobile'  => '0',
+				),
+			),
+			'equalHeight' => true,
+			'colunmGap'   => array( 'Desktop' => '1rem' ),
+			'rowGap'      => array( 'Desktop' => '1rem' ),
 		),
 	),
 	
@@ -60,6 +107,35 @@ return array(
 	'style_question' => array(
 		'type'    => 'object',
 		'default' => array(
+			'typography'           => array(
+				'fontSizes'      => array( 'Desktop' => '' ),
+				'appearance'     => array(
+					'id'    => '1',
+					'name'  => 'Default',
+					'value' => 'Default',
+					'style' => array(
+						'fontWeight' => 'normal',
+						'fontStyle'  => 'normal',
+					),
+				),
+				'textDecoration' => '',
+				'textTransform'  => '',
+				'lineHeight'     => array( 'Desktop' => '' ),
+				'letterSpacing'  => array( 'Desktop' => '' ),
+				'fontFamily'     => '',
+			),
+			'padding'              => array(
+				'Desktop' => array(
+					'top'    => '1rem',
+					'left'   => '1rem',
+					'right'  => '1rem',
+					'bottom' => '1rem',
+				),
+			),
+			'backgroundColor'      => '',
+			'backgroundColorHover' => '',
+			'color'                => '',
+			'colorHover'           => '',
 		),
 	),
 	
@@ -69,6 +145,10 @@ return array(
 	'style_icon' => array(
 		'type'    => 'object',
 		'default' => array(
+			'size'        => array( 'Desktop' => 20 ),
+			'color'       => '',
+			'activeColor' => '',
+			'colGap'      => array( 'Desktop' => '1rem' ),
 		),
 	),
 	
@@ -78,6 +158,33 @@ return array(
 	'style_answer' => array(
 		'type'    => 'object',
 		'default' => array(
+			'typography'      => array(
+				'fontSizes'      => array( 'Desktop' => '' ),
+				'appearance'     => array(
+					'id'    => '1',
+					'name'  => 'Default',
+					'value' => 'Default',
+					'style' => array(
+						'fontWeight' => 'normal',
+						'fontStyle'  => 'normal',
+					),
+				),
+				'textDecoration' => '',
+				'textTransform'  => '',
+				'lineHeight'     => array( 'Desktop' => '' ),
+				'letterSpacing'  => array( 'Desktop' => '' ),
+				'fontFamily'     => '',
+			),
+			'padding'         => array(
+				'Desktop' => array(
+					'top'    => '1rem',
+					'left'   => '1rem',
+					'right'  => '1rem',
+					'bottom' => '1rem',
+				),
+			),
+			'backgroundColor' => '',
+			'color'           => '',
 		),
 	),
 	
@@ -87,6 +194,22 @@ return array(
 	'style_dimension' => array(
 		'type'    => 'object',
 		'default' => array(
+			'padding' => array(
+				'Desktop' => array(
+					'top'    => '',
+					'left'   => '',
+					'right'  => '',
+					'bottom' => '',
+				),
+			),
+			'margin'  => array(
+				'Desktop' => array(
+					'top'    => '',
+					'left'   => '',
+					'right'  => '',
+					'bottom' => '',
+				),
+			),
 		),
 	),
 	

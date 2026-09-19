@@ -147,9 +147,9 @@ if ( ! empty( $sab['background'] ) ) {
 
 // 9. Dots margin top
 if ( ! empty( $sa['dotsMarginTop'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-bottom', $item_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-bottom', $item_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-bottom', $item_sel, 'mobile' ) );
+	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-top', $swiper_dots, 'desktop' ) );
+	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-top', $swiper_dots, 'tablet' ) );
+	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-top', $swiper_dots, 'mobile' ) );
 }
 
 // 10. Swiper Arrow & Dots
@@ -162,7 +162,8 @@ $selectors[ $swiper_arrow ]['justify-content'] = 'center';
 $selectors[ $swiper_arrow ]['cursor']          = 'pointer';
 
 if ( ! empty( $sa['color'] ) ) {
-	$selectors[ $swiper_arrow ]['color'] = $sa['color'];
+	$selectors[ $swiper_arrow ]['color']                   = $sa['color'];
+	$selectors[ $swiper_arrow_svg ]['color']               = $sa['color'];
 	$selectors[ $swiper_dots ]['--swiper-pagination-color'] = $sa['color'];
 	$selectors[ $swiper_bullet ]['background-color']        = $sa['color'];
 	$selectors[ $swiper_bullet ]['opacity']                 = '0.4';
