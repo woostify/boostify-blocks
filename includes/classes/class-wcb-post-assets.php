@@ -69,6 +69,13 @@ class WCB_Post_Assets {
 	private $file_css_enqueued = false;
 
 	/**
+	 * Whether server-side inline CSS was enqueued for the current request.
+	 *
+	 * @var bool
+	 */
+	private $inline_css_enqueued = false;
+
+	/**
 	 * Fallback flag — true when file should exist but doesn't, so inline CSS is needed.
 	 *
 	 * @var bool
@@ -148,7 +155,7 @@ class WCB_Post_Assets {
 	private function __construct() {
 		
 		// Load helper class for block CSS extraction.
-		require_once BOOSTIFY_BLOCKS_PATH . 'includes/class-wcb-block-helper.php';
+		require_once BOOSTIFY_BLOCKS_PATH . 'includes/classes/class-wcb-block-helper.php';
 
 		$settings = get_option( 'boostify_blocks_settings_options', array() );
 		$this->file_generation_enabled = ! empty( $settings['enableFileGeneration'] ) && ( 'true' === $settings['enableFileGeneration'] || true === $settings['enableFileGeneration'] || '1' === (string) $settings['enableFileGeneration'] );
@@ -511,16 +518,13 @@ class WCB_Post_Assets {
 	}
 
 	/**
-	 * Conditionally enqueue the generated CSS file for the current request.
+	 * Enqueue generated CSS file or server-side inline CSS for the current request.
 	 *
-	 * Pattern from UAGB: enqueue_file_generation_assets().
-	 * Supports: singular posts/pages, archives, FSE templates, home, search.
-	 *
-	 * - If file exists → enqueue <link>.
-	 * - If file missing → set fallback flag for inline CSS.
+	 * - File generation ON & file exists: enqueues static CSS file.
+	 * - File generation OFF or file missing: injects inline CSS into <head> to eliminate FOUC.
 	 */
 	public function enqueue_post_css() {
-		if ( ! $this->file_generation_enabled ) {
+		if ( is_admin() ) {
 			return;
 		}
 
@@ -534,21 +538,24 @@ class WCB_Post_Assets {
 		// Use a consistent file name based on post ID or template slug.
 		$file_id = $this->get_css_file_id_for_request( $post_id );
 
-		// Check if file exists and assets are still valid (no version mismatch or settings update).
-		$needs_regeneration = ( 'post' === $this->request_context ) ? $this->should_regenerate_post_assets( $post_id ) : false;
+		// 1. If file generation is enabled, attempt to serve the static CSS file.
+		if ( $this->file_generation_enabled ) {
+			$needs_regeneration = ( 'post' === $this->request_context ) ? $this->should_regenerate_post_assets( $post_id ) : false;
 
-		if ( ! $needs_regeneration && $this->css_file_exists( $file_id ) ) {
-			$file_path = $this->get_css_file_path( $file_id );
-			$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
-			wp_enqueue_style(
-				'boostify-blocks-' . $file_id,
-				$this->get_css_file_url( $file_id ),
-				array( 'boostify-blocks-frontend-css' ),
-				$version
-			);
-			$this->file_css_enqueued    = true;
-			$this->assets_file_handler   = array( 'css_url' => $this->get_css_file_url( $file_id ) );
-		} else {
+			if ( ! $needs_regeneration && $this->css_file_exists( $file_id ) ) {
+				$file_path = $this->get_css_file_path( $file_id );
+				$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
+				wp_enqueue_style(
+					'boostify-blocks-' . $file_id,
+					$this->get_css_file_url( $file_id ),
+					array( 'boostify-blocks-frontend-css' ),
+					$version
+				);
+				$this->file_css_enqueued   = true;
+				$this->assets_file_handler = array( 'css_url' => $this->get_css_file_url( $file_id ) );
+				return;
+			}
+
 			// File missing OR needs regeneration (global asset version or plugin version updated).
 			if ( 'post' === $this->request_context ) {
 				// Cooldown check: if recent generation failed on this version, skip heavy regeneration.
@@ -570,33 +577,46 @@ class WCB_Post_Assets {
 							array( 'boostify-blocks-frontend-css' ),
 							$version
 						);
-						$this->file_css_enqueued  = true;
+						$this->file_css_enqueued   = true;
 						$this->assets_file_handler = array( 'css_url' => $this->get_css_file_url( $file_id ) );
 						return;
 					}
-					$this->fallback_css = true;
-					return;
-				}
+				} else {
+					// Regenerate safely — writes over existing file without deleting first.
+					$this->regenerate_post_assets( $post_id );
 
-				// Regenerate safely — writes over existing file without deleting first.
-				$this->regenerate_post_assets( $post_id );
-
-				// Enqueue regenerated file.
-				if ( $this->css_file_exists( $file_id ) ) {
-					$file_path = $this->get_css_file_path( $file_id );
-					$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
-					wp_enqueue_style(
-						'boostify-blocks-' . $file_id,
-						$this->get_css_file_url( $file_id ),
-						array( 'boostify-blocks-frontend-css' ),
-						$version
-					);
-					$this->file_css_enqueued  = true;
-					$this->assets_file_handler = array( 'css_url' => $this->get_css_file_url( $file_id ) );
-					return;
+					// Enqueue regenerated file.
+					if ( $this->css_file_exists( $file_id ) ) {
+						$file_path = $this->get_css_file_path( $file_id );
+						$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
+						wp_enqueue_style(
+							'boostify-blocks-' . $file_id,
+							$this->get_css_file_url( $file_id ),
+							array( 'boostify-blocks-frontend-css' ),
+							$version
+						);
+						$this->file_css_enqueued   = true;
+						$this->assets_file_handler = array( 'css_url' => $this->get_css_file_url( $file_id ) );
+						return;
+					}
 				}
 			}
-			// Fallback — inline CSS will be used.
+		}
+
+		// 2. Fallback / File Generation Disabled:
+		// Generate CSS on the server side and inject directly into <head> via wp_add_inline_style.
+		// This eliminates 100% of FOUC (flash of unstyled content / layout shift)
+		// without waiting for client-side Emotion JS runtime.
+		$css = $this->get_current_request_css();
+		if ( ! empty( $css ) ) {
+			if ( ! wp_style_is( 'boostify-blocks-frontend-css', 'enqueued' ) ) {
+				wp_enqueue_style( 'boostify-blocks-frontend-css' );
+			}
+			wp_add_inline_style( 'boostify-blocks-frontend-css', $css );
+			$this->inline_css_enqueued = true;
+			$this->file_css_enqueued   = true;
+			$this->fallback_css        = false;
+		} else {
 			$this->fallback_css = true;
 		}
 	}
@@ -747,12 +767,70 @@ class WCB_Post_Assets {
 	}
 
 	/**
-	 * Whether a generated CSS file was enqueued for this request.
+	 * Whether a generated CSS file or server inline CSS was enqueued for this request.
 	 *
 	 * @return bool
 	 */
 	public function is_file_css_enqueued() {
-		return $this->file_css_enqueued;
+		return $this->file_css_enqueued || $this->inline_css_enqueued;
+	}
+
+	/**
+	 * Whether server-side inline CSS was enqueued for this request.
+	 *
+	 * @return bool
+	 */
+	public function is_inline_css_enqueued() {
+		return $this->inline_css_enqueued;
+	}
+
+	/**
+	 * Check if block CSS is already loaded (either via static file or server-side inline CSS).
+	 *
+	 * When true, frontend JS should skip Emotion client-side CSS injection.
+	 *
+	 * @return bool
+	 */
+	public function is_css_ready() {
+		return $this->file_css_enqueued || $this->inline_css_enqueued;
+	}
+
+	/**
+	 * Extract CSS for the current frontend request.
+	 *
+	 * Used when file generation is disabled or when falling back to inline CSS.
+	 *
+	 * @return string CSS rules for the current page/template.
+	 */
+	public function get_current_request_css() {
+		$effective_id = $this->get_effective_post_id();
+
+		// Singular post or page.
+		if ( 'post' === $this->request_context && $effective_id ) {
+			return WCB_Block_Helper::extract_css_from_post( intval( $effective_id ) );
+		}
+
+		// Block theme template or archive.
+		if ( ( 'template' === $this->request_context || 'archive' === $this->request_context ) && $effective_id ) {
+			$template_slug = (string) $effective_id;
+			if ( function_exists( 'get_block_templates' ) ) {
+				$templates = get_block_templates( array( 'slug__in' => array( $template_slug ) ) );
+				if ( ! empty( $templates ) && ! empty( $templates[0]->content ) ) {
+					$blocks = parse_blocks( $templates[0]->content );
+					return WCB_Block_Helper::extract_css_from_blocks( $blocks );
+				}
+			}
+		}
+
+		// Generic fallback: attempt current post ID.
+		if ( function_exists( 'get_the_ID' ) ) {
+			$the_id = get_the_ID();
+			if ( $the_id ) {
+				return WCB_Block_Helper::extract_css_from_post( intval( $the_id ) );
+			}
+		}
+
+		return '';
 	}
 
 	/**
