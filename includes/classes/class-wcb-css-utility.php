@@ -440,11 +440,22 @@ class WCB_CSS_Utility {
 
 		// Border radius.
 		if ( ! empty( $border['radius'] ) ) {
-			$radius = $border['radius'];
-			if ( is_array( $radius ) ) {
-				$css['border-radius'] = self::get_css_value( $radius['Desktop'] ?? $radius );
+			$radius  = $border['radius'];
+			$raw_rad = is_array( $radius ) ? ( $radius['Desktop'] ?? $radius ) : $radius;
+			if ( is_array( $raw_rad ) ) {
+				$tl = self::get_css_value( $raw_rad['topLeft'] ?? '0' );
+				$tr = self::get_css_value( $raw_rad['topRight'] ?? '0' );
+				$br = self::get_css_value( $raw_rad['bottomRight'] ?? '0' );
+				$bl = self::get_css_value( $raw_rad['bottomLeft'] ?? '0' );
+				$rad_str = trim( "$tl $tr $br $bl" );
+				if ( '0 0 0 0' !== $rad_str && '0px 0px 0px 0px' !== $rad_str && '' !== $rad_str ) {
+					$css['border-radius'] = $rad_str;
+				}
 			} else {
-				$css['border-radius'] = self::get_css_value( $radius );
+				$rad_val = self::get_css_value( $raw_rad );
+				if ( '' !== $rad_val && '0' !== $rad_val && '0px' !== $rad_val ) {
+					$css['border-radius'] = $rad_val;
+				}
 			}
 		}
 
@@ -524,6 +535,17 @@ class WCB_CSS_Utility {
 		}
 
 		if ( null !== $val && '' !== $val ) {
+			if ( is_array( $val ) && ( isset( $val['topLeft'] ) || isset( $val['topRight'] ) || isset( $val['bottomLeft'] ) || isset( $val['bottomRight'] ) ) ) {
+				$tl = self::get_css_value( $val['topLeft'] ?? '0', $unit );
+				$tr = self::get_css_value( $val['topRight'] ?? '0', $unit );
+				$br = self::get_css_value( $val['bottomRight'] ?? '0', $unit );
+				$bl = self::get_css_value( $val['bottomLeft'] ?? '0', $unit );
+				$rad_str = trim( "$tl $tr $br $bl" );
+				if ( '0 0 0 0' !== $rad_str && '0px 0px 0px 0px' !== $rad_str && '' !== $rad_str ) {
+					return array( $selector => array( $property => $rad_str ) );
+				}
+				return array();
+			}
 			return array( $selector => array( $property => self::get_css_value( $val, $unit ) ) );
 		}
 

@@ -84,6 +84,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 					display: "flex",
 					flexDirection: "column",
 				},
+				[ITEM_CLASSNAME_INNER]: {
+					display: "flex",
+					flexDirection: "column",
+					width: "100%",
+				},
+				[CALL_TO_ACTION_INNER]: {
+					display: "inline-flex",
+					alignItems: "center",
+					justifyContent: "center",
+					width: "fit-content",
+					maxWidth: "100%",
+					boxSizing: "border-box",
+					cursor: "pointer",
+				},
 			},
 		];
 	};
@@ -215,21 +229,37 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					{
 						[ITEM_CLASSNAME_INNER]: {
-							justifyItems: (() => {
-							if (
-								style_layoutPreset?.preset === "wcb-layout-2" ||
-								style_layoutPreset?.preset === "wcb-layout-3" ||
-								style_layoutPreset?.preset === "wcb-layout-5" ||
-								style_image?.iconPosition === "left"
-							) {
-								return "start";
-							}
+							alignItems: (() => {
+								if (
+									style_layoutPreset?.preset === "wcb-layout-2" ||
+									style_layoutPreset?.preset === "wcb-layout-3" ||
+									style_layoutPreset?.preset === "wcb-layout-5" ||
+									style_image?.iconPosition === "left"
+								) {
+									return "flex-start";
+								}
 
-							if (style_image?.iconPosition === "right") {
-								return "end";
-							}
+								if (style_image?.iconPosition === "right") {
+									return "flex-end";
+								}
 
-							return undefined; // fallback
+								return "center";
+							})(),
+							textAlign: (() => {
+								if (
+									style_layoutPreset?.preset === "wcb-layout-2" ||
+									style_layoutPreset?.preset === "wcb-layout-3" ||
+									style_layoutPreset?.preset === "wcb-layout-5" ||
+									style_image?.iconPosition === "left"
+								) {
+									return "start";
+								}
+
+								if (style_image?.iconPosition === "right") {
+									return "end";
+								}
+
+								return "center";
 							})(),
 						},
 					},
@@ -237,38 +267,56 @@ const GlobalCss: FC<Props> = (attrs) => {
 						// Mobile
 						[`@media (max-width: 767px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
-								justifyItems:
+								alignItems:
+									style_content?.textAlignment?.Mobile === "left"
+									? "flex-start"
+									: style_content?.textAlignment?.Mobile === "right"
+									? "flex-end"
+									: "center",
+								textAlign:
 									style_content?.textAlignment?.Mobile === "left"
 									? "start"
 									: style_content?.textAlignment?.Mobile === "right"
 									? "end"
 									: "center",
-								},
 							},
+						},
 
 						// Tablet
 						[`@media (min-width: 768px) and (max-width: 1023px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
-								justifyItems:
+								alignItems:
+									style_content?.textAlignment?.Tablet === "left"
+									? "flex-start"
+									: style_content?.textAlignment?.Tablet === "right"
+									? "flex-end"
+									: "center",
+								textAlign:
 									style_content?.textAlignment?.Tablet === "left"
 									? "start"
 									: style_content?.textAlignment?.Tablet === "right"
 									? "end"
 									: "center",
-								},
 							},
+						},
 
 						// Desktop
 						[`@media (min-width: 1024px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
-								justifyItems:
+								alignItems:
+									style_content?.textAlignment?.Desktop === "left"
+									? "flex-start"
+									: style_content?.textAlignment?.Desktop === "right"
+									? "flex-end"
+									: "center",
+								textAlign:
 									style_content?.textAlignment?.Desktop === "left"
 									? "start"
 									: style_content?.textAlignment?.Desktop === "right"
 									? "end"
 									: "center",
-								},
 							},
+						},
 					},
 					{
 						[CALL_TO_ACTION_INNER]: {

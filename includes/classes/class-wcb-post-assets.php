@@ -475,6 +475,7 @@ class WCB_Post_Assets {
 	 * @return bool True on success.
 	 */
 	public function delete_css_file( $post_id ) {
+		$this->delete_js_file( $post_id );
 		$file = $this->get_css_file_path( $post_id );
 		if ( file_exists( $file ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
@@ -513,6 +514,7 @@ class WCB_Post_Assets {
 		}
 
 		delete_post_meta_by_key( self::PAGE_ASSETS_META_KEY );
+		$this->delete_all_js_files();
 
 		return $count;
 	}
@@ -1393,7 +1395,25 @@ class WCB_Post_Assets {
 	 */
 	public function js_file_exists( $post_id ) {
 		$file = $this->get_js_file_path( $post_id );
-		return file_exists( $file ) && filesize( $file ) > 0;
+		if ( ! file_exists( $file ) ) {
+			return false;
+		}
+
+		// Clean up legacy or empty shell files (<= 150 bytes or containing only empty wrapper).
+		if ( filesize( $file ) <= 150 ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$content = file_get_contents( $file );
+			if ( false !== $content ) {
+				$cleaned = preg_replace( '/\/\*[\s\S]*?\*\/|\/\/.*|[\s\r\n\t\(\);\'"]|use strict|function|document|addEventListener|DOMContentLoaded/i', '', $content );
+				if ( empty( $cleaned ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					unlink( $file );
+					return false;
+				}
+			}
+		}
+
+		return filesize( $file ) > 0;
 	}
 
 	/**
@@ -1408,19 +1428,20 @@ class WCB_Post_Assets {
 		$file = $this->get_js_file_path( $post_id );
 
 		if ( '' === trim( $js ) ) {
+			$this->delete_js_file( $post_id );
 			return false;
 		}
 
 		// Compare with existing — only write if changed.
 		if ( file_exists( $file ) ) {
-			// phpcs:ignore
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$old = file_get_contents( $file );
 			if ( $old === $js ) {
 				return true;
 			}
 		}
 
-		// phpcs:ignore
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		$result = file_put_contents( $file, $js, LOCK_EX );
 		return false !== $result;
 	}
@@ -1515,20 +1536,30 @@ class WCB_Post_Assets {
 			return '';
 		}
 
-		$js = "/* Boostify Blocks auto-generated JS */\n";
-		$js .= "(function(){\n";
-		$js .= "'use strict';\n";
-		$js .= "document.addEventListener('DOMContentLoaded',function(){\n\n";
+		$inner_js = '';
 
 		// Gather unique IDs for each block type that needs JS.
 		foreach ( $needs_js as $block_type => $ids ) {
 			if ( empty( $ids ) ) {
 				continue;
 			}
-
+			// Interactive blocks are handled modernly via WordPress Interactivity API or script modules.
 		}
 
-		$js .= "\n});\n})();\n";
+		// Allow third-party or custom blocks to inject JS code if needed.
+		$inner_js = (string) apply_filters( 'boostify_blocks_post_assets_inner_js', $inner_js, $needs_js, $blocks );
+
+		// If no block requires custom JS in this file, return empty to prevent generating empty files.
+		if ( '' === trim( $inner_js ) ) {
+			return '';
+		}
+
+		$js  = "/* Boostify Blocks auto-generated JS */\n";
+		$js .= "(function(){\n";
+		$js .= "'use strict';\n";
+		$js .= "document.addEventListener('DOMContentLoaded',function(){\n\n";
+		$js .= $inner_js . "\n";
+		$js .= "});\n})();\n";
 		return $js;
 	}
 

@@ -20,6 +20,9 @@
 		padding: 0.5rem;
 		width: unset;
 		height: unset;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		&:hover {
 			color: black;
 		}
@@ -27,6 +30,12 @@
 			content: "";
 			display: none;
 		}
+	}
+	.slick-prev {
+		left: 0;
+	}
+	.slick-next {
+		right: 0;
 	}
 }
 

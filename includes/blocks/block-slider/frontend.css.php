@@ -25,7 +25,7 @@ $sa  = $attr['style_arrowAndDots'] ?? array();
 $sdm = $attr['style_dimension'] ?? array();
 
 $wrap_sel       = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
-$item_sel       = $wrap_sel . '.wcb-slider__wrap';
+$slide_sel      = $wrap_sel . ' .slick-slide';
 $slick_arrow    = $wrap_sel . ' .slick-arrow';
 $slick_dots     = $wrap_sel . ' .slick-dots';
 $slick_dots_btn = $wrap_sel . ' .slick-dots li button:before';
@@ -34,38 +34,43 @@ $slick_next     = $wrap_sel . ' .slick-next';
 
 // 1. Text Alignment
 if ( ! empty( $gg['textAlignment'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $item_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $item_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $item_sel, 'mobile' ) );
+	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $wrap_sel, 'desktop' ) );
+	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $wrap_sel, 'tablet' ) );
+	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $wrap_sel, 'mobile' ) );
 }
 
-// 2. Column Gap (padding left/right on item)
+// 2. Column Gap (padding left/right on slides)
 if ( ! empty( $gg['colGap'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $item_sel, 'desktop' ) );
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $item_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $item_sel, 'tablet' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $item_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $item_sel, 'mobile' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $item_sel, 'mobile' ) );
+	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $slide_sel, 'desktop' ) );
+	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $slide_sel, 'desktop' ) );
+	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $slide_sel, 'tablet' ) );
+	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $slide_sel, 'tablet' ) );
+	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $slide_sel, 'mobile' ) );
+	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $slide_sel, 'mobile' ) );
 }
 
 // 3. Background & Border
 if ( ! empty( $sab['background'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_background_css( $sab['background'], $item_sel ) );
+	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_background_css( $sab['background'], $wrap_sel ) );
 }
 if ( ! empty( $sab['border'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sab['border'], $item_sel, true ) );
+	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sab['border'], $wrap_sel, true ) );
 }
 
 // 4. Box Shadow
 if ( ! empty( $sbs ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_box_shadow_css( $sbs, $item_sel ) );
+	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_box_shadow_css( $sbs, $wrap_sel ) );
 }
 
 // 5. Slick Arrow & Dots
 if ( ! empty( $sa['border'] ) ) {
 	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sa['border'], $slick_arrow, true ) );
 }
+$selectors[ $slick_arrow ]['display']         = 'flex';
+$selectors[ $slick_arrow ]['align-items']     = 'center';
+$selectors[ $slick_arrow ]['justify-content'] = 'center';
+$selectors[ $slick_arrow ]['cursor']          = 'pointer';
+
 if ( ! empty( $sa['arrowSize'] ) ) {
 	$selectors[ $slick_arrow . ' svg' ]['width']  = $sa['arrowSize'];
 	$selectors[ $slick_arrow . ' svg' ]['height'] = $sa['arrowSize'];
@@ -76,19 +81,21 @@ if ( ! empty( $sa['color'] ) ) {
 	$selectors[ $slick_dots_btn ]['color']      = $sa['color'];
 }
 if ( ! empty( $sa['backgroundColor'] ) ) {
-	$selectors[ $slick_arrow ]['background-color']        = $sa['backgroundColor'];
-	$selectors[ $slick_arrow . ' svg' ]['background']     = $sa['backgroundColor'];
+	$selectors[ $slick_arrow ]['background-color']    = $sa['backgroundColor'];
+	$selectors[ $slick_arrow . ' svg' ]['background'] = $sa['backgroundColor'];
 }
-if ( ! empty( $sa['dotsMarginTop'] ) ) {
-	$selectors[ $slick_dots ]['position'] = 'absolute';
-	$dots_bottom = is_array( $sa['dotsMarginTop'] ) ? ( $sa['dotsMarginTop']['Desktop'] ?? '0px' ) : $sa['dotsMarginTop'];
-	$selectors[ $slick_dots ]['bottom']   = $dots_bottom;
+$selectors[ $wrap_sel . ' .wcb-slider__wrap-items' ]['padding-bottom'] = '2.5rem';
+
+$selectors[ $slick_dots ]['position'] = 'absolute';
+$dots_bottom = is_array( $sa['dotsMarginTop'] ?? null ) ? ( $sa['dotsMarginTop']['Desktop'] ?? '8px' ) : ( $sa['dotsMarginTop'] ?? '8px' );
+if ( '0px' === $dots_bottom || '' === $dots_bottom ) {
+	$dots_bottom = '8px';
 }
-if ( ! empty( $sa['arrowDistance'] ) ) {
-	$arrow_dist = is_array( $sa['arrowDistance'] ) ? ( $sa['arrowDistance']['Desktop'] ?? '0px' ) : $sa['arrowDistance'];
-	$selectors[ $slick_prev ]['left']  = $arrow_dist;
-	$selectors[ $slick_next ]['right'] = $arrow_dist;
-}
+$selectors[ $slick_dots ]['bottom'] = $dots_bottom;
+
+$arrow_dist = is_array( $sa['arrowDistance'] ?? null ) ? ( $sa['arrowDistance']['Desktop'] ?? '0px' ) : ( $sa['arrowDistance'] ?? '0px' );
+$selectors[ $slick_prev ]['left']  = $arrow_dist;
+$selectors[ $slick_next ]['right'] = $arrow_dist;
 
 // 6. Dimensions
 if ( ! empty( $sdm['padding'] ) ) {

@@ -217,7 +217,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 							{/* Frontend CSS injection elements */}
 							<div data-wcb-global-styles={uniqueId}></div>
 							<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
-								{_.escape(JSON.stringify(newAttrForSave))}
+								{JSON.stringify(newAttrForSave, null, 2)}
 							</pre>
 							
 							{/* Child CSS styles for both edit and save mode */}
@@ -279,8 +279,10 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 														if (style_image?.iconPosition === "right") {
 															return "wcb-slider-child__content_end";
 														}
+
+														return "";
 													})()
-												}`}>
+												}`.trim()}>
 												<RichText.Content
 													tagName="div"
 													value={content}

@@ -41,6 +41,34 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 	}
 
 	/**
+	 * Convert clientID to a unique short class (wcb-xxxxxx) matching TypeScript converClientIdToUniqueClass.
+	 *
+	 * @param string $client_id Block client ID.
+	 * @param string $prefix    CSS class prefix.
+	 * @return string CSS class.
+	 */
+	public static function convert_client_id_to_unique_class( $client_id, $prefix = 'wcb-' ) {
+		if ( empty( $client_id ) ) {
+			return '';
+		}
+
+		$hash = 0;
+		$len  = strlen( $client_id );
+		for ( $i = 0; $i < $len; $i++ ) {
+			$char = ord( $client_id[ $i ] );
+			// Simulates JS 32-bit int: ((hash << 5) - hash) + char
+			$hash = ( ( $hash << 5 ) - $hash ) + $char;
+			$hash = $hash & 0xFFFFFFFF;
+			if ( $hash > 0x7FFFFFFF ) {
+				$hash -= 0x100000000;
+			}
+		}
+
+		$short_id = base_convert( abs( $hash ), 10, 36 );
+		return $prefix . $short_id;
+	}
+
+	/**
 	 * Get a Block's Default Attributes.
 	 *
 	 * @param string $block_name Name of the block to retrieve defaults.
