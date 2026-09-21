@@ -84,7 +84,6 @@ if ( ! empty( $sa['backgroundColor'] ) ) {
 	$selectors[ $slick_arrow ]['background-color']    = $sa['backgroundColor'];
 	$selectors[ $slick_arrow . ' svg' ]['background'] = $sa['backgroundColor'];
 }
-$selectors[ $wrap_sel . ' .wcb-slider__wrap-items' ]['padding-bottom'] = '2.5rem';
 
 $selectors[ $slick_dots ]['position'] = 'absolute';
 $dots_bottom = is_array( $sa['dotsMarginTop'] ?? null ) ? ( $sa['dotsMarginTop']['Desktop'] ?? '8px' ) : ( $sa['dotsMarginTop'] ?? '8px' );

@@ -566,11 +566,12 @@ class WCB_CSS_Utility {
 			return array();
 		}
 
-		$is_nested = isset( $dim_data['Desktop'] ) || isset( $dim_data['Tablet'] ) || isset( $dim_data['Mobile'] );
+		$is_nested = isset( $dim_data['Desktop'] ) || isset( $dim_data['Tablet'] ) || isset( $dim_data['Mobile'] )
+			|| isset( $dim_data['desktop'] ) || isset( $dim_data['tablet'] ) || isset( $dim_data['mobile'] );
 
-		$d_data = $is_nested ? ( $dim_data['Desktop'] ?? array() ) : $dim_data;
-		$t_data = $is_nested ? ( $dim_data['Tablet'] ?? $d_data ) : $dim_data;
-		$m_data = $is_nested ? ( $dim_data['Mobile'] ?? $t_data ) : $dim_data;
+		$d_data = $dim_data['Desktop'] ?? ( $dim_data['desktop'] ?? ( $is_nested ? array() : $dim_data ) );
+		$t_data = $dim_data['Tablet'] ?? ( $dim_data['tablet'] ?? ( $is_nested ? $d_data : $dim_data ) );
+		$m_data = $dim_data['Mobile'] ?? ( $dim_data['mobile'] ?? ( $is_nested ? $t_data : $dim_data ) );
 
 		$target_data = null;
 		$ref_data    = null;

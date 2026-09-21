@@ -108,6 +108,45 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 	// =====================================================================
 
 	/**
+	 * Extract block attributes from <pre data-wcb-block-attrs> in innerHTML if available.
+	 *
+	 * When blocks are saved in Gutenberg, all current React attributes are serialized
+	 * into <pre data-wcb-block-attrs="...">...</pre>. Many attributes (especially for child
+	 * blocks like slider-child, slider-swiper-child, icon-child, etc.) are omitted from
+	 * Gutenberg's block comment delimiters. Extracting from <pre> ensures the full,
+	 * up-to-date attributes are used for server-side CSS generation.
+	 *
+	 * @param string $inner_html       Block innerHTML.
+	 * @param string $target_unique_id Optional uniqueId to match specific pre tag.
+	 * @return array Decoded attributes or empty array.
+	 */
+	public static function extract_attrs_from_inner_html( $inner_html, $target_unique_id = '' ) {
+		if ( empty( $inner_html ) ) {
+			return array();
+		}
+
+		if ( ! empty( $target_unique_id ) ) {
+			$pattern = '/<pre[^>]*data-wcb-block-attrs=[\x27\x22]?' . preg_quote( $target_unique_id, '/' ) . '[\x27\x22]?[^>]*>(.*?)<\/pre>/s';
+			if ( preg_match( $pattern, $inner_html, $matches ) ) {
+				$decoded = json_decode( html_entity_decode( $matches[1], ENT_QUOTES, 'UTF-8' ), true );
+				if ( is_array( $decoded ) ) {
+					return $decoded;
+				}
+			}
+		}
+
+		// Fallback: match any <pre data-wcb-block-attrs> tag.
+		if ( preg_match( '/<pre[^>]*data-wcb-block-attrs[^>]*>(.*?)<\/pre>/s', $inner_html, $matches ) ) {
+			$decoded = json_decode( html_entity_decode( $matches[1], ENT_QUOTES, 'UTF-8' ), true );
+			if ( is_array( $decoded ) ) {
+				return $decoded;
+			}
+		}
+
+		return array();
+	}
+
+	/**
 	 * Generate CSS for a single Boostify block from its attributes.
 	 *
 	 * @param array $block Parsed block with attrs.
@@ -115,6 +154,14 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 	 */
 	public static function generate_block_css( $block ) {
 		$attrs      = $block['attrs'] ?? array();
+		$inner_html = $block['innerHTML'] ?? '';
+
+		// Extract attributes serialized in <pre data-wcb-block-attrs> inside innerHTML.
+		$pre_attrs = self::extract_attrs_from_inner_html( $inner_html, $attrs['uniqueId'] ?? '' );
+		if ( ! empty( $pre_attrs ) ) {
+			$attrs = array_replace_recursive( $attrs, $pre_attrs );
+		}
+
 		$unique_id  = $attrs['uniqueId'] ?? '';
 		$block_name = $block['blockName'] ?? '';
 

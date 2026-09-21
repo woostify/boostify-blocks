@@ -89,7 +89,6 @@ if ( ! empty( $sa['arrowSize'] ) ) {
 	$selectors[ $swiper_arrow_svg ]['width']  = $sa['arrowSize'];
 	$selectors[ $swiper_arrow_svg ]['height'] = $sa['arrowSize'];
 }
-$selectors[ $wrap_sel . ' .wcb-slider__wrap-items' ]['padding-bottom'] = '2.5rem';
 
 if ( ! empty( $sa['dotsMarginTop'] ) ) {
 	$selectors[ $swiper_dots ]['position'] = 'absolute';

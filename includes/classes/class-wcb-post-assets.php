@@ -194,6 +194,10 @@ class WCB_Post_Assets {
 		if ( $this->file_generation_enabled ) {
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_common_static_css' ), 5 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_individual_block_styles' ), 999 );
+			add_action( 'wp_head', array( $this, 'dequeue_individual_block_styles' ), 0 );
+			add_action( 'wp_footer', array( $this, 'dequeue_individual_block_styles' ), 0 );
+			add_action( 'wp_print_styles', array( $this, 'dequeue_individual_block_styles' ), 0 );
+			add_action( 'wp_print_footer_scripts', array( $this, 'dequeue_individual_block_styles' ), 0 );
 		}
 	}
 
@@ -220,7 +224,7 @@ class WCB_Post_Assets {
 			self::update_global_asset_version();
 		}
 
-		$this->regenerate_post_assets( $post_id );
+		$this->regenerate_post_assets( $post_id, true );
 	}
 
 	/**
@@ -298,7 +302,7 @@ class WCB_Post_Assets {
 	 * @param string $css     CSS content.
 	 * @return bool True on success.
 	 */
-	public function save_css_file( $post_id, $css ) {
+	public function save_css_file( $post_id, $css, $force = false ) {
 		$this->ensure_assets_dir_exists();
 
 		$file      = $this->get_css_file_path( $post_id );
@@ -319,7 +323,7 @@ class WCB_Post_Assets {
 		$css = $this->minify_css( $css );
 
 		// Compare with existing file content — only write if changed.
-		if ( file_exists( $file ) ) {
+		if ( ! $force && file_exists( $file ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$old_css = file_get_contents( $file );
 			if ( $old_css === $css ) {
@@ -520,6 +524,18 @@ class WCB_Post_Assets {
 	}
 
 	/**
+	 * Get cache-busted stylesheet version combining filemtime and global asset version.
+	 *
+	 * @param string $file_path File path.
+	 * @return string Version string for wp_enqueue_style.
+	 */
+	private function get_stylesheet_version( $file_path ) {
+		$mtime      = file_exists( $file_path ) ? filemtime( $file_path ) : time();
+		$global_ver = self::get_global_asset_version();
+		return $mtime . '.' . $global_ver;
+	}
+
+	/**
 	 * Enqueue generated CSS file or server-side inline CSS for the current request.
 	 *
 	 * - File generation ON & file exists: enqueues static CSS file.
@@ -546,7 +562,7 @@ class WCB_Post_Assets {
 
 			if ( ! $needs_regeneration && $this->css_file_exists( $file_id ) ) {
 				$file_path = $this->get_css_file_path( $file_id );
-				$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
+				$version   = $this->get_stylesheet_version( $file_path );
 				wp_enqueue_style(
 					'boostify-blocks-' . $file_id,
 					$this->get_css_file_url( $file_id ),
@@ -572,7 +588,7 @@ class WCB_Post_Assets {
 					// If old file exists, serve it to avoid broken UI and prevent 404.
 					if ( $this->css_file_exists( $file_id ) ) {
 						$file_path = $this->get_css_file_path( $file_id );
-						$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
+						$version   = $this->get_stylesheet_version( $file_path );
 						wp_enqueue_style(
 							'boostify-blocks-' . $file_id,
 							$this->get_css_file_url( $file_id ),
@@ -585,12 +601,12 @@ class WCB_Post_Assets {
 					}
 				} else {
 					// Regenerate safely — writes over existing file without deleting first.
-					$this->regenerate_post_assets( $post_id );
+					$this->regenerate_post_assets( $post_id, true );
 
 					// Enqueue regenerated file.
 					if ( $this->css_file_exists( $file_id ) ) {
 						$file_path = $this->get_css_file_path( $file_id );
-						$version   = file_exists( $file_path ) ? filemtime( $file_path ) : self::get_global_asset_version();
+						$version   = $this->get_stylesheet_version( $file_path );
 						wp_enqueue_style(
 							'boostify-blocks-' . $file_id,
 							$this->get_css_file_url( $file_id ),
@@ -907,7 +923,7 @@ class WCB_Post_Assets {
 			wp_send_json_error( array( 'message' => 'Invalid post ID' ), 400 );
 		}
 
-		$success = $this->regenerate_post_assets( $post_id );
+		$success = $this->regenerate_post_assets( $post_id, true );
 
 		wp_send_json_success(
 			array(
@@ -1168,7 +1184,7 @@ class WCB_Post_Assets {
 		// Step 3: Regenerate for each post.
 		foreach ( $all_post_ids as $post_id ) {
 			
-			$result = $this->regenerate_post_assets( $post_id );
+			$result = $this->regenerate_post_assets( $post_id, true );
 			if ( $result ) {
 				$posts_regenerated_ids[] = $post_id;
 				$regenerated++;
@@ -1315,7 +1331,7 @@ class WCB_Post_Assets {
 	 * @param int $post_id Post ID.
 	 * @return bool True on success.
 	 */
-	public function regenerate_post_assets( $post_id ) {
+	public function regenerate_post_assets( $post_id, $force = false ) {
 		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
 
 		if ( empty( $css ) ) {
@@ -1339,7 +1355,7 @@ class WCB_Post_Assets {
 		// Generate JS alongside CSS.
 		$this->generate_post_js( $post_id );
 
-		return $this->save_css_file( $post_id, $css );
+		return $this->save_css_file( $post_id, $css, $force );
 	}
 
 	/**
@@ -1833,7 +1849,7 @@ class WCB_Post_Assets {
 				'boostify-blocks-custom-style-blocks',
 				$this->get_assets_url() . '/custom-style-blocks.css',
 				array(),
-				BOOSTIFY_BLOCKS_VERSION
+				$this->get_stylesheet_version( $file )
 			);
 		}
 	}
@@ -1861,10 +1877,14 @@ class WCB_Post_Assets {
 		}
 
 		foreach ( $wp_styles->registered as $handle => $style ) {
-			// Match handles like: boostify-blocks-heading-style, boostify-blocks-container-style, etc.
+			// Match handles like: boostify-blocks-*-style, create-block-*-style, etc.
 			// These are auto-generated by WP from block.json "style" handles.
-			if ( 0 === strpos( $handle, 'boostify-blocks-' ) && '-style' === substr( $handle, -6 ) ) {
+			$is_boostify_style = ( 0 === strpos( $handle, 'boostify-blocks-' ) || 0 === strpos( $handle, 'create-block-' ) ) && '-style' === substr( $handle, -6 );
+			$is_block_file     = isset( $style->src ) && is_string( $style->src ) && false !== strpos( $style->src, 'boostify-blocks/build/' ) && false !== strpos( $style->src, 'style-index.css' );
+
+			if ( $is_boostify_style || $is_block_file ) {
 				wp_dequeue_style( $handle );
+				$style->src = false;
 			}
 		}
 	}

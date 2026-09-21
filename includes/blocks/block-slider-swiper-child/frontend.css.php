@@ -38,15 +38,6 @@ $icon_wrap_sel  = $wrap_sel . ' .wcb-top__icon-wrap';
 $icon_sel       = $wrap_sel . ' .wcb-top__icon';
 $image_sel      = $wrap_sel . ' .wcb-slider-child__image';
 
-// 1. Base Item flex
-$selectors[ $item_sel ]['display']        = 'flex';
-$selectors[ $item_sel ]['flex-direction'] = 'column';
-
-$selectors[ $item_inner_sel ]['display']        = 'flex';
-$selectors[ $item_inner_sel ]['flex-direction'] = 'column';
-$selectors[ $item_inner_sel ]['align-items']    = 'center';
-$selectors[ $item_inner_sel ]['text-align']     = 'center';
-$selectors[ $item_inner_sel ]['width']          = '100%';
 
 // 2. Name
 if ( ! empty( $sn['typography'] ) ) {
@@ -133,13 +124,6 @@ if ( ! empty( $sc['textAlignment'] ) ) {
 }
 
 // 4. Call To Action Button
-$selectors[ $btn_inner_sel ]['display']         = 'inline-flex';
-$selectors[ $btn_inner_sel ]['align-items']     = 'center';
-$selectors[ $btn_inner_sel ]['justify-content'] = 'center';
-$selectors[ $btn_inner_sel ]['width']           = 'fit-content';
-$selectors[ $btn_inner_sel ]['max-width']       = '100%';
-$selectors[ $btn_inner_sel ]['box-sizing']      = 'border-box';
-$selectors[ $btn_inner_sel ]['cursor']          = 'pointer';
 
 if ( ! empty( $sb['typographyText'] ) ) {
 	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sb['typographyText'], $btn_text_sel, 'desktop' ) );
