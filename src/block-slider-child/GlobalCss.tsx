@@ -84,6 +84,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 					display: "flex",
 					flexDirection: "column",
 				},
+				[ITEM_CLASSNAME_INNER]: {
+					display: "flex",
+					flexDirection: "column",
+					width: "100%",
+				},
+				[CALL_TO_ACTION_INNER]: {
+					display: "inline-flex",
+					alignItems: "center",
+					justifyContent: "center",
+					width: "fit-content",
+					maxWidth: "100%",
+					boxSizing: "border-box",
+					cursor: "pointer",
+				},
 			},
 		];
 	};

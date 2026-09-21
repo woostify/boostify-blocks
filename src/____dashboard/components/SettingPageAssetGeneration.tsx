@@ -92,37 +92,46 @@ const ConfirmationPopup: FC<ConfirmationPopupProps> = ({
 						leaveFrom="opacity-100 translate-y-0 sm:scale-100"
 						leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
 					>
-						<div className="inline-block p-3 rounded-lg bg-white max-w-[30rem] font-[Figtree] relative z-999999">
-							<div className="mb-2 p-2">
+						<div
+							className="inline-block p-4 sm:p-5 rounded-lg bg-white max-w-[30rem] w-full relative z-999999 shadow-xl text-left"
+							style={{
+								fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
+							}}
+						>
+							<div className="mb-3">
 								<div className="flex w-full justify-between items-center mb-2">
-									<div className="text-base font-semibold text-text-primary">
+									<div className="text-base font-semibold text-gray-900">
 										{popupContent.title}
 									</div>
 
-									<svg
-										width={16}
-										height={16}
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth={2}
-										strokeLinecap="round"
-										strokeLinejoin="round"
+									<button
+										type="button"
 										onClick={onCancelClick}
-										className="cursor-pointer"
+										className="text-gray-400 hover:text-gray-600 focus:outline-none cursor-pointer"
 									>
-										<line x1="18" y1="6" x2="6" y2="18" />
-										<line x1="6" y1="6" x2="18" y2="18" />
-									</svg>
+										<svg
+											width={16}
+											height={16}
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth={2}
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										>
+											<line x1="18" y1="6" x2="6" y2="18" />
+											<line x1="6" y1="6" x2="18" y2="18" />
+										</svg>
+									</button>
 								</div>
-								<div className="text-sm text-text-secondary font-normal w-full text-left">
+								<div className="text-sm text-gray-600 font-normal leading-relaxed w-full text-left">
 									{popupContent.description}
 								</div>
 							</div>
-							<div className="p-2">
+							<div className="mt-4">
 								<div className="flex justify-end items-center w-full gap-3">
 									<button
-										className="focus:ring-0 outline outline-0 inline-flex items-center rounded-md border border-gray bg-white-600 px-3 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-slate-50 focus:outline-none"
+										className="focus:ring-0 outline outline-1 inline-flex items-center rounded-md border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none"
 										type="button"
 										onClick={onCancelClick}
 										ref={cancelButtonRef}
@@ -130,13 +139,13 @@ const ConfirmationPopup: FC<ConfirmationPopupProps> = ({
 										{popupCancel.label}
 									</button>
 									<button
-										className="focus:ring-0 outline outline-1 inline-flex items-center rounded-md border border-blue-600 bg-blue-600 px-3 py-2.5 text-sm font-medium text-white shadow-sm hover:border-blue-700 hover:bg-blue-700 focus:outline-none"
+										className="focus:ring-0 outline outline-1 inline-flex items-center rounded-md border border-blue-600 bg-blue-600 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:border-blue-700 hover:bg-blue-700 focus:outline-none"
 										type="button"
 										onClick={onAcceptClick}
 									>
 										{isAcceptLoading && (
 											<svg
-												className="animate-spin mr-1 h-5 w-5 text-white"
+												className="animate-spin mr-1.5 h-4 w-4 text-white"
 												xmlns="http://www.w3.org/2000/svg"
 												fill="none"
 												viewBox="0 0 24 24"
@@ -230,7 +239,7 @@ const SettingsPageAssetGeneration: FC<Props> = ({
 			<div className="pb-8">
                 <MyToggle
                     label="File Generation"
-                    desc='Boostify loads the CSS and JS inline on the page by default. If you want to generate CSS and JS files for Boostify blocks, enable this option.'
+                    desc="Boostify loads block styles inline on the page by default. If you want to generate static CSS files for Boostify blocks, enable this option."
                     id="MyToggle_FileGeneration"
                     checked={allSettings.enableFileGeneration === "true"}
                     onChange={(checked) => {
@@ -249,7 +258,7 @@ const SettingsPageAssetGeneration: FC<Props> = ({
             <div className="py-8">
                 <MyButton
                     label="Generate Assets"
-                    desc="Facing issues with style, layout, color or another page element? Use this option to regenerate CSS and Javascript assets. It can help with all kinds of asset issues."
+                    desc="Facing issues with style, layout, color or another page element? Use this option to regenerate CSS assets. It can help with all kinds of styling and caching issues."
                     id="MyButton_GenerateAssets"
 					buttonText="Regenerate Assets"
                     onClick={ openModal }

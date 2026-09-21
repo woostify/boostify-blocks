@@ -178,6 +178,23 @@ classes.forEach(({ D, C, F }) => {
 	}
 });
 
+function parseBlockAttrs(raw: string): any {
+	try {
+		return JSON.parse(raw);
+	} catch (e) {
+		if (raw.includes("&quot;") || raw.includes("&#") || raw.includes("&amp;")) {
+			try {
+				const txt = document.createElement("textarea");
+				txt.innerHTML = raw;
+				return JSON.parse(txt.value);
+			} catch (err2) {
+				// pass through to throw original
+			}
+		}
+		throw e;
+	}
+}
+
 /**
  * Renders the GlobalCss component to the DOM and optionally executes a function on each element.
  * 
@@ -201,11 +218,12 @@ function renderToDom(
 			`div[data-wcb-global-styles=${div.getAttribute("data-uniqueid")}]`
 		) as HTMLElement | null;
 
-		if (!preEl || !preEl.innerText || !divRenderCssEl) {
+		const rawJson = preEl?.textContent || preEl?.innerText;
+		if (!preEl || !rawJson || !divRenderCssEl) {
 			return;
 		}
 		try {
-			const props = JSON.parse(preEl?.innerText);
+			const props = parseBlockAttrs(rawJson.trim());
 
 			// Skip emotion <Global> rendering when static CSS file is loaded.
 			// Init functions (carousels, forms, counters) still run.

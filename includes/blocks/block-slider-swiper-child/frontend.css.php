@@ -25,7 +25,9 @@ $si  = $attr['style_image'] ?? array();
 $sab = $attr['style_backgroundAndBorder'] ?? array();
 $sdm = $attr['style_dimension'] ?? array();
 
-$wrap_sel       = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
+$unique_css_class = ! empty( $attr['clientID'] ) ? WCB_Block_Helper::convert_client_id_to_unique_class( $attr['clientID'] ) : $unique_id;
+
+$wrap_sel       = ! empty( $unique_css_class ) ? '.wcb-slider-child__wrap.' . $unique_css_class : ( ! empty( $unique_id ) ? '.' . $unique_id : '.wcb-slider-child__wrap' );
 $item_sel       = $wrap_sel . ' .wcb-slider-child__item';
 $item_inner_sel = $wrap_sel . ' .wcb-slider-child__item-inner';
 $name_sel       = $wrap_sel . ' .wcb-slider-child__name';
@@ -36,9 +38,6 @@ $icon_wrap_sel  = $wrap_sel . ' .wcb-top__icon-wrap';
 $icon_sel       = $wrap_sel . ' .wcb-top__icon';
 $image_sel      = $wrap_sel . ' .wcb-slider-child__image';
 
-// 1. Base Item flex
-$selectors[ $item_sel ]['display']        = 'flex';
-$selectors[ $item_sel ]['flex-direction'] = 'column';
 
 // 2. Name
 if ( ! empty( $sn['typography'] ) ) {
@@ -82,23 +81,50 @@ if ( ! empty( $sc['textAlignment'] ) ) {
 		}
 		return '';
 	};
+	$get_flex_align = function( $align ) {
+		if ( 'left' === $align ) {
+			return 'flex-start';
+		}
+		if ( 'right' === $align ) {
+			return 'flex-end';
+		}
+		if ( 'center' === $align ) {
+			return 'center';
+		}
+		return '';
+	};
 	if ( is_array( $sc['textAlignment'] ) ) {
 		$d_align = $get_align_val( $sc['textAlignment']['Desktop'] ?? '' );
 		$t_align = $get_align_val( $sc['textAlignment']['Tablet'] ?? '' );
 		$m_align = $get_align_val( $sc['textAlignment']['Mobile'] ?? '' );
+
+		$d_flex = $get_flex_align( $sc['textAlignment']['Desktop'] ?? '' );
+		$t_flex = $get_flex_align( $sc['textAlignment']['Tablet'] ?? '' );
+		$m_flex = $get_flex_align( $sc['textAlignment']['Mobile'] ?? '' );
+
 		if ( $d_align ) {
-			$selectors[ $content_sel ]['text-align'] = $d_align;
+			$selectors[ $content_sel ]['text-align']    = $d_align;
+			$selectors[ $name_sel ]['text-align']       = $d_align;
+			$selectors[ $item_inner_sel ]['text-align'] = $d_align;
+			$selectors[ $item_inner_sel ]['align-items'] = $d_flex;
 		}
 		if ( $t_align ) {
-			$t_selectors[ $content_sel ]['text-align'] = $t_align;
+			$t_selectors[ $content_sel ]['text-align']    = $t_align;
+			$t_selectors[ $name_sel ]['text-align']       = $t_align;
+			$t_selectors[ $item_inner_sel ]['text-align'] = $t_align;
+			$t_selectors[ $item_inner_sel ]['align-items'] = $t_flex;
 		}
 		if ( $m_align ) {
-			$m_selectors[ $content_sel ]['text-align'] = $m_align;
+			$m_selectors[ $content_sel ]['text-align']    = $m_align;
+			$m_selectors[ $name_sel ]['text-align']       = $m_align;
+			$m_selectors[ $item_inner_sel ]['text-align'] = $m_align;
+			$m_selectors[ $item_inner_sel ]['align-items'] = $m_flex;
 		}
 	}
 }
 
 // 4. Call To Action Button
+
 if ( ! empty( $sb['typographyText'] ) ) {
 	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sb['typographyText'], $btn_text_sel, 'desktop' ) );
 	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $sb['typographyText'], $btn_text_sel, 'tablet' ) );
@@ -134,6 +160,28 @@ if ( ! empty( $sb['margin'] ) ) {
 	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_dimension_css( $sb['margin'], 'margin', $btn_inner_sel, 'desktop' ) );
 	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_dimension_css( $sb['margin'], 'margin', $btn_inner_sel, 'tablet' ) );
 	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_dimension_css( $sb['margin'], 'margin', $btn_inner_sel, 'mobile' ) );
+}
+
+// 4.1 Button preset icon spacing
+$sb_preset = $attr['style_buttonPreset'] ?? array();
+if ( ! empty( $sb_preset['iconSpacing'] ) ) {
+	$btn_spacing_sel = $wrap_sel . ' .wcb-slider-child__btn_spacing';
+	$spacing_prop    = ( ( $sb_preset['iconPosition'] ?? 'afterTitle' ) === 'afterTitle' ) ? 'margin-right' : 'margin-left';
+	$selectors       = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sb_preset['iconSpacing'], $spacing_prop, $btn_spacing_sel, 'desktop' ) );
+	$t_selectors     = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sb_preset['iconSpacing'], $spacing_prop, $btn_spacing_sel, 'tablet' ) );
+	$m_selectors     = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sb_preset['iconSpacing'], $spacing_prop, $btn_spacing_sel, 'mobile' ) );
+}
+
+// 4.2 Layout Preset
+$layout_preset = $attr['style_layoutPreset'] ?? array();
+$preset_name   = $layout_preset['preset'] ?? '';
+$icon_pos      = $si['iconPosition'] ?? '';
+if ( in_array( $preset_name, array( 'wcb-layout-2', 'wcb-layout-3', 'wcb-layout-5' ), true ) || 'left' === $icon_pos ) {
+	$selectors[ $item_inner_sel ]['align-items'] = 'flex-start';
+	$selectors[ $item_inner_sel ]['text-align']  = 'start';
+} elseif ( 'right' === $icon_pos ) {
+	$selectors[ $item_inner_sel ]['align-items'] = 'flex-end';
+	$selectors[ $item_inner_sel ]['text-align']  = 'end';
 }
 
 // 5. Icon / Image

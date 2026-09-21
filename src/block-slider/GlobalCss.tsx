@@ -26,8 +26,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 	} = attrs;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid="${uniqueId}"]`;
-	const ITEM_CLASSNAME = `${WRAP_CLASSNAME}.wcb-slider__wrap`;
-	// const ITEM_INNER_CLASSNAME = `${ITEM_CLASSNAME} .wcb-slider__item-inner`;
+	const SLIDE_CLASSNAME = `${WRAP_CLASSNAME} .slick-slide`;
 	const SLICK_ARROW = `${WRAP_CLASSNAME} .slick-arrow`;
 	const SLICK_DOTS = `${WRAP_CLASSNAME} .slick-dots`;
 	const SLICK_PREV = `${WRAP_CLASSNAME} .slick-prev`;
@@ -38,7 +37,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		return [
 			getStyleObjectFromResponsiveAttr({
 				value: general_general.textAlignment,
-				className: `${ITEM_CLASSNAME}`,
+				className: `${WRAP_CLASSNAME}`,
 				prefix: "textAlign",
 			}),
 		];
@@ -57,11 +56,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					getBorderStyles({
 						border: style_backgroundAndBorder.border,
-						className: ITEM_CLASSNAME,
+						className: WRAP_CLASSNAME,
 						isWithRadius: true,
 					}),
 					getStyleObjectFromResponsiveAttr({
-						className: ITEM_CLASSNAME,
+						className: SLIDE_CLASSNAME,
 						value: general_general.colGap,
 						prefix: "paddingLeft",
 						prefix_2: "paddingRight",
@@ -72,7 +71,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						margin: style_dimension.margin,
 					}),
 					getStyleBackground({
-						className: ITEM_CLASSNAME,
+						className: WRAP_CLASSNAME,
 						styles_background: style_backgroundAndBorder.background,
 					}),
 				]}
@@ -81,7 +80,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{/* BOXSHADOW  */}
 			<Global
 				styles={getBoxShadowStyles({
-					className: ITEM_CLASSNAME,
+					className: WRAP_CLASSNAME,
 					boxShadow: style_boxshadow,
 				})}
 			/>
@@ -111,23 +110,32 @@ const GlobalCss: FC<Props> = (attrs) => {
 					},
 					{
 						[`${SLICK_ARROW}`]: {
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
 							backgroundColor: style_arrowAndDots.backgroundColor,
+							cursor: "pointer",
 						},
 					},
 					{
+						[`${WRAP_CLASSNAME} .wcb-slider__wrap-items`]: {
+							paddingBottom: "2.5rem",
+						},
 						[`${SLICK_DOTS}`]: {
 							position: "absolute",
-							bottom: style_arrowAndDots.dotsMarginTop.Desktop,
+							bottom: style_arrowAndDots.dotsMarginTop?.Desktop && style_arrowAndDots.dotsMarginTop?.Desktop !== "0px"
+								? style_arrowAndDots.dotsMarginTop.Desktop
+								: "8px",
 						}
 					},
 					{
 						[`${SLICK_PREV}`]: {
-							left: style_arrowAndDots.arrowDistance.Desktop,
+							left: style_arrowAndDots.arrowDistance?.Desktop || "0px",
 						}
-					}
-					,{
+					},
+					{
 						[`${SLICK_NEXT}`]: {
-							right: style_arrowAndDots.arrowDistance.Desktop,
+							right: style_arrowAndDots.arrowDistance?.Desktop || "0px",
 						}
 					}
 				]}
