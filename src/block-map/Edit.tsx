@@ -7,6 +7,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
+//@ts-ignore
 import "./editor.scss";
 import useSetBlockPanelInfo from "../hooks/useSetBlockPanelInfo";
 import AdvancePanelCommon from "../components/AdvancePanelCommon";
@@ -148,15 +149,15 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 						allowFullScreen
 						referrerPolicy="no-referrer-when-downgrade"
 						title={general_general.placeQuery || ""}
-						src={`https://www.google.com/maps/embed/v1/place
-						?key=AIzaSyCLK1ZWtKchh3gykkn2o3i47pVEX5vbKdA
-						&maptype=${general_general.mapTypeId}
-						&language=${general_general.language}
-						&zoom=${general_general.zoom}
-						&q=${
-							general_general.placeQuery?.replace?.(/ /g, "+") ||
-							"Eiffel+Tower,Paris+France"
-						}`}
+						// Editor canvas is a blob: iframe, so no Referer is sent and the
+						// referrer-restricted Embed API key gets rejected. Use keyless embed.
+						src={`https://maps.google.com/maps?output=embed&t=${
+							general_general.mapTypeId === "satellite" ? "k" : "m"
+						}&hl=${general_general.language}&z=${
+							general_general.zoom
+						}&q=${encodeURIComponent(
+							general_general.placeQuery || "Eiffel Tower,Paris France"
+						)}`}
 						style={{ pointerEvents: "none" }}
 					></iframe>
 				</div>
