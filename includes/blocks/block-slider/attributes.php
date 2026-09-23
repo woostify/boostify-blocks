@@ -232,10 +232,10 @@ return array(
 		'default' => array(
 			'padding' => array(
 				'Desktop' => array(
-					'top'    => '1rem',
-					'left'   => '1rem',
-					'right'  => '1rem',
-					'bottom' => '1rem',
+					'top'    => '',
+					'left'   => '',
+					'right'  => '',
+					'bottom' => '',
 				),
 			),
 			'margin'  => array(

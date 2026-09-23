@@ -26,7 +26,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 	} = attrs;
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid="${uniqueId}"]`;
-	const SLIDE_CLASSNAME = `${WRAP_CLASSNAME} .swiper-slide`;
+	const ITEM_CLASSNAME = `${WRAP_CLASSNAME}.wcb-slider__wrap`;
 	const SWIPER_PREV = `${WRAP_CLASSNAME} .swiper-button-prev`;
 	const SWIPER_NEXT = `${WRAP_CLASSNAME} .swiper-button-next`;
 	const SWIPER_ARROW = `${SWIPER_PREV}, ${SWIPER_NEXT}`;
@@ -39,7 +39,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		return [
 			getStyleObjectFromResponsiveAttr({
 				value: general_general.textAlignment,
-				className: `${WRAP_CLASSNAME}`,
+				className: `${ITEM_CLASSNAME}`,
 				prefix: "textAlign",
 			}),
 		];
@@ -58,22 +58,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					getBorderStyles({
 						border: style_backgroundAndBorder.border,
-						className: WRAP_CLASSNAME,
+						className: ITEM_CLASSNAME,
 						isWithRadius: true,
 					}),
-					getStyleObjectFromResponsiveAttr({
-						className: SLIDE_CLASSNAME,
-						value: general_general.colGap,
-						prefix: "paddingLeft",
-						prefix_2: "paddingRight",
-					}),
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME}`,
+						className: `${ITEM_CLASSNAME}`,
 						padding: style_dimension.padding,
 						margin: style_dimension.margin,
 					}),
 					getStyleBackground({
-						className: WRAP_CLASSNAME,
+						className: ITEM_CLASSNAME,
 						styles_background: style_backgroundAndBorder.background,
 					}),
 				]}
@@ -82,7 +76,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{/* BOXSHADOW  */}
 			<Global
 				styles={getBoxShadowStyles({
-					className: WRAP_CLASSNAME,
+					className: ITEM_CLASSNAME,
 					boxShadow: style_boxshadow,
 				})}
 			/>
@@ -132,27 +126,21 @@ const GlobalCss: FC<Props> = (attrs) => {
 							backgroundColor: style_arrowAndDots.backgroundColor,
 						},
 					},
-					{
-						[`${WRAP_CLASSNAME} .wcb-slider__wrap-items`]: {
-							paddingBottom: "2.5rem",
-						},
-						[`${SWIPER_DOTS}`]: {
-							position: "absolute",
-							bottom: style_arrowAndDots.dotsMarginTop?.Desktop && style_arrowAndDots.dotsMarginTop?.Desktop !== "0px"
-								? style_arrowAndDots.dotsMarginTop.Desktop
-								: "8px",
-						}
-					},
-					{
-						[`${SWIPER_PREV}`]: {
-							left: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					},
-					{
-						[`${SWIPER_NEXT}`]: {
-							right: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					}
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_DOTS,
+						value: style_arrowAndDots.dotsMarginTop,
+						prefix: "marginTop",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_PREV,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "left",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_NEXT,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "right",
+					}),
 				]}
 			/>
 

@@ -791,8 +791,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		isAutoPlay,
 		showArrowsDots,
 		adaptiveHeight,
+		rewind,
 	} = general_carousel;
-	const { columns } = general_general;
+	const { columns, colGap } = general_general;
 
 	const {
 		value_Desktop: columnsDesktop,
@@ -800,6 +801,25 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		value_Mobile: columnsMobile,
 		currentDeviceValue: currentColumns,
 	} = getValueFromAttrsResponsives(columns, deviceType);
+
+	const {
+		value_Desktop: colGapDesktop,
+		value_Tablet: colGapTablet,
+		value_Mobile: colGapMobile,
+	} = getValueFromAttrsResponsives(colGap, deviceType);
+
+	const parseGapToPx = (gapVal?: string | number): number => {
+		if (!gapVal) return 0;
+		if (typeof gapVal === "number") return gapVal;
+		const num = parseFloat(gapVal);
+		if (isNaN(num)) return 0;
+		if (typeof gapVal === "string" && gapVal.endsWith("rem")) return num * 16;
+		return num;
+	};
+
+	const gapDesk = parseGapToPx(colGapDesktop);
+	const gapTab = parseGapToPx(colGapTablet ?? colGapDesktop);
+	const gapMob = parseGapToPx(colGapMobile ?? colGapTablet ?? colGapDesktop);
 
 	const activeCols =
 		Number(currentColumns) ||
@@ -810,9 +830,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				: Number(columnsDesktop)) ||
 		1;
 
+	const activeGap =
+		activeCols > 1
+			? deviceType === "Mobile"
+				? gapMob
+				: deviceType === "Tablet"
+					? gapTab
+					: gapDesk
+			: 0;
+
 	// forceSliderRecalc: calls update() and forces pagination to re-render.
-	// Writes params.breakpoints/slidesPerView directly onto the Swiper
-	// instance so sidebar column changes apply instantly without reload.
+	// Writes params.breakpoints/slidesPerView/spaceBetween directly onto the Swiper
+	// instance so sidebar column and gap changes apply instantly without reload.
 	const forceSliderRecalc = useCallback(() => {
 		const swiper = swiperRef.current;
 		if (swiper && !swiper.destroyed && swiper.el && swiper.el.isConnected) {
@@ -825,16 +854,22 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			const newBreakpoints = {
 				[BREAKPOINT_TABLET]: {
 					slidesPerView: colsTab,
+					spaceBetween: colsTab > 1 ? gapTab : 0,
 				},
 				[BREAKPOINT_DESKTOP]: {
 					slidesPerView: colsDesk,
+					spaceBetween: colsDesk > 1 ? gapDesk : 0,
 				},
 			};
 
 			swiper.params.breakpoints = newBreakpoints;
+			swiper.params.spaceBetween = activeGap;
+			swiper.params.rewind = !! rewind;
 			if (swiper.originalParams) {
 				swiper.originalParams.breakpoints = { ...newBreakpoints };
 				swiper.originalParams.slidesPerView = colsMob;
+				swiper.originalParams.spaceBetween = colsMob > 1 ? gapMob : 0;
+				swiper.originalParams.rewind = !! rewind;
 			}
 
 			// In the editor, show the column count for the device being edited
@@ -862,7 +897,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				swiper.pagination.update();
 			}
 		}
-	}, [columnsDesktop, columnsTablet, columnsMobile, activeCols]);
+	}, [columnsDesktop, columnsTablet, columnsMobile, activeCols, colGapDesktop, colGapTablet, colGapMobile, activeGap, gapDesk, gapTab, gapMob, rewind]);
 
 	// Progressive recalculation so the slider resizes correctly as child
 	// blocks (RichText, Button, GlobalCss) finish mounting one by one
@@ -1132,17 +1167,21 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			observeParents: true,
 			observeSlideChildren: true,
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating InspectorControls
+			rewind: !! rewind,
 			speed: animationDuration || 500,
 			autoplay: isAutoPlay
 				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
 				: false,
 			slidesPerView: activeCols || columnsMobile || 1,
+			spaceBetween: activeGap,
 			breakpoints: {
 				[BREAKPOINT_TABLET]: {
 					slidesPerView: columnsTablet || columnsMobile || 1,
+					spaceBetween: (Number(columnsTablet) || 1) > 1 ? gapTab : 0,
 				},
 				[BREAKPOINT_DESKTOP]: {
 					slidesPerView: columnsDesktop || columnsTablet || 1,
+					spaceBetween: (Number(columnsDesktop) || 1) > 1 ? gapDesk : 0,
 				},
 			},
 			autoHeight: adaptiveHeight,
@@ -1175,9 +1214,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			columnsTablet,
 			columnsMobile,
 			activeCols,
+			activeGap,
+			gapDesk,
+			gapTab,
+			gapMob,
 			adaptiveHeight,
 			showArrows,
 			showDots,
+			rewind,
 			swiperSelectorScope,
 			handleAfterInit,
 			handleSwiper,

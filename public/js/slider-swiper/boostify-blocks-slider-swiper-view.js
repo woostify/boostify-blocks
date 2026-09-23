@@ -58,6 +58,15 @@ function equalizeItemHeights( wrap ) {
 	} );
 }
 
+function parseGapToPx( gapVal ) {
+	if ( ! gapVal ) return 0;
+	if ( typeof gapVal === 'number' ) return gapVal;
+	const num = parseFloat( gapVal );
+	if ( isNaN( num ) ) return 0;
+	if ( typeof gapVal === 'string' && gapVal.endsWith( 'rem' ) ) return num * 16;
+	return num;
+}
+
 function mountSwiper( ref, context ) {
 	// Guard against a missing target and against double init.
 	if ( ! ref || ref.swiper ) {
@@ -73,17 +82,30 @@ function mountSwiper( ref, context ) {
 		showArrowsDots,
 		adaptiveHeight,
 		columns,
+		colGap,
 	} = context;
 
 	const columnsDesktop = columns?.Desktop;
 	const columnsTablet = columns?.Tablet ?? columnsDesktop;
 	const columnsMobile = columns?.Mobile ?? columnsTablet;
 
+	const colGapDesktop = colGap?.Desktop;
+	const colGapTablet = colGap?.Tablet ?? colGapDesktop;
+	const colGapMobile = colGap?.Mobile ?? colGapTablet;
+
+	const gapDesk = parseGapToPx( colGapDesktop );
+	const gapTab = parseGapToPx( colGapTablet );
+	const gapMob = parseGapToPx( colGapMobile );
+
+	const colsDesk = Number( columnsDesktop ) || 1;
+	const colsTab = Number( columnsTablet ) || colsDesk;
+	const colsMob = Number( columnsMobile ) || colsTab;
+
 	const wrap = ref.closest( '.wcb-slider__wrap' ) || ref;
 
 	try {
 		new window.Swiper( ref, {
-			loop: !! rewind,
+			rewind: !! rewind,
 			speed: animationDuration || 500,
 			autoplay: isAutoPlay
 				? {
@@ -92,7 +114,8 @@ function mountSwiper( ref, context ) {
 				  }
 				: false,
 			autoHeight: !! adaptiveHeight,
-			slidesPerView: columnsMobile || 1,
+			slidesPerView: colsMob,
+			spaceBetween: colsMob > 1 ? gapMob : 0,
 			// Always advance by exactly one slide per next/prev click,
 			// regardless of how many slides are shown at once (columns).
 			slidesPerGroup: 1,
@@ -112,10 +135,12 @@ function mountSwiper( ref, context ) {
 					: false,
 			breakpoints: {
 				[ BREAKPOINT_TABLET ]: {
-					slidesPerView: columnsTablet || columnsMobile || 1,
+					slidesPerView: colsTab,
+					spaceBetween: colsTab > 1 ? gapTab : 0,
 				},
 				[ BREAKPOINT_DESKTOP ]: {
-					slidesPerView: columnsDesktop || columnsTablet || 1,
+					slidesPerView: colsDesk,
+					spaceBetween: colsDesk > 1 ? gapDesk : 0,
 				},
 			},
 			on: {

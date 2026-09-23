@@ -49,18 +49,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const WRAP_CLASSNAME_UNIVERSAL = `.wcb-slider-child__wrap.${uniqueCssClass}`;
 	const WRAP_CLASSNAME_SCOPED = `.wcb-slider__wrap .wcb-slider-child__wrap.${uniqueCssClass}`;
 	
-	// Create comprehensive dual selectors that handle various wrapper scenarios
+	// Create clean dual selectors (universal for save mode, scoped for edit mode)
 	const createRobustSelector = (childSelector: string) => [
-		// Direct targeting (most reliable for save mode)
 		`${WRAP_CLASSNAME_UNIVERSAL} ${childSelector}`,
-		// Scoped targeting (for edit mode context)
 		`${WRAP_CLASSNAME_SCOPED} ${childSelector}`,
-		// Additional targeting for potential slider wrapper scenarios
-		`${WRAP_CLASSNAME_UNIVERSAL} .wcb-slider__item ${childSelector}`,
-		`${WRAP_CLASSNAME_SCOPED} .wcb-slider__item ${childSelector}`,
-		// Even more specific for deeply nested scenarios
-		`${WRAP_CLASSNAME_UNIVERSAL} .wcb-slider__item .wcb-slider__item-inner ${childSelector}`,
-		`${WRAP_CLASSNAME_SCOPED} .wcb-slider__item .wcb-slider__item-inner ${childSelector}`
 	].join(', ');
 
 	// Create CSS selectors using robust approach

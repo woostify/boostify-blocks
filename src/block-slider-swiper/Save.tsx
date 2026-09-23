@@ -88,6 +88,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		showArrowsDots,
 		adaptiveHeight: newAttrForSave.general_carousel.adaptiveHeight,
 		columns: newAttrForSave.general_general.columns,
+		colGap: newAttrForSave.general_general.colGap,
 	};
 
 	return (

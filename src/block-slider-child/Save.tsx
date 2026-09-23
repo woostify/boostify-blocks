@@ -10,7 +10,7 @@ import _ from "lodash";
 import { WCB_SLIDER_PANEL_STYLE_NAME_DEMO } from "./WcbSliderPanel_StyleName";
 import { WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO } from "./WcbSliderPanel_StyleContent";
 import { WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO } from "./WcbSliderPanel_StyleBackground";
-import WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO  from "./WcbSliderPanel_StyleDimension";
+import { WCB_SLIDER_PANEL_STYLE_DIMENSION_DEMO } from "../block-slider/WcbSliderPanel_StyleDimension";
 import { WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO, DEFAULT_MY_TOP_ICON } from "./WcbSliderPanel_StyleImage";
 import { WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO } from "./WcbSliderPanel_ButtonPreset";
 import { WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO } from "./WcbSliderPanel_LayoutPreset";
@@ -215,7 +215,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 							{/* Frontend CSS injection elements */}
 							<div data-wcb-global-styles={uniqueId}></div>
 							<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
-								{JSON.stringify(newAttrForSave, null, 2)}
+								{_.escape(JSON.stringify(newAttrForSave))}
 							</pre>
 							
 							{/* Child CSS styles for both edit and save mode */}
@@ -277,10 +277,8 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 														if (style_image?.iconPosition === "right") {
 															return "wcb-slider-child__content_end";
 														}
-
-														return "";
 													})()
-												}`.trim()}>
+												}`}>
 												<RichText.Content
 													tagName="div"
 													value={content}

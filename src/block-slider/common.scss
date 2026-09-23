@@ -1,11 +1,21 @@
 /*  */
 /*  */
 .wcb-slider__wrap {
-	.slick-dots li {
-		margin: 0px;
-	}
-	.slick-dots li button:before {
-		font-size: 8px;
+	.slick-dots {
+		position: relative !important;
+		display: flex !important;
+		justify-content: center;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		bottom: auto !important;
+
+		li {
+			margin: 0px;
+		}
+		li button:before {
+			font-size: 8px;
+		}
 	}
 
 	.slick-prev,
@@ -67,5 +77,5 @@
 
 .wcb-slider__wrap-items {
 	padding-top: 0.5rem;
-	padding-bottom: 2.5rem;
+	padding-bottom: 0.5rem;
 }
