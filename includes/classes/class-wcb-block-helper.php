@@ -159,7 +159,7 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 		// Extract attributes serialized in <pre data-wcb-block-attrs> inside innerHTML.
 		$pre_attrs = self::extract_attrs_from_inner_html( $inner_html, $attrs['uniqueId'] ?? '' );
 		if ( ! empty( $pre_attrs ) ) {
-			$attrs = array_replace_recursive( $attrs, $pre_attrs );
+			$attrs = array_replace_recursive( $pre_attrs, $attrs );
 		}
 
 		$unique_id  = $attrs['uniqueId'] ?? '';

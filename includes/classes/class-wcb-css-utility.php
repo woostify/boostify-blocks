@@ -610,6 +610,34 @@ class WCB_CSS_Utility {
 	}
 
 	/**
+	 * Tailwind shadow preset value. Mirrors getShadowStyleValueFromTwPreset.
+	 *
+	 * @param string $preset Preset name (shadow-sm, shadow, shadow-md, shadow-lg, shadow-xl, shadow-2xl, shadow-inner).
+	 * @param string $color  Optional shadow color.
+	 * @return string CSS box-shadow string.
+	 */
+	public static function get_tw_shadow_preset_value( $preset, $color = '' ) {
+		switch ( $preset ) {
+			case 'shadow-sm':
+				return '0 1px 2px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.05)' );
+			case 'shadow':
+				return '0 1px 3px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 1px 2px -1px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+			case 'shadow-md':
+				return '0 4px 6px -1px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 2px 4px -2px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+			case 'shadow-lg':
+				return '0 10px 15px -3px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 4px 6px -4px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+			case 'shadow-xl':
+				return '0 20px 25px -5px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' ) . ', 0 8px 10px -6px ' . ( $color ? $color : 'rgb(0 0 0 / 0.1)' );
+			case 'shadow-2xl':
+				return '0 25px 50px -12px ' . ( $color ? $color : 'rgb(0 0 0 / 0.25)' );
+			case 'shadow-inner':
+				return 'inset 0 2px 4px 0 ' . ( $color ? $color : 'rgb(0 0 0 / 0.05)' );
+			default:
+				return '';
+		}
+	}
+
+	/**
 	 * Get box shadow CSS.
 	 *
 	 * @param array  $box_shadow Box shadow attribute array.
@@ -624,32 +652,52 @@ class WCB_CSS_Utility {
 		$result = array();
 
 		$build_shadow = function( $item ) {
-			if ( empty( $item ) || ! is_array( $item ) || empty( $item['color'] ) ) {
+			if ( empty( $item ) || ! is_array( $item ) ) {
 				return '';
 			}
+
+			$color  = $item['color'] ?? '';
+			$preset = $item['presetClass'] ?? '';
+
+			if ( ! empty( $preset ) ) {
+				return self::get_tw_shadow_preset_value( $preset, $color );
+			}
+
+			$h_val = floatval( $item['horizontal'] ?? 0 );
+			$v_val = floatval( $item['vertical'] ?? 0 );
+			$b_val = floatval( $item['blur'] ?? 0 );
+			$s_val = floatval( $item['spread'] ?? 0 );
+
+			if ( empty( $color ) && 0.0 === $h_val && 0.0 === $v_val && 0.0 === $b_val && 0.0 === $s_val ) {
+				return '';
+			}
+
+			$x     = self::get_css_value( $item['horizontal'] ?? 0 );
+			$y     = self::get_css_value( $item['vertical'] ?? 0 );
+			$b     = self::get_css_value( $item['blur'] ?? 0 );
+			$s     = self::get_css_value( $item['spread'] ?? 0 );
+			$c     = ! empty( $color ) ? $color : 'rgb(0 0 0 / 0.1)';
 			$inset = ! empty( $item['position'] ) && 'inset' === $item['position'] ? 'inset ' : '';
-			$x     = self::get_css_value( $item['horizontal'] ?? '0px' );
-			$y     = self::get_css_value( $item['vertical'] ?? '0px' );
-			$b     = self::get_css_value( $item['blur'] ?? '0px' );
-			$s     = self::get_css_value( $item['spread'] ?? '0px' );
-			$c     = $item['color'];
+
 			return trim( "{$inset}{$x} {$y} {$b} {$s} {$c}" );
 		};
 
-		if ( ! empty( $box_shadow['Normal'] ) ) {
-			$norm = $build_shadow( $box_shadow['Normal'] );
+		$normal = $box_shadow['Normal'] ?? ( $box_shadow['normal'] ?? null );
+		if ( ! empty( $normal ) ) {
+			$norm = $build_shadow( $normal );
 			if ( $norm ) {
 				$result[ $selector ]['box-shadow'] = $norm;
 			}
-		} elseif ( ! empty( $box_shadow['color'] ) ) {
+		} elseif ( ! empty( $box_shadow['presetClass'] ) || ! empty( $box_shadow['color'] ) || ! empty( $box_shadow['blur'] ) || ! empty( $box_shadow['spread'] ) ) {
 			$single = $build_shadow( $box_shadow );
 			if ( $single ) {
 				$result[ $selector ]['box-shadow'] = $single;
 			}
 		}
 
-		if ( ! empty( $box_shadow['Hover'] ) ) {
-			$hov = $build_shadow( $box_shadow['Hover'] );
+		$hover = $box_shadow['Hover'] ?? ( $box_shadow['hover'] ?? null );
+		if ( ! empty( $hover ) ) {
+			$hov = $build_shadow( $hover );
 			if ( $hov ) {
 				$result[ $selector . ':hover' ]['box-shadow'] = $hov;
 			}

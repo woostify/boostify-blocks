@@ -178,19 +178,39 @@ classes.forEach(({ D, C, F }) => {
 	}
 });
 
+let entityDecoder: HTMLTextAreaElement | null = null;
+
+function decodeHtmlEntities(str: string): string {
+	if (!entityDecoder) {
+		entityDecoder = document.createElement("textarea");
+	}
+	entityDecoder.innerHTML = str;
+	return entityDecoder.value;
+}
+
 function parseBlockAttrs(raw: string): any {
+	// Fast path: parse directly
 	try {
 		return JSON.parse(raw);
 	} catch (e) {
-		if (raw.includes("&quot;") || raw.includes("&#") || raw.includes("&amp;")) {
+		let text = raw;
+
+		// 1. Decode HTML entities if present (&quot;, &lt;, &gt;, &#39;, &amp;, etc.)
+		if (text.includes("&")) {
+			text = decodeHtmlEntities(text);
 			try {
-				const txt = document.createElement("textarea");
-				txt.innerHTML = raw;
-				return JSON.parse(txt.value);
-			} catch (err2) {
-				// pass through to throw original
-			}
+				return JSON.parse(text);
+			} catch {}
 		}
+
+		// 2. Fallback: sanitize unescaped svgCode strings corrupted by WordPress unslash
+		if (text.includes("svgCode")) {
+			const cleaned = text.replace(/"svgCode"\s*:\s*"<svg[\s\S]*?<\/svg>"/gi, '"svgCode":""');
+			try {
+				return JSON.parse(cleaned);
+			} catch {}
+		}
+
 		throw e;
 	}
 }
