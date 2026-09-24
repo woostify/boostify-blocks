@@ -13,7 +13,7 @@ import {
 } from "../components/controls/MyTypographyControl/types";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import {
-    TextAlignment,
+	TextAlignment,
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
 import MyTextAlignControl, {
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
@@ -22,19 +22,22 @@ export interface WCB_SLIDER_PANEL_STYLE_CONTENT {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
-	textAlignment: HasResponsive<TextAlignment>;
+	textAlignment?: {
+		Desktop?: TextAlignment;
+		Tablet?: TextAlignment;
+		Mobile?: TextAlignment;
+	};
 }
 
 export const WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO: WCB_SLIDER_PANEL_STYLE_CONTENT =
-	{
-		typography: {
-			...TYPOGRAPHY_CONTROL_DEMO,
-			lineHeight: { Desktop: 1.75 },
-		},
-		textColor: "",
-		marginBottom: { Desktop: "1.5rem" },
-		textAlignment: { Desktop: "center" , Tablet: "center", Mobile: "center" },
-	};
+{
+	typography: {
+		...TYPOGRAPHY_CONTROL_DEMO,
+		lineHeight: { Desktop: 1.75 },
+	},
+	textColor: "",
+	marginBottom: { Desktop: "1.5rem" },
+};
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
@@ -54,20 +57,16 @@ const WcbSlidersPanel_StyleContent: FC<Props> = ({
 	const { currentDeviceValue: currentMarginBottom } =
 		getValueFromAttrsResponsives(marginBottom, deviceType);
 
-    const { currentDeviceValue: TEXT_ALIGNMENT } = getValueFromAttrsResponsives(
-        textAlignment,
-        deviceType
-    );
 
-    const handleChangeTextAlignment = (selected: CSSProperties["textAlign"]) => {
-        setAttr__({
-            ...panelData,
-            textAlignment: {
-                ...textAlignment,
+	const handleChangeTextAlignment = (selected: CSSProperties["textAlign"]) => {
+		setAttr__({
+			...panelData,
+			textAlignment: {
+				...textAlignment,
 				[deviceType]: selected,
-            },
-        });
-    };
+			},
+		});
+	};
 
 	//
 	return (
@@ -79,10 +78,10 @@ const WcbSlidersPanel_StyleContent: FC<Props> = ({
 		>
 			<div className="space-y-5">
 				<MyTextAlignControl
-                    textAlignment={textAlignment?.[deviceType] || undefined}
-                    onChange={handleChangeTextAlignment}
-                />
-				
+					textAlignment={textAlignment?.[deviceType] || undefined}
+					onChange={handleChangeTextAlignment}
+				/>
+
 				<MyColorPicker
 					label={__("Color", "wcb")}
 					onChange={(value) => {

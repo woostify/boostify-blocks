@@ -21,6 +21,21 @@ import { INIT_IMAGE_DATA_UPLOAD_DEMO } from "../components/controls/MyBackground
 import { WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO } from "./WcbSliderPanel_StyleCallToActionButton";
 import MyIconFull from "../components/controls/MyIconFull";
 
+// Normalize data to prevent array vs object inconsistency between PHP json_encode and Gutenberg
+const normalizeData = (obj: any): any => {
+	if (Array.isArray(obj)) {
+		return obj.length === 0 ? {} : obj;
+	}
+	if (obj && typeof obj === "object") {
+		const normalized: any = {};
+		for (const [key, value] of Object.entries(obj)) {
+			normalized[key] = normalizeData(value);
+		}
+		return normalized;
+	}
+	return obj;
+};
+
 export interface WcbAttrsForSave extends WcbAttrs {
 	clientID?: string;
 }
@@ -217,7 +232,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 							{/* Frontend CSS injection elements */}
 							<div data-wcb-global-styles={uniqueId}></div>
 							<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
-								{_.escape(JSON.stringify(newAttrForSave))}
+								{_.escape(JSON.stringify(normalizeData(newAttrForSave)))}
 							</pre>
 							
 							{/* Child CSS styles for both edit and save mode */}
@@ -279,8 +294,10 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 														if (style_image?.iconPosition === "right") {
 															return "wcb-slider-child__content_end";
 														}
+
+														return "";
 													})()
-												}`}>
+												}`.trim()}>
 												<RichText.Content
 													tagName="div"
 													value={content}
