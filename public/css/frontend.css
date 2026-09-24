@@ -64,3 +64,9 @@
     margin-bottom: 10px;
     z-index: 10;
 }
+
+.edit-post-fullscreen-mode-close__view-mode-toggle .edit-post-fullscreen-mode-close__view-mode-toggle-icon svg, 
+.edit-post-fullscreen-mode-close__view-mode-toggle .edit-post-fullscreen-mode-close__view-mode-toggle-icon img{
+    background-color: transparent;
+    padding: 5px;
+}
