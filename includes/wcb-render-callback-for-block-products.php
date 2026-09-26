@@ -807,16 +807,63 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
     );
 
     $html  = '<style>
+        .wcb-products__product-quickview-preview {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 4;
+        }
+        .wcb-products__product-quickview-preview > * {
+            pointer-events: auto;
+        }
         .wcb-quick-view-hover-gallery {
             position: absolute;
             inset: 0;
-            z-index: 2;
+            z-index: 1;
             overflow: hidden;
+            pointer-events: none;
+        }
+        .wcb-quick-view-hover-gallery[hidden] {
+            display: none !important;
         }
         .wcb-quick-view-hover-gallery img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+        .wcb-products__product-quickview-preview .tns-outer {
+            position: absolute;
+            inset: 0;
+            height: 100%;
+            width: 100%;
+        }
+        .wcb-products__product-quickview-preview .tns-ovh,
+        .wcb-products__product-quickview-preview .tns-inner {
+            height: 100%;
+        }
+        .wcb-products__product-quickview-preview .tns-nav {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            z-index: 5;
+            pointer-events: auto;
+        }
+        .wcb-products__product-quickview-preview .tns-nav button {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            border: none;
+            padding: 0;
+            margin: 0 2px;
+            cursor: pointer;
+        }
+        .wcb-products__product-quickview-preview .tns-nav button.tns-nav-active {
+            background: #ffffff;
         }
     </style>';
 
@@ -1057,7 +1104,7 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
     }
 
     // Check if Woostify Pro is active
-    $woostify_pro_active = in_array('woostify-pro/woostify-pro.php', get_option('active_plugins', []));
+    $woostify_pro_active = defined( 'WOOSTIFY_PRO_VERSION' ) || in_array( 'woostify-pro/woostify-pro.php', get_option( 'active_plugins', array() ), true ) || in_array( 'woostify-pro-dev/woostify-pro.php', get_option( 'active_plugins', array() ), true );
     if ( ! $woostify_pro_active ) {
         return '';
     }

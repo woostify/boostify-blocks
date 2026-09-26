@@ -30,14 +30,44 @@ $scrt = $attr['style_checkbox_radio_toggle'] ?? array();
 $wrap_sel       = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
 $box_sel        = $wrap_sel . ' .wcb-form__box';
 $inner_sel      = $wrap_sel . ' .wcb-form__inner';
-$input_sel      = "$wrap_sel [type=\"text\"], $wrap_sel [type=\"email\"], $wrap_sel [type=\"url\"], $wrap_sel [type=\"password\"], $wrap_sel [type=\"number\"], $wrap_sel [type=\"date\"], $wrap_sel [type=\"datetime-local\"], $wrap_sel [type=\"month\"], $wrap_sel [type=\"search\"], $wrap_sel [type=\"tel\"], $wrap_sel [type=\"time\"], $wrap_sel [type=\"week\"], $wrap_sel [multiple], $wrap_sel select, $wrap_sel textarea";
-$label_sel      = $wrap_sel . ' .wcb-form__label';
-$submit_wrap    = $wrap_sel . ' .wcb-form__btn-submit-wrap';
-$submit_sel     = $wrap_sel . ' .wcb-form__btn-submit';
-$success_sel    = $wrap_sel . ' .wcb-form__successMessageText';
-$error_sel      = $wrap_sel . ' .wcb-form__errorMessageText';
-$cb_radio_sel   = "$wrap_sel input[type=\"checkbox\"], $wrap_sel input[type=\"radio\"]";
-$toggle_sel     = $wrap_sel . ' .wcb-toggle__switch';
+$input_sel_parts = array(
+	"$wrap_sel [type=\"text\"]",
+	"$wrap_sel [type=\"email\"]",
+	"$wrap_sel [type=\"url\"]",
+	"$wrap_sel [type=\"password\"]",
+	"$wrap_sel [type=\"number\"]",
+	"$wrap_sel [type=\"date\"]",
+	"$wrap_sel [type=\"datetime-local\"]",
+	"$wrap_sel [type=\"month\"]",
+	"$wrap_sel [type=\"search\"]",
+	"$wrap_sel [type=\"tel\"]",
+	"$wrap_sel [type=\"time\"]",
+	"$wrap_sel [type=\"week\"]",
+	"$wrap_sel [multiple]",
+	"$wrap_sel select",
+	"$wrap_sel textarea",
+);
+$input_sel            = implode( ', ', $input_sel_parts );
+$input_hov_sel        = implode( ', ', array_map( function( $s ) { return $s . ':hover'; }, $input_sel_parts ) );
+$input_foc_act_sel    = implode( ', ', array_merge(
+	array_map( function( $s ) { return $s . ':focus'; }, $input_sel_parts ),
+	array_map( function( $s ) { return $s . ':active'; }, $input_sel_parts )
+) );
+$input_ph_sel         = implode( ', ', array_map( function( $s ) { return $s . '::placeholder'; }, $input_sel_parts ) );
+$input_ph_hov_sel     = implode( ', ', array_map( function( $s ) { return $s . ':hover::placeholder'; }, $input_sel_parts ) );
+$input_ph_act_foc_sel = implode( ', ', array_merge(
+	array_map( function( $s ) { return $s . ':focus::placeholder'; }, $input_sel_parts ),
+	array_map( function( $s ) { return $s . ':active::placeholder'; }, $input_sel_parts )
+) );
+
+$label_sel            = $wrap_sel . ' .wcb-form__label';
+$submit_wrap          = $wrap_sel . ' .wcb-form__btn-submit-wrap';
+$submit_sel           = $wrap_sel . ' .wcb-form__btn-submit';
+$success_sel          = $wrap_sel . ' .wcb-form__successMessageText';
+$error_sel            = $wrap_sel . ' .wcb-form__errorMessageText';
+$cb_radio_sel         = "$wrap_sel input[type=\"checkbox\"], $wrap_sel input[type=\"radio\"]";
+$cb_radio_checked_sel = "$wrap_sel input[type=\"checkbox\"]:checked, $wrap_sel input[type=\"radio\"]:checked";
+$toggle_sel           = $wrap_sel . ' .wcb-toggle__switch';
 
 // 1. Wrap alignment & Submit wrap alignment
 if ( ! empty( $gg['textAlignment'] ) ) {
@@ -146,25 +176,23 @@ if ( ! empty( $bg_norm ) ) {
 }
 $ph_norm = $si['bgAndPlaceholder']['Normal']['placeholderColor'] ?? '';
 if ( ! empty( $ph_norm ) ) {
-	$selectors[ $input_sel . '::placeholder' ]['color'] = $ph_norm;
+	$selectors[ $input_ph_sel ]['color'] = $ph_norm;
 }
 $bg_hov = $si['bgAndPlaceholder']['Hover']['backgroundColor'] ?? '';
 if ( ! empty( $bg_hov ) ) {
-	$selectors[ $input_sel . ':hover' ]['background-color'] = $bg_hov;
+	$selectors[ $input_hov_sel ]['background-color'] = $bg_hov;
 }
 $ph_hov = $si['bgAndPlaceholder']['Hover']['placeholderColor'] ?? '';
 if ( ! empty( $ph_hov ) ) {
-	$selectors[ $input_sel . ':hover::placeholder' ]['color'] = $ph_hov;
+	$selectors[ $input_ph_hov_sel ]['color'] = $ph_hov;
 }
 $bg_act = $si['bgAndPlaceholder']['Active']['backgroundColor'] ?? '';
 if ( ! empty( $bg_act ) ) {
-	$selectors[ $input_sel . ':focus' ]['background-color']  = $bg_act;
-	$selectors[ $input_sel . ':active' ]['background-color'] = $bg_act;
+	$selectors[ $input_foc_act_sel ]['background-color'] = $bg_act;
 }
 $ph_act = $si['bgAndPlaceholder']['Active']['placeholderColor'] ?? '';
 if ( ! empty( $ph_act ) ) {
-	$selectors[ $input_sel . ':focus::placeholder' ]['color']  = $ph_act;
-	$selectors[ $input_sel . ':active::placeholder' ]['color'] = $ph_act;
+	$selectors[ $input_ph_act_foc_sel ]['color'] = $ph_act;
 }
 
 // 4. Checkbox / Radio / Toggle
@@ -177,7 +205,7 @@ if ( ! empty( $scrt['colors']['Normal']['backgroundColor'] ) ) {
 	$selectors[ $toggle_sel . ' .wcb-toggle__slider' ]['background-color'] = $scrt['colors']['Normal']['backgroundColor'];
 }
 if ( ! empty( $scrt['colors']['Active']['backgroundColor'] ) ) {
-	$selectors[ $cb_radio_sel . ':checked' ]['background-color'] = $scrt['colors']['Active']['backgroundColor'];
+	$selectors[ $cb_radio_checked_sel ]['background-color'] = $scrt['colors']['Active']['backgroundColor'];
 	$selectors[ $toggle_sel . ' input:checked + .wcb-toggle__slider' ]['background-color'] = $scrt['colors']['Active']['backgroundColor'];
 }
 if ( ! empty( $scrt['checkboxRadioSize'] ) ) {
@@ -187,6 +215,40 @@ if ( ! empty( $scrt['checkboxRadioSize'] ) ) {
 	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $scrt['checkboxRadioSize'], 'height', $cb_radio_sel, 'tablet' ) );
 	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $scrt['checkboxRadioSize'], 'width', $cb_radio_sel, 'mobile' ) );
 	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $scrt['checkboxRadioSize'], 'height', $cb_radio_sel, 'mobile' ) );
+}
+if ( ! empty( $scrt['toggleSize'] ) ) {
+	$toggle_slider_sel  = $toggle_sel . ' .wcb-toggle__slider::before';
+	$toggle_checked_sel = $toggle_sel . ' input:checked + .wcb-toggle__slider:before';
+
+	$ts   = $scrt['toggleSize'];
+	$ts_d = is_array( $ts ) ? ( $ts['Desktop'] ?? '' ) : $ts;
+	$ts_t = is_array( $ts ) ? ( $ts['Tablet'] ?? $ts_d ) : $ts;
+	$ts_m = is_array( $ts ) ? ( $ts['Mobile'] ?? $ts_t ) : $ts;
+
+	if ( '' !== $ts_d && null !== $ts_d ) {
+		$d_val = is_numeric( $ts_d ) ? ( $ts_d . 'rem' ) : $ts_d;
+		$selectors[ $toggle_slider_sel ]['width']  = $d_val;
+		$selectors[ $toggle_slider_sel ]['height'] = $d_val;
+		$selectors[ $toggle_checked_sel ]['transform'] = "translateX({$d_val})";
+		$selectors[ $toggle_sel ]['height'] = "calc({$d_val} + 8px)";
+		$selectors[ $toggle_sel ]['width']  = "calc(({$d_val} * 2) + 8px)";
+	}
+	if ( '' !== $ts_t && null !== $ts_t && $ts_t !== $ts_d ) {
+		$t_val = is_numeric( $ts_t ) ? ( $ts_t . 'rem' ) : $ts_t;
+		$t_selectors[ $toggle_slider_sel ]['width']  = $t_val;
+		$t_selectors[ $toggle_slider_sel ]['height'] = $t_val;
+		$t_selectors[ $toggle_checked_sel ]['transform'] = "translateX({$t_val})";
+		$t_selectors[ $toggle_sel ]['height'] = "calc({$t_val} + 8px)";
+		$t_selectors[ $toggle_sel ]['width']  = "calc(({$t_val} * 2) + 8px)";
+	}
+	if ( '' !== $ts_m && null !== $ts_m && $ts_m !== $ts_t ) {
+		$m_val = is_numeric( $ts_m ) ? ( $ts_m . 'rem' ) : $ts_m;
+		$m_selectors[ $toggle_slider_sel ]['width']  = $m_val;
+		$m_selectors[ $toggle_slider_sel ]['height'] = $m_val;
+		$m_selectors[ $toggle_checked_sel ]['transform'] = "translateX({$m_val})";
+		$m_selectors[ $toggle_sel ]['height'] = "calc({$m_val} + 8px)";
+		$m_selectors[ $toggle_sel ]['width']  = "calc(({$m_val} * 2) + 8px)";
+	}
 }
 
 // 5. Submit Button

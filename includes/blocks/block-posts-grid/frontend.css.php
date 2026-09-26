@@ -57,6 +57,9 @@ $pag_wrap       = $wrap_sel . ' .wcb-posts-grid__pagination';
 $pag_sel        = $pag_wrap . ' .page-numbers';
 $pag_active     = $pag_wrap . ' .page-numbers.current';
 
+// Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
+$selectors[ $wrap_sel ]['display'] = 'block';
+
 // 1. Grid List of Posts
 $selectors[ $list_sel ]['display'] = 'grid';
 

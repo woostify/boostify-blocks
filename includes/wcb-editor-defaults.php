@@ -9,7 +9,7 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		$woostify_pro = get_option('woostify_pro_options') ?: [];
 
 		// Check if Woostify Pro is active
-		$woostify_pro_active = in_array('woostify-pro/woostify-pro.php', get_option('active_plugins', []));
+		$woostify_pro_active = defined( 'WOOSTIFY_PRO_VERSION' ) || in_array( 'woostify-pro/woostify-pro.php', get_option( 'active_plugins', array() ), true ) || in_array( 'woostify-pro-dev/woostify-pro.php', get_option( 'active_plugins', array() ), true );
 
 		$add_to_cart_position = $woostify['shop_page_add_to_cart_button_position'] ?? null;
 		if ($add_to_cart_position === 'image') {

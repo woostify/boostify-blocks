@@ -419,6 +419,8 @@ class WCB_CSS_Utility {
 						$c  = $s['color'] ?? '';
 						if ( '' !== $c ) {
 							$css[ 'border-' . $side ] = $w . ' ' . $st . ' ' . $c;
+						} elseif ( '0' === (string) $w || '0px' === (string) $w || 'none' === $st ) {
+							$css[ 'border-' . $side ] = $w . ' ' . $st;
 						}
 					}
 				}
@@ -448,12 +450,14 @@ class WCB_CSS_Utility {
 				$br = self::get_css_value( $raw_rad['bottomRight'] ?? '0' );
 				$bl = self::get_css_value( $raw_rad['bottomLeft'] ?? '0' );
 				$rad_str = trim( "$tl $tr $br $bl" );
-				if ( '0 0 0 0' !== $rad_str && '0px 0px 0px 0px' !== $rad_str && '' !== $rad_str ) {
+				if ( '0 0 0 0' === $rad_str || '0px 0px 0px 0px' === $rad_str ) {
+					$css['border-radius'] = '0';
+				} elseif ( '' !== $rad_str ) {
 					$css['border-radius'] = $rad_str;
 				}
 			} else {
 				$rad_val = self::get_css_value( $raw_rad );
-				if ( '' !== $rad_val && '0' !== $rad_val && '0px' !== $rad_val ) {
+				if ( '' !== $rad_val ) {
 					$css['border-radius'] = $rad_val;
 				}
 			}
