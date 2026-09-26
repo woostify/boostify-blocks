@@ -25,43 +25,46 @@ const MyResponsiveConditionControl: FC<Props> = ({
 	responsiveConditionControl = RESPONSIVE_CONDITON_DEMO,
 	setAttrs__responsiveCondition,
 }) => {
-	const { isHiddenOnDesktop, isHiddenOnMobile, isHiddenOnTablet } =
-		responsiveConditionControl;
+	const rc = {
+		...RESPONSIVE_CONDITON_DEMO,
+		...(responsiveConditionControl || {}),
+	};
+	const { isHiddenOnDesktop, isHiddenOnMobile, isHiddenOnTablet } = rc;
 
 	const toggleHiddenOnDesktop = (e: boolean) => {
 		setAttrs__responsiveCondition({
-			...responsiveConditionControl,
-			isHiddenOnDesktop: e,
+			...rc,
+			isHiddenOnDesktop: Boolean(e),
 		});
 	};
 	const toggleHiddenOnTablet = (e: boolean) => {
 		setAttrs__responsiveCondition({
-			...responsiveConditionControl,
-			isHiddenOnTablet: e,
+			...rc,
+			isHiddenOnTablet: Boolean(e),
 		});
 	};
 	const toggleHiddenOnMobile = (e: boolean) => {
 		setAttrs__responsiveCondition({
-			...responsiveConditionControl,
-			isHiddenOnMobile: e,
+			...rc,
+			isHiddenOnMobile: Boolean(e),
 		});
 	};
 	return (
 		<div className={className}>
 			<ToggleControl
 				label={__("Hide on Desktop", "boostify-blocks")}
-				checked={isHiddenOnDesktop}
+				checked={Boolean(isHiddenOnDesktop)}
 				onChange={toggleHiddenOnDesktop}
 				className="mb-0"
 			/>
 			<ToggleControl
 				label={__("Hide on Tablet", "boostify-blocks")}
-				checked={isHiddenOnTablet}
+				checked={Boolean(isHiddenOnTablet)}
 				onChange={toggleHiddenOnTablet}
 			/>
 			<ToggleControl
 				label={__("Hide on Mobile", "boostify-blocks")}
-				checked={isHiddenOnMobile}
+				checked={Boolean(isHiddenOnMobile)}
 				onChange={toggleHiddenOnMobile}
 			/>
 		</div>

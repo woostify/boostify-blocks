@@ -19,7 +19,7 @@ export const TYPOGRAPHY_CONTROL_DEMO: MyTypographyControlData = {
 	appearance: FONT_APPEARANCE_OPTIONS[0],
 	textDecoration: undefined,
 	textTransform: undefined,
-	lineHeight: { Desktop: "1.5" },
+	lineHeight: { Desktop: undefined },
 	letterSpacing: { Desktop: undefined },
 	fontFamily: undefined,
 };

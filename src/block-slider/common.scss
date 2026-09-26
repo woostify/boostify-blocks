@@ -1,13 +1,21 @@
 /*  */
 /*  */
 .wcb-slider__wrap {
-	padding: 28px !important;
+	.slick-dots {
+		position: relative !important;
+		display: flex !important;
+		justify-content: center;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		bottom: auto !important;
 
-	.slick-dots li {
-		margin: 0px;
-	}
-	.slick-dots li button:before {
-		font-size: 8px;
+		li {
+			margin: 0px;
+		}
+		li button:before {
+			font-size: 8px;
+		}
 	}
 
 	.slick-prev,
@@ -17,6 +25,9 @@
 		padding: 0.5rem;
 		width: unset;
 		height: unset;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		&:hover {
 			color: black;
 		}
@@ -26,17 +37,10 @@
 		}
 	}
 
-	.slick-track {
-		min-width: 0px;
-		display: flex !important;
-    	align-items: center;
-	}
-
 	.wcb-slider__wrap-items {
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-    }
+		width: 100%;
+		max-width: 100%;
+	}
 }
 
 .wcb-slider__item-inner {
@@ -74,11 +78,4 @@
 .wcb-slider__wrap-items {
 	padding-top: 0.5rem;
 	padding-bottom: 0.5rem;
-}
-
-.slick-list {
-    display: flex;
-	justify-content: center;
-    align-items: center; /* Center items vertically */
-	height: unset !important;
 }

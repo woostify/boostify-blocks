@@ -176,6 +176,10 @@ function boostify_blocks_block_container_render_callback($attributes, $content)
 //============================================= block 1 ===============================================================
 function boostify_blocks_block_slider_render_callback($attributes, $content)
 {
+    if (!is_admin()) {
+        wp_enqueue_style( 'boostify-blocks-slick-main', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/slick/slick.css', array(), '1.8.0' );
+        wp_enqueue_style( 'boostify-blocks-slick-theme', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/slick/slick-theme.css', array(), '1.8.0' );
+    }
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     return $content;
 }
@@ -199,12 +203,32 @@ function boostify_blocks_block_slider_swiper_render_callback($attributes, $conte
 }
 
 if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_styles')) :
-    function boostify_blocks_enqueue_script_block_commoncss_frontend_styles($deps = ['wp-element', 'jquery'])
+    function boostify_blocks_enqueue_script_block_commoncss_frontend_styles($deps = ['wp-element', 'jquery', 'boostify-blocks-slicklib'])
     {
         if (!is_admin()) {
             $asset     = require BOOSTIFY_BLOCKS_PATH . 'build/block-common-css/FrontendStyles.asset.php';
             $asset_ver = $asset['version'] ?? BOOSTIFY_BLOCKS_VERSION;
             wp_enqueue_script('boostify-blocks-commoncss-frontend', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/FrontendStyles.js', $deps, $asset_ver, true);
+
+            // Signal the JS whether CSS was already loaded (from static file or server-side inline <head>).
+            // When CSS is loaded, JS skips emotion <Global> rendering to completely eliminate FOUC,
+            // while still executing interactive init functions (carousels, animations, counters).
+            if (class_exists('WCB_Post_Assets')) {
+                $assets   = WCB_Post_Assets::instance();
+                $is_ready = $assets->is_file_css_enqueued();
+                wp_add_inline_script(
+                    'boostify-blocks-commoncss-frontend',
+                    'window.boostify_blocks_file_generation_enabled = true;' .
+                    'window.boostify_blocks_file_css_loaded = ' . ($is_ready ? 'true' : 'false') . ';' .
+                    'window.boostify_blocks_fallback_css = ' . ($assets->is_fallback_css() ? 'true' : 'false') . ';' .
+                    'window.boostify_blocks_post_id = ' . intval(get_queried_object_id()) . ';' .
+                    'window.boostify_blocks_ajax_object = ' . wp_json_encode(array(
+                        'ajaxurl' => admin_url('admin-ajax.php'),
+                        'nonce'   => wp_create_nonce('boostifyblocks_dashboard_settings_nonce'),
+                    )) . ';',
+                    'before'
+                );
+            }
 
             // Expose theme defaults on the frontend so JS helpers can read them.
             static $boostify_blocks_theme_defaults_enqueued = false;

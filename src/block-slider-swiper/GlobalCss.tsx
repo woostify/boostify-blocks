@@ -27,7 +27,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid="${uniqueId}"]`;
 	const ITEM_CLASSNAME = `${WRAP_CLASSNAME}.wcb-slider__wrap`;
-	// const ITEM_INNER_CLASSNAME = `${ITEM_CLASSNAME} .wcb-slider__item-inner`;
 	const SWIPER_PREV = `${WRAP_CLASSNAME} .swiper-button-prev`;
 	const SWIPER_NEXT = `${WRAP_CLASSNAME} .swiper-button-next`;
 	const SWIPER_ARROW = `${SWIPER_PREV}, ${SWIPER_NEXT}`;
@@ -62,14 +61,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 						className: ITEM_CLASSNAME,
 						isWithRadius: true,
 					}),
-					getStyleObjectFromResponsiveAttr({
-						className: ITEM_CLASSNAME,
-						value: general_general.colGap,
-						prefix: "paddingLeft",
-						prefix_2: "paddingRight",
-					}),
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME}`,
+						className: `${ITEM_CLASSNAME}`,
 						padding: style_dimension.padding,
 						margin: style_dimension.margin,
 					}),
@@ -133,22 +126,21 @@ const GlobalCss: FC<Props> = (attrs) => {
 							backgroundColor: style_arrowAndDots.backgroundColor,
 						},
 					},
-					{
-						[`${SWIPER_DOTS}`]: {
-							position: "absolute",
-							bottom: style_arrowAndDots.dotsMarginTop?.Desktop || "0px",
-						}
-					},
-					{
-						[`${SWIPER_PREV}`]: {
-							left: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					},
-					{
-						[`${SWIPER_NEXT}`]: {
-							right: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					}
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_DOTS,
+						value: style_arrowAndDots.dotsMarginTop,
+						prefix: "marginTop",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_PREV,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "left",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_NEXT,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "right",
+					}),
 				]}
 			/>
 

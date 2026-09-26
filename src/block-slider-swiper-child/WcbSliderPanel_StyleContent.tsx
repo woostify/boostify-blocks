@@ -22,7 +22,11 @@ export interface WCB_SLIDER_PANEL_STYLE_CONTENT {
 	typography: MyTypographyControlData;
 	textColor: string;
 	marginBottom: HasResponsive<string>;
-	textAlignment: HasResponsive<TextAlignment>;
+	textAlignment?: {
+		Desktop?: TextAlignment;
+		Tablet?: TextAlignment;
+		Mobile?: TextAlignment;
+	};
 }
 
 export const WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO: WCB_SLIDER_PANEL_STYLE_CONTENT =
@@ -33,7 +37,6 @@ export const WCB_SLIDER_PANEL_STYLE_CONTENT_DEMO: WCB_SLIDER_PANEL_STYLE_CONTENT
 		},
 		textColor: "",
 		marginBottom: { Desktop: "1.5rem" },
-		textAlignment: { Desktop: "center" , Tablet: "center", Mobile: "center" },
 	};
 
 interface Props
@@ -54,10 +57,6 @@ const WcbSlidersPanel_StyleContent: FC<Props> = ({
 	const { currentDeviceValue: currentMarginBottom } =
 		getValueFromAttrsResponsives(marginBottom, deviceType);
 
-    const { currentDeviceValue: TEXT_ALIGNMENT } = getValueFromAttrsResponsives(
-        textAlignment,
-        deviceType
-    );
 
     const handleChangeTextAlignment = (selected: CSSProperties["textAlign"]) => {
         setAttr__({
