@@ -18,6 +18,19 @@ $selectors   = array();
 $t_selectors = array();
 $m_selectors = array();
 
+// Apply theme defaults (Customizer) if available so generated CSS reflects customizer settings (columns, etc.)
+if ( ! function_exists( 'boostify_blocks_block_products_apply_theme_defaults' ) ) {
+	$cb_file = BOOSTIFY_BLOCKS_PATH . 'includes/wcb-render-callback-for-block-products.php';
+	if ( file_exists( $cb_file ) ) {
+		require_once $cb_file;
+	}
+}
+
+if ( function_exists( 'boostify_blocks_block_products_apply_theme_defaults' ) ) {
+	$block_overrides = ! empty( $attr['general_layout']['isCustomizerGeneralLayout'] );
+	$attr            = boostify_blocks_block_products_apply_theme_defaults( $attr, $block_overrides );
+}
+
 $st  = $attr['style_title'] ?? array();
 $sc  = $attr['style_category'] ?? array();
 $sp  = $attr['style_price'] ?? array();
@@ -30,6 +43,9 @@ $ss  = $attr['style_saleBadge'] ?? array();
 $so  = $attr['style_outOfStock'] ?? array();
 $sb  = $attr['style_border'] ?? array();
 $sd  = $attr['style_dimension'] ?? array();
+$sw  = $attr['style_wishlistBtn'] ?? array();
+$sq  = $attr['style_quickViewBtn'] ?? array();
+$scu = $attr['style_countdownUrgency'] ?? array();
 
 $wrap_sel          = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
 $list_sel          = $wrap_sel . ' .wcb-products__list';
@@ -52,6 +68,9 @@ $out_of_stock_bdg  = $wrap_sel . ' .wcb-products__product-outofstock-badge .wcb-
 $pag_wrap_sel      = $wrap_sel . ' .wcb-products__pagination';
 $pag_sel           = $pag_wrap_sel . ' .page-numbers';
 $pag_active        = $pag_wrap_sel . ' .page-numbers.current';
+
+// Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
+$selectors[ $wrap_sel ]['display'] = 'block';
 
 // 1. Products List Grid
 $selectors[ $list_sel ]['display'] = 'grid';
@@ -281,6 +300,9 @@ if ( ! empty( $sa['border'] ) ) {
 }
 
 // 11. Pagination
+if ( ! empty( $sg['justifyContent'] ) ) {
+	$selectors[ $pag_wrap_sel ]['justify-content'] = $sg['justifyContent'];
+}
 if ( ! empty( $sg['mainStyle']['Normal']['color'] ) ) {
 	$selectors[ $pag_sel ]['color'] = $sg['mainStyle']['Normal']['color'];
 }
@@ -317,7 +339,202 @@ if ( ! empty( $sd['margin'] ) ) {
 	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_dimension_css( $sd['margin'], 'margin', $wrap_sel, 'mobile' ) );
 }
 
-// 13. Advance
+// 13. Wishlist Button
+if ( ! empty( $sw ) ) {
+	$wishlist_btn_sel = $wrap_sel . ' .wcb-products__product--wishlistTopRight--item';
+	if ( ( $sw['position'] ?? '' ) === 'top-right' ) {
+		$selectors[ $wishlist_btn_sel ]['position'] = 'absolute';
+		$selectors[ $wishlist_btn_sel ]['top']      = '0';
+		$selectors[ $wishlist_btn_sel ]['right']    = '0';
+		$selectors[ $wishlist_btn_sel ]['z-index']  = '2';
+	}
+}
+
+// 14. Quick View Button & Hover Gallery Preview
+$qv_btn_sel        = $wrap_sel . ' .wcb-products__product--quickViewBottomImage--item';
+$qv_prod_hover_sel = $wrap_sel . ' .wcb-products__product:hover .wcb-products__product--quickViewBottomImage--item';
+$qv_btn_hover_sel  = $qv_btn_sel . ':hover';
+
+$qv_position = $sq['position'] ?? 'center-image';
+$qv_enabled  = ! empty( $sq['enabled'] );
+
+if ( ! $qv_enabled ) {
+	$selectors[ $qv_btn_sel ]['display'] = 'none !important';
+} else {
+	// Base button resets & styles
+	$selectors[ $qv_btn_sel ]['border']          = 'none';
+	$selectors[ $qv_btn_sel ]['cursor']          = 'pointer';
+	$selectors[ $qv_btn_sel ]['gap']             = '6px';
+	$selectors[ $qv_btn_sel ]['text-decoration'] = 'none';
+	$selectors[ $qv_btn_sel ]['font-size']       = '14px';
+	$selectors[ $qv_btn_sel ]['font-weight']     = '500';
+	$selectors[ $qv_btn_sel ]['transition']      = 'transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease';
+
+	$bg_color   = ! empty( $sq['bg_color'] ) ? $sq['bg_color'] : '#ffffff';
+	$text_color = ! empty( $sq['text_color'] ) ? $sq['text_color'] : '#000000';
+	$selectors[ $qv_btn_sel ]['background-color'] = $bg_color;
+	$selectors[ $qv_btn_sel ]['color']            = $text_color;
+
+	if ( ! empty( $sq['border_radius'] ) ) {
+		$selectors[ $qv_btn_sel ]['border-radius']        = WCB_Block_Helper::get_css_value( $sq['border_radius'] );
+		$selectors[ $qv_prod_hover_sel ]['border-radius'] = WCB_Block_Helper::get_css_value( $sq['border_radius'] );
+	}
+
+	$hover_bg   = ! empty( $sq['hover_bg_color'] ) ? $sq['hover_bg_color'] : '#474747';
+	$hover_text = ! empty( $sq['hover_text_color'] ) ? $sq['hover_text_color'] : '#ffffff';
+	$selectors[ $qv_btn_hover_sel ]['background-color'] = $hover_bg;
+	$selectors[ $qv_btn_hover_sel ]['color']            = $hover_text;
+
+	$selectors[ $qv_btn_sel . ' .wcb-products__product--quickViewBottomImage__text' ]['color']       = 'inherit';
+	$selectors[ $qv_btn_sel . ' svg' ]['color']                                                      = 'inherit';
+	$selectors[ $qv_btn_sel . ' svg' ]['fill']                                                       = 'currentColor';
+	$selectors[ $qv_btn_hover_sel . ' .wcb-products__product--quickViewBottomImage__text' ]['color'] = 'inherit';
+	$selectors[ $qv_btn_hover_sel . ' svg' ]['color']                                               = 'inherit';
+	$selectors[ $qv_btn_hover_sel . ' svg' ]['fill']                                                = 'currentColor';
+
+	$cart_pos = $attr['general_addToCartBtn']['position'] ?? '';
+
+	if ( $qv_position === 'bottom-image' ) {
+		// Normal state: hidden at bottom of image
+		$selectors[ $qv_btn_sel ]['position']        = 'absolute';
+		$selectors[ $qv_btn_sel ]['left']            = '0';
+		$selectors[ $qv_btn_sel ]['bottom']          = '10px';
+		$selectors[ $qv_btn_sel ]['width']           = '100%';
+		$selectors[ $qv_btn_sel ]['height']          = '0px';
+		$selectors[ $qv_btn_sel ]['opacity']         = '0';
+		$selectors[ $qv_btn_sel ]['visibility']      = 'hidden';
+		$selectors[ $qv_btn_sel ]['z-index']         = '10';
+		$selectors[ $qv_btn_sel ]['display']         = 'flex';
+		$selectors[ $qv_btn_sel ]['align-items']     = 'center';
+		$selectors[ $qv_btn_sel ]['justify-content'] = 'center';
+		$selectors[ $qv_btn_sel ]['transition']      = 'height 0.3s ease, opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease';
+
+		// Hover state: animate into view
+		$selectors[ $qv_prod_hover_sel ]['opacity']    = '1';
+		$selectors[ $qv_prod_hover_sel ]['visibility'] = 'visible';
+		$selectors[ $qv_prod_hover_sel ]['height']     = '40px';
+		$selectors[ $qv_prod_hover_sel ]['display']    = 'flex !important';
+	} elseif ( $qv_position === 'top-right' ) {
+		// Normal state: offscreen/hidden
+		$selectors[ $qv_btn_sel ]['display']  = 'none !important';
+		$selectors[ $qv_btn_sel ]['position'] = 'absolute';
+		$selectors[ $qv_btn_sel ]['top']      = '-10rem';
+		$selectors[ $qv_btn_sel ]['right']    = '0rem';
+
+		// Hover state
+		$qv_tr_top = ( $cart_pos === 'icon' ) ? '0rem' : '-2.5rem';
+		$selectors[ $qv_prod_hover_sel ]['display']         = 'flex !important';
+		$selectors[ $qv_prod_hover_sel ]['align-items']     = 'center !important';
+		$selectors[ $qv_prod_hover_sel ]['justify-content'] = 'center !important';
+		$selectors[ $qv_prod_hover_sel ]['position']        = 'absolute';
+		$selectors[ $qv_prod_hover_sel ]['top']             = $qv_tr_top;
+		$selectors[ $qv_prod_hover_sel ]['bottom']          = 'auto';
+		$selectors[ $qv_prod_hover_sel ]['right']           = '-0.1rem';
+		$selectors[ $qv_prod_hover_sel ]['width']           = '2.6rem';
+		$selectors[ $qv_prod_hover_sel ]['height']          = '2.48rem';
+		$selectors[ $qv_prod_hover_sel ]['transform']       = 'translateY(2.5rem)';
+		$selectors[ $qv_prod_hover_sel ]['border']          = 'none';
+		$selectors[ $qv_prod_hover_sel ]['z-index']         = '10';
+	} else {
+		// Default: center-image
+		// Normal state: hidden
+		$selectors[ $qv_btn_sel ]['display']  = 'none !important';
+		$selectors[ $qv_btn_sel ]['position'] = 'absolute';
+		$selectors[ $qv_btn_sel ]['top']      = '-10rem';
+		$selectors[ $qv_btn_sel ]['right']    = '0rem';
+
+		// Hover state: centered horizontally on image
+		$qv_bottom = ( $cart_pos === 'icon' ) ? '10rem' : '6rem';
+		$selectors[ $qv_prod_hover_sel ]['display']         = 'flex !important';
+		$selectors[ $qv_prod_hover_sel ]['align-items']     = 'center !important';
+		$selectors[ $qv_prod_hover_sel ]['justify-content'] = 'center !important';
+		$selectors[ $qv_prod_hover_sel ]['padding']         = '0.5rem 1.4rem !important';
+		$selectors[ $qv_prod_hover_sel ]['position']        = 'absolute';
+		$selectors[ $qv_prod_hover_sel ]['top']             = 'auto';
+		$selectors[ $qv_prod_hover_sel ]['left']            = 'auto';
+		$selectors[ $qv_prod_hover_sel ]['bottom']          = $qv_bottom;
+		$selectors[ $qv_prod_hover_sel ]['right']           = '50%';
+		$selectors[ $qv_prod_hover_sel ]['transform']       = 'translateX(50%)';
+		$selectors[ $qv_prod_hover_sel ]['height']          = 'auto';
+		$selectors[ $qv_prod_hover_sel ]['white-space']     = 'nowrap';
+		$selectors[ $qv_prod_hover_sel ]['border']          = 'none';
+		$selectors[ $qv_prod_hover_sel ]['box-shadow']      = '0 4px 10px rgba(0,0,0,0.1)';
+		$selectors[ $qv_prod_hover_sel ]['z-index']         = '10';
+	}
+}
+
+// Hover Gallery Preview (Interactivity API wrapper & tiny-slider)
+$qv_preview_sel = $wrap_sel . ' .wcb-products__product-quickview-preview';
+$selectors[ $qv_preview_sel ]['position']       = 'absolute';
+$selectors[ $qv_preview_sel ]['top']            = '0px';
+$selectors[ $qv_preview_sel ]['left']           = '0px';
+$selectors[ $qv_preview_sel ]['right']          = '0px';
+$selectors[ $qv_preview_sel ]['bottom']         = '0px';
+$selectors[ $qv_preview_sel ]['pointer-events'] = 'none';
+$selectors[ $qv_preview_sel ]['z-index']        = '4';
+
+$selectors[ $qv_preview_sel . ' > *' ]['pointer-events'] = 'auto';
+
+$qv_gallery_sel = $wrap_sel . ' .wcb-quick-view-hover-gallery';
+$selectors[ $qv_gallery_sel ]['position']       = 'absolute';
+$selectors[ $qv_gallery_sel ]['top']            = '0px';
+$selectors[ $qv_gallery_sel ]['left']           = '0px';
+$selectors[ $qv_gallery_sel ]['right']          = '0px';
+$selectors[ $qv_gallery_sel ]['bottom']         = '0px';
+$selectors[ $qv_gallery_sel ]['z-index']        = '1';
+$selectors[ $qv_gallery_sel ]['overflow']       = 'hidden';
+$selectors[ $qv_gallery_sel ]['pointer-events'] = 'none';
+$selectors[ $qv_gallery_sel . '[hidden]' ]['display'] = 'none !important';
+$selectors[ $qv_gallery_sel . ' img' ]['width']      = '100%';
+$selectors[ $qv_gallery_sel . ' img' ]['height']     = '100%';
+$selectors[ $qv_gallery_sel . ' img' ]['object-fit'] = 'cover';
+
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['position'] = 'absolute';
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['top']      = '0px';
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['left']     = '0px';
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['right']    = '0px';
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['bottom']   = '0px';
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['height']   = '100%';
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['width']    = '100%';
+$selectors[ $qv_preview_sel . ' .tns-ovh' ]['height']     = '100%';
+$selectors[ $qv_preview_sel . ' .tns-inner' ]['height']   = '100%';
+
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['position']        = 'absolute';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['bottom']          = '10px';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['left']            = '0px';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['right']           = '0px';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['display']         = 'flex';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['justify-content'] = 'center';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['gap']             = '5px';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['z-index']         = '5';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['pointer-events']  = 'auto';
+
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['width']         = '8px';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['height']        = '8px';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['border-radius'] = '50%';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['background']    = 'rgba(255, 255, 255, 0.6)';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['border']        = 'none';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['padding']       = '0';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['margin']        = '0 2px';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['cursor']        = 'pointer';
+
+$selectors[ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['background'] = '#ffffff';
+
+// 15. Countdown Urgency
+if ( ! empty( $scu ) ) {
+	$cu_sel = $wrap_sel . ' .wcb-products__countdown-urgency';
+	if ( ! empty( $scu['textColor'] ) ) {
+		$selectors[ $cu_sel ]['color'] = $scu['textColor'];
+	}
+	if ( ! empty( $scu['backgroundColor'] ) ) {
+		$selectors[ $cu_sel ]['background-color'] = $scu['backgroundColor'];
+	}
+	if ( ! empty( $scu['border'] ) ) {
+		$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $scu['border'], $cu_sel, true ) );
+	}
+}
+
+// 16. Advance
 $selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 
 $combined_selectors = array(

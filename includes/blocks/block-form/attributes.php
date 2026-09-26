@@ -32,6 +32,13 @@ return array(
 	'general_general' => array(
 		'type'    => 'object',
 		'default' => array(
+			'textAlignment'      => array( 'Desktop' => 'left' ),
+			'isShowLabel'        => true,
+			'formStyle'          => 'simple',
+			'confirmationType'   => 'message',
+			'successMessageText' => 'The form has been submitted successfully!',
+			'errorMessageText'   => 'There has been some error while submitting the form. Please verify all form fields again.',
+			'successRedirectUrl' => '#',
 		),
 	),
 	
@@ -41,6 +48,8 @@ return array(
 	'general_submit_button' => array(
 		'type'    => 'object',
 		'default' => array(
+			'textAlignment' => array( 'Desktop' => 'start' ),
+			'position'      => array( 'Desktop' => 'bottom' ),
 		),
 	),
 	
@@ -68,24 +77,77 @@ return array(
 	'style_label' => array(
 		'type'    => 'object',
 		'default' => array(
+			'typography'     => array(
+				'appearance' => array(
+					'key'   => 'default',
+					'name'  => 'Default',
+					'style' => array(
+						'fontWeight' => 500,
+					),
+				),
+			),
+			'textColor'      => '',
+			'textColorHover' => '',
 		),
 	),
 	
 	// =================================================================
-	// style_input — WCB_FORM_PANEL_STYLE_INPUT_DEMO
+	// style_input — WCB_FORM_PANEL_STYLE_INPUT_DEMO__SIMPLE
 	// =================================================================
 	'style_input' => array(
 		'type'    => 'object',
 		'default' => array(
+			'textColor'        => '',
+			'bgAndPlaceholder' => array(
+				'Normal' => array( 'backgroundColor' => '#fff', 'placeholderColor' => '' ),
+				'Hover'  => array( 'backgroundColor' => '#fff', 'placeholderColor' => '' ),
+				'Active' => array( 'backgroundColor' => '#fff', 'placeholderColor' => '' ),
+			),
+			'border'           => array(
+				'mainSettings' => array(
+					'color' => '#d1d5db',
+					'style' => 'solid',
+					'width' => '1px',
+				),
+			),
+			'padding'          => array(
+				'Desktop' => array(
+					'top'    => '0.5rem',
+					'left'   => '0.75rem',
+					'right'  => '0.75rem',
+					'bottom' => '0.5rem',
+				),
+			),
 		),
 	),
 	
 	// =================================================================
-	// style_checkbox_radio_toggle — WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO
+	// style_checkbox_radio_toggle — WCB_FORM_PANEL_STYLE_CHECKBOX_RADIO_TOGGLE_DEMO__SIMPLE
 	// =================================================================
 	'style_checkbox_radio_toggle' => array(
 		'type'    => 'object',
 		'default' => array(
+			'colors'            => array(
+				'Normal' => array( 'backgroundColor' => '' ),
+				'Active' => array( 'backgroundColor' => '#0284c7' ),
+			),
+			'border'            => array(
+				'mainSettings' => array(
+					'color' => '#d1d5db',
+					'style' => 'solid',
+					'width' => '1px',
+				),
+				'radius'       => array(
+					'Desktop' => array(
+						'bottomLeft'  => '0.25rem',
+						'bottomRight' => '0.25rem',
+						'topLeft'     => '0.25rem',
+						'topRight'    => '0.25rem',
+					),
+				),
+			),
+			'checkboxRadioSize' => array( 'Desktop' => '1rem' ),
+			'toggleSize'        => array( 'Desktop' => 1 ),
 		),
 	),
 	
@@ -95,6 +157,24 @@ return array(
 	'style_submit_button' => array(
 		'type'    => 'object',
 		'default' => array(
+			'colorAndBackgroundColor' => array(
+				'Normal' => array(
+					'color'           => '#fff',
+					'backgroundColor' => '#1346af',
+				),
+				'Hover'  => array(
+					'color'           => '#fff',
+					'backgroundColor' => '#3a3a3a',
+				),
+			),
+			'padding'                 => array(
+				'Desktop' => array(
+					'top'    => '1rem',
+					'left'   => '2rem',
+					'right'  => '2rem',
+					'bottom' => '1rem',
+				),
+			),
 		),
 	),
 	
@@ -104,6 +184,14 @@ return array(
 	'style_messages' => array(
 		'type'    => 'object',
 		'default' => array(
+			'Success' => array(
+				'color'           => '#0c4a6e',
+				'backgroundColor' => '#f0f9ff',
+			),
+			'Error'   => array(
+				'color'           => '#ef4444',
+				'backgroundColor' => '#fef2f2',
+			),
 		),
 	),
 	
@@ -113,6 +201,23 @@ return array(
 	'style_spacing' => array(
 		'type'    => 'object',
 		'default' => array(
+			'padding'           => array(
+				'Desktop' => array(
+					'top'    => '1.75rem',
+					'left'   => '1.75rem',
+					'right'  => '1.75rem',
+					'bottom' => '1.75rem',
+				),
+			),
+			'border'            => array(
+				'mainSettings' => array(
+					'color' => '#38bdf8',
+					'style' => 'solid',
+					'width' => '1px',
+				),
+			),
+			'rowGap'            => array( 'Desktop' => '1.75rem' ),
+			'labelBottomMargin' => array( 'Desktop' => '0.5rem' ),
 		),
 	),
 	
