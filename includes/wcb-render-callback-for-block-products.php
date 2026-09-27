@@ -134,27 +134,30 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     // Sale badge
     $sale = $theme['shop_archive_sale_tag'] ?? [];
     $sale_position = $pick($sale['position'] ?? null, $attributes['style_saleBadge']['position'] ?? null) ?? 'top-right';
+    $mapped_sale_position = ( 'left' === $sale_position || 'top-left' === $sale_position ) ? 'top-left' : 'top-right';
     $attributes['style_saleBadge'] = array_merge(
         $attributes['style_saleBadge'] ?? [],
         [
             'backgroundColor' => $pick($sale['bg_color'] ?? null, $attributes['style_saleBadge']['backgroundColor'] ?? null),
             'textColor'       => $pick($sale['text_color'] ?? null, $attributes['style_saleBadge']['textColor'] ?? null),
-            'position'        => $sale_position === 'left' ? 'top-left' : 'top-right',
+            'position'        => $mapped_sale_position,
+            'shape'           => $pick($sale['shape'] ?? 'rectangular', $attributes['style_saleBadge']['shape'] ?? null),
         ]
     );
 
     // Out of stock badge
     $outofstock = $theme['shop_archive_out_of_stock'] ?? [];
     $raw_out_position = $pick($outofstock['position'] ?? null, $attributes['style_outOfStock']['position'] ?? null) ?? 'none';
-    $mapped_out_position = $raw_out_position === 'left'
+    $mapped_out_position = ( 'left' === $raw_out_position || 'top-left' === $raw_out_position )
         ? 'top-left'
-        : ($raw_out_position === 'right' ? 'top-right' : 'none');
+        : ( ( 'right' === $raw_out_position || 'top-right' === $raw_out_position ) ? 'top-right' : 'none' );
     $attributes['style_outOfStock'] = array_merge(
         $attributes['style_outOfStock'] ?? [],
         [
             'backgroundColor' => $pick($outofstock['bg_color'] ?? null, $attributes['style_outOfStock']['backgroundColor'] ?? null),
             'textColor'       => $pick($outofstock['text_color'] ?? null, $attributes['style_outOfStock']['textColor'] ?? null),
             'position'        => $mapped_out_position,
+            'shape'           => $pick($outofstock['shape'] ?? 'rectangular', $attributes['style_outOfStock']['shape'] ?? null),
         ]
     );
 
@@ -541,7 +544,9 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         $data->categories = boostify_blocks_block_products_get_category_html($product);
     }
 
-    $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
+    if (boostify_blocks_is_enabled($attributes['general_content']['isShowOutOfStock'] ?? true)) {
+        $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
+    }
     // pre-order badge
     $data->preorder_badge = boostify_blocks_block_products__get_preorder_html($product);
     $btnInsideImage = ($attributes['general_addToCartBtn']['position'] ?? "") === "inside image";
@@ -672,9 +677,11 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $escaped_permalink = esc_url($data->permalink);
     $escaped_feat_classes = esc_attr($featuredClasses);
 
-    $quantity_interactivity_attrs = $has_quantity
-        ? " data-wp-interactive=\"boostify-blocks/product-quantity\" data-wp-context='{\"quantity\":1}' data-wp-watch=\"callbacks.syncQuantityJqueryData\""
-        : '';
+    $quantity_interactivity_attrs = '';
+    if ( boostify_blocks_block_products_has_quantity_feature( $attributes ) ) {
+        $quantity_context = wp_json_encode( array( 'quantity' => 1 ) );
+        $quantity_interactivity_attrs = " data-wp-interactive=\"boostify-blocks/quantity\" data-wp-context='" . esc_attr( $quantity_context ) . "'";
+    }
 
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
@@ -807,6 +814,9 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
     );
 
     $html  = '<style>
+        .wcb-products__product-featured {
+            overflow: hidden;
+        }
         .wcb-products__product-quickview-preview {
             position: absolute;
             inset: 0;
@@ -821,49 +831,117 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
             inset: 0;
             z-index: 1;
             overflow: hidden;
-            pointer-events: none;
+            pointer-events: auto;
         }
         .wcb-quick-view-hover-gallery[hidden] {
             display: none !important;
-        }
-        .wcb-quick-view-hover-gallery img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
         .wcb-products__product-quickview-preview .tns-outer {
             position: absolute;
             inset: 0;
             height: 100%;
             width: 100%;
+            overflow: hidden;
         }
         .wcb-products__product-quickview-preview .tns-ovh,
         .wcb-products__product-quickview-preview .tns-inner {
             height: 100%;
+            width: 100%;
+        }
+        .wcb-products__product-quickview-preview .wcb-quick-view-hover-gallery {
+            height: 100%;
+        }
+        .wcb-products__product-quickview-preview .tns-item {
+            height: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            object-position: center;
+            vertical-align: top;
+        }
+        .wcb-products__product-quickview-preview img.tns-item {
+            display: inline-block;
         }
         .wcb-products__product-quickview-preview .tns-nav {
             position: absolute;
-            bottom: 10px;
+            bottom: ' . ( $position === 'bottom-image' ? '54px' : '10px' ) . ';
             left: 0;
             right: 0;
             display: flex;
             justify-content: center;
-            gap: 5px;
-            z-index: 5;
+            align-items: center;
+            gap: 6px;
+            z-index: 25;
             pointer-events: auto;
+            height: auto;
         }
         .wcb-products__product-quickview-preview .tns-nav button {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.6);
-            border: none;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
             padding: 0;
             margin: 0 2px;
             cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.2s ease;
         }
         .wcb-products__product-quickview-preview .tns-nav button.tns-nav-active {
             background: #ffffff;
+            border-color: #000000;
+            transform: scale(1.25);
+        }
+        .wcb-products__product-quickview-preview .tns-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 8px;
+            right: 8px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 25;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .wcb-products__product:hover .wcb-products__product-quickview-preview .tns-controls {
+            opacity: 1;
+        }
+        .wcb-products__product-quickview-preview .tns-controls button {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            color: #222222;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            line-height: 1;
+            pointer-events: auto;
+            z-index: 25;
+            transform: none;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .wcb-products__product-quickview-preview .tns-controls button:hover {
+            background: #ffffff;
+            color: #000000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: scale(1.08);
+        }
+        .wcb-products__product-quickview-preview .tns-controls button svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            display: block;
+            pointer-events: none;
         }
     </style>';
 
@@ -875,6 +953,7 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
 
     $html .= '<button
         class="wcb-products__product--quickViewBottomImage--item product-quick-view-btn"
+        data-wp-on--mouseenter="actions.preloadGallery"
         data-product_id="' . esc_attr( $product_id_attr ) . '"
         data-pid="' . esc_attr( $product_id_attr ) . '"
         type="button"
@@ -1058,8 +1137,17 @@ function boostify_blocks_block_products_get_sale_badge_html($product,  $showSale
     }
 
     $woostify = get_option('woostify_setting') ?: [];
-    $is_show_sale_percent = $woostify['shop_page_sale_percent'];
+    $product_label_active = defined('WOOSTIFY_PRO_PRODUCT_LABEL') || ( 'activated' === get_option('woostify_product_label') );
 
+    if ($product_label_active) {
+        $is_show_sale_percent = ( '1' === get_option('woostify_product_label_sale_percentage', '') );
+    } else {
+        $is_show_sale_percent = !empty($woostify['shop_page_sale_percent']);
+    }
+
+    if (!empty($showSaleBadgeDiscoutPercent)) {
+        $is_show_sale_percent = true;
+    }
 
     if ($product->is_on_sale() && $is_show_sale_percent) {
         return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
