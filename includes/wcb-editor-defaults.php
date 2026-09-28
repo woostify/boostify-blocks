@@ -229,6 +229,8 @@ add_action('enqueue_block_editor_assets', function () {
 		$out_css .= "{$prop}: {$val} !important; ";
 	}
 
+	$offset = ( 'round' === $sale_shape || 'round' === $out_shape || 'circle' === $sale_shape || 'circle' === $out_shape ) ? '50px' : '36px';
+
 	$editor_css = "
 		.editor-styles-wrapper .wcb-products__product-salebadge .wcb-products__product-onsale,
 		.wcb-products__product-salebadge .wcb-products__product-onsale {
@@ -259,10 +261,15 @@ add_action('enqueue_block_editor_assets', function () {
 			white-space: nowrap !important;
 			{$out_css}
 		}
+		.editor-styles-wrapper .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge,
+		.wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge,
+		.editor-styles-wrapper .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge,
+		.wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge {
+			top: calc(0.5rem + {$offset}) !important;
+		}
 	";
 
 	wp_register_style( 'boostify-blocks-editor-badge-sync', false );
 	wp_enqueue_style( 'boostify-blocks-editor-badge-sync' );
 	wp_add_inline_style( 'boostify-blocks-editor-badge-sync', $editor_css );
-	wp_add_inline_style( 'boostify-blocks-frontend', $editor_css );
 }, 20);

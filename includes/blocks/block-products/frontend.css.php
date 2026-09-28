@@ -52,12 +52,12 @@ $list_sel          = $wrap_sel . ' .wcb-products__list';
 $product_sel       = $wrap_sel . ' .wcb-products__product';
 $title_sel         = $wrap_sel . ' .wcb-products__product-title';
 $title_a_sel       = $wrap_sel . ' .wcb-products__product-title a';
-$category_sel      = $wrap_sel . ' .wcb-products__product-category';
-$category_a_sel    = $wrap_sel . ' .wcb-products__product-category a';
+$category_sel      = $wrap_sel . ' .wcb-products__product-categories, ' . $wrap_sel . ' .wcb-products__product-category';
+$category_a_sel    = $wrap_sel . ' .wcb-products__product-categories a, ' . $wrap_sel . ' .wcb-products__product-category a';
 $price_sel         = $wrap_sel . ' .wcb-products__product-price';
 $rating_sel        = $wrap_sel . ' .wcb-products__product-rating';
-$image_sel         = $wrap_sel . ' .wcb-products__product-image';
-$image_link_sel    = $wrap_sel . ' .wcb-products__product-image .wcb-products__product-image-link';
+$image_sel         = $wrap_sel . ' .wcb-products__product-featured';
+$image_link_sel    = $wrap_sel . ' .wcb-products__product-image-link';
 $overlay_sel       = $wrap_sel . ' .wcb-products__product-image-overlay';
 $add_cart_wrap_sel = $wrap_sel . ' .wcb-products__product-add-to-cart';
 $add_cart_sel      = $wrap_sel . ' .wcb-products__product-add-to-cart a';
@@ -192,6 +192,46 @@ if ( ! empty( $sf['backgroundOverlay'] ) ) {
 }
 if ( ! empty( $sf['border'] ) ) {
 	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sf['border'], $image_link_sel, true ) );
+
+	if ( ! empty( $sf['border']['radius'] ) && is_array( $sf['border']['radius'] ) ) {
+		$radius = $sf['border']['radius'];
+		$normalize_corners = function ( $val ) {
+			if ( is_string( $val ) ) {
+				return array( 'topLeft' => $val, 'topRight' => $val, 'bottomRight' => $val, 'bottomLeft' => $val );
+			}
+			return array(
+				'topLeft'     => $val['topLeft'] ?? '',
+				'topRight'    => $val['topRight'] ?? '',
+				'bottomRight' => $val['bottomRight'] ?? '',
+				'bottomLeft'  => $val['bottomLeft'] ?? '',
+			);
+		};
+		$d_c = $normalize_corners( $radius['Desktop'] ?? ( isset( $radius['topLeft'] ) ? $radius : '' ) );
+		$t_c = ! empty( $radius['Tablet'] ) ? $normalize_corners( $radius['Tablet'] ) : $d_c;
+		$m_c = ! empty( $radius['Mobile'] ) ? $normalize_corners( $radius['Mobile'] ) : $t_c;
+
+		$corner_props = array(
+			'topLeft'     => 'border-top-left-radius',
+			'topRight'    => 'border-top-right-radius',
+			'bottomRight' => 'border-bottom-right-radius',
+			'bottomLeft'  => 'border-bottom-left-radius',
+		);
+		foreach ( $corner_props as $ckey => $css_prop ) {
+			$d_v = $d_c[ $ckey ] ?? '';
+			$t_v = $t_c[ $ckey ] ?? '';
+			$m_v = $m_c[ $ckey ] ?? '';
+			if ( '' !== $t_v && $t_v !== $d_v ) {
+				$t_selectors[ $image_link_sel ][ $css_prop ] = WCB_Block_Helper::get_css_value( $t_v );
+			}
+			if ( '' !== $m_v && $m_v !== $t_v ) {
+				$m_selectors[ $image_link_sel ][ $css_prop ] = WCB_Block_Helper::get_css_value( $m_v );
+			}
+		}
+	}
+
+	if ( ! empty( $sf['border']['hoverColor'] ) ) {
+		$selectors[ $product_sel . ':hover .wcb-products__product-image-link' ]['border-color'] = $sf['border']['hoverColor'];
+	}
 }
 
 // 8. Sale Badge
@@ -304,6 +344,16 @@ if ( ! empty( $so['position'] ) ) {
 	}
 }
 
+// Stacking when both out-of-stock and sale badges are on the same side inside the image.
+$so_pos = ( ! empty( $so['position'] ) && ( 'top-right' === $so['position'] || 'right' === $so['position'] ) ) ? 'right' : 'left';
+$ss_pos = ( ! empty( $ss['position'] ) && ( 'top-right' === $ss['position'] || 'right' === $ss['position'] ) ) ? 'right' : 'left';
+if ( ! empty( $so['position'] ) && 'none' !== $so['position'] && ! empty( $ss['position'] ) && $so_pos === $ss_pos ) {
+	$badge_shape = $so['shape'] ?? $ss['shape'] ?? 'round';
+	$offset      = ( 'round' === $badge_shape ) ? '50px' : '32px';
+	$selectors[ $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge' ]['top'] = 'calc(0.5rem + ' . $offset . ')';
+	$selectors[ $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge' ]['top'] = 'calc(0.5rem + ' . $offset . ')';
+}
+
 // 10. Add to Cart Button
 if ( ! empty( $sl['textAlignment'] ) ) {
 	$align_items = 'center';
@@ -332,6 +382,8 @@ if ( ! empty( $sa['colorAndBackgroundColor'] ) ) {
 	}
 	if ( ! empty( $cbc['Hover']['color'] ) ) {
 		$selectors[ $add_cart_sel . ':hover' ]['color'] = $cbc['Hover']['color'];
+		$selectors[ $add_cart_sel . ':hover svg path' ]['fill']       = $cbc['Hover']['color'] . ' !important';
+		$selectors[ $add_cart_sel . ':hover svg path' ]['transition'] = 'fill 0.3s ease';
 	}
 	if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
 		$selectors[ $add_cart_sel . ':hover' ]['background-color'] = $cbc['Hover']['backgroundColor'];
@@ -597,8 +649,8 @@ $selectors[ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['transform']  
 $selectors[ $qv_preview_sel . ' .tns-controls' ]['position']        = 'absolute';
 $selectors[ $qv_preview_sel . ' .tns-controls' ]['top']             = '50%';
 $selectors[ $qv_preview_sel . ' .tns-controls' ]['transform']       = 'translateY(-50%)';
-$selectors[ $qv_preview_sel . ' .tns-controls' ]['left']            = '8px';
-$selectors[ $qv_preview_sel . ' .tns-controls' ]['right']           = '8px';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['left']            = '0px';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['right']           = '0px';
 $selectors[ $qv_preview_sel . ' .tns-controls' ]['display']         = 'flex';
 $selectors[ $qv_preview_sel . ' .tns-controls' ]['justify-content'] = 'space-between';
 $selectors[ $qv_preview_sel . ' .tns-controls' ]['z-index']         = '25';
@@ -653,7 +705,22 @@ if ( ! empty( $scu ) ) {
 	}
 }
 
-// 16. Advance
+// 16. Pre-order
+$preorder_msg_sel = $wrap_sel . ' .wcb-products__product-preorder-message';
+$selectors[ $preorder_msg_sel ]['color']       = '#000000';
+$selectors[ $preorder_msg_sel ]['font-size']   = '15px';
+$selectors[ $preorder_msg_sel ]['font-weight'] = '400';
+
+$preorder_cd_sel = $wrap_sel . ' .wcb-products__product-preorder-countdown';
+$selectors[ $preorder_cd_sel ]['display']       = 'flex';
+$selectors[ $preorder_cd_sel ]['gap']           = '8px';
+$selectors[ $preorder_cd_sel ]['margin-bottom'] = '6px';
+
+$preorder_item_sel = $wrap_sel . ' .wcb-products__product-preorder-countdown-item';
+$selectors[ $preorder_item_sel ]['font-size']   = '13px';
+$selectors[ $preorder_item_sel ]['font-weight'] = '600';
+
+// 17. Advance
 $selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 
 $combined_selectors = array(
