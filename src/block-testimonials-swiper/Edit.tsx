@@ -956,7 +956,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const renderEditContent = () => {
 		return (
 			<div className="wcb-testimonials-swiper__wrap-items swiper">
-				<Swiper {...swiperCommonProps}>
+				{/* Remount when autoplay settings change: swiper/react only swaps
+				    params.autoplay on update and never calls autoplay.stop(), so
+				    turning autoplay off leaves it "running" with no delay and the
+				    hover (pauseOnMouseEnter) listeners then slide non-stop. */}
+				<Swiper
+					key={`autoplay-${isAutoPlay}-${autoplaySpeed}-${hoverpause}`}
+					{...swiperCommonProps}
+				>
 					{CURRENT_DATA.map(renderTestimonialItem)}
 				</Swiper>
 				{renderNav()}
