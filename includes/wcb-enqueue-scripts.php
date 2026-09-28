@@ -188,22 +188,6 @@ add_action( 'enqueue_block_editor_assets', function() {
         BOOSTIFY_BLOCKS_VERSION
     );
 
-    // load the extension block
-    wp_enqueue_style(
-        'boostify-blocks-extensions',
-        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/extensions/index.css',
-        array(),
-        BOOSTIFY_BLOCKS_VERSION
-    );
-
-    wp_enqueue_script(
-        'boostify-blocks-extensions', 
-        plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/extensions/index.js', 
-        ['wp-blocks', 'wp-element', 'jquery'], 
-        BOOSTIFY_BLOCKS_VERSION, 
-        true
-    );
-    
     wp_add_inline_script(
 		'wp-edit-post',
 		'
@@ -228,6 +212,21 @@ add_action( 'enqueue_block_editor_assets', function() {
 		} );
 		'
 	);
+    // load the extension block
+    wp_enqueue_style(
+        'boostify-blocks-extensions',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/extensions/index.css',
+        array(),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
+    wp_enqueue_script(
+        'boostify-blocks-extensions', 
+        plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/extensions/index.js', 
+        ['wp-blocks', 'wp-element', 'jquery'], 
+        BOOSTIFY_BLOCKS_VERSION, 
+        true
+    );
 
 });
 

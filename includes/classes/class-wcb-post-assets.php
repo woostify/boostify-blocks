@@ -199,6 +199,22 @@ class WCB_Post_Assets {
 			add_action( 'wp_print_styles', array( $this, 'dequeue_individual_block_styles' ), 0 );
 			add_action( 'wp_print_footer_scripts', array( $this, 'dequeue_individual_block_styles' ), 0 );
 		}
+
+		// Invalidate assets cache when Woostify theme or Woostify Pro Product Label settings are updated.
+		$theme_options_to_watch = array(
+			'woostify_setting',
+			'woostify_product_label',
+			'woostify_product_label_style',
+			'woostify_product_label_sale_percentage',
+			'woostify_product_label_background',
+			'woostify_product_label_text_color',
+			'woostify_product_label_out_of_stock_background',
+			'woostify_product_label_out_of_stock_text_color',
+		);
+		foreach ( $theme_options_to_watch as $opt_name ) {
+			add_action( "update_option_{$opt_name}", array( __CLASS__, 'update_global_asset_version' ) );
+		}
+		add_action( 'customize_save_after', array( __CLASS__, 'update_global_asset_version' ) );
 	}
 
 	/**

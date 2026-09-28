@@ -134,27 +134,30 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     // Sale badge
     $sale = $theme['shop_archive_sale_tag'] ?? [];
     $sale_position = $pick($sale['position'] ?? null, $attributes['style_saleBadge']['position'] ?? null) ?? 'top-right';
+    $mapped_sale_position = ( 'left' === $sale_position || 'top-left' === $sale_position ) ? 'top-left' : 'top-right';
     $attributes['style_saleBadge'] = array_merge(
         $attributes['style_saleBadge'] ?? [],
         [
             'backgroundColor' => $pick($sale['bg_color'] ?? null, $attributes['style_saleBadge']['backgroundColor'] ?? null),
             'textColor'       => $pick($sale['text_color'] ?? null, $attributes['style_saleBadge']['textColor'] ?? null),
-            'position'        => $sale_position === 'left' ? 'top-left' : 'top-right',
+            'position'        => $mapped_sale_position,
+            'shape'           => $pick($sale['shape'] ?? 'rectangular', $attributes['style_saleBadge']['shape'] ?? null),
         ]
     );
 
     // Out of stock badge
     $outofstock = $theme['shop_archive_out_of_stock'] ?? [];
     $raw_out_position = $pick($outofstock['position'] ?? null, $attributes['style_outOfStock']['position'] ?? null) ?? 'none';
-    $mapped_out_position = $raw_out_position === 'left'
+    $mapped_out_position = ( 'left' === $raw_out_position || 'top-left' === $raw_out_position )
         ? 'top-left'
-        : ($raw_out_position === 'right' ? 'top-right' : 'none');
+        : ( ( 'right' === $raw_out_position || 'top-right' === $raw_out_position ) ? 'top-right' : 'none' );
     $attributes['style_outOfStock'] = array_merge(
         $attributes['style_outOfStock'] ?? [],
         [
             'backgroundColor' => $pick($outofstock['bg_color'] ?? null, $attributes['style_outOfStock']['backgroundColor'] ?? null),
             'textColor'       => $pick($outofstock['text_color'] ?? null, $attributes['style_outOfStock']['textColor'] ?? null),
             'position'        => $mapped_out_position,
+            'shape'           => $pick($outofstock['shape'] ?? 'rectangular', $attributes['style_outOfStock']['shape'] ?? null),
         ]
     );
 
@@ -372,19 +375,44 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
 ?>
 
     <?php
-        // Update the serialized attributes inside the saved content so frontend CSS uses refreshed defaults.
-        if (!empty($uniqueId)) {
-            $json = esc_html(wp_json_encode($attributes));
-            $content = preg_replace(
-                '/(<pre[^>]*data-wcb-block-attrs=["\']?' . preg_quote($uniqueId, '/') . '["\']?[^>]*>)(.*?)(<\/pre>)/s',
-                '$1' . $json . '$3',
-                $content
-            );
+        $json = !empty($uniqueId) ? esc_html(wp_json_encode($attributes)) : '';
+
+        // Extract any extra classes and id from saved $content (e.g. Gutenberg block wrapper classes / anchor)
+        $saved_classes = '';
+        $saved_id      = '';
+        if (!empty($content)) {
+            if (preg_match('/<div\b[^>]*\bclass=["\']([^"\']*)["\']/i', $content, $class_matches)) {
+                $saved_classes = $class_matches[1];
+            }
+            if (preg_match('/<div\b[^>]*\bid=["\']([^"\']*)["\']/i', $content, $id_matches)) {
+                $saved_id = $id_matches[1];
+            }
         }
 
-        echo $content;
+        // Build responsive classes if configured
+        $rc = $attributes['advance_responsiveCondition'] ?? [];
+        $responsiveClasses = '';
+        if (!empty($rc['isHiddenOnDesktop'])) {
+            $responsiveClasses .= ' wcb-hide-desktop';
+        }
+        if (!empty($rc['isHiddenOnTablet'])) {
+            $responsiveClasses .= ' wcb-hide-tab';
+        }
+        if (!empty($rc['isHiddenOnMobile'])) {
+            $responsiveClasses .= ' wcb-hide-mob';
+        }
+
+        $anchor_id = !empty($saved_id) ? $saved_id : ($attributes['anchor'] ?? '');
+
+        // Merge all classes into a unique set, ensuring wcb-products__wrap, wcb-update-div, and uniqueId are present
+        $raw_classes        = 'wcb-cm wcb-update-div wp-block-boostify-blocks-products wcb-products__wrap ' . $uniqueId . ' ' . $className . ' ' . $saved_classes . ' ' . $responsiveClasses;
+        $class_list         = array_unique(array_filter(explode(' ', $raw_classes)));
+        $wrapper_class_attr = implode(' ', $class_list);
     ?>
-    <div class="wcb-products__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
+    <div class="<?php echo esc_attr($wrapper_class_attr); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>"<?php echo !empty($anchor_id) ? ' id="' . esc_attr($anchor_id) . '"' : ''; ?>>
+        <div data-wcb-global-styles="<?php echo esc_attr($uniqueId); ?>"></div>
+        <pre data-wcb-block-attrs="<?php echo esc_attr($uniqueId); ?>" style="display: none;"><?php echo $json; ?></pre>
+        <span data-block-products-uniqueId="<?php echo esc_attr($uniqueId); ?>" style="display: none;"></span>
 
         <?php
         if ($loop->have_posts()) :
@@ -541,7 +569,9 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         $data->categories = boostify_blocks_block_products_get_category_html($product);
     }
 
-    $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
+    if (boostify_blocks_is_enabled($attributes['general_content']['isShowOutOfStock'] ?? true)) {
+        $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
+    }
     // pre-order badge
     $data->preorder_badge = boostify_blocks_block_products__get_preorder_html($product);
     $btnInsideImage = ($attributes['general_addToCartBtn']['position'] ?? "") === "inside image";
@@ -581,7 +611,6 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $saleBadge2 = $saleInsideImage ?   "" : $data->badge;
 
     // out of stock
-    $classes .= $saleInsideImage ? " wcb-products__product--onsaleInsideImage" : "";
     $saleOutOfStock = $data->out_of_stock ? : "";
     $preorderBadge = $data->preorder_badge ? : "";
 
@@ -672,9 +701,11 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $escaped_permalink = esc_url($data->permalink);
     $escaped_feat_classes = esc_attr($featuredClasses);
 
-    $quantity_interactivity_attrs = $has_quantity
-        ? " data-wp-interactive=\"boostify-blocks/product-quantity\" data-wp-context='{\"quantity\":1}' data-wp-watch=\"callbacks.syncQuantityJqueryData\""
-        : '';
+    $quantity_interactivity_attrs = '';
+    if ( boostify_blocks_block_products_has_quantity_feature( $attributes ) ) {
+        $quantity_context = wp_json_encode( array( 'quantity' => 1 ) );
+        $quantity_interactivity_attrs = " data-wp-interactive=\"boostify-blocks/product-quantity\" data-wp-context='" . esc_attr( $quantity_context ) . "' data-wp-watch=\"callbacks.syncQuantityJqueryData\"";
+    }
 
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
@@ -688,8 +719,8 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$bottomRightIconHtml}
                     {$btnQuickViewBottomImageHtml}
                     {$countdownHtml}
-                    {$saleBadge1}
                     {$saleOutOfStock}
+                    {$saleBadge1}
                 </div>
                 <div class=\"wcb-products__product-content\">
                     {$data->categories}
@@ -806,68 +837,7 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
         )
     );
 
-    $html  = '<style>
-        .wcb-products__product-quickview-preview {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 4;
-        }
-        .wcb-products__product-quickview-preview > * {
-            pointer-events: auto;
-        }
-        .wcb-quick-view-hover-gallery {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            overflow: hidden;
-            pointer-events: none;
-        }
-        .wcb-quick-view-hover-gallery[hidden] {
-            display: none !important;
-        }
-        .wcb-quick-view-hover-gallery img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .wcb-products__product-quickview-preview .tns-outer {
-            position: absolute;
-            inset: 0;
-            height: 100%;
-            width: 100%;
-        }
-        .wcb-products__product-quickview-preview .tns-ovh,
-        .wcb-products__product-quickview-preview .tns-inner {
-            height: 100%;
-        }
-        .wcb-products__product-quickview-preview .tns-nav {
-            position: absolute;
-            bottom: 10px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            z-index: 5;
-            pointer-events: auto;
-        }
-        .wcb-products__product-quickview-preview .tns-nav button {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.6);
-            border: none;
-            padding: 0;
-            margin: 0 2px;
-            cursor: pointer;
-        }
-        .wcb-products__product-quickview-preview .tns-nav button.tns-nav-active {
-            background: #ffffff;
-        }
-    </style>';
-
-    $html .= '<div class="wcb-products__product-quickview-preview"'
+    $html  = '<div class="wcb-products__product-quickview-preview"'
         . ' data-wp-interactive="boostify-blocks/quick-view-preview"'
         . ' data-wp-context=\'' . esc_attr( $preview_context ) . '\''
         . ' data-wp-on--mouseenter="actions.preloadGallery"'
@@ -875,6 +845,7 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
 
     $html .= '<button
         class="wcb-products__product--quickViewBottomImage--item product-quick-view-btn"
+        data-wp-on--mouseenter="actions.preloadGallery"
         data-product_id="' . esc_attr( $product_id_attr ) . '"
         data-pid="' . esc_attr( $product_id_attr ) . '"
         type="button"
@@ -1058,8 +1029,17 @@ function boostify_blocks_block_products_get_sale_badge_html($product,  $showSale
     }
 
     $woostify = get_option('woostify_setting') ?: [];
-    $is_show_sale_percent = $woostify['shop_page_sale_percent'];
+    $product_label_active = defined('WOOSTIFY_PRO_PRODUCT_LABEL') || ( 'activated' === get_option('woostify_product_label') );
 
+    if ($product_label_active) {
+        $is_show_sale_percent = ( '1' === get_option('woostify_product_label_sale_percentage', '') );
+    } else {
+        $is_show_sale_percent = !empty($woostify['shop_page_sale_percent']);
+    }
+
+    if (!empty($showSaleBadgeDiscoutPercent)) {
+        $is_show_sale_percent = true;
+    }
 
     if ($product->is_on_sale() && $is_show_sale_percent) {
         return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
@@ -1144,23 +1124,7 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
         )
     );
 
-    $html = '<style>
-        .wcb-products__product-preorder-message {
-            color: #000000;
-            font-size: 15px;
-            font-weight: 400;
-        }
-        .wcb-products__product-preorder-countdown {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-        .wcb-products__product-preorder-countdown-item {
-            font-size: 13px;
-            font-weight: 600;
-        }
-    </style>';
-    $html .= '<div class="wcb-products__product-preorder-badge">';
+    $html = '<div class="wcb-products__product-preorder-badge">';
     $html .= '<div class="wcb-products__product-salebadge">';
     $html .= '<div class="wcb-products__product-onsale wc-block-grid__product-onsale">';
     $html .= '<span aria-hidden="true">Pre-Order</span>';
@@ -1236,16 +1200,6 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
     
     $label_markup = '<span class="wcb-products__add-to-cart-label">' . esc_html($product->add_to_cart_text()) . '</span>';
 
-    // Inline CSS for hover color change
-    $inline_css = "
-        <style>
-            .{$product_class}:hover svg path {
-                fill: {$hover_svg_color} !important;
-                transition: fill 0.3s ease;
-            }
-        </style>
-    ";
-
     $show_icon = $attributesFromBlock['general_addToCartBtn']['isShowIcon'] ?? true;
 
     $has_quantity = boostify_blocks_block_products_has_quantity_feature($attributesFromBlock);
@@ -1268,7 +1222,7 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
         $label_markup
     );
 
-    return $inline_css . $btn_markup;
+    return $btn_markup;
 }
 
 /**

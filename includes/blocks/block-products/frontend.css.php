@@ -52,18 +52,18 @@ $list_sel          = $wrap_sel . ' .wcb-products__list';
 $product_sel       = $wrap_sel . ' .wcb-products__product';
 $title_sel         = $wrap_sel . ' .wcb-products__product-title';
 $title_a_sel       = $wrap_sel . ' .wcb-products__product-title a';
-$category_sel      = $wrap_sel . ' .wcb-products__product-category';
-$category_a_sel    = $wrap_sel . ' .wcb-products__product-category a';
+$category_sel      = $wrap_sel . ' .wcb-products__product-categories, ' . $wrap_sel . ' .wcb-products__product-category';
+$category_a_sel    = $wrap_sel . ' .wcb-products__product-categories a, ' . $wrap_sel . ' .wcb-products__product-category a';
 $price_sel         = $wrap_sel . ' .wcb-products__product-price';
 $rating_sel        = $wrap_sel . ' .wcb-products__product-rating';
-$image_sel         = $wrap_sel . ' .wcb-products__product-image';
-$image_link_sel    = $wrap_sel . ' .wcb-products__product-image .wcb-products__product-image-link';
+$image_sel         = $wrap_sel . ' .wcb-products__product-featured';
+$image_link_sel    = $wrap_sel . ' .wcb-products__product-image-link';
 $overlay_sel       = $wrap_sel . ' .wcb-products__product-image-overlay';
 $add_cart_wrap_sel = $wrap_sel . ' .wcb-products__product-add-to-cart';
 $add_cart_sel      = $wrap_sel . ' .wcb-products__product-add-to-cart a';
-$sale_sel          = $wrap_sel . ' .wcb-products__product-sale-badge';
+$sale_sel          = $wrap_sel . ' .wcb-products__product-salebadge';
 $sale_badge_sel    = $wrap_sel . ' .wcb-products__product-salebadge .wcb-products__product-onsale';
-$out_of_stock_sel  = $wrap_sel . ' .wcb-products__product-out-of-stock';
+$out_of_stock_sel  = $wrap_sel . ' .wcb-products__product-outofstock-badge';
 $out_of_stock_bdg  = $wrap_sel . ' .wcb-products__product-outofstock-badge .wcb-products__product-on-outofstock';
 $pag_wrap_sel      = $wrap_sel . ' .wcb-products__pagination';
 $pag_sel           = $pag_wrap_sel . ' .page-numbers';
@@ -192,13 +192,86 @@ if ( ! empty( $sf['backgroundOverlay'] ) ) {
 }
 if ( ! empty( $sf['border'] ) ) {
 	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sf['border'], $image_link_sel, true ) );
+
+	if ( ! empty( $sf['border']['radius'] ) && is_array( $sf['border']['radius'] ) ) {
+		$radius = $sf['border']['radius'];
+		$normalize_corners = function ( $val ) {
+			if ( is_string( $val ) ) {
+				return array( 'topLeft' => $val, 'topRight' => $val, 'bottomRight' => $val, 'bottomLeft' => $val );
+			}
+			return array(
+				'topLeft'     => $val['topLeft'] ?? '',
+				'topRight'    => $val['topRight'] ?? '',
+				'bottomRight' => $val['bottomRight'] ?? '',
+				'bottomLeft'  => $val['bottomLeft'] ?? '',
+			);
+		};
+		$d_c = $normalize_corners( $radius['Desktop'] ?? ( isset( $radius['topLeft'] ) ? $radius : '' ) );
+		$t_c = ! empty( $radius['Tablet'] ) ? $normalize_corners( $radius['Tablet'] ) : $d_c;
+		$m_c = ! empty( $radius['Mobile'] ) ? $normalize_corners( $radius['Mobile'] ) : $t_c;
+
+		$corner_props = array(
+			'topLeft'     => 'border-top-left-radius',
+			'topRight'    => 'border-top-right-radius',
+			'bottomRight' => 'border-bottom-right-radius',
+			'bottomLeft'  => 'border-bottom-left-radius',
+		);
+		foreach ( $corner_props as $ckey => $css_prop ) {
+			$d_v = $d_c[ $ckey ] ?? '';
+			$t_v = $t_c[ $ckey ] ?? '';
+			$m_v = $m_c[ $ckey ] ?? '';
+			if ( '' !== $t_v && $t_v !== $d_v ) {
+				$t_selectors[ $image_link_sel ][ $css_prop ] = WCB_Block_Helper::get_css_value( $t_v );
+			}
+			if ( '' !== $m_v && $m_v !== $t_v ) {
+				$m_selectors[ $image_link_sel ][ $css_prop ] = WCB_Block_Helper::get_css_value( $m_v );
+			}
+		}
+	}
+
+	if ( ! empty( $sf['border']['hoverColor'] ) ) {
+		$selectors[ $product_sel . ':hover .wcb-products__product-image-link' ]['border-color'] = $sf['border']['hoverColor'];
+	}
 }
 
 // 8. Sale Badge
+$apply_badge_shape_css = function ( $shape, $sel ) use ( &$selectors ) {
+	if ( function_exists( 'boostify_blocks_get_badge_shape_css_rules' ) ) {
+		$rules = boostify_blocks_get_badge_shape_css_rules( $shape );
+		foreach ( $rules as $prop => $val ) {
+			$selectors[ $sel ][ $prop ] = $val;
+		}
+	}
+};
+
+$selectors[ $sale_badge_sel ]['display']         = 'inline-flex';
+$selectors[ $sale_badge_sel ]['align-items']     = 'center';
+$selectors[ $sale_badge_sel ]['justify-content'] = 'center';
+$selectors[ $sale_badge_sel ]['padding']         = '2px 8px';
+$selectors[ $sale_badge_sel ]['min-width']       = '32px';
+$selectors[ $sale_badge_sel ]['min-height']      = '20px';
+$selectors[ $sale_badge_sel ]['line-height']     = '1.2';
+$selectors[ $sale_badge_sel ]['border-radius']   = '2px';
+$selectors[ $sale_badge_sel ]['white-space']     = 'nowrap';
+
+if ( ! empty( $ss['shape'] ) ) {
+	$apply_badge_shape_css( $ss['shape'], $sale_badge_sel );
+}
+
+$sale_span_sel = $wrap_sel . ' .wcb-products__product-salebadge .wcb-products__product-onsale span.onsale';
+$selectors[ $sale_span_sel ]['position']         = 'static';
+$selectors[ $sale_span_sel ]['margin']           = '0px';
+$selectors[ $sale_span_sel ]['padding']          = '0px';
+$selectors[ $sale_span_sel ]['display']          = 'inline';
+$selectors[ $sale_span_sel ]['font-size']        = 'inherit';
+$selectors[ $sale_span_sel ]['line-height']      = 'inherit';
+$selectors[ $sale_span_sel ]['color']            = 'inherit';
+$selectors[ $sale_span_sel ]['background-color'] = 'transparent';
+
 if ( ! empty( $ss['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $ss['typography'], $sale_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $ss['typography'], $sale_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $ss['typography'], $sale_sel, 'mobile' ) );
+	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $ss['typography'], $sale_badge_sel, 'desktop' ) );
+	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $ss['typography'], $sale_badge_sel, 'tablet' ) );
+	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $ss['typography'], $sale_badge_sel, 'mobile' ) );
 }
 if ( ! empty( $ss['backgroundColor'] ) ) {
 	$selectors[ $sale_badge_sel ]['background-color'] = $ss['backgroundColor'];
@@ -216,7 +289,7 @@ if ( ! empty( $ss['position'] ) ) {
 	$selectors[ $sale_inside ]['position'] = 'absolute';
 	$selectors[ $sale_inside ]['top']      = '0.5rem';
 	$selectors[ $sale_inside ]['z-index']  = '10';
-	if ( 'top-left' === $ss['position'] ) {
+	if ( 'top-left' === $ss['position'] || 'left' === $ss['position'] ) {
 		$selectors[ $sale_inside ]['left'] = '0.5rem';
 	} else {
 		$selectors[ $sale_inside ]['right'] = '0.5rem';
@@ -224,10 +297,24 @@ if ( ! empty( $ss['position'] ) ) {
 }
 
 // 9. Out of Stock
+$selectors[ $out_of_stock_bdg ]['display']         = 'inline-flex';
+$selectors[ $out_of_stock_bdg ]['align-items']     = 'center';
+$selectors[ $out_of_stock_bdg ]['justify-content'] = 'center';
+$selectors[ $out_of_stock_bdg ]['padding']         = '2px 8px';
+$selectors[ $out_of_stock_bdg ]['min-width']       = '32px';
+$selectors[ $out_of_stock_bdg ]['min-height']      = '20px';
+$selectors[ $out_of_stock_bdg ]['line-height']     = '1.2';
+$selectors[ $out_of_stock_bdg ]['border-radius']   = '2px';
+$selectors[ $out_of_stock_bdg ]['white-space']     = 'nowrap';
+
+if ( ! empty( $so['shape'] ) ) {
+	$apply_badge_shape_css( $so['shape'], $out_of_stock_bdg );
+}
+
 if ( ! empty( $so['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $so['typography'], $out_of_stock_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $so['typography'], $out_of_stock_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $so['typography'], $out_of_stock_sel, 'mobile' ) );
+	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $so['typography'], $out_of_stock_bdg, 'desktop' ) );
+	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $so['typography'], $out_of_stock_bdg, 'tablet' ) );
+	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $so['typography'], $out_of_stock_bdg, 'mobile' ) );
 }
 if ( ! empty( $so['backgroundColor'] ) ) {
 	$selectors[ $out_of_stock_bdg ]['background-color'] = $so['backgroundColor'];
@@ -235,14 +322,19 @@ if ( ! empty( $so['backgroundColor'] ) ) {
 if ( ! empty( $so['textColor'] ) ) {
 	$selectors[ $out_of_stock_bdg ]['color'] = $so['textColor'];
 }
+if ( ! empty( $so['marginBottom'] ) ) {
+	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $so['marginBottom'], 'margin-bottom', $out_of_stock_sel, 'desktop' ) );
+	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $so['marginBottom'], 'margin-bottom', $out_of_stock_sel, 'tablet' ) );
+	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $so['marginBottom'], 'margin-bottom', $out_of_stock_sel, 'mobile' ) );
+}
 if ( ! empty( $so['position'] ) ) {
 	$oos_inside = $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge';
-	if ( 'top-left' === $so['position'] ) {
+	if ( 'top-left' === $so['position'] || 'left' === $so['position'] ) {
 		$selectors[ $oos_inside ]['position'] = 'absolute';
 		$selectors[ $oos_inside ]['top']      = '0.5rem';
 		$selectors[ $oos_inside ]['left']     = '0.5rem';
 		$selectors[ $oos_inside ]['z-index']  = '10';
-	} elseif ( 'top-right' === $so['position'] ) {
+	} elseif ( 'top-right' === $so['position'] || 'right' === $so['position'] ) {
 		$selectors[ $oos_inside ]['position'] = 'absolute';
 		$selectors[ $oos_inside ]['top']      = '0.5rem';
 		$selectors[ $oos_inside ]['right']    = '0.5rem';
@@ -250,6 +342,16 @@ if ( ! empty( $so['position'] ) ) {
 	} else {
 		$selectors[ $oos_inside ]['display'] = 'none';
 	}
+}
+
+// Stacking when both out-of-stock and sale badges are on the same side inside the image.
+$so_pos = ( ! empty( $so['position'] ) && ( 'top-right' === $so['position'] || 'right' === $so['position'] ) ) ? 'right' : 'left';
+$ss_pos = ( ! empty( $ss['position'] ) && ( 'top-right' === $ss['position'] || 'right' === $ss['position'] ) ) ? 'right' : 'left';
+if ( ! empty( $so['position'] ) && 'none' !== $so['position'] && ! empty( $ss['position'] ) && $so_pos === $ss_pos ) {
+	$badge_shape = $so['shape'] ?? $ss['shape'] ?? 'round';
+	$offset      = ( 'round' === $badge_shape ) ? '50px' : '32px';
+	$selectors[ $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge' ]['top'] = 'calc(0.5rem + ' . $offset . ')';
+	$selectors[ $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge' ]['top'] = 'calc(0.5rem + ' . $offset . ')';
 }
 
 // 10. Add to Cart Button
@@ -280,6 +382,8 @@ if ( ! empty( $sa['colorAndBackgroundColor'] ) ) {
 	}
 	if ( ! empty( $cbc['Hover']['color'] ) ) {
 		$selectors[ $add_cart_sel . ':hover' ]['color'] = $cbc['Hover']['color'];
+		$selectors[ $add_cart_sel . ':hover svg path' ]['fill']       = $cbc['Hover']['color'] . ' !important';
+		$selectors[ $add_cart_sel . ':hover svg path' ]['transition'] = 'fill 0.3s ease';
 	}
 	if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
 		$selectors[ $add_cart_sel . ':hover' ]['background-color'] = $cbc['Hover']['backgroundColor'];
@@ -463,6 +567,8 @@ if ( ! $qv_enabled ) {
 	}
 }
 
+$selectors[ $product_sel . ' .wcb-products__product-featured' ]['overflow'] = 'hidden';
+
 // Hover Gallery Preview (Interactivity API wrapper & tiny-slider)
 $qv_preview_sel = $wrap_sel . ' .wcb-products__product-quickview-preview';
 $selectors[ $qv_preview_sel ]['position']       = 'absolute';
@@ -483,11 +589,13 @@ $selectors[ $qv_gallery_sel ]['right']          = '0px';
 $selectors[ $qv_gallery_sel ]['bottom']         = '0px';
 $selectors[ $qv_gallery_sel ]['z-index']        = '1';
 $selectors[ $qv_gallery_sel ]['overflow']       = 'hidden';
-$selectors[ $qv_gallery_sel ]['pointer-events'] = 'none';
+$selectors[ $qv_gallery_sel ]['pointer-events'] = 'auto';
 $selectors[ $qv_gallery_sel . '[hidden]' ]['display'] = 'none !important';
-$selectors[ $qv_gallery_sel . ' img' ]['width']      = '100%';
-$selectors[ $qv_gallery_sel . ' img' ]['height']     = '100%';
-$selectors[ $qv_gallery_sel . ' img' ]['object-fit'] = 'cover';
+$selectors[ $qv_gallery_sel . ' img' ]['width']           = '100%';
+$selectors[ $qv_gallery_sel . ' img' ]['height']          = '100%';
+$selectors[ $qv_gallery_sel . ' img' ]['object-fit']      = 'cover';
+$selectors[ $qv_gallery_sel . ' img' ]['object-position'] = 'center';
+$selectors[ $qv_gallery_sel . ' img' ]['display']         = 'block';
 
 $selectors[ $qv_preview_sel . ' .tns-outer' ]['position'] = 'absolute';
 $selectors[ $qv_preview_sel . ' .tns-outer' ]['top']      = '0px';
@@ -496,29 +604,92 @@ $selectors[ $qv_preview_sel . ' .tns-outer' ]['right']    = '0px';
 $selectors[ $qv_preview_sel . ' .tns-outer' ]['bottom']   = '0px';
 $selectors[ $qv_preview_sel . ' .tns-outer' ]['height']   = '100%';
 $selectors[ $qv_preview_sel . ' .tns-outer' ]['width']    = '100%';
+$selectors[ $qv_preview_sel . ' .tns-outer' ]['overflow'] = 'hidden';
 $selectors[ $qv_preview_sel . ' .tns-ovh' ]['height']     = '100%';
+$selectors[ $qv_preview_sel . ' .tns-ovh' ]['width']      = '100%';
 $selectors[ $qv_preview_sel . ' .tns-inner' ]['height']   = '100%';
+$selectors[ $qv_preview_sel . ' .tns-inner' ]['width']    = '100%';
+$selectors[ $qv_preview_sel . ' .wcb-quick-view-hover-gallery' ]['height'] = '100%';
+$selectors[ $qv_preview_sel . ' .tns-item' ]['height']          = '100%';
+$selectors[ $qv_preview_sel . ' .tns-item' ]['max-height']      = '100%';
+$selectors[ $qv_preview_sel . ' .tns-item' ]['object-fit']      = 'cover';
+$selectors[ $qv_preview_sel . ' .tns-item' ]['object-position'] = 'center';
+$selectors[ $qv_preview_sel . ' .tns-item' ]['vertical-align']  = 'top';
+$selectors[ $qv_preview_sel . ' img.tns-item' ]['display']      = 'inline-block';
 
+$nav_bottom = ( $qv_position === 'bottom-image' ) ? '54px' : '10px';
 $selectors[ $qv_preview_sel . ' .tns-nav' ]['position']        = 'absolute';
-$selectors[ $qv_preview_sel . ' .tns-nav' ]['bottom']          = '10px';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['bottom']          = $nav_bottom;
 $selectors[ $qv_preview_sel . ' .tns-nav' ]['left']            = '0px';
 $selectors[ $qv_preview_sel . ' .tns-nav' ]['right']           = '0px';
 $selectors[ $qv_preview_sel . ' .tns-nav' ]['display']         = 'flex';
 $selectors[ $qv_preview_sel . ' .tns-nav' ]['justify-content'] = 'center';
-$selectors[ $qv_preview_sel . ' .tns-nav' ]['gap']             = '5px';
-$selectors[ $qv_preview_sel . ' .tns-nav' ]['z-index']         = '5';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['align-items']     = 'center';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['gap']             = '6px';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['z-index']         = '25';
 $selectors[ $qv_preview_sel . ' .tns-nav' ]['pointer-events']  = 'auto';
+$selectors[ $qv_preview_sel . ' .tns-nav' ]['height']          = 'auto';
 
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['width']         = '8px';
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['height']        = '8px';
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['border-radius'] = '50%';
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['background']    = 'rgba(255, 255, 255, 0.6)';
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['border']        = 'none';
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['padding']       = '0';
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['margin']        = '0 2px';
-$selectors[ $qv_preview_sel . ' .tns-nav button' ]['cursor']        = 'pointer';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['width']            = '8px';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['height']           = '8px';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['border-radius']    = '50%';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['background-color'] = 'rgba(255, 255, 255, 0.7)';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['border']           = '1px solid rgba(0, 0, 0, 0.2)';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['box-shadow']       = '0 1px 3px rgba(0, 0, 0, 0.35)';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['padding']          = '0px';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['margin']           = '0 2px';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['cursor']           = 'pointer';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['pointer-events']   = 'auto';
+$selectors[ $qv_preview_sel . ' .tns-nav button' ]['transition']       = 'all 0.2s ease';
 
-$selectors[ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['background'] = '#ffffff';
+$selectors[ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['background-color'] = '#ffffff';
+$selectors[ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['border-color']       = '#000000';
+$selectors[ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['transform']          = 'scale(1.25)';
+
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['position']        = 'absolute';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['top']             = '50%';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['transform']       = 'translateY(-50%)';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['left']            = '0px';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['right']           = '0px';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['display']         = 'flex';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['justify-content'] = 'space-between';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['z-index']         = '25';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['pointer-events']  = 'none';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['opacity']         = '0';
+$selectors[ $qv_preview_sel . ' .tns-controls' ]['transition']      = 'opacity 0.25s ease';
+
+$selectors[ $product_sel . ':hover .wcb-products__product-quickview-preview .tns-controls' ]['opacity'] = '1';
+
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['width']            = '32px';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['height']           = '32px';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['min-width']        = '32px';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['min-height']       = '32px';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['border-radius']    = '50%';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['background-color'] = 'rgba(255, 255, 255, 0.95)';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['color']            = '#222222';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['border']           = 'none';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['padding']          = '0px';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['cursor']           = 'pointer';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['box-shadow']       = '0 2px 8px rgba(0, 0, 0, 0.2)';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['display']          = 'inline-flex';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['align-items']      = 'center';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['justify-content']  = 'center';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['font-size']        = '0px';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['line-height']      = '1';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['pointer-events']   = 'auto';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['z-index']          = '25';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['transform']        = 'none';
+$selectors[ $qv_preview_sel . ' .tns-controls button' ]['transition']       = 'background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease';
+
+$selectors[ $qv_preview_sel . ' .tns-controls button:hover' ]['background-color'] = '#ffffff';
+$selectors[ $qv_preview_sel . ' .tns-controls button:hover' ]['color']            = '#000000';
+$selectors[ $qv_preview_sel . ' .tns-controls button:hover' ]['box-shadow']       = '0 4px 12px rgba(0, 0, 0, 0.3)';
+$selectors[ $qv_preview_sel . ' .tns-controls button:hover' ]['transform']        = 'scale(1.08)';
+
+$selectors[ $qv_preview_sel . ' .tns-controls button svg' ]['width']          = '14px';
+$selectors[ $qv_preview_sel . ' .tns-controls button svg' ]['height']         = '14px';
+$selectors[ $qv_preview_sel . ' .tns-controls button svg' ]['stroke']         = 'currentColor';
+$selectors[ $qv_preview_sel . ' .tns-controls button svg' ]['pointer-events'] = 'none';
 
 // 15. Countdown Urgency
 if ( ! empty( $scu ) ) {
@@ -534,7 +705,22 @@ if ( ! empty( $scu ) ) {
 	}
 }
 
-// 16. Advance
+// 16. Pre-order
+$preorder_msg_sel = $wrap_sel . ' .wcb-products__product-preorder-message';
+$selectors[ $preorder_msg_sel ]['color']       = '#000000';
+$selectors[ $preorder_msg_sel ]['font-size']   = '15px';
+$selectors[ $preorder_msg_sel ]['font-weight'] = '400';
+
+$preorder_cd_sel = $wrap_sel . ' .wcb-products__product-preorder-countdown';
+$selectors[ $preorder_cd_sel ]['display']       = 'flex';
+$selectors[ $preorder_cd_sel ]['gap']           = '8px';
+$selectors[ $preorder_cd_sel ]['margin-bottom'] = '6px';
+
+$preorder_item_sel = $wrap_sel . ' .wcb-products__product-preorder-countdown-item';
+$selectors[ $preorder_item_sel ]['font-size']   = '13px';
+$selectors[ $preorder_item_sel ]['font-weight'] = '600';
+
+// 17. Advance
 $selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
 
 $combined_selectors = array(

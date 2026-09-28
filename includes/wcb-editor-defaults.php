@@ -37,6 +37,14 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		// Countdown Urgency settings (Woostify Pro).
 		$countdown_urgency_active = class_exists('Woostify_Countdown_Urgency');
 
+		// Product Label defaults (Woostify Pro).
+		$product_label_active = $woostify_pro_active && ( 'activated' === get_option( 'woostify_product_label' ) || defined( 'WOOSTIFY_PRO_PRODUCT_LABEL' ) );
+		$product_label_style  = $product_label_active ? get_option( 'woostify_product_label_style', 'round' ) : 'rectangular';
+		$sale_bg_default      = $product_label_active ? get_option( 'woostify_product_label_background', '#1346af' ) : ( $woostify['shop_page_sale_bg_color'] ?? '#0c4a6e' );
+		$sale_color_default   = $product_label_active ? get_option( 'woostify_product_label_text_color', '#ffffff' ) : ( $woostify['shop_page_sale_color'] ?? '#f0f9ff' );
+		$out_bg_default       = $product_label_active ? get_option( 'woostify_product_label_out_of_stock_background', '#dd3333' ) : ( $woostify['shop_page_out_of_stock_bg_color'] ?? '#dd3333' );
+		$out_color_default    = $product_label_active ? get_option( 'woostify_product_label_out_of_stock_text_color', '#ffffff' ) : ( $woostify['shop_page_out_of_stock_color'] ?? '#ffffff' );
+
 		return [
 			'countdown_urgency' => [
 				'active'               => $countdown_urgency_active,
@@ -84,14 +92,16 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 				'hover' => $woostify['shop_page_product_image_hover'] ?? 'none',
 			],
 			'shop_archive_sale_tag' => [
-				'bg_color'   => $woostify['shop_page_sale_bg_color'] ?? '#0c4a6e',
-				'text_color' => $woostify['shop_page_sale_color'] ?? '#f0f9ff',
+				'bg_color'   => $sale_bg_default,
+				'text_color' => $sale_color_default,
 				'position'   => $woostify['shop_page_sale_tag_position'] ?? 'top-left',
+				'shape'      => $product_label_style,
 			],
 			'shop_archive_out_of_stock' => [
-				'bg_color'   => $woostify['shop_page_out_of_stock_bg_color'] ?? '#0c4a6e',
-				'text_color' => $woostify['shop_page_out_of_stock_color'] ?? '#f0f9ff',
+				'bg_color'   => $out_bg_default,
+				'text_color' => $out_color_default,
 				'position'   => $woostify['shop_page_out_of_stock_position'] ?? 'left',
+				'shape'      => $product_label_style,
 			],
 			'shop_archive_general_design' => [
 				'title_color'       => $woostify['shop_page_product_title_color'] ?? '#000',
@@ -136,7 +146,130 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 	}
 }
 
+if ( ! function_exists( 'boostify_blocks_get_badge_shape_css_rules' ) ) {
+	/**
+	 * Get CSS property-value pairs for product badge shapes.
+	 *
+	 * @param string $shape Badge shape name.
+	 * @return array<string, string>
+	 */
+	function boostify_blocks_get_badge_shape_css_rules( $shape ) {
+		switch ( $shape ) {
+			case 'round':
+				return array(
+					'border-radius' => '50%',
+					'min-width'     => '40px',
+					'min-height'    => '40px',
+					'padding'       => '5px',
+					'text-align'    => 'center',
+					'word-break'    => 'break-all',
+					'box-shadow'    => '0 1px 2px rgba(0,0,0,0.1)',
+				);
+			case 'pill':
+				return array(
+					'border-radius' => '9999px',
+					'padding'       => '2px 12px',
+				);
+			case 'leaf':
+				return array(
+					'border-radius' => '10px 0 10px 0',
+					'padding'       => '2px 8px',
+				);
+			case 'parallelogram':
+				return array(
+					'border-radius' => '0',
+					'clip-path'     => 'polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)',
+					'padding-left'  => '15px',
+					'padding-right' => '15px',
+				);
+			case 'teardrop':
+				return array(
+					'border-radius' => '50% 50% 50% 0',
+					'padding'       => '4px 8px',
+				);
+			case 'ribbon':
+				return array(
+					'border-radius' => '0',
+					'clip-path'     => 'polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)',
+					'padding-right' => '15px',
+				);
+			case 'tag-left':
+				return array(
+					'border-radius' => '0',
+					'clip-path'     => 'polygon(10px 0%, 100% 0, 100% 100%, 10px 100%, 0% 50%)',
+					'padding-left'  => '15px',
+				);
+			case 'rectangular':
+			default:
+				return array(
+					'border-radius' => '2px',
+					'padding'       => '2px 8px',
+				);
+		}
+	}
+}
+
 add_action('enqueue_block_editor_assets', function () {
 	$data = boostify_blocks_get_theme_defaults_data();
 	wp_add_inline_script('wp-blocks', 'window.BOOSTIFY_BLOCKS_THEME_DEFAULTS='.wp_json_encode($data).';', 'before');
-});
+
+	$sale_shape = $data['shop_archive_sale_tag']['shape'] ?? 'rectangular';
+	$out_shape  = $data['shop_archive_out_of_stock']['shape'] ?? 'rectangular';
+
+	$sale_rules = boostify_blocks_get_badge_shape_css_rules( $sale_shape );
+	$out_rules  = boostify_blocks_get_badge_shape_css_rules( $out_shape );
+
+	$sale_css = '';
+	foreach ( $sale_rules as $prop => $val ) {
+		$sale_css .= "{$prop}: {$val} !important; ";
+	}
+
+	$out_css = '';
+	foreach ( $out_rules as $prop => $val ) {
+		$out_css .= "{$prop}: {$val} !important; ";
+	}
+
+	$offset = ( 'round' === $sale_shape || 'round' === $out_shape || 'circle' === $sale_shape || 'circle' === $out_shape ) ? '50px' : '36px';
+
+	$editor_css = "
+		.editor-styles-wrapper .wcb-products__product-salebadge .wcb-products__product-onsale,
+		.wcb-products__product-salebadge .wcb-products__product-onsale {
+			display: inline-flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			line-height: 1.2 !important;
+			white-space: nowrap !important;
+			{$sale_css}
+		}
+		.editor-styles-wrapper .wcb-products__product-salebadge .wcb-products__product-onsale span.onsale,
+		.wcb-products__product-salebadge .wcb-products__product-onsale span.onsale {
+			position: static !important;
+			margin: 0 !important;
+			padding: 0 !important;
+			display: inline !important;
+			font-size: inherit !important;
+			line-height: inherit !important;
+			color: inherit !important;
+			background-color: transparent !important;
+		}
+		.editor-styles-wrapper .wcb-products__product-outofstock-badge .wcb-products__product-on-outofstock,
+		.wcb-products__product-outofstock-badge .wcb-products__product-on-outofstock {
+			display: inline-flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			line-height: 1.2 !important;
+			white-space: nowrap !important;
+			{$out_css}
+		}
+		.editor-styles-wrapper .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge,
+		.wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge,
+		.editor-styles-wrapper .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge,
+		.wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge {
+			top: calc(0.5rem + {$offset}) !important;
+		}
+	";
+
+	wp_register_style( 'boostify-blocks-editor-badge-sync', false );
+	wp_enqueue_style( 'boostify-blocks-editor-badge-sync' );
+	wp_add_inline_style( 'boostify-blocks-editor-badge-sync', $editor_css );
+}, 20);
