@@ -13,55 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * for freshly inserted blocks and the generated CSS misses base styles.
  */
 
-// Shared typography default — TYPOGRAPHY_CONTROL_DEMO
-$typographyDefault = array(
-	'fontSizes'      => array( 'Desktop' => '' ),
-	'appearance'     => array(
-		'key'   => 'default',
-		'name'  => 'Default',
-		'style' => array(),
-	),
-	'textDecoration' => '',
-	'textTransform'  => '',
-	'lineHeight'     => array(),
-	'letterSpacing'  => array(),
-	'fontFamily'     => '',
-);
+// Shared defaults using centralized helpers
+$typographyDefault = WCB_Block_Helper::get_typography_default();
+$borderDefault     = WCB_Block_Helper::get_border_default();
+$boxShadowDefault  = WCB_Block_Helper::get_box_shadow_default();
 
-// Shared border default — MY_BORDER_CONTROL_DEMO
-$borderDefault = array(
-	'mainSettings' => null,
-	'hoverColor'   => '',
-	'radius'       => array(
-		'Desktop' => '0',
-		'Tablet'  => '0',
-		'Mobile'  => '0',
-	),
-);
-
-// Shared box shadow default — MY_BOX_SHADOW_CONTROL_DEMO
-$boxShadowDefault = array(
-	'Normal' => array(
-		'color'       => '',
-		'presetClass' => '',
-		'blur'        => 0,
-		'horizontal'  => 0,
-		'spread'      => 0,
-		'vertical'    => 0,
-		'position'    => 'outset',
-	),
-	'Hover'  => array(
-		'color'       => '',
-		'presetClass' => '',
-		'blur'        => 0,
-		'horizontal'  => 0,
-		'spread'      => 0,
-		'vertical'    => 0,
-		'position'    => 'outset',
-	),
-);
-
-return array(
+return array_merge(
+	array(
 	// =================================================================
 	// uniqueId
 	// =================================================================
@@ -357,51 +315,12 @@ return array(
 	// =================================================================
 	// style_border — MY_BORDER_CONTROL_DEMO
 	// =================================================================
-	'style_border' => array(
-		'type'    => 'object',
-		'default' => $borderDefault,
-	),
+	'style_border' => WCB_Block_Helper::get_border_schema(),
 	
 	// =================================================================
 	// style_boxShadow — MY_BOX_SHADOW_CONTROL_DEMO
 	// =================================================================
-	'style_boxShadow' => array(
-		'type'    => 'object',
-		'default' => $boxShadowDefault,
+	'style_boxShadow' => WCB_Block_Helper::get_box_shadow_schema(),
 	),
-	
-	// =================================================================
-	// advance_responsiveCondition — RESPONSIVE_CONDITON_DEMO
-	// =================================================================
-	'advance_responsiveCondition' => array(
-		'type'    => 'object',
-		'default' => array(
-			'isHiddenOnDesktop' => false,
-			'isHiddenOnTablet'  => false,
-			'isHiddenOnMobile'  => false,
-		),
-	),
-	
-	// =================================================================
-	// advance_zIndex — Z_INDEX_DEMO
-	// =================================================================
-	'advance_zIndex' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Desktop' => '',
-		),
-	),
-	
-	// =================================================================
-	// advance_motionEffect — MY_MOTION_EFFECT_DEMO
-	// =================================================================
-	'advance_motionEffect' => array(
-		'type'    => 'object',
-		'default' => array(
-			'animationDelay'    => 0,
-			'animationDuration' => 'fast',
-			'entranceAnimation' => '',
-			'repeat'            => '1',
-		),
-	),
+	WCB_Block_Helper::get_advance_attributes()
 );
