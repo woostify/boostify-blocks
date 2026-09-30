@@ -256,12 +256,12 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 				$css .= '@media (max-width: ' . ( $media_tablet - 1 ) . 'px) {' . $result['mobile'] . '}';
 			}
 
-			return $css;
+			return apply_filters( 'boostify_blocks_block_frontend_css', $css, $block_name, $unique_id, $attr );
 		}
 
 		// If the file generated output directly.
 		if ( ! empty( $buffered ) ) {
-			return $buffered;
+			return apply_filters( 'boostify_blocks_block_frontend_css', $buffered, $block_name, $unique_id, $attr );
 		}
 
 		return null;

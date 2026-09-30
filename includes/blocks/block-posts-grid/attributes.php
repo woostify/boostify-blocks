@@ -4,10 +4,62 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Default attributes for the Posts grid block. (Defaults mostly commented out in TS — JS handles them) block.
+ * Default attributes for the Posts grid block.
  * Mirrors the TypeScript defaults from src/block-posts-grid/attributes.ts
  * and all sub-panel *_DEMO constants.
+ *
+ * Gutenberg omits attributes equal to their JS defaults when saving block
+ * markup, so without these mirrors the server-side parser sees EMPTY panels
+ * for freshly inserted blocks and the generated CSS misses base styles.
  */
+
+// Shared typography default — TYPOGRAPHY_CONTROL_DEMO
+$typographyDefault = array(
+	'fontSizes'      => array( 'Desktop' => '' ),
+	'appearance'     => array(
+		'key'   => 'default',
+		'name'  => 'Default',
+		'style' => array(),
+	),
+	'textDecoration' => '',
+	'textTransform'  => '',
+	'lineHeight'     => array(),
+	'letterSpacing'  => array(),
+	'fontFamily'     => '',
+);
+
+// Shared border default — MY_BORDER_CONTROL_DEMO
+$borderDefault = array(
+	'mainSettings' => null,
+	'hoverColor'   => '',
+	'radius'       => array(
+		'Desktop' => '0',
+		'Tablet'  => '0',
+		'Mobile'  => '0',
+	),
+);
+
+// Shared box shadow default — MY_BOX_SHADOW_CONTROL_DEMO
+$boxShadowDefault = array(
+	'Normal' => array(
+		'color'       => '',
+		'presetClass' => '',
+		'blur'        => 0,
+		'horizontal'  => 0,
+		'spread'      => 0,
+		'vertical'    => 0,
+		'position'    => 'outset',
+	),
+	'Hover'  => array(
+		'color'       => '',
+		'presetClass' => '',
+		'blur'        => 0,
+		'horizontal'  => 0,
+		'spread'      => 0,
+		'vertical'    => 0,
+		'position'    => 'outset',
+	),
+);
 
 return array(
 	// =================================================================
@@ -24,6 +76,9 @@ return array(
 	'general_sortingAndFiltering' => array(
 		'type'    => 'object',
 		'default' => array(
+			'emptyMessage'   => 'No post found!',
+			'numberOfColumn' => array( 'Desktop' => 3 ),
+			'isEqualHeight'  => true,
 		),
 	),
 	
@@ -33,6 +88,9 @@ return array(
 	'general_postContent' => array(
 		'type'    => 'object',
 		'default' => array(
+			'isShowPostContent'  => true,
+			'contentType'        => 'excerpt',
+			'excerptWordsNumber' => 10,
 		),
 	),
 	
@@ -42,6 +100,17 @@ return array(
 	'general_postMeta' => array(
 		'type'    => 'object',
 		'default' => array(
+			'isShowTitle'        => true,
+			'titleHtmlTag'       => 'h4',
+			'isShowComment'      => true,
+			'isShowAuthor'       => true,
+			'isShowDate'         => true,
+			'isShowTaxonomy'     => true,
+			'isShowMetaIcon'     => true,
+			'isShowTaxonomyIcon' => false,
+			'taxonomyPosition'   => 'Below featured image',
+			'taxonomyDivider'    => ', ',
+			'taxonomyStyle'      => 'Highlighted',
 		),
 	),
 	
@@ -51,6 +120,13 @@ return array(
 	'general_postFeaturedImage' => array(
 		'type'    => 'object',
 		'default' => array(
+			'isShowFeaturedImage'   => true,
+			'featuredImageSize'     => 'large',
+			'featuredImagePosition' => 'top',
+			'linkCompleteBox'       => false,
+			'imageRatio'            => '16/9',
+			'customHeight'          => array( 'Desktop' => '220px' ),
+			'imageFit'              => 'cover',
 		),
 	),
 	
@@ -60,6 +136,9 @@ return array(
 	'general_readmoreLink' => array(
 		'type'    => 'object',
 		'default' => array(
+			'isShowReadmore' => true,
+			'isOpenInNewTab' => false,
+			'text'           => 'Read more',
 		),
 	),
 	
@@ -69,6 +148,11 @@ return array(
 	'general_pagination' => array(
 		'type'    => 'object',
 		'default' => array(
+			'isShowPagination' => true,
+			'pageLimit'        => 0,
+			'previousText'     => '',
+			'nextText'         => '',
+			'iconName'         => 'arrow',
 		),
 	),
 	
@@ -78,6 +162,18 @@ return array(
 	'style_layout' => array(
 		'type'    => 'object',
 		'default' => array(
+			'colunmGap'       => array( 'Desktop' => '1.5rem' ),
+			'rowGap'          => array( 'Desktop' => '1.5rem' ),
+			'textAlignment'   => 'left',
+			'backgroundColor' => '#fafafa',
+			'padding'         => array(
+				'Desktop' => array(
+					'top'    => '1rem',
+					'right'  => '1rem',
+					'bottom' => '1rem',
+					'left'   => '1rem',
+				),
+			),
 		),
 	),
 	
@@ -87,6 +183,10 @@ return array(
 	'style_title' => array(
 		'type'    => 'object',
 		'default' => array(
+			'typography'     => $typographyDefault,
+			'textColor'      => '#171717',
+			'textHoverColor' => '#0284c7',
+			'marginBottom'   => array( 'Desktop' => '0.5rem' ),
 		),
 	),
 	
@@ -96,6 +196,9 @@ return array(
 	'style_excerpt' => array(
 		'type'    => 'object',
 		'default' => array(
+			'typography'   => $typographyDefault,
+			'textColor'    => '#737373',
+			'marginBottom' => array( 'Desktop' => '1rem' ),
 		),
 	),
 	
@@ -105,6 +208,22 @@ return array(
 	'style_taxonomy' => array(
 		'type'    => 'object',
 		'default' => array(
+			'typography'      => array(
+				'fontSizes'      => array( 'Desktop' => '12px' ),
+				'appearance'     => array(
+					'key'   => 'default',
+					'name'  => 'Default',
+					'style' => array( 'fontWeight' => '500' ),
+				),
+				'textDecoration' => 'none',
+				'textTransform'  => '',
+				'lineHeight'     => array(),
+				'letterSpacing'  => array(),
+				'fontFamily'     => '',
+			),
+			'textColor'       => '#0c4a6e',
+			'backgroundColor' => '#f0f9ff',
+			'marginBottom'    => array( 'Desktop' => '0.5rem' ),
 		),
 	),
 	
@@ -114,6 +233,35 @@ return array(
 	'style_meta' => array(
 		'type'    => 'object',
 		'default' => array(
+			'authorTypography' => array(
+				'fontSizes'      => array( 'Desktop' => '14px' ),
+				'appearance'     => array(
+					'key'   => 'default',
+					'name'  => 'Default',
+					'style' => array( 'fontWeight' => '500' ),
+				),
+				'textDecoration' => 'none',
+				'textTransform'  => '',
+				'lineHeight'     => array(),
+				'letterSpacing'  => array(),
+				'fontFamily'     => '',
+			),
+			'dateTypography'   => array(
+				'fontSizes'      => array( 'Desktop' => '14px' ),
+				'appearance'     => array(
+					'key'   => 'default',
+					'name'  => 'Default',
+					'style' => array(),
+				),
+				'textDecoration' => '',
+				'textTransform'  => '',
+				'lineHeight'     => array(),
+				'letterSpacing'  => array(),
+				'fontFamily'     => '',
+			),
+			'authorColor'      => '#171717',
+			'dateTextColor'    => '#a3a3a3',
+			'marginBottom'     => array( 'Desktop' => '2rem' ),
 		),
 	),
 	
@@ -123,6 +271,27 @@ return array(
 	'style_readmoreLink' => array(
 		'type'    => 'object',
 		'default' => array(
+			'colorAndBackgroundColor' => array(
+				'Normal' => array(
+					'color'           => '#fff',
+					'backgroundColor' => '#1346af',
+				),
+				'Hover'  => array(
+					'color'           => '#fff',
+					'backgroundColor' => '#3a3a3a',
+				),
+			),
+			'typography'              => $typographyDefault,
+			'padding'                 => array(
+				'Desktop' => array(
+					'top'    => '10px',
+					'right'  => '20px',
+					'bottom' => '10px',
+					'left'   => '20px',
+				),
+			),
+			'border'                  => $borderDefault,
+			'marginBottom'            => array( 'Desktop' => '0' ),
 		),
 	),
 	
@@ -132,6 +301,44 @@ return array(
 	'style_pagination' => array(
 		'type'    => 'object',
 		'default' => array(
+			'mainStyle'      => array(
+				'Normal' => array(
+					'color'           => '#171717',
+					'backgroundColor' => '#fff',
+					'border'          => array(
+						'mainSettings' => array(
+							'color' => '#cbd5e1',
+							'style' => 'solid',
+							'width' => '1px',
+						),
+						'hoverColor'   => '',
+						'radius'       => array(
+							'Desktop' => '0',
+							'Tablet'  => '0',
+							'Mobile'  => '0',
+						),
+					),
+				),
+				'Active' => array(
+					'color'           => '#fff',
+					'backgroundColor' => '#0ea5e9',
+					'border'          => array(
+						'mainSettings' => array(
+							'color' => '#0ea5e9',
+							'style' => 'solid',
+							'width' => '1px',
+						),
+						'hoverColor'   => '',
+						'radius'       => array(
+							'Desktop' => '0',
+							'Tablet'  => '0',
+							'Mobile'  => '0',
+						),
+					),
+				),
+			),
+			'marginTop'      => array( 'Desktop' => '2rem' ),
+			'justifyContent' => 'left',
 		),
 	),
 	
@@ -141,6 +348,9 @@ return array(
 	'style_featuredImage' => array(
 		'type'    => 'object',
 		'default' => array(
+			'marginBottom'      => array( 'Desktop' => '0' ),
+			'backgroundOverlay' => '#FFFFFFE6',
+			'border'            => $borderDefault,
 		),
 	),
 	
@@ -149,8 +359,7 @@ return array(
 	// =================================================================
 	'style_border' => array(
 		'type'    => 'object',
-		'default' => array(
-		),
+		'default' => $borderDefault,
 	),
 	
 	// =================================================================
@@ -158,8 +367,7 @@ return array(
 	// =================================================================
 	'style_boxShadow' => array(
 		'type'    => 'object',
-		'default' => array(
-		),
+		'default' => $boxShadowDefault,
 	),
 	
 	// =================================================================
