@@ -9,7 +9,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * and all sub-panel *_DEMO constants exactly.
  */
 
-return array(
+return array_merge(
+	array(
 	// =================================================================
 	// uniqueId
 	// =================================================================
@@ -121,45 +122,12 @@ return array(
 	// =================================================================
 	// styles_border — MY_BORDER_CONTROL_DEMO
 	// =================================================================
-	'styles_border' => array(
-		'type'    => 'object',
-		'default' => array(
-			'mainSettings' => null,
-			'hoverColor'   => '',
-			'radius'       => array(
-				'Desktop' => '0',
-				'Tablet'  => '0',
-				'Mobile'  => '0',
-			),
-		),
-	),
+	'styles_border' => WCB_Block_Helper::get_border_schema(),
 
 	// =================================================================
 	// styles_boxShadow — MY_BOX_SHADOW_CONTROL_DEMO
 	// =================================================================
-	'styles_boxShadow' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Normal' => array(
-				'color'       => '',
-				'presetClass' => '',
-				'blur'        => 0,
-				'horizontal'  => 0,
-				'spread'      => 0,
-				'vertical'    => 0,
-				'position'    => 'outset',
-			),
-			'Hover'  => array(
-				'color'       => '',
-				'presetClass' => '',
-				'blur'        => 0,
-				'horizontal'  => 0,
-				'spread'      => 0,
-				'vertical'    => 0,
-				'position'    => 'outset',
-			),
-		),
-	),
+	'styles_boxShadow' => WCB_Block_Helper::get_box_shadow_schema(),
 
 	// =================================================================
 	// styles_dimensions — block-specific defaults
@@ -188,39 +156,7 @@ return array(
 			),
 		),
 	),
-
-	// =================================================================
-	// advance_responsiveCondition — RESPONSIVE_CONDITON_DEMO
-	// =================================================================
-	'advance_responsiveCondition' => array(
-		'type'    => 'object',
-		'default' => array(
-			'isHiddenOnDesktop' => false,
-			'isHiddenOnTablet'  => false,
-			'isHiddenOnMobile'  => false,
-		),
 	),
-
-	// =================================================================
-	// advance_zIndex — Z_INDEX_DEMO
-	// =================================================================
-	'advance_zIndex' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Desktop' => '',
-		),
-	),
-
-	// =================================================================
-	// advance_motionEffect — MY_MOTION_EFFECT_DEMO
-	// =================================================================
-	'advance_motionEffect' => array(
-		'type'    => 'object',
-		'default' => array(
-			'animationDelay'    => 0,
-			'animationDuration' => 'fast',
-			'entranceAnimation' => '',
-			'repeat'            => '1',
-		),
-	),
+	WCB_Block_Helper::get_advance_attributes()
 );
+

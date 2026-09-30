@@ -8,20 +8,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Mirrors the TypeScript defaults from src/block-button/attributes.ts
  * and all sub-panel *_DEMO constants.
  *
- * IMPORTANT: these values MUST stay in sync with:
- *   - WCB_BUTTON_PANEL_PRESET_DEMO            (WcbButtonPanelPreset.tsx)
- *   - WCB_BUTTON_PANEL_CONTENT_DEMO           (WcbButtonPanelContent.tsx)
- *   - WCB_BUTTON_PANEL_STYLE_TEXT_DEMO        (WcbButtonPanel_StyleText.tsx)
- *   - WCB_BUTTON_PANEL_STYLE_ICON_DEMO        (WcbButtonPanel_StyleIcon.tsx)
- *   - WCB_BUTTON_PANEL_STYLE_BACKGROUND_DEMO  (WcbButtonPanel_StyleBackground.tsx)
- *   - WCB_BUTTON_PANEL_STYLE_BORDER_DEMO      (WcbButtonPanel_StyleBorder.tsx)
- *   - WCB_BUTTON_PANEL_STYLE_BOXSHADOW_DEMO   (WcbButtonPanel_StyleBoxshadow.tsx)
- *   - WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO   (WcbButtonPanel_StyleDimension.tsx)
- *
- * Gutenberg omits attributes equal to their JS defaults when saving block
- * markup, so without these mirrors the server-side parser sees EMPTY panels
- * for freshly inserted blocks and the generated CSS misses base styles.
+ * @package Boostify_Blocks
  */
+
+$typographyDefault = WCB_Block_Helper::get_typography_default();
 
 return array(
 	// =================================================================
@@ -54,19 +44,17 @@ return array(
 
 	// =================================================================
 	// general_content — WCB_BUTTON_PANEL_CONTENT_DEMO_COMMON_NO_ICON
-	// NOTE: isInheritFromTheme intentionally absent (optional toggle;
-	// absence means "follow the dashboard setting").
 	// =================================================================
 	'general_content' => array(
 		'type'    => 'object',
 		'default' => array(
-			'enableIcon'      => false,
-			'iconPosition'    => 'left',
-			'link'            => '',
-			'openInNewWindow' => false,
-			'isHiddenText'    => false,
+			'enableIcon'        => false,
+			'iconPosition'      => 'left',
+			'link'              => '',
+			'openInNewWindow'   => false,
+			'isHiddenText'      => false,
 			'addNofollowToLink' => true,
-			'icon'            => array(
+			'icon'              => array(
 				'type'      => 'icon',
 				'iconName'  => 'lni-heart-filled',
 				'imageData' => array(
@@ -85,24 +73,9 @@ return array(
 	'style_text' => array(
 		'type'    => 'object',
 		'default' => array(
-			'typography' => array(
-				'fontSizes'      => array( 'Desktop' => '' ),
-				'appearance'     => array(
-					'key'   => 'default',
-					'name'  => 'Default',
-					'style' => array(
-						'fontWeight' => null,
-						'fontStyle'  => null,
-					),
-				),
-				'textDecoration' => null,
-				'textTransform'  => null,
-				'lineHeight'     => array( 'Desktop' => null ),
-				'letterSpacing'  => array( 'Desktop' => null ),
-				'fontFamily'     => null,
-			),
-			'color'       => '#fff',
-			'hoverColor'  => '#fff',
+			'typography' => $typographyDefault,
+			'color'      => '#fff',
+			'hoverColor' => '#fff',
 		),
 	),
 
@@ -139,51 +112,22 @@ return array(
 
 	// =================================================================
 	// style_border — WCB_BUTTON_PANEL_STYLE_BORDER_DEMO (PRIMARY)
-	// radius comes from MY_BORDER_CONTROL_DEMO (DEFAULT_BORDER_RADIUS = "0")
 	// =================================================================
-	'style_border' => array(
-		'type'    => 'object',
-		'default' => array(
+	'style_border' => WCB_Block_Helper::get_border_schema(
+		array(
 			'mainSettings' => array(
 				'style' => 'solid',
 				'width' => '1px',
 				'color' => '#0284c7',
 			),
 			'hoverColor'   => '#0369a1',
-			'radius'       => array(
-				'Desktop' => '0',
-				'Tablet'  => '0',
-				'Mobile'  => '0',
-			),
-		),
+		)
 	),
 
 	// =================================================================
-	// style_boxshadow — MY_BOX_SHADOW_CONTROL_DEMO (all zeroed)
+	// style_boxshadow — MY_BOX_SHADOW_CONTROL_DEMO
 	// =================================================================
-	'style_boxshadow' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Normal' => array(
-				'color'       => '',
-				'presetClass' => '',
-				'blur'        => 0,
-				'horizontal'  => 0,
-				'spread'      => 0,
-				'vertical'    => 0,
-				'position'    => 'outset',
-			),
-			'Hover'  => array(
-				'color'       => '',
-				'presetClass' => '',
-				'blur'        => 0,
-				'horizontal'  => 0,
-				'spread'      => 0,
-				'vertical'    => 0,
-				'position'    => 'outset',
-			),
-		),
-	),
+	'style_boxshadow' => WCB_Block_Helper::get_box_shadow_schema(),
 
 	// =================================================================
 	// style_dimension — WCB_BUTTON_PANEL_STYLE_DIMENSION_DEMO_PRIMARY
@@ -224,7 +168,7 @@ return array(
 	),
 
 	// =================================================================
-	// advance_zIndex — Z_INDEX_DEMO (JS: { Desktop: undefined })
+	// advance_zIndex — Z_INDEX_DEMO
 	// =================================================================
 	'advance_zIndex' => array(
 		'type'    => 'object',

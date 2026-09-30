@@ -2,6 +2,9 @@
 /**
  * Frontend CSS for Posts Grid Block.
  *
+ * Standardized to use WCB_Block_Helper fluent accumulator methods.
+ * Mirrors src/block-posts-grid/GlobalCss.tsx.
+ *
  * @package Boostify_Blocks
  */
 
@@ -14,9 +17,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$selectors   = array();
-$t_selectors = array();
-$m_selectors = array();
+$css = array(
+	'desktop' => array(),
+	'tablet'  => array(),
+	'mobile'  => array(),
+);
 
 $g_pag = $attr['general_pagination'] ?? array();
 $g_con = $attr['general_postContent'] ?? array();
@@ -36,274 +41,216 @@ $sr  = $attr['style_readmoreLink'] ?? array();
 $st  = $attr['style_title'] ?? array();
 $stx = $attr['style_taxonomy'] ?? array();
 
-$wrap_sel       = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
-$list_sel       = $wrap_sel . ' .wcb-posts-grid__list-posts';
-$card_sel       = $wrap_sel . ' .wcbPostCard';
-$card_content   = $card_sel . ' .wcbPostCard__content';
-$title_sel      = $card_sel . ' .wcbPostCard__title a';
-$title_wrap     = $card_sel . ' .wcbPostCard__title';
-$excerpt_sel    = $card_sel . ' .wcbPostCard__excerpt';
-$tax_sel        = $card_sel . ' .wcbPostCard__taxonomies a';
-$tax_wrap       = $card_sel . ' .wcbPostCard__taxonomies';
-$tax_high       = $card_sel . ' .wcbPostCard__taxonomies--highlighted a';
-$meta_sel       = $card_sel . ' .wcbPostCard__meta';
-$author_sel     = $card_sel . ' .wcbPostCard__meta-author-name';
-$date_sel       = $card_sel . ' .wcbPostCard__meta-date-and-comments';
-$readmore_sel   = $card_sel . ' .wcbPostCard__readmoreLink';
-$image_sel      = $card_sel . ' .wcbPostCard__featuredImage';
-$image_img_sel  = $wrap_sel . ' .wcbPostCard:not(.wcbPostCard--image-background) .wcbPostCard__featuredImage img';
-$overlay_sel    = $wrap_sel . ' .wcbPostCard--image-background .wcbPostCard__featuredImage-overlay';
-$pag_wrap       = $wrap_sel . ' .wcb-posts-grid__pagination';
-$pag_sel        = $pag_wrap . ' .page-numbers';
-$pag_active     = $pag_wrap . ' .page-numbers.current';
+$wrap_sel      = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
+$list_sel      = $wrap_sel . ' .wcb-posts-grid__list-posts';
+$card_sel      = $wrap_sel . ' .wcbPostCard';
+$card_content  = $card_sel . ' .wcbPostCard__content';
+$title_sel     = $card_sel . ' .wcbPostCard__title a';
+$title_wrap    = $card_sel . ' .wcbPostCard__title';
+$excerpt_sel   = $card_sel . ' .wcbPostCard__excerpt';
+$tax_sel       = $card_sel . ' .wcbPostCard__taxonomies a';
+$tax_wrap      = $card_sel . ' .wcbPostCard__taxonomies';
+$tax_high      = $card_sel . ' .wcbPostCard__taxonomies--highlighted a';
+$meta_sel      = $card_sel . ' .wcbPostCard__meta';
+$author_sel    = $card_sel . ' .wcbPostCard__meta-author-name';
+$date_sel      = $card_sel . ' .wcbPostCard__meta-date-and-comments';
+$readmore_sel  = $card_sel . ' .wcbPostCard__readmoreLink';
+$image_sel     = $card_sel . ' .wcbPostCard__featuredImage';
+$image_img_sel = $wrap_sel . ' .wcbPostCard:not(.wcbPostCard--image-background) .wcbPostCard__featuredImage img';
+$overlay_sel   = $wrap_sel . ' .wcbPostCard--image-background .wcbPostCard__featuredImage-overlay';
+$pag_wrap      = $wrap_sel . ' .wcb-posts-grid__pagination';
+$pag_sel       = $pag_wrap . ' .page-numbers';
+$pag_active    = $pag_wrap . ' .page-numbers.current';
 
 // Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
-$selectors[ $wrap_sel ]['display'] = 'block';
+$css['desktop'][ $wrap_sel ]['display'] = 'block';
 
 // 1. Grid List of Posts
-$selectors[ $list_sel ]['display'] = 'grid';
+$css['desktop'][ $list_sel ]['display'] = 'grid';
 
 $num_col = $g_srt['numberOfColumn'] ?? ( $sl['numberOfColumn'] ?? 3 );
-$nc_d = is_array( $num_col ) ? ( $num_col['Desktop'] ?? 3 ) : $num_col;
-$nc_t = is_array( $num_col ) ? ( $num_col['Tablet'] ?? $nc_d ) : $nc_d;
-$nc_m = is_array( $num_col ) ? ( $num_col['Mobile'] ?? $nc_t ) : $nc_t;
+$nc_d    = is_array( $num_col ) ? ( $num_col['Desktop'] ?? 3 ) : $num_col;
+$nc_t    = is_array( $num_col ) ? ( $num_col['Tablet'] ?? $nc_d ) : $nc_d;
+$nc_m    = is_array( $num_col ) ? ( $num_col['Mobile'] ?? $nc_t ) : $nc_t;
 
-$selectors[ $list_sel ]['grid-template-columns']   = "repeat({$nc_d}, minmax(0, 1fr))";
-$t_selectors[ $list_sel ]['grid-template-columns'] = "repeat({$nc_t}, minmax(0, 1fr))";
-$m_selectors[ $list_sel ]['grid-template-columns'] = "repeat({$nc_m}, minmax(0, 1fr))";
+$css['desktop'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_d}, minmax(0, 1fr))";
+$css['tablet'][ $list_sel ]['grid-template-columns']  = "repeat({$nc_t}, minmax(0, 1fr))";
+$css['mobile'][ $list_sel ]['grid-template-columns']  = "repeat({$nc_m}, minmax(0, 1fr))";
 
 if ( ! empty( $sl['rowGap'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sl['rowGap'], 'row-gap', $list_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sl['rowGap'], 'row-gap', $list_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sl['rowGap'], 'row-gap', $list_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $list_sel, 'row-gap', $sl['rowGap'] );
 }
 if ( ! empty( $sl['colunmGap'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sl['colunmGap'], 'column-gap', $list_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sl['colunmGap'], 'column-gap', $list_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sl['colunmGap'], 'column-gap', $list_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $list_sel, 'column-gap', $sl['colunmGap'] );
 }
 
 // 2. Post Card
-$selectors[ $card_sel ]['position'] = 'relative';
-$selectors[ $card_sel ]['overflow'] = 'hidden';
+$css['desktop'][ $card_sel ]['position'] = 'relative';
+$css['desktop'][ $card_sel ]['overflow'] = 'hidden';
 if ( isset( $g_srt['isEqualHeight'] ) && ! $g_srt['isEqualHeight'] ) {
-	$selectors[ $card_sel ]['height'] = 'max-content';
+	$css['desktop'][ $card_sel ]['height'] = 'max-content';
 }
 if ( ! empty( $sl['textAlignment'] ) ) {
-	$selectors[ $card_sel ]['text-align'] = $sl['textAlignment'];
+	$css['desktop'][ $card_sel ]['text-align'] = $sl['textAlignment'];
 }
 if ( ! empty( $sl['backgroundColor'] ) ) {
-	$selectors[ $card_sel ]['background-color'] = $sl['backgroundColor'];
+	$css['desktop'][ $card_sel ]['background-color'] = $sl['backgroundColor'];
 }
 if ( ! empty( $sb ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sb, $card_sel, true ) );
+	WCB_Block_Helper::add_border_css( $css, $card_sel, $sb, true );
 }
 if ( ! empty( $sbs ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_box_shadow_css( $sbs, $card_sel ) );
+	WCB_Block_Helper::add_box_shadow_css( $css, $card_sel, $sbs );
 }
 
 // Padding: either on card or on card__content
 $pad_target = ( ( $g_img['featuredImagePosition'] ?? '' ) === 'background' ) ? $card_sel : $card_content;
 if ( ! empty( $sl['padding'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_dimension_css( $sl['padding'], 'padding', $pad_target, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_dimension_css( $sl['padding'], 'padding', $pad_target, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_dimension_css( $sl['padding'], 'padding', $pad_target, 'mobile' ) );
+	WCB_Block_Helper::add_dimension_css( $css, $pad_target, 'padding', $sl['padding'] );
 }
 
 // 3. Featured Image
 if ( ! empty( $sf['marginBottom'] ) ) {
 	$top_img_sel = $wrap_sel . ' .wcbPostCard--image-top .wcbPostCard__featuredImage';
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sf['marginBottom'], 'margin-bottom', $top_img_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sf['marginBottom'], 'margin-bottom', $top_img_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sf['marginBottom'], 'margin-bottom', $top_img_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $top_img_sel, 'margin-bottom', $sf['marginBottom'] );
 }
 if ( ! empty( $sf['backgroundOverlay'] ) ) {
-	$selectors[ $overlay_sel ]['background-color'] = $sf['backgroundOverlay'];
+	$css['desktop'][ $overlay_sel ]['background-color'] = $sf['backgroundOverlay'];
 }
-$selectors[ $overlay_sel ]['border-radius'] = 'inherit';
+$css['desktop'][ $overlay_sel ]['border-radius'] = 'inherit';
 
 $bg_img_sel = $wrap_sel . ' .wcbPostCard--image-background .wcbPostCard__featuredImage';
-$selectors[ $bg_img_sel ]['border-radius'] = 'inherit';
-$selectors[ $bg_img_sel . ' img' ]['border-radius'] = 'inherit';
+$css['desktop'][ $bg_img_sel ]['border-radius']          = 'inherit';
+$css['desktop'][ $bg_img_sel . ' img' ]['border-radius'] = 'inherit';
 
 // Image ratio, custom height & object-fit for non-background featured images.
-$img_pos   = $g_img['featuredImagePosition'] ?? 'top';
-$img_ratio = $g_img['imageRatio'] ?? '16/9';
-$img_fit   = $g_img['imageFit'] ?? 'cover';
+$img_pos = $g_img['featuredImagePosition'] ?? 'top';
 
 if ( 'background' !== $img_pos ) {
-	$selectors[ $image_img_sel ]['width']      = '100%';
-	$selectors[ $image_img_sel ]['object-fit'] = $img_fit;
-
-	if ( 'custom' === $img_ratio ) {
-		$selectors[ $image_img_sel ]['aspect-ratio'] = 'auto';
-		$custom_h   = ! empty( $g_img['customHeight'] ) ? $g_img['customHeight'] : array( 'Desktop' => '220px' );
-		$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $custom_h, 'height', $image_img_sel, 'desktop' ) );
-		$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $custom_h, 'height', $image_img_sel, 'tablet' ) );
-		$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $custom_h, 'height', $image_img_sel, 'mobile' ) );
-	} elseif ( 'auto' === $img_ratio ) {
-		$selectors[ $image_img_sel ]['aspect-ratio'] = 'auto';
-		$selectors[ $image_img_sel ]['height']       = 'auto';
-	} else {
-		$selectors[ $image_img_sel ]['aspect-ratio'] = $img_ratio;
-		$selectors[ $image_img_sel ]['height']       = 'auto';
-	}
+	WCB_Block_Helper::add_image_ratio_css( $css, $image_img_sel, $g_img );
 }
 
 if ( ! empty( $sf['border'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sf['border'], $image_img_sel, true ) );
+	WCB_Block_Helper::add_border_css( $css, $image_img_sel, $sf['border'], true );
 	// If background image mode and card border is empty, apply image border settings to the card.
 	if ( ( $g_img['featuredImagePosition'] ?? '' ) === 'background' && empty( $sb['mainSettings']['color'] ) ) {
-		$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sf['border'], $card_sel, true ) );
+		WCB_Block_Helper::add_border_css( $css, $card_sel, $sf['border'], true );
 	}
 }
 
 // 4. Title
 if ( ! empty( $st['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $st['typography'], $title_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $st['typography'], $title_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $st['typography'], $title_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $title_sel, $st['typography'] );
 }
 if ( ! empty( $st['textColor'] ) ) {
-	$selectors[ $title_sel ]['color'] = $st['textColor'];
+	$css['desktop'][ $title_sel ]['color'] = $st['textColor'];
 }
 if ( ! empty( $st['textHoverColor'] ) ) {
-	$selectors[ $title_sel . ':hover' ]['color'] = $st['textHoverColor'];
+	$css['desktop'][ $title_sel . ':hover' ]['color'] = $st['textHoverColor'];
 }
 if ( ! empty( $st['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $st['marginBottom'], 'margin-bottom', $title_wrap, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $st['marginBottom'], 'margin-bottom', $title_wrap, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $st['marginBottom'], 'margin-bottom', $title_wrap, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $title_wrap, 'margin-bottom', $st['marginBottom'] );
 }
 
 // 5. Excerpt
 if ( ! empty( $se['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $se['typography'], $excerpt_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $se['typography'], $excerpt_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $se['typography'], $excerpt_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $excerpt_sel, $se['typography'] );
 }
 if ( ! empty( $se['textColor'] ) ) {
-	$selectors[ $excerpt_sel ]['color'] = $se['textColor'];
+	$css['desktop'][ $excerpt_sel ]['color'] = $se['textColor'];
 }
 if ( ! empty( $se['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $se['marginBottom'], 'margin-bottom', $excerpt_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $se['marginBottom'], 'margin-bottom', $excerpt_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $se['marginBottom'], 'margin-bottom', $excerpt_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $excerpt_sel, 'margin-bottom', $se['marginBottom'] );
 }
 
 // 6. Meta
 if ( ! empty( $sm['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sm['marginBottom'], 'margin-bottom', $meta_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sm['marginBottom'], 'margin-bottom', $meta_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sm['marginBottom'], 'margin-bottom', $meta_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $meta_sel, 'margin-bottom', $sm['marginBottom'] );
 }
 if ( ! empty( $sm['authorTypography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sm['authorTypography'], $author_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $sm['authorTypography'], $author_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $sm['authorTypography'], $author_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $author_sel, $sm['authorTypography'] );
 }
 if ( ! empty( $sm['authorColor'] ) ) {
-	$selectors[ $author_sel ]['color'] = $sm['authorColor'];
-	$selectors[ $card_sel . ' .wcbPostCard__meta-author' ]['color'] = $sm['authorColor'];
+	$css['desktop'][ $author_sel ]['color']                           = $sm['authorColor'];
+	$css['desktop'][ $card_sel . ' .wcbPostCard__meta-author' ]['color'] = $sm['authorColor'];
 }
 if ( ! empty( $sm['dateTypography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sm['dateTypography'], $date_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $sm['dateTypography'], $date_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $sm['dateTypography'], $date_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $date_sel, $sm['dateTypography'] );
 }
 if ( ! empty( $sm['dateTextColor'] ) ) {
-	$selectors[ $date_sel ]['color'] = $sm['dateTextColor'];
+	$css['desktop'][ $date_sel ]['color'] = $sm['dateTextColor'];
 }
 
 // 7. Taxonomy
 if ( ! empty( $stx['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $stx['typography'], $tax_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $stx['typography'], $tax_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $stx['typography'], $tax_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $tax_sel, $stx['typography'] );
 }
 if ( ! empty( $stx['textColor'] ) ) {
-	$selectors[ $tax_sel ]['color'] = $stx['textColor'];
+	$css['desktop'][ $tax_sel ]['color'] = $stx['textColor'];
 }
 if ( ! empty( $stx['backgroundColor'] ) ) {
-	$selectors[ $tax_high ]['background-color'] = $stx['backgroundColor'];
+	$css['desktop'][ $tax_high ]['background-color'] = $stx['backgroundColor'];
 }
 if ( ! empty( $stx['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $stx['marginBottom'], 'margin-bottom', $tax_wrap, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $stx['marginBottom'], 'margin-bottom', $tax_wrap, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $stx['marginBottom'], 'margin-bottom', $tax_wrap, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $tax_wrap, 'margin-bottom', $stx['marginBottom'] );
 }
 
 // 8. Read More Link
 if ( ! empty( $sr['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sr['typography'], $readmore_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $sr['typography'], $readmore_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $sr['typography'], $readmore_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $readmore_sel, $sr['typography'] );
 }
 if ( ! empty( $sr['colorAndBackgroundColor'] ) ) {
 	$cbc = $sr['colorAndBackgroundColor'];
 	if ( ! empty( $cbc['Normal']['color'] ) ) {
-		$selectors[ $readmore_sel ]['color'] = $cbc['Normal']['color'];
+		$css['desktop'][ $readmore_sel ]['color'] = $cbc['Normal']['color'];
 	}
 	if ( ! empty( $cbc['Normal']['backgroundColor'] ) ) {
-		$selectors[ $readmore_sel ]['background-color'] = $cbc['Normal']['backgroundColor'];
+		$css['desktop'][ $readmore_sel ]['background-color'] = $cbc['Normal']['backgroundColor'];
 	}
 	if ( ! empty( $cbc['Hover']['color'] ) ) {
-		$selectors[ $readmore_sel . ':hover' ]['color'] = $cbc['Hover']['color'];
+		$css['desktop'][ $readmore_sel . ':hover' ]['color'] = $cbc['Hover']['color'];
 	}
 	if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
-		$selectors[ $readmore_sel . ':hover' ]['background-color'] = $cbc['Hover']['backgroundColor'];
+		$css['desktop'][ $readmore_sel . ':hover' ]['background-color'] = $cbc['Hover']['backgroundColor'];
 	}
 }
 if ( ! empty( $sr['border'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sr['border'], $readmore_sel, true ) );
+	WCB_Block_Helper::add_border_css( $css, $readmore_sel, $sr['border'], true );
 }
 if ( ! empty( $sr['padding'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_dimension_css( $sr['padding'], 'padding', $readmore_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_dimension_css( $sr['padding'], 'padding', $readmore_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_dimension_css( $sr['padding'], 'padding', $readmore_sel, 'mobile' ) );
+	WCB_Block_Helper::add_dimension_css( $css, $readmore_sel, 'padding', $sr['padding'] );
 }
 if ( ! empty( $sr['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sr['marginBottom'], 'margin-bottom', $readmore_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sr['marginBottom'], 'margin-bottom', $readmore_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sr['marginBottom'], 'margin-bottom', $readmore_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $readmore_sel, 'margin-bottom', $sr['marginBottom'] );
 }
 
 // 9. Pagination
 if ( ! empty( $sp['justifyContent'] ) ) {
-	$selectors[ $pag_wrap ]['justify-content'] = $sp['justifyContent'];
+	$css['desktop'][ $pag_wrap ]['justify-content'] = $sp['justifyContent'];
 }
 if ( ! empty( $sp['marginTop'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sp['marginTop'], 'margin-top', $pag_wrap, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sp['marginTop'], 'margin-top', $pag_wrap, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sp['marginTop'], 'margin-top', $pag_wrap, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $pag_wrap, 'margin-top', $sp['marginTop'] );
 }
 if ( ! empty( $sp['mainStyle']['Normal']['color'] ) ) {
-	$selectors[ $pag_sel ]['color'] = $sp['mainStyle']['Normal']['color'];
+	$css['desktop'][ $pag_sel ]['color'] = $sp['mainStyle']['Normal']['color'];
 }
 if ( ! empty( $sp['mainStyle']['Normal']['backgroundColor'] ) ) {
-	$selectors[ $pag_sel ]['background-color'] = $sp['mainStyle']['Normal']['backgroundColor'];
+	$css['desktop'][ $pag_sel ]['background-color'] = $sp['mainStyle']['Normal']['backgroundColor'];
 }
 if ( ! empty( $sp['mainStyle']['Normal']['border'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sp['mainStyle']['Normal']['border'], $pag_sel, true ) );
+	WCB_Block_Helper::add_border_css( $css, $pag_sel, $sp['mainStyle']['Normal']['border'], true );
 }
 if ( ! empty( $sp['mainStyle']['Active']['color'] ) ) {
-	$selectors[ $pag_active ]['color'] = $sp['mainStyle']['Active']['color'];
+	$css['desktop'][ $pag_active ]['color'] = $sp['mainStyle']['Active']['color'];
 }
 if ( ! empty( $sp['mainStyle']['Active']['backgroundColor'] ) ) {
-	$selectors[ $pag_active ]['background-color'] = $sp['mainStyle']['Active']['backgroundColor'];
+	$css['desktop'][ $pag_active ]['background-color'] = $sp['mainStyle']['Active']['backgroundColor'];
 }
 if ( ! empty( $sp['mainStyle']['Active']['border'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sp['mainStyle']['Active']['border'], $pag_active, true ) );
+	WCB_Block_Helper::add_border_css( $css, $pag_active, $sp['mainStyle']['Active']['border'], true );
 }
 
 // 10. Advance
-$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+WCB_Block_Helper::add_advance_css( $css, $wrap_sel, $attr );
 
-$combined_selectors = array(
-	'desktop' => $selectors,
-	'tablet'  => $t_selectors,
-	'mobile'  => $m_selectors,
-);
-
-return WCB_Block_Helper::generate_all_css( $combined_selectors, '' );
-
+return WCB_Block_Helper::generate_all_css( $css, '' );
