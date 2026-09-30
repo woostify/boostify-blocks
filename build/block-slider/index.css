@@ -1,5 +1,5 @@
 /*!*****************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/block-slider/editor.scss ***!
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/block-slider/editor.scss ***!
   \*****************************************************************************************************************************************************************************************************************************************************/
 /*  */
 /*  */
@@ -97,13 +97,13 @@
   /* Match frontend slider structure */
 }
 /*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/components/controls/MySpacingSizesControl/styles.scss ***!
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/components/controls/MySpacingSizesControl/styles.scss ***!
   \**********************************************************************************************************************************************************************************************************************************************************************************/
 .MySpacingSizesControl .components-base-control__field {
   margin-bottom: 0;
 }
 /*!*************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/slick-carousel/slick/slick.css ***!
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].use[2]!./node_modules/slick-carousel/slick/slick.css ***!
   \*************************************************************************************************************************************************************************************************/
 /* Slider */
 .slick-slider
@@ -220,7 +220,7 @@
 }
 
 /*!*******************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/slick-carousel/slick/slick-theme.css ***!
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].use[2]!./node_modules/slick-carousel/slick/slick-theme.css ***!
   \*******************************************************************************************************************************************************************************************************/
 @charset 'UTF-8';
 /* Slider */
@@ -425,5 +425,3 @@
     color: black;
 }
 
-
-/*# sourceMappingURL=index.css.map*/

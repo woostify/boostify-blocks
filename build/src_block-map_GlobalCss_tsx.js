@@ -1,4 +1,12 @@
 "use strict";
+/*
+ * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
 (globalThis["webpackChunkboostify_blocks"] = globalThis["webpackChunkboostify_blocks"] || []).push([["src_block-map_GlobalCss_tsx"],{
 
 /***/ "./src/block-map/GlobalCss.tsx":
@@ -7,82 +15,7 @@
   \*************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @emotion/react */ "./node_modules/@emotion/react/dist/emotion-react.browser.esm.js");
-/* harmony import */ var _block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../block-container/getAdvanveStyles */ "./src/block-container/getAdvanveStyles.ts");
-/* harmony import */ var _utils_getBorderStyles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getBorderStyles */ "./src/utils/getBorderStyles.ts");
-/* harmony import */ var _utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/getStyleObjectFromResponsiveAttr */ "./src/utils/getStyleObjectFromResponsiveAttr.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
-
-
-
-
-
-
-
-const GlobalCss = attrs => {
-  const {
-    uniqueId,
-    // ATTRS OF BLOCK
-    general_general,
-    style_border,
-    //
-    advance_responsiveCondition,
-    advance_zIndex,
-    advance_motionEffect
-  } = attrs;
-  const {
-    media_desktop,
-    media_tablet
-  } = ___WEBPACK_IMPORTED_MODULE_4__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
-  const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-  const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-map__inner`;
-
-  // ------------------- WRAP DIV
-  const getDivWrapStyles = () => {
-    return {
-      [`${WRAP_CLASSNAME}`]: {
-        [`@media (min-width: ${media_tablet})`]: {},
-        [`@media (min-width: ${media_desktop})`]: {}
-      }
-    };
-  };
-  if (!uniqueId) {
-    return null;
-  }
-  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_5__.Global, {
-    styles: [(0,_utils_getBorderStyles__WEBPACK_IMPORTED_MODULE_2__["default"])({
-      className: WRAP_CLASSNAME,
-      border: style_border,
-      isWithRadius: true,
-      isWithIframe: true
-    }), (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_3__["default"])({
-      className: INNER_CLASSNAME,
-      value: general_general.height,
-      prefix: "height"
-    })]
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_5__.Global, {
-    styles: [{
-      [WRAP_CLASSNAME]: {
-        flex: 1
-      }
-    }]
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_5__.Global, {
-    styles: (0,_block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__.getAdvanveDivWrapStyles)({
-      advance_motionEffect,
-      advance_responsiveCondition,
-      advance_zIndex,
-      className: WRAP_CLASSNAME,
-      defaultDisplay: "block"
-    })
-  }));
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (react__WEBPACK_IMPORTED_MODULE_0___default().memo(GlobalCss));
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _emotion_react__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @emotion/react */ \"./node_modules/@emotion/react/dist/emotion-react.browser.esm.js\");\n/* harmony import */ var _block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../block-container/getAdvanveStyles */ \"./src/block-container/getAdvanveStyles.ts\");\n/* harmony import */ var _utils_getBorderStyles__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getBorderStyles */ \"./src/utils/getBorderStyles.ts\");\n/* harmony import */ var _utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/getStyleObjectFromResponsiveAttr */ \"./src/utils/getStyleObjectFromResponsiveAttr.ts\");\n/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../________ */ \"./src/________.ts\");\n\n\n\n\n\n\n\nconst GlobalCss = attrs => {\n  const {\n    uniqueId,\n    // ATTRS OF BLOCK\n    general_general,\n    style_border,\n    //\n    advance_responsiveCondition,\n    advance_zIndex,\n    advance_motionEffect\n  } = attrs;\n  const {\n    media_desktop,\n    media_tablet\n  } = ___WEBPACK_IMPORTED_MODULE_4__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;\n  const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;\n  const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-map__inner`;\n\n  // ------------------- WRAP DIV\n  const getDivWrapStyles = () => {\n    return {\n      [`${WRAP_CLASSNAME}`]: {\n        [`@media (min-width: ${media_tablet})`]: {},\n        [`@media (min-width: ${media_desktop})`]: {}\n      }\n    };\n  };\n  if (!uniqueId) {\n    return null;\n  }\n  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_5__.Global, {\n    styles: [(0,_utils_getBorderStyles__WEBPACK_IMPORTED_MODULE_2__[\"default\"])({\n      className: WRAP_CLASSNAME,\n      border: style_border,\n      isWithRadius: true,\n      isWithIframe: true\n    }), (0,_utils_getStyleObjectFromResponsiveAttr__WEBPACK_IMPORTED_MODULE_3__[\"default\"])({\n      className: INNER_CLASSNAME,\n      value: general_general.height,\n      prefix: \"height\"\n    })]\n  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_5__.Global, {\n    styles: [{\n      [WRAP_CLASSNAME]: {\n        flex: 1\n      }\n    }]\n  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_emotion_react__WEBPACK_IMPORTED_MODULE_5__.Global, {\n    styles: (0,_block_container_getAdvanveStyles__WEBPACK_IMPORTED_MODULE_1__.getAdvanveDivWrapStyles)({\n      advance_motionEffect,\n      advance_responsiveCondition,\n      advance_zIndex,\n      className: WRAP_CLASSNAME,\n      defaultDisplay: \"block\"\n    })\n  }));\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (react__WEBPACK_IMPORTED_MODULE_0___default().memo(GlobalCss));\n\n//# sourceURL=webpack://boostify-blocks/./src/block-map/GlobalCss.tsx?");
 
 /***/ }),
 
@@ -92,113 +25,7 @@ const GlobalCss = attrs => {
   \********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
-/* harmony import */ var _getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getValueFromAttrsResponsives */ "./src/utils/getValueFromAttrsResponsives.ts");
-/* harmony import */ var _checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./checkResponsiveValueForOptimizeCSS */ "./src/utils/checkResponsiveValueForOptimizeCSS.ts");
-
-
-
-const getBorderRadiusStyles = ({
-  className,
-  radius,
-  isWithIframe = false
-}) => {
-  const {
-    media_desktop,
-    media_tablet
-  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
-  let {
-    value_Desktop: radiusDesktop,
-    value_Tablet: radiusTablet,
-    value_Mobile: radiusMobile
-  } = (0,_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__["default"])(radius);
-  const converttted = radiusValue => {
-    let newradiusValue = radiusValue;
-    if (typeof radiusValue === "string") {
-      newradiusValue = {
-        bottomLeft: radiusValue,
-        bottomRight: radiusValue,
-        topLeft: radiusValue,
-        topRight: radiusValue
-      };
-    } else {
-      newradiusValue = {
-        bottomLeft: radiusValue?.bottomLeft,
-        bottomRight: radiusValue?.bottomRight,
-        topLeft: radiusValue?.topLeft,
-        topRight: radiusValue?.topRight
-      };
-    }
-    return newradiusValue;
-  };
-  radiusDesktop = converttted(radiusDesktop);
-  radiusTablet = converttted(radiusTablet);
-  radiusMobile = converttted(radiusMobile);
-  const {
-    mobile_v: mobile_v_topLeft,
-    tablet_v: tablet_v_topLeft,
-    desktop_v: desktop_v_topLeft
-  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__["default"])({
-    mobile_v: radiusMobile?.topLeft,
-    tablet_v: radiusTablet?.topLeft,
-    desktop_v: radiusDesktop?.topLeft
-  });
-  const {
-    mobile_v: mobile_v_topRight,
-    tablet_v: tablet_v_topRight,
-    desktop_v: desktop_v_topRight
-  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__["default"])({
-    mobile_v: radiusMobile?.topRight,
-    tablet_v: radiusTablet?.topRight,
-    desktop_v: radiusDesktop?.topRight
-  });
-  const {
-    mobile_v: mobile_v_bottomRight,
-    tablet_v: tablet_v_bottomRight,
-    desktop_v: desktop_v_bottomRight
-  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__["default"])({
-    mobile_v: radiusMobile?.bottomRight,
-    tablet_v: radiusTablet?.bottomRight,
-    desktop_v: radiusDesktop?.bottomRight
-  });
-  const {
-    mobile_v: mobile_v_bottomLeft,
-    tablet_v: tablet_v_bottomLeft,
-    desktop_v: desktop_v_bottomLeft
-  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__["default"])({
-    mobile_v: radiusMobile?.bottomLeft,
-    tablet_v: radiusTablet?.bottomLeft,
-    desktop_v: radiusDesktop?.bottomLeft
-  });
-
-  // Check if className is for iframe
-  const applyImportant = isWithIframe ? "!important" : "";
-  return {
-    [`${className}`]: {
-      borderTopLeftRadius: `${mobile_v_topLeft} ${applyImportant}`,
-      borderTopRightRadius: `${mobile_v_topRight} ${applyImportant}`,
-      borderBottomRightRadius: `${mobile_v_bottomRight} ${applyImportant}`,
-      borderBottomLeftRadius: `${mobile_v_bottomLeft} ${applyImportant}`,
-      [`@media (min-width: ${media_tablet})`]: tablet_v_topLeft || tablet_v_topRight || tablet_v_bottomRight || tablet_v_bottomLeft ? {
-        borderTopLeftRadius: `${tablet_v_topLeft} ${applyImportant}`,
-        borderTopRightRadius: `${tablet_v_topRight} ${applyImportant}`,
-        borderBottomRightRadius: `${tablet_v_bottomRight} ${applyImportant}`,
-        borderBottomLeftRadius: `${tablet_v_bottomLeft} ${applyImportant}`
-      } : null,
-      [`@media (min-width: ${media_desktop})`]: desktop_v_topLeft || desktop_v_topRight || desktop_v_bottomRight || desktop_v_bottomLeft ? {
-        borderTopLeftRadius: `${desktop_v_topLeft} ${applyImportant}`,
-        borderTopRightRadius: `${desktop_v_topRight} ${applyImportant}`,
-        borderBottomRightRadius: `${desktop_v_bottomRight} ${applyImportant}`,
-        borderBottomLeftRadius: `${desktop_v_bottomLeft} ${applyImportant}`
-      } : null
-    }
-  };
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getBorderRadiusStyles);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../________ */ \"./src/________.ts\");\n/* harmony import */ var _getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getValueFromAttrsResponsives */ \"./src/utils/getValueFromAttrsResponsives.ts\");\n/* harmony import */ var _checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./checkResponsiveValueForOptimizeCSS */ \"./src/utils/checkResponsiveValueForOptimizeCSS.ts\");\n\n\n\nconst getBorderRadiusStyles = ({\n  className,\n  radius,\n  isWithIframe = false\n}) => {\n  const {\n    media_desktop,\n    media_tablet\n  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;\n  let {\n    value_Desktop: radiusDesktop,\n    value_Tablet: radiusTablet,\n    value_Mobile: radiusMobile\n  } = (0,_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__[\"default\"])(radius);\n  const converttted = radiusValue => {\n    let newradiusValue = radiusValue;\n    if (typeof radiusValue === \"string\") {\n      newradiusValue = {\n        bottomLeft: radiusValue,\n        bottomRight: radiusValue,\n        topLeft: radiusValue,\n        topRight: radiusValue\n      };\n    } else {\n      newradiusValue = {\n        bottomLeft: radiusValue?.bottomLeft,\n        bottomRight: radiusValue?.bottomRight,\n        topLeft: radiusValue?.topLeft,\n        topRight: radiusValue?.topRight\n      };\n    }\n    return newradiusValue;\n  };\n  radiusDesktop = converttted(radiusDesktop);\n  radiusTablet = converttted(radiusTablet);\n  radiusMobile = converttted(radiusMobile);\n  const {\n    mobile_v: mobile_v_topLeft,\n    tablet_v: tablet_v_topLeft,\n    desktop_v: desktop_v_topLeft\n  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__[\"default\"])({\n    mobile_v: radiusMobile?.topLeft,\n    tablet_v: radiusTablet?.topLeft,\n    desktop_v: radiusDesktop?.topLeft\n  });\n  const {\n    mobile_v: mobile_v_topRight,\n    tablet_v: tablet_v_topRight,\n    desktop_v: desktop_v_topRight\n  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__[\"default\"])({\n    mobile_v: radiusMobile?.topRight,\n    tablet_v: radiusTablet?.topRight,\n    desktop_v: radiusDesktop?.topRight\n  });\n  const {\n    mobile_v: mobile_v_bottomRight,\n    tablet_v: tablet_v_bottomRight,\n    desktop_v: desktop_v_bottomRight\n  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__[\"default\"])({\n    mobile_v: radiusMobile?.bottomRight,\n    tablet_v: radiusTablet?.bottomRight,\n    desktop_v: radiusDesktop?.bottomRight\n  });\n  const {\n    mobile_v: mobile_v_bottomLeft,\n    tablet_v: tablet_v_bottomLeft,\n    desktop_v: desktop_v_bottomLeft\n  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__[\"default\"])({\n    mobile_v: radiusMobile?.bottomLeft,\n    tablet_v: radiusTablet?.bottomLeft,\n    desktop_v: radiusDesktop?.bottomLeft\n  });\n\n  // Check if className is for iframe\n  const applyImportant = isWithIframe ? \"!important\" : \"\";\n  return {\n    [`${className}`]: {\n      borderTopLeftRadius: `${mobile_v_topLeft} ${applyImportant}`,\n      borderTopRightRadius: `${mobile_v_topRight} ${applyImportant}`,\n      borderBottomRightRadius: `${mobile_v_bottomRight} ${applyImportant}`,\n      borderBottomLeftRadius: `${mobile_v_bottomLeft} ${applyImportant}`,\n      [`@media (min-width: ${media_tablet})`]: tablet_v_topLeft || tablet_v_topRight || tablet_v_bottomRight || tablet_v_bottomLeft ? {\n        borderTopLeftRadius: `${tablet_v_topLeft} ${applyImportant}`,\n        borderTopRightRadius: `${tablet_v_topRight} ${applyImportant}`,\n        borderBottomRightRadius: `${tablet_v_bottomRight} ${applyImportant}`,\n        borderBottomLeftRadius: `${tablet_v_bottomLeft} ${applyImportant}`\n      } : null,\n      [`@media (min-width: ${media_desktop})`]: desktop_v_topLeft || desktop_v_topRight || desktop_v_bottomRight || desktop_v_bottomLeft ? {\n        borderTopLeftRadius: `${desktop_v_topLeft} ${applyImportant}`,\n        borderTopRightRadius: `${desktop_v_topRight} ${applyImportant}`,\n        borderBottomRightRadius: `${desktop_v_bottomRight} ${applyImportant}`,\n        borderBottomLeftRadius: `${desktop_v_bottomLeft} ${applyImportant}`\n      } : null\n    }\n  };\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getBorderRadiusStyles);\n\n//# sourceURL=webpack://boostify-blocks/./src/utils/getBorderRadiusStyles.ts?");
 
 /***/ }),
 
@@ -208,103 +35,7 @@ const getBorderRadiusStyles = ({
   \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _getBorderRadiusStyles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getBorderRadiusStyles */ "./src/utils/getBorderRadiusStyles.ts");
-
-const getBorderStyles = ({
-  border,
-  className,
-  isWithRadius = false,
-  isWithIframe = false
-}) => {
-  const {
-    hoverColor,
-    mainSettings,
-    radius
-  } = border;
-  //
-
-  // MAIN BORDER
-  let CSSObject = {
-    [`${className}`]: {}
-  };
-  if (mainSettings) {
-    const as4Side = mainSettings;
-    if ("top" in as4Side || "right" in as4Side || "bottom" in as4Side || "left" in as4Side) {
-      const {
-        bottom,
-        left,
-        right,
-        top
-      } = as4Side;
-      CSSObject = {
-        [`${className}`]: {
-          ...(top ? {
-            borderTop: `${top.width} ${top.style || "none"} ${top.color || ""}`
-          } : {}),
-          ...(left ? {
-            borderLeft: `${left.width} ${left.style || "none"} ${left.color || ""}`
-          } : {}),
-          ...(right ? {
-            borderRight: `${right.width} ${right.style || "none"} ${right.color || ""}`
-          } : {}),
-          ...(bottom ? {
-            borderBottom: `${bottom.width} ${bottom.style || "none"} ${bottom.color || ""}`
-          } : {}),
-          "&:hover": {
-            borderColor: `${hoverColor}`
-          }
-        }
-      };
-    } else {
-      const {
-        color,
-        style,
-        width
-      } = mainSettings;
-      CSSObject = {
-        [`${className}`]: {
-          border: `${width} ${style || "none"} ${color || ""}`,
-          "&:hover": {
-            borderColor: `${hoverColor || ""}`
-          }
-        }
-      };
-    }
-  }
-
-  // RAIDUS
-  let radiusCSSObject = {
-    [`${className}`]: {}
-  };
-  if (isWithRadius && radius) {
-    radiusCSSObject = (0,_getBorderRadiusStyles__WEBPACK_IMPORTED_MODULE_0__["default"])({
-      radius,
-      className,
-      isWithIframe
-    });
-  }
-
-  //
-  let a = {};
-  let b = {};
-  if (typeof CSSObject[className] === "object") {
-    a = CSSObject[className] || {};
-  }
-  if (typeof radiusCSSObject[className] === "object") {
-    b = radiusCSSObject[className] || {};
-  }
-  return {
-    [`${className}`]: {
-      ...a,
-      ...b
-    }
-  };
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getBorderStyles);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _getBorderRadiusStyles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getBorderRadiusStyles */ \"./src/utils/getBorderRadiusStyles.ts\");\n\nconst getBorderStyles = ({\n  border,\n  className,\n  isWithRadius = false,\n  isWithIframe = false\n}) => {\n  const {\n    hoverColor,\n    mainSettings,\n    radius\n  } = border;\n  //\n\n  // MAIN BORDER\n  let CSSObject = {\n    [`${className}`]: {}\n  };\n  if (mainSettings) {\n    const as4Side = mainSettings;\n    if (\"top\" in as4Side || \"right\" in as4Side || \"bottom\" in as4Side || \"left\" in as4Side) {\n      const {\n        bottom,\n        left,\n        right,\n        top\n      } = as4Side;\n      CSSObject = {\n        [`${className}`]: {\n          ...(top ? {\n            borderTop: `${top.width} ${top.style || \"none\"} ${top.color || \"\"}`\n          } : {}),\n          ...(left ? {\n            borderLeft: `${left.width} ${left.style || \"none\"} ${left.color || \"\"}`\n          } : {}),\n          ...(right ? {\n            borderRight: `${right.width} ${right.style || \"none\"} ${right.color || \"\"}`\n          } : {}),\n          ...(bottom ? {\n            borderBottom: `${bottom.width} ${bottom.style || \"none\"} ${bottom.color || \"\"}`\n          } : {}),\n          \"&:hover\": {\n            borderColor: `${hoverColor}`\n          }\n        }\n      };\n    } else {\n      const {\n        color,\n        style,\n        width\n      } = mainSettings;\n      CSSObject = {\n        [`${className}`]: {\n          border: `${width} ${style || \"none\"} ${color || \"\"}`,\n          \"&:hover\": {\n            borderColor: `${hoverColor || \"\"}`\n          }\n        }\n      };\n    }\n  }\n\n  // RAIDUS\n  let radiusCSSObject = {\n    [`${className}`]: {}\n  };\n  if (isWithRadius && radius) {\n    radiusCSSObject = (0,_getBorderRadiusStyles__WEBPACK_IMPORTED_MODULE_0__[\"default\"])({\n      radius,\n      className,\n      isWithIframe\n    });\n  }\n\n  //\n  let a = {};\n  let b = {};\n  if (typeof CSSObject[className] === \"object\") {\n    a = CSSObject[className] || {};\n  }\n  if (typeof radiusCSSObject[className] === \"object\") {\n    b = radiusCSSObject[className] || {};\n  }\n  return {\n    [`${className}`]: {\n      ...a,\n      ...b\n    }\n  };\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getBorderStyles);\n\n//# sourceURL=webpack://boostify-blocks/./src/utils/getBorderStyles.ts?");
 
 /***/ }),
 
@@ -314,89 +45,8 @@ const getBorderStyles = ({
   \*******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../________ */ "./src/________.ts");
-/* harmony import */ var _getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getValueFromAttrsResponsives */ "./src/utils/getValueFromAttrsResponsives.ts");
-/* harmony import */ var _checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./checkResponsiveValueForOptimizeCSS */ "./src/utils/checkResponsiveValueForOptimizeCSS.ts");
-
-
-
-function getStyleObjectFromResponsiveAttr({
-  className,
-  prefix,
-  prefix_2,
-  prefix_3,
-  prefix_4,
-  value,
-  hasUnit = true,
-  unit
-}) {
-  const {
-    media_desktop,
-    media_tablet
-  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
-  let {
-    value_Desktop,
-    value_Tablet,
-    value_Mobile
-  } = (0,_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__["default"])(value);
-  if (!hasUnit && !!unit) {
-    if (typeof value_Desktop === "number") {
-      value_Desktop = value_Desktop + unit;
-      value_Tablet = value_Tablet + unit;
-      value_Mobile = value_Mobile + unit;
-    }
-    if (typeof value_Desktop === "string") {
-      value_Desktop = value_Desktop ? value_Desktop + unit : null;
-      value_Tablet = value_Tablet ? value_Tablet + unit : null;
-      value_Mobile = value_Mobile ? value_Mobile + unit : null;
-    }
-  }
-
-  //
-  let prefix2 = prefix_2 || "";
-  let prefix3 = prefix_3 || "";
-  let prefix4 = prefix_4 || "";
-
-  //
-  const {
-    mobile_v: value_Mobile_new,
-    tablet_v: value_Tablet_new,
-    desktop_v: value_Desktop_new
-  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__["default"])({
-    mobile_v: value_Mobile,
-    tablet_v: value_Tablet,
-    desktop_v: value_Desktop
-  });
-  //
-
-  return {
-    [className]: {
-      [prefix]: value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null,
-      [prefix2]: prefix_2 ? value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null : null,
-      [prefix3]: prefix_3 ? value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null : null,
-      [prefix4]: prefix_4 ? value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null : null,
-      [`@media (min-width: ${media_tablet})`]: value_Tablet_new ? {
-        [prefix]: value_Tablet_new,
-        [prefix2]: prefix_2 ? value_Tablet_new : null,
-        [prefix3]: prefix_3 ? value_Tablet_new : null,
-        [prefix4]: prefix_4 ? value_Tablet_new : null
-      } : undefined,
-      [`@media (min-width: ${media_desktop})`]: value_Desktop_new ? {
-        [prefix]: value_Desktop_new,
-        [prefix2]: prefix_2 ? value_Desktop_new : null,
-        [prefix3]: prefix_3 ? value_Desktop_new : null,
-        [prefix4]: prefix_4 ? value_Desktop_new : null
-      } : undefined
-    }
-  };
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getStyleObjectFromResponsiveAttr);
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../________ */ \"./src/________.ts\");\n/* harmony import */ var _getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getValueFromAttrsResponsives */ \"./src/utils/getValueFromAttrsResponsives.ts\");\n/* harmony import */ var _checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./checkResponsiveValueForOptimizeCSS */ \"./src/utils/checkResponsiveValueForOptimizeCSS.ts\");\n\n\n\nfunction getStyleObjectFromResponsiveAttr({\n  className,\n  prefix,\n  prefix_2,\n  prefix_3,\n  prefix_4,\n  value,\n  hasUnit = true,\n  unit\n}) {\n  const {\n    media_desktop,\n    media_tablet\n  } = ___WEBPACK_IMPORTED_MODULE_0__.DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;\n  let {\n    value_Desktop,\n    value_Tablet,\n    value_Mobile\n  } = (0,_getValueFromAttrsResponsives__WEBPACK_IMPORTED_MODULE_1__[\"default\"])(value);\n  if (!hasUnit && !!unit) {\n    if (typeof value_Desktop === \"number\") {\n      value_Desktop = value_Desktop + unit;\n      value_Tablet = value_Tablet + unit;\n      value_Mobile = value_Mobile + unit;\n    }\n    if (typeof value_Desktop === \"string\") {\n      value_Desktop = value_Desktop ? value_Desktop + unit : null;\n      value_Tablet = value_Tablet ? value_Tablet + unit : null;\n      value_Mobile = value_Mobile ? value_Mobile + unit : null;\n    }\n  }\n\n  //\n  let prefix2 = prefix_2 || \"\";\n  let prefix3 = prefix_3 || \"\";\n  let prefix4 = prefix_4 || \"\";\n\n  //\n  const {\n    mobile_v: value_Mobile_new,\n    tablet_v: value_Tablet_new,\n    desktop_v: value_Desktop_new\n  } = (0,_checkResponsiveValueForOptimizeCSS__WEBPACK_IMPORTED_MODULE_2__[\"default\"])({\n    mobile_v: value_Mobile,\n    tablet_v: value_Tablet,\n    desktop_v: value_Desktop\n  });\n  //\n\n  return {\n    [className]: {\n      [prefix]: value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null,\n      [prefix2]: prefix_2 ? value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null : null,\n      [prefix3]: prefix_3 ? value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null : null,\n      [prefix4]: prefix_4 ? value_Mobile_new !== null && value_Mobile_new !== void 0 ? value_Mobile_new : null : null,\n      [`@media (min-width: ${media_tablet})`]: value_Tablet_new ? {\n        [prefix]: value_Tablet_new,\n        [prefix2]: prefix_2 ? value_Tablet_new : null,\n        [prefix3]: prefix_3 ? value_Tablet_new : null,\n        [prefix4]: prefix_4 ? value_Tablet_new : null\n      } : undefined,\n      [`@media (min-width: ${media_desktop})`]: value_Desktop_new ? {\n        [prefix]: value_Desktop_new,\n        [prefix2]: prefix_2 ? value_Desktop_new : null,\n        [prefix3]: prefix_3 ? value_Desktop_new : null,\n        [prefix4]: prefix_4 ? value_Desktop_new : null\n      } : undefined\n    }\n  };\n}\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getStyleObjectFromResponsiveAttr);\n\n//# sourceURL=webpack://boostify-blocks/./src/utils/getStyleObjectFromResponsiveAttr.ts?");
 
 /***/ })
 
 }]);
-//# sourceMappingURL=src_block-map_GlobalCss_tsx.js.map

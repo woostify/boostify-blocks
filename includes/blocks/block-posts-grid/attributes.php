@@ -124,6 +124,9 @@ return array(
 			'featuredImageSize'     => 'large',
 			'featuredImagePosition' => 'top',
 			'linkCompleteBox'       => false,
+			'imageRatio'            => '16/9',
+			'customHeight'          => array( 'Desktop' => '220px' ),
+			'imageFit'              => 'cover',
 		),
 	),
 	

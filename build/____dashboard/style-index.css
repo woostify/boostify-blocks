@@ -1,5 +1,5 @@
 /*!*****************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/____dashboard/style.scss ***!
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/____dashboard/style.scss ***!
   \*****************************************************************************************************************************************************************************************************************************************************/
 /* CSS VARIABLE ROOT */
 :root {
@@ -101664,5 +101664,3 @@ select {
     transition-duration: 150ms !important;
   }
 }
-
-/*# sourceMappingURL=style-index.css.map*/
