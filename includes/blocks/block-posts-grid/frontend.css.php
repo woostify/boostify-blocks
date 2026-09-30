@@ -51,7 +51,7 @@ $author_sel     = $card_sel . ' .wcbPostCard__meta-author-name';
 $date_sel       = $card_sel . ' .wcbPostCard__meta-date-and-comments';
 $readmore_sel   = $card_sel . ' .wcbPostCard__readmoreLink';
 $image_sel      = $card_sel . ' .wcbPostCard__featuredImage';
-$image_img_sel  = $wrap_sel . ' .wcbPostCard--image-top .wcbPostCard__featuredImage img';
+$image_img_sel  = $wrap_sel . ' .wcbPostCard:not(.wcbPostCard--image-background) .wcbPostCard__featuredImage img';
 $overlay_sel    = $wrap_sel . ' .wcbPostCard--image-background .wcbPostCard__featuredImage-overlay';
 $pag_wrap       = $wrap_sel . ' .wcb-posts-grid__pagination';
 $pag_sel        = $pag_wrap . ' .page-numbers';
@@ -85,6 +85,7 @@ if ( ! empty( $sl['colunmGap'] ) ) {
 
 // 2. Post Card
 $selectors[ $card_sel ]['position'] = 'relative';
+$selectors[ $card_sel ]['overflow'] = 'hidden';
 if ( isset( $g_srt['isEqualHeight'] ) && ! $g_srt['isEqualHeight'] ) {
 	$selectors[ $card_sel ]['height'] = 'max-content';
 }
@@ -119,8 +120,18 @@ if ( ! empty( $sf['marginBottom'] ) ) {
 if ( ! empty( $sf['backgroundOverlay'] ) ) {
 	$selectors[ $overlay_sel ]['background-color'] = $sf['backgroundOverlay'];
 }
+$selectors[ $overlay_sel ]['border-radius'] = 'inherit';
+
+$bg_img_sel = $wrap_sel . ' .wcbPostCard--image-background .wcbPostCard__featuredImage';
+$selectors[ $bg_img_sel ]['border-radius'] = 'inherit';
+$selectors[ $bg_img_sel . ' img' ]['border-radius'] = 'inherit';
+
 if ( ! empty( $sf['border'] ) ) {
 	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sf['border'], $image_img_sel, true ) );
+	// If background image mode and card border is empty, apply image border settings to the card.
+	if ( ( $g_img['featuredImagePosition'] ?? '' ) === 'background' && empty( $sb['mainSettings']['color'] ) ) {
+		$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sf['border'], $card_sel, true ) );
+	}
 }
 
 // 4. Title

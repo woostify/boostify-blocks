@@ -171,6 +171,9 @@ class WCB_Post_Assets {
 		// Auto-regenerate assets when a post is saved.
 		add_action( 'save_post', array( $this, 'on_save_post' ), 20, 2 );
 
+		// Clean up assets when a post is permanently deleted.
+		add_action( 'before_delete_post', array( $this, 'delete_css_file' ) );
+
 		// Frontend: enqueue generated JS if present.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_post_js' ), 21 );
 
@@ -246,14 +249,18 @@ class WCB_Post_Assets {
 	/**
 	 * Get the assets upload directory info.
 	 *
+	 * Supports CDN / custom storage rewrite via boostify_blocks_get_upload_dir filter (matching Spectra's uag_get_upload_dir).
+	 *
 	 * @return array{dir: string, url: string}
 	 */
 	public function get_assets_upload_dir() {
-		$upload = wp_upload_dir();
-		return array(
+		$upload   = wp_upload_dir();
+		$dir_info = array(
 			'dir' => trailingslashit( $upload['basedir'] ) . self::ASSETS_DIR . '/',
 			'url' => trailingslashit( set_url_scheme( $upload['baseurl'] ) ) . self::ASSETS_DIR . '/',
 		);
+
+		return (array) apply_filters( 'boostify_blocks_get_upload_dir', $dir_info );
 	}
 
 	/**
@@ -277,23 +284,66 @@ class WCB_Post_Assets {
 	}
 
 	/**
+	 * Get the asset subfolder partition name for a post ID.
+	 *
+	 * Uses Spectra's partitioning pattern round($post_id, -3) to prevent
+	 * having tens of thousands of files in a single flat directory on large sites.
+	 *
+	 * @param int|string $post_id Post ID or numeric file ID.
+	 * @return string Folder name (e.g. '0', '1000', '6000').
+	 */
+	public function get_asset_folder_name( $post_id ) {
+		$folder_name = '0';
+		$id_val      = absint( $post_id );
+
+		if ( $id_val > 0 ) {
+			$folder_name = (string) absint( round( $id_val, -3 ) );
+		}
+
+		return (string) apply_filters( 'boostify_blocks_asset_folder_name', $folder_name, $post_id );
+	}
+
+	/**
 	 * Get the CSS file path for a given post ID.
 	 *
+	 * Supports partitioned subdirectories with backward compatibility for legacy flat files.
+	 *
 	 * @param int $post_id Post ID.
-	 * @return string
+	 * @return string File path.
 	 */
 	public function get_css_file_path( $post_id ) {
-		return $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.css';
+		$folder   = $this->get_asset_folder_name( $post_id );
+		$new_path = $this->get_assets_dir() . '/' . $folder . '/post-' . absint( $post_id ) . '.css';
+		$old_path = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.css';
+
+		// Backward compatibility: If legacy flat file exists and new partitioned file does not, serve legacy.
+		if ( ! file_exists( $new_path ) && file_exists( $old_path ) ) {
+			return $old_path;
+		}
+
+		return $new_path;
 	}
 
 	/**
 	 * Get the CSS file URL for a given post ID.
 	 *
+	 * Supports partitioned subdirectories with backward compatibility for legacy flat files.
+	 *
 	 * @param int $post_id Post ID.
-	 * @return string
+	 * @return string File URL.
 	 */
 	public function get_css_file_url( $post_id ) {
-		return $this->get_assets_url() . '/post-' . absint( $post_id ) . '.css';
+		$folder   = $this->get_asset_folder_name( $post_id );
+		$new_path = $this->get_assets_dir() . '/' . $folder . '/post-' . absint( $post_id ) . '.css';
+		$old_path = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.css';
+
+		if ( ! file_exists( $new_path ) && file_exists( $old_path ) ) {
+			$url = $this->get_assets_url() . '/post-' . absint( $post_id ) . '.css';
+		} else {
+			$url = $this->get_assets_url() . '/' . $folder . '/post-' . absint( $post_id ) . '.css';
+		}
+
+		return (string) apply_filters( 'boostify_blocks_css_file_url', $url, $post_id );
 	}
 
 	/**
@@ -310,19 +360,25 @@ class WCB_Post_Assets {
 	/**
 	 * Save CSS content to a file for a post.
 	 *
-	 * Pattern from UAGB: file_write() with empty data protection.
+	 * Pattern from UAGB: file_write() with empty data protection and partitioned subfolders.
 	 * - If CSS is empty: keep existing file (don't write empty → prevents 404).
 	 * - If file already exists: compare content, only write if changed.
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $css     CSS content.
+	 * @param bool   $force   Force overwrite even if content unchanged.
 	 * @return bool True on success.
 	 */
 	public function save_css_file( $post_id, $css, $force = false ) {
 		$this->ensure_assets_dir_exists();
 
-		$file      = $this->get_css_file_path( $post_id );
-		$file_url  = $this->get_css_file_url( $post_id );
+		$folder     = $this->get_asset_folder_name( $post_id );
+		$target_dir = $this->get_assets_dir() . '/' . $folder;
+		wp_mkdir_p( $target_dir );
+
+		$file     = $target_dir . '/post-' . absint( $post_id ) . '.css';
+		$file_url = $this->get_assets_url() . '/' . $folder . '/post-' . absint( $post_id ) . '.css';
+		$old_file = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.css';
 
 		// CRITICAL: Empty CSS means no Boostify blocks or generation failed.
 		// Keep the old file to prevent 404 errors with page-level caching.
@@ -355,6 +411,12 @@ class WCB_Post_Assets {
 		$result = file_put_contents( $file, $css, LOCK_EX );
 
 		if ( false !== $result ) {
+			// Clean up legacy flat file if it existed to complete migration.
+			if ( file_exists( $old_file ) && $old_file !== $file ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				@unlink( $old_file );
+			}
+
 			$this->update_page_assets_meta( $post_id, false );
 			$this->assets_file_handler = array( 'css_url' => $file_url );
 			return true;
@@ -491,25 +553,53 @@ class WCB_Post_Assets {
 	/**
 	 * Delete the CSS file for a post.
 	 *
+	 * Cleans up both partitioned and legacy flat files, removing empty partition subfolders.
+	 *
 	 * @param int $post_id Post ID.
 	 * @return bool True on success.
 	 */
 	public function delete_css_file( $post_id ) {
 		$this->delete_js_file( $post_id );
-		$file = $this->get_css_file_path( $post_id );
-		if ( file_exists( $file ) ) {
+
+		$folder         = $this->get_asset_folder_name( $post_id );
+		$target_dir     = $this->get_assets_dir() . '/' . $folder;
+		$partition_file = $target_dir . '/post-' . absint( $post_id ) . '.css';
+		$flat_file      = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.css';
+
+		$deleted = false;
+
+		if ( file_exists( $partition_file ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			$result = unlink( $file );
-			if ( $result ) {
-				delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );
+			if ( @unlink( $partition_file ) ) {
+				$deleted = true;
 			}
-			return $result;
 		}
-		return true;
+
+		if ( file_exists( $flat_file ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			if ( @unlink( $flat_file ) ) {
+				$deleted = true;
+			}
+		}
+
+		// Clean up partition subfolder if now empty.
+		if ( is_dir( $target_dir ) ) {
+			$remaining = glob( $target_dir . '/*' );
+			if ( empty( $remaining ) ) {
+				@rmdir( $target_dir );
+			}
+		}
+
+		delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );
+
+		return $deleted || ( ! file_exists( $partition_file ) && ! file_exists( $flat_file ) );
 	}
 
 	/**
 	 * Delete all generated CSS files.
+	 *
+	 * Deletes all generated CSS files from both root and partitioned subfolders,
+	 * cleans up empty subdirectories, and resets meta tracking.
 	 *
 	 * @return int Number of files deleted.
 	 */
@@ -518,16 +608,31 @@ class WCB_Post_Assets {
 		$count = 0;
 
 		if ( is_dir( $dir ) ) {
-			$files = glob( $dir . '/post-*.css' );
-			if ( is_array( $files ) ) {
-				foreach ( $files as $file ) {
-					// Extract post ID from filename for meta cleanup.
-					if ( preg_match( '/post-(\d+)\.css/', basename( $file ), $matches ) ) {
-						delete_post_meta( intval( $matches[1] ), self::PAGE_ASSETS_META_KEY );
-					}
-					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-					if ( unlink( $file ) ) {
-						$count++;
+			$flat_files        = glob( $dir . '/post-*.css' );
+			$partitioned_files = glob( $dir . '/*/post-*.css' );
+
+			$flat_files        = is_array( $flat_files ) ? $flat_files : array();
+			$partitioned_files = is_array( $partitioned_files ) ? $partitioned_files : array();
+			$files             = array_merge( $flat_files, $partitioned_files );
+
+			foreach ( $files as $file ) {
+				// Extract post ID from filename for meta cleanup.
+				if ( preg_match( '/post-(\d+)\.css/', basename( $file ), $matches ) ) {
+					delete_post_meta( intval( $matches[1] ), self::PAGE_ASSETS_META_KEY );
+				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				if ( @unlink( $file ) ) {
+					$count++;
+				}
+			}
+
+			// Clean up any empty partition subdirectories.
+			$subdirs = glob( $dir . '/*', GLOB_ONLYDIR );
+			if ( is_array( $subdirs ) ) {
+				foreach ( $subdirs as $subdir ) {
+					$remaining = glob( $subdir . '/*' );
+					if ( empty( $remaining ) ) {
+						@rmdir( $subdir );
 					}
 				}
 			}
@@ -1197,9 +1302,21 @@ class WCB_Post_Assets {
 
 		$debug_reports = array();
 
+		// Time budget guard to prevent PHP execution timeout (504) on sites with thousands of posts.
+		// Default 20 seconds; remaining posts will lazily regenerate on request since global_asset_version was bumped.
+		$time_limit = (int) apply_filters( 'boostify_blocks_bulk_regenerate_time_limit', 20 );
+		$start_time = microtime( true );
+
 		// Step 3: Regenerate for each post.
 		foreach ( $all_post_ids as $post_id ) {
-			
+			if ( $time_limit > 0 && ( microtime( true ) - $start_time ) > $time_limit ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( sprintf( '[Boostify Blocks] Time limit of %ds reached during bulk asset regeneration. Processed %d posts; remaining posts will lazily regenerate on request.', $time_limit, $regenerated ) );
+				}
+				break;
+			}
+
 			$result = $this->regenerate_post_assets( $post_id, true );
 			if ( $result ) {
 				$posts_regenerated_ids[] = $post_id;
@@ -1352,16 +1469,7 @@ class WCB_Post_Assets {
 
 		if ( empty( $css ) ) {
 			// Remove stale asset files if any.
-			$file_css = $this->get_css_file_path( $post_id );
-			if ( file_exists( $file_css ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				unlink( $file_css );
-			}
-			$file_js = $this->get_js_file_path( $post_id );
-			if ( file_exists( $file_js ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				unlink( $file_js );
-			}
+			$this->delete_css_file( $post_id );
 
 			// Record failure state in meta to avoid re-running on every frontend hit.
 			$this->update_page_assets_meta( $post_id, true );
@@ -1402,21 +1510,44 @@ class WCB_Post_Assets {
 	/**
 	 * Get the JS file path for a given post ID.
 	 *
+	 * Supports partitioned subdirectories with backward compatibility for legacy flat files.
+	 *
 	 * @param int $post_id Post ID.
 	 * @return string
 	 */
 	public function get_js_file_path( $post_id ) {
-		return $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.js';
+		$folder   = $this->get_asset_folder_name( $post_id );
+		$new_path = $this->get_assets_dir() . '/' . $folder . '/post-' . absint( $post_id ) . '.js';
+		$old_path = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.js';
+
+		// Backward compatibility: If legacy flat file exists and new partitioned file does not, serve legacy.
+		if ( ! file_exists( $new_path ) && file_exists( $old_path ) ) {
+			return $old_path;
+		}
+
+		return $new_path;
 	}
 
 	/**
 	 * Get the JS file URL for a given post ID.
 	 *
+	 * Supports partitioned subdirectories with backward compatibility for legacy flat files.
+	 *
 	 * @param int $post_id Post ID.
 	 * @return string
 	 */
 	public function get_js_file_url( $post_id ) {
-		return $this->get_assets_url() . '/post-' . absint( $post_id ) . '.js';
+		$folder   = $this->get_asset_folder_name( $post_id );
+		$new_path = $this->get_assets_dir() . '/' . $folder . '/post-' . absint( $post_id ) . '.js';
+		$old_path = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.js';
+
+		if ( ! file_exists( $new_path ) && file_exists( $old_path ) ) {
+			$url = $this->get_assets_url() . '/post-' . absint( $post_id ) . '.js';
+		} else {
+			$url = $this->get_assets_url() . '/' . $folder . '/post-' . absint( $post_id ) . '.js';
+		}
+
+		return (string) apply_filters( 'boostify_blocks_js_file_url', $url, $post_id );
 	}
 
 	/**
@@ -1457,7 +1588,13 @@ class WCB_Post_Assets {
 	 */
 	public function save_js_file( $post_id, $js ) {
 		$this->ensure_assets_dir_exists();
-		$file = $this->get_js_file_path( $post_id );
+
+		$folder     = $this->get_asset_folder_name( $post_id );
+		$target_dir = $this->get_assets_dir() . '/' . $folder;
+		wp_mkdir_p( $target_dir );
+
+		$file     = $target_dir . '/post-' . absint( $post_id ) . '.js';
+		$old_file = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.js';
 
 		if ( '' === trim( $js ) ) {
 			$this->delete_js_file( $post_id );
@@ -1475,22 +1612,58 @@ class WCB_Post_Assets {
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		$result = file_put_contents( $file, $js, LOCK_EX );
-		return false !== $result;
+
+		if ( false !== $result ) {
+			// Clean up legacy flat file if it existed to complete migration.
+			if ( file_exists( $old_file ) && $old_file !== $file ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				@unlink( $old_file );
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Delete the JS file for a post.
 	 *
+	 * Cleans up both partitioned and legacy flat files, removing empty partition subfolders.
+	 *
 	 * @param int $post_id Post ID.
 	 * @return bool
 	 */
 	public function delete_js_file( $post_id ) {
-		$file = $this->get_js_file_path( $post_id );
-		if ( file_exists( $file ) ) {
-			// phpcs:ignore
-			return unlink( $file );
+		$folder         = $this->get_asset_folder_name( $post_id );
+		$target_dir     = $this->get_assets_dir() . '/' . $folder;
+		$partition_file = $target_dir . '/post-' . absint( $post_id ) . '.js';
+		$flat_file      = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.js';
+
+		$deleted = false;
+
+		if ( file_exists( $partition_file ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			if ( @unlink( $partition_file ) ) {
+				$deleted = true;
+			}
 		}
-		return true;
+
+		if ( file_exists( $flat_file ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			if ( @unlink( $flat_file ) ) {
+				$deleted = true;
+			}
+		}
+
+		// Clean up partition subfolder if now empty.
+		if ( is_dir( $target_dir ) ) {
+			$remaining = glob( $target_dir . '/*' );
+			if ( empty( $remaining ) ) {
+				@rmdir( $target_dir );
+			}
+		}
+
+		return $deleted || ( ! file_exists( $partition_file ) && ! file_exists( $flat_file ) );
 	}
 
 	/**
@@ -1506,12 +1679,27 @@ class WCB_Post_Assets {
 			return 0;
 		}
 
-		$files = glob( $dir . '/post-*.js' );
-		if ( is_array( $files ) ) {
-			foreach ( $files as $file ) {
-				// phpcs:ignore
-				if ( unlink( $file ) ) {
-					$count++;
+		$flat_files        = glob( $dir . '/post-*.js' );
+		$partitioned_files = glob( $dir . '/*/post-*.js' );
+
+		$flat_files        = is_array( $flat_files ) ? $flat_files : array();
+		$partitioned_files = is_array( $partitioned_files ) ? $partitioned_files : array();
+		$files             = array_merge( $flat_files, $partitioned_files );
+
+		foreach ( $files as $file ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			if ( @unlink( $file ) ) {
+				$count++;
+			}
+		}
+
+		// Clean up any empty partition subdirectories.
+		$subdirs = glob( $dir . '/*', GLOB_ONLYDIR );
+		if ( is_array( $subdirs ) ) {
+			foreach ( $subdirs as $subdir ) {
+				$remaining = glob( $subdir . '/*' );
+				if ( empty( $remaining ) ) {
+					@rmdir( $subdir );
 				}
 			}
 		}
@@ -1861,9 +2049,10 @@ class WCB_Post_Assets {
 		}
 
 		if ( file_exists( $file ) && filesize( $file ) > 0 ) {
+			$common_url = (string) apply_filters( 'boostify_blocks_common_css_url', $this->get_assets_url() . '/custom-style-blocks.css' );
 			wp_enqueue_style(
 				'boostify-blocks-custom-style-blocks',
-				$this->get_assets_url() . '/custom-style-blocks.css',
+				$common_url,
 				array(),
 				$this->get_stylesheet_version( $file )
 			);

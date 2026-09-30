@@ -218,7 +218,7 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
                 $is_ready = $assets->is_file_css_enqueued();
                 wp_add_inline_script(
                     'boostify-blocks-commoncss-frontend',
-                    'window.boostify_blocks_file_generation_enabled = true;' .
+                    'window.boostify_blocks_file_generation_enabled = ' . ($assets->is_file_generation_enabled() ? 'true' : 'false') . ';' .
                     'window.boostify_blocks_file_css_loaded = ' . ($is_ready ? 'true' : 'false') . ';' .
                     'window.boostify_blocks_fallback_css = ' . ($assets->is_fallback_css() ? 'true' : 'false') . ';' .
                     'window.boostify_blocks_post_id = ' . intval(get_queried_object_id()) . ';' .
