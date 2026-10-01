@@ -79,8 +79,7 @@ class WCB_Assets_Ajax {
 					'message' => $e->getMessage() . ' (' . basename( $e->getFile() ) . ':' . $e->getLine() . ')',
 					'file'    => $e->getFile(),
 					'line'    => $e->getLine(),
-				),
-				500
+				)
 			);
 		}
 	}
@@ -120,8 +119,7 @@ class WCB_Assets_Ajax {
 					'message' => $e->getMessage() . ' (' . basename( $e->getFile() ) . ':' . $e->getLine() . ')',
 					'file'    => $e->getFile(),
 					'line'    => $e->getLine(),
-				),
-				500
+				)
 			);
 		}
 	}

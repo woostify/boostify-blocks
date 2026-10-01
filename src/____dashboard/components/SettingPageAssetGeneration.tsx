@@ -212,10 +212,11 @@ const SettingsPageAssetGeneration: FC<Props> = ({
 			} else {
 				toast.error(response?.data?.message || 'Failed to regenerate assets.');
 			}
-		}).fail(function () {
+		}).fail(function (xhr: any) {
 			setRegenerateAssetsState( false );
 			setIsModalOpen( false );
-			toast.error('Failed to regenerate assets. Please try again.');
+			const msg = xhr?.responseJSON?.data?.message || 'Failed to regenerate assets. Please try again.';
+			toast.error(msg);
 		});
 	};
 
