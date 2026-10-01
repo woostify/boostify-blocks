@@ -50,7 +50,7 @@ $borderDefault = array(
 	),
 );
 
-return array(
+$attributes = array(
 	// =========================================================================
 	'uniqueId' => array(
 		'type'    => 'string',
@@ -457,39 +457,10 @@ return array(
 			),
 		),
 	),
-
-	// =========================================================================
-	// advance_responsiveCondition — RESPONSIVE_CONDITON_DEMO
-	// =========================================================================
-	'advance_responsiveCondition' => array(
-		'type'    => 'object',
-		'default' => array(
-			'isHiddenOnDesktop' => false,
-			'isHiddenOnTablet'  => false,
-			'isHiddenOnMobile'  => false,
-		),
-	),
-
-	// =========================================================================
-	// advance_zIndex — Z_INDEX_DEMO
-	// =========================================================================
-	'advance_zIndex' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Desktop' => '',
-		),
-	),
-
-	// =========================================================================
-	// advance_motionEffect — MY_MOTION_EFFECT_DEMO
-	// =========================================================================
-	'advance_motionEffect' => array(
-		'type'    => 'object',
-		'default' => array(
-			'animationDelay'    => 0,
-			'animationDuration' => 'fast',
-			'entranceAnimation' => '',
-			'repeat'            => '1',
-		),
-	),
 );
+
+return array_merge(
+	$attributes,
+	WCB_Block_Helper::get_advance_attributes()
+);
+

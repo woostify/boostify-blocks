@@ -67,7 +67,7 @@ $container_padding = $global['containerPadding'] ?: '10px';
 $css['desktop'][ $wrap_class ]['padding'] = $container_padding;
 
 if ( ! empty( $sc ) ) {
-	$css['desktop'][ $wrap_class ]['color'] = $sc;
+	WCB_Block_Helper::add_responsive_css( $css, $wrap_class, 'color', $sc );
 }
 
 if ( ! empty( $gc ) ) {
@@ -79,7 +79,7 @@ if ( ! empty( $gc ) ) {
 	$content_box_w  = $gc['contentBoxWidth'] ?? array();
 
 	if ( ! empty( $overflow ) ) {
-		$css['desktop'][ $wrap_class ]['overflow'] = $overflow;
+		WCB_Block_Helper::add_responsive_css( $css, $wrap_class, 'overflow', $overflow );
 	}
 
 	// Custom width (Desktop-first).
@@ -151,9 +151,9 @@ if ( ! empty( $attr['styles_background'] ) && is_array( $attr['styles_background
 	$bg_type = $bg['bgType'] ?? 'color';
 
 	if ( 'color' === $bg_type && ! empty( $bg['color'] ) ) {
-		$css['desktop'][ $wrap_class ]['background-color'] = $bg['color'];
+		WCB_Block_Helper::add_responsive_css( $css, $wrap_class, 'background-color', $bg['color'] );
 	} elseif ( 'gradient' === $bg_type && ! empty( $bg['gradient'] ) ) {
-		$css['desktop'][ $wrap_class ]['background-image'] = $bg['gradient'];
+		WCB_Block_Helper::add_responsive_css( $css, $wrap_class, 'background-image', $bg['gradient'] );
 	} elseif ( 'image' === $bg_type ) {
 		$img_data = $bg['imageData'] ?? array();
 		$img_d    = is_array( $img_data ) ? ( $img_data['Desktop']['mediaUrl'] ?? '' ) : '';
@@ -210,18 +210,18 @@ if ( ! empty( $attr['styles_background'] ) && is_array( $attr['styles_background
 	$overlay_type = $bg['overlayType'] ?? 'none';
 	if ( 'color' === $overlay_type && ! empty( $bg['overlayColor'] ) ) {
 		$css['desktop'][ $overlay_class ] = array(
-			'background-color' => $bg['overlayColor'],
-			'position'         => 'absolute',
-			'inset'            => '0',
-			'z-index'          => '0',
+			'position' => 'absolute',
+			'inset'    => '0',
+			'z-index'  => '0',
 		);
+		WCB_Block_Helper::add_responsive_css( $css, $overlay_class, 'background-color', $bg['overlayColor'] );
 	} elseif ( 'gradient' === $overlay_type && ! empty( $bg['overlayGradient'] ) ) {
 		$css['desktop'][ $overlay_class ] = array(
-			'background-image' => $bg['overlayGradient'],
-			'position'         => 'absolute',
-			'inset'            => '0',
-			'z-index'          => '0',
+			'position' => 'absolute',
+			'inset'    => '0',
+			'z-index'  => '0',
 		);
+		WCB_Block_Helper::add_responsive_css( $css, $overlay_class, 'background-image', $bg['overlayGradient'] );
 	}
 }
 

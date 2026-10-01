@@ -2,14 +2,10 @@
 /**
  * Frontend CSS for Buttons Block.
  *
- * IMPORTANT: this block mirrors src/block-buttons/GlobalCss.tsx, which uses a
- * MOBILE-FIRST cascade (@media min-width). The shared asset helper wraps the
- * "tablet"/"mobile" buckets in max-width queries (desktop-first), so this file
- * assembles its own min-width media queries and returns everything inside the
- * "desktop" bucket — the helper then outputs it verbatim.
- *
- * Emotion-style nested rules (e.g. ">*" inside a block) are flattened into
- * plain descendant selectors for valid static CSS.
+ * Mirrors src/block-buttons/GlobalCss.tsx, which uses a mobile-first cascade
+ * (@media min-width). Returns the complete media-query assembly inside the
+ * 'desktop' bucket so get_frontend_css_from_file outputs it verbatim without
+ * desktop-first max-width wrapping.
  *
  * @package Boostify_Blocks
  */
@@ -18,6 +14,10 @@
  * @var mixed[] $attr Block attributes.
  * @var string $unique_id Block unique ID.
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 // Responsive breakpoints (same source as DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES).
 $settings_opts = get_option( 'boostify_blocks_settings_options', array() );
@@ -37,31 +37,10 @@ $general = is_array( $attr['general_general'] ?? null ) ? $attr['general_general
 $stack   = $general['stackOrientation'] ?? 'none';
 
 /**
- * Fill a responsive attr upward (mirrors getValueFromAttrsResponsives):
- * Tablet ?? Desktop, Mobile ?? Tablet.
+ * Optimize mobile-first responsive values (mirrors checkResponsiveValueForOptimizeCSS).
+ * All-equal -> only Mobile survives; Tablet == Mobile -> Tablet nulled; Desktop == Tablet -> Desktop nulled.
  */
-$responsive_fill = function ( $value ) {
-	$value = is_array( $value ) ? $value : array();
-	$d     = array_key_exists( 'Desktop', $value ) ? $value['Desktop'] : null;
-	$t     = $value['Tablet'] ?? $d;
-	$m     = $value['Mobile'] ?? $t;
-	return array(
-		'Desktop' => $d,
-		'Tablet'  => $t,
-		'Mobile'  => $m,
-	);
-};
-
-/**
- * Optimize responsive values (mirrors checkResponsiveValueForOptimizeCSS):
- * all-equal -> only Mobile survives; Tablet == Mobile -> Tablet nulled;
- * Desktop == Tablet -> Desktop nulled.
- */
-$responsive_optimize = function ( $values ) {
-	$d = $values['Desktop'];
-	$t = $values['Tablet'];
-	$m = $values['Mobile'];
-
+$optimize_responsive = static function( $d, $t, $m ) {
 	if ( $m === $t && $t === $d ) {
 		return array(
 			'Desktop' => null,
@@ -82,94 +61,65 @@ $responsive_optimize = function ( $values ) {
 	);
 };
 
-/** Renders one declaration or '' when value is null/''. */
-$decl = function ( $prop, $value, $important = false ) {
-	if ( null === $value || '' === $value ) {
-		return '';
-	}
-	return $prop . ':' . $value . ( $important ? ' !important' : '' ) . ';';
-};
-
-/** Appends "@media (...) {rules}" only when rules are non-empty. */
-$media = function ( $query, $rules ) {
-	return '' !== trim( $rules ) ? '@media ' . $query . '{' . $rules . '}' : '';
-};
-
-/** Appends "sel{rules}" only when rules are non-empty. */
-$rule = function ( $sel, $rules ) {
-	return '' !== trim( $rules ) ? $sel . '{' . $rules . '}' : '';
-};
-
 $css = '';
 
 // =====================================================================
-// ADVANCE — wrap base (mirrors getAdvanveDivWrapStyles base rule).
+// 1. WRAPPER BASE
 // =====================================================================
-$css .= $rule( $wrap, 'visibility:visible;' );
+$css .= $wrap . '{visibility:visible;}';
 
 // =====================================================================
-// INNER FLEX LAYOUT (mobile-first: base + min-width queries).
-// Mirrors flexDirection / justifyContent / alignItems logic. The nested
-// ">*" rule from GlobalCss.tsx is flattened to "$inner >*".
+// 2. INNER FLEX LAYOUT (mobile-first: base + min-width queries)
 // =====================================================================
-$alignment = $responsive_fill( $general['alignment'] ?? array() );
+$alignment = WCB_Block_Helper::get_responsive_value( $general['alignment'] ?? array() );
 $align_m   = $alignment['Mobile'];
 $align_t   = $alignment['Tablet'];
 $align_d   = $alignment['Desktop'];
 
-$child_decls = function ( $align_value ) {
-	return 'stretch' === $align_value ? 'flex:1;display:flex;' : 'display:block;';
-};
+$build_flex_parts = static function( $is_stacked, $align_val ) {
+	$decls = 'flex-direction:' . ( $is_stacked ? 'column' : 'row' ) . ';';
+	if ( ! $is_stacked && null !== $align_val && '' !== $align_val ) {
+		$decls .= 'justify-content:' . $align_val . ';';
+	}
+	if ( null !== $align_val && '' !== $align_val || ! $is_stacked ) {
+		$decls .= 'align-items:' . ( $is_stacked ? $align_val : 'center' ) . ';';
+	}
+	$child = 'stretch' === $align_val ? 'flex:1;display:flex;' : 'display:block;';
 
-$flex_parts = function ( $is_stacked, $align_value ) use ( $decl, $child_decls ) {
-	$out  = $decl( 'flex-direction', $is_stacked ? 'column' : 'row' );
-	$out .= $is_stacked ? '' : $decl( 'justify-content', $align_value );
-	$out .= $decl( 'align-items', $is_stacked ? $align_value : 'center' );
 	return array(
-		'decls' => $out,
-		'child' => $child_decls( $align_value ),
+		'decls' => $decls,
+		'child' => $child,
 	);
 };
 
-// Base (mobile).
-$is_stacked_m = 'none' !== $stack;
-$base         = $flex_parts( $is_stacked_m, $align_m );
+// Mobile / Base.
+$base = $build_flex_parts( 'none' !== $stack, $align_m );
 
 // Tablet.
-$is_stacked_t = 'none' !== $stack && 'Mobile' !== $stack;
-$tablet       = $flex_parts( $is_stacked_t, $align_t );
+$tablet = $build_flex_parts( 'none' !== $stack && 'Mobile' !== $stack, $align_t );
 
 // Desktop.
-$is_stacked_d = 'Desktop' === $stack;
-$desktop      = $flex_parts( $is_stacked_d, $align_d );
+$desktop = $build_flex_parts( 'Desktop' === $stack, $align_d );
+
+// Gap.
+$gap_raw  = WCB_Block_Helper::get_responsive_value( $general['gap'] ?? array() );
+$gap_vals = $optimize_responsive( $gap_raw['Desktop'], $gap_raw['Tablet'], $gap_raw['Mobile'] );
+
+$gap_m = ( null !== $gap_vals['Mobile'] && '' !== $gap_vals['Mobile'] ) ? 'gap:' . $gap_vals['Mobile'] . ';' : '';
+$gap_t = ( null !== $gap_vals['Tablet'] && '' !== $gap_vals['Tablet'] ) ? 'gap:' . $gap_vals['Tablet'] . ';' : '';
+$gap_d = ( null !== $gap_vals['Desktop'] && '' !== $gap_vals['Desktop'] ) ? 'gap:' . $gap_vals['Desktop'] . ';' : '';
+
+$css .= $inner . '{' . $base['decls'] . $gap_m . '}' . $inner . ' >*{' . $base['child'] . '}';
+$css .= '@media (min-width:' . $media_tablet . 'px){' . $inner . '{' . $tablet['decls'] . $gap_t . '}' . $inner . ' >*{' . $tablet['child'] . '}}';
+$css .= '@media (min-width:' . $media_desktop . 'px){' . $inner . '{' . $desktop['decls'] . $gap_d . '}' . $inner . ' >*{' . $desktop['child'] . '}}';
 
 // =====================================================================
-// GAP (responsive, optimized — mirrors getStyleObjectFromResponsiveAttr).
-// =====================================================================
-$gap_vals = $responsive_optimize( $responsive_fill( $general['gap'] ?? array() ) );
-
-$inner_rules  = $rule( $inner, $base['decls'] . $decl( 'gap', $gap_vals['Mobile'] ) );
-$inner_rules .= $inner . ' >*{' . $base['child'] . '}';
-$inner_rules .= $media(
-	'(min-width:' . $media_tablet . 'px)',
-	$rule( $inner, $tablet['decls'] . $decl( 'gap', $gap_vals['Tablet'] ) ) .
-	$rule( $inner . ' >*', $tablet['child'] )
-);
-$inner_rules .= $media(
-	'(min-width:' . $media_desktop . 'px)',
-	$rule( $inner, $desktop['decls'] . $decl( 'gap', $gap_vals['Desktop'] ) ) .
-	$rule( $inner . ' >*', $desktop['child'] )
-);
-$css         .= $inner_rules;
-
-// =====================================================================
-// PADDING & MARGIN on wrap (body-prefixed, mirrors getPaddingMarginStyles,
-// including its original !important flags).
+// 3. PADDING & MARGIN (body-prefixed, mirrors getPaddingMarginStyles)
 // =====================================================================
 $dim = is_array( $attr['style_dimension'] ?? null ) ? $attr['style_dimension'] : array();
 
 foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {
-	$values    = $responsive_fill( $dim[ $spacing_prop ] ?? array() );
+	$values    = WCB_Block_Helper::get_responsive_value( $dim[ $spacing_prop ] ?? array() );
 	$per_level = array(
 		'Mobile'  => '',
 		'Tablet'  => '',
@@ -177,114 +127,127 @@ foreach ( array( 'padding', 'margin' ) as $spacing_prop ) {
 	);
 
 	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
-		$side_vals = $responsive_optimize(
-			array(
-				'Desktop' => $values['Desktop'][ $side ] ?? null,
-				'Tablet'  => $values['Tablet'][ $side ] ?? null,
-				'Mobile'  => $values['Mobile'][ $side ] ?? null,
-			)
+		$side_vals = $optimize_responsive(
+			$values['Desktop'][ $side ] ?? null,
+			$values['Tablet'][ $side ] ?? null,
+			$values['Mobile'][ $side ] ?? null
 		);
 
-		// Original flags: padding-* always !important; margin-top/bottom
-		// !important; margin-right/left plain (kept for parity).
-		$important = 'padding' === $spacing_prop || in_array( $side, array( 'top', 'bottom' ), true );
+		$important = 'padding' === $spacing_prop || in_array( $side, array( 'top', 'bottom' ), true ) ? ' !important;' : ';';
 
-		foreach ( array_keys( $per_level ) as $level ) {
-			$per_level[ $level ] .= $decl( $spacing_prop . '-' . $side, $side_vals[ $level ], $important );
+		foreach ( array( 'Mobile', 'Tablet', 'Desktop' ) as $lvl ) {
+			if ( null !== $side_vals[ $lvl ] && '' !== $side_vals[ $lvl ] ) {
+				$per_level[ $lvl ] .= $spacing_prop . '-' . $side . ':' . $side_vals[ $lvl ] . $important;
+			}
 		}
 	}
 
-	$css .= $rule( 'body ' . $wrap, $per_level['Mobile'] );
-	$css .= $media( '(min-width:' . $media_tablet . 'px)', $rule( 'body ' . $wrap, $per_level['Tablet'] ) );
-	$css .= $media( '(min-width:' . $media_desktop . 'px)', $rule( 'body ' . $wrap, $per_level['Desktop'] ) );
+	if ( '' !== $per_level['Mobile'] ) {
+		$css .= 'body ' . $wrap . '{' . $per_level['Mobile'] . '}';
+	}
+	if ( '' !== $per_level['Tablet'] ) {
+		$css .= '@media (min-width:' . $media_tablet . 'px){body ' . $wrap . '{' . $per_level['Tablet'] . '}}';
+	}
+	if ( '' !== $per_level['Desktop'] ) {
+		$css .= '@media (min-width:' . $media_desktop . 'px){body ' . $wrap . '{' . $per_level['Desktop'] . '}}';
+	}
 }
 
 // =====================================================================
-// TYPOGRAPHY — targets "#uid .wcb-button__text" exactly like GlobalCss.tsx
-// (INNER_BUTTON_TEXT uses an id selector there; mirrored for parity).
+// 4. TYPOGRAPHY (#uid .wcb-button__text)
 // =====================================================================
 $typo = is_array( $attr['style_text']['typography'] ?? null ) ? $attr['style_text']['typography'] : array();
 
 if ( ! empty( $typo ) ) {
-	$text_sel = '#' . $unique_id . ' .wcb-button__text';
+	$text_sel   = '#' . $unique_id . ' .wcb-button__text';
+	$base_decls = '';
 
-	$base_decls  = '';
-	$base_decls .= $decl( 'font-family', $typo['fontFamily'] ?? null );
-	$base_decls .= $decl( 'font-weight', $typo['appearance']['style']['fontWeight'] ?? null );
-	$base_decls .= $decl( 'font-style', $typo['appearance']['style']['fontStyle'] ?? null );
-	$base_decls .= $decl( 'text-decoration', $typo['textDecoration'] ?? null );
-	$base_decls .= $decl( 'text-transform', $typo['textTransform'] ?? null );
+	if ( ! empty( $typo['fontFamily'] ) ) {
+		$base_decls .= 'font-family:' . $typo['fontFamily'] . ';';
+	}
+	if ( ! empty( $typo['appearance']['style']['fontWeight'] ) ) {
+		$base_decls .= 'font-weight:' . $typo['appearance']['style']['fontWeight'] . ';';
+	}
+	if ( ! empty( $typo['appearance']['style']['fontStyle'] ) ) {
+		$base_decls .= 'font-style:' . $typo['appearance']['style']['fontStyle'] . ';';
+	}
+	if ( ! empty( $typo['textDecoration'] ) ) {
+		$base_decls .= 'text-decoration:' . $typo['textDecoration'] . ';';
+	}
+	if ( ! empty( $typo['textTransform'] ) ) {
+		$base_decls .= 'text-transform:' . $typo['textTransform'] . ';';
+	}
 
-	$fill_falsy = function ( $map ) {
-		$map = is_array( $map ) ? $map : array();
-		$d   = $map['Desktop'] ?? null;
-		$t   = ( ! empty( $map['Tablet'] ) ? $map['Tablet'] : null ) ?: $d;
-		$m   = ( ! empty( $map['Mobile'] ) ? $map['Mobile'] : null ) ?: $t;
-		return array(
-			'Desktop' => $d,
-			'Tablet'  => $t,
-			'Mobile'  => $m,
-		);
-	};
+	$typo_props = array(
+		'font-size'      => 'fontSizes',
+		'line-height'    => 'lineHeight',
+		'letter-spacing' => 'letterSpacing',
+	);
 
-	$responsive_group = function ( $css_prop, $attr_key ) use ( $typo, $responsive_optimize, $fill_falsy, $decl ) {
-		$vals = $responsive_optimize( $fill_falsy( $typo[ $attr_key ] ?? array() ) );
-		return array(
-			'Mobile'  => $decl( $css_prop, $vals['Mobile'] ),
-			'Tablet'  => $decl( $css_prop, $vals['Tablet'] ),
-			'Desktop' => $decl( $css_prop, $vals['Desktop'] ),
-		);
-	};
+	$typo_levels = array(
+		'Mobile'  => '',
+		'Tablet'  => '',
+		'Desktop' => '',
+	);
 
-	$font_size      = $responsive_group( 'font-size', 'fontSizes' );
-	$line_height    = $responsive_group( 'line-height', 'lineHeight' );
-	$letter_spacing = $responsive_group( 'letter-spacing', 'letterSpacing' );
+	foreach ( $typo_props as $css_prop => $attr_key ) {
+		$raw_map = is_array( $typo[ $attr_key ] ?? null ) ? $typo[ $attr_key ] : array();
+		$d       = $raw_map['Desktop'] ?? null;
+		$t       = ( ! empty( $raw_map['Tablet'] ) ? $raw_map['Tablet'] : null ) ?: $d;
+		$m       = ( ! empty( $raw_map['Mobile'] ) ? $raw_map['Mobile'] : null ) ?: $t;
 
-	$combine = function ( $level ) use ( $font_size, $line_height, $letter_spacing ) {
-		return $font_size[ $level ] . $line_height[ $level ] . $letter_spacing[ $level ];
-	};
+		$vals = $optimize_responsive( $d, $t, $m );
+		foreach ( array( 'Mobile', 'Tablet', 'Desktop' ) as $lvl ) {
+			if ( null !== $vals[ $lvl ] && '' !== $vals[ $lvl ] ) {
+				$typo_levels[ $lvl ] .= $css_prop . ':' . $vals[ $lvl ] . ';';
+			}
+		}
+	}
 
-	$css .= $rule( $text_sel, $base_decls . $combine( 'Mobile' ) );
-	$css .= $media( '(min-width:' . $media_tablet . 'px)', $rule( $text_sel, $combine( 'Tablet' ) ) );
-	$css .= $media( '(min-width:' . $media_desktop . 'px)', $rule( $text_sel, $combine( 'Desktop' ) ) );
+	$rule_m = $base_decls . $typo_levels['Mobile'];
+	if ( '' !== $rule_m ) {
+		$css .= $text_sel . '{' . $rule_m . '}';
+	}
+	if ( '' !== $typo_levels['Tablet'] ) {
+		$css .= '@media (min-width:' . $media_tablet . 'px){' . $text_sel . '{' . $typo_levels['Tablet'] . '}}';
+	}
+	if ( '' !== $typo_levels['Desktop'] ) {
+		$css .= '@media (min-width:' . $media_desktop . 'px){' . $text_sel . '{' . $typo_levels['Desktop'] . '}}';
+	}
 }
 
 // =====================================================================
-// ADVANCE — responsive condition / z-index (mirrors getAdvanveDivWrapStyles,
-// min-width ranges kept identical, incl. its exact max-width boundaries).
-// Frontend note: hidden devices get display:none (the editor renders a
-// preview overlay instead; meaningless outside the editor).
+// 5. ADVANCE (responsive condition + z-index)
 // =====================================================================
-$rc = is_array( $attr['advance_responsiveCondition'] ?? null ) ? $attr['advance_responsiveCondition'] : array();
-$zi = $responsive_fill( is_array( $attr['advance_zIndex'] ?? null ) ? $attr['advance_zIndex'] : array() );
-$zi = $responsive_optimize(
-	array(
-		'Desktop' => $zi['Desktop'],
-		'Tablet'  => $zi['Tablet'],
-		'Mobile'  => $zi['Mobile'],
-	)
-);
+$rc     = is_array( $attr['advance_responsiveCondition'] ?? null ) ? $attr['advance_responsiveCondition'] : array();
+$zi_raw = WCB_Block_Helper::get_responsive_value( $attr['advance_zIndex'] ?? array() );
+$zi     = $optimize_responsive( $zi_raw['Desktop'], $zi_raw['Tablet'], $zi_raw['Mobile'] );
 
-$hiddendecl = function ( $is_hidden ) {
-	return ! empty( $is_hidden ) ? 'display:none !important;' : '';
+$build_adv = static function( $z_val, $is_hidden ) {
+	$out = '';
+	if ( null !== $z_val && '' !== $z_val ) {
+		$out .= 'z-index:' . $z_val . ';';
+	}
+	if ( ! empty( $is_hidden ) ) {
+		$out .= 'display:none !important;';
+	}
+	return $out;
 };
 
-$adv_des = $decl( 'z-index', $zi['Desktop'] ?? null ) . $hiddendecl( $rc['isHiddenOnDesktop'] ?? false );
-$adv_tab = $decl( 'z-index', $zi['Tablet'] ?? null ) . $hiddendecl( $rc['isHiddenOnTablet'] ?? false );
-$adv_mob = $decl( 'z-index', $zi['Mobile'] ?? null ) . $hiddendecl( $rc['isHiddenOnMobile'] ?? false );
+$adv_des = $build_adv( $zi['Desktop'] ?? null, $rc['isHiddenOnDesktop'] ?? false );
+$adv_tab = $build_adv( $zi['Tablet'] ?? null, $rc['isHiddenOnTablet'] ?? false );
+$adv_mob = $build_adv( $zi['Mobile'] ?? null, $rc['isHiddenOnMobile'] ?? false );
 
 if ( ! empty( $adv_des ) ) {
-	$css .= $media( '(min-width:' . ( $media_desktop + 1 ) . 'px)', $rule( $wrap, $adv_des ) );
+	$css .= '@media (min-width:' . ( $media_desktop + 1 ) . 'px){' . $wrap . '{' . $adv_des . '}}';
 }
 if ( ! empty( $adv_tab ) ) {
-	$css .= $media( '(min-width:' . $media_tablet . 'px) and (max-width:' . $media_desktop . 'px)', $rule( $wrap, $adv_tab ) );
+	$css .= '@media (min-width:' . $media_tablet . 'px) and (max-width:' . $media_desktop . 'px){' . $wrap . '{' . $adv_tab . '}}';
 }
 if ( ! empty( $adv_mob ) ) {
-	$css .= $media( '(max-width:' . ( $media_tablet - 1 ) . 'px)', $rule( $wrap, $adv_mob ) );
+	$css .= '@media (max-width:' . ( $media_tablet - 1 ) . 'px){' . $wrap . '{' . $adv_mob . '}}';
 }
 
-// Return as-is in the "desktop" bucket: get_frontend_css_from_file appends
-// this string verbatim (tablet/mobile left empty so no max-width wrapping).
 return array(
 	'desktop' => $css,
 	'tablet'  => '',

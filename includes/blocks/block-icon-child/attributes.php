@@ -289,39 +289,32 @@ return array(
 			),
 		),
 	),
-
 	// =================================================================
-	// advance_responsiveCondition — RESPONSIVE_CONDITON_DEMO
+	// Custom style override flags
 	// =================================================================
-	'advance_responsiveCondition' => array(
-		'type'    => 'object',
-		'default' => array(
-			'isHiddenOnDesktop' => false,
-			'isHiddenOnTablet'  => false,
-			'isHiddenOnMobile'  => false,
-		),
+	'isCustomIcon' => array(
+		'type'    => 'boolean',
+		'default' => false,
 	),
-
-	// =================================================================
-	// advance_zIndex — Z_INDEX_DEMO
-	// =================================================================
-	'advance_zIndex' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Desktop' => '',
-		),
+	'isCustomStyleIcon' => array(
+		'type'    => 'boolean',
+		'default' => false,
 	),
-
-	// =================================================================
-	// advance_motionEffect — MY_MOTION_EFFECT_DEMO
-	// =================================================================
-	'advance_motionEffect' => array(
-		'type'    => 'object',
-		'default' => array(
-			'animationDelay'    => 0,
-			'animationDuration' => 'fast',
-			'entranceAnimation' => '',
-			'repeat'            => '1',
-		),
+	'isCustomStyleTitle' => array(
+		'type'    => 'boolean',
+		'default' => false,
 	),
-);
+	'isCustomStyleDesignation' => array(
+		'type'    => 'boolean',
+		'default' => false,
+	),
+	'isCustomStyleDimension' => array(
+		'type'    => 'boolean',
+		'default' => false,
+	),
+	'isCustomGeneralIcon' => array(
+		'type'    => 'boolean',
+		'default' => false,
+	),
+) + WCB_Block_Helper::get_advance_attributes();
+

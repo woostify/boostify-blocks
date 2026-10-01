@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * and all sub-panel *_DEMO constants.
  */
 
-return array(
+$attributes = array(
 	'uniqueId' => array(
 		'type'    => 'string',
 		'default' => '',
@@ -185,50 +185,7 @@ return array(
 			),
 		),
 	),
-	'style_boxshadow' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Normal' => array(
-				'color'       => '',
-				'presetClass' => '',
-				'blur'        => 0,
-				'horizontal'  => 0,
-				'spread'      => 0,
-				'vertical'    => 0,
-				'position'    => 'outset',
-			),
-			'Hover'  => array(
-				'color'       => '',
-				'presetClass' => '',
-				'blur'        => 0,
-				'horizontal'  => 0,
-				'spread'      => 0,
-				'vertical'    => 0,
-				'position'    => 'outset',
-			),
-		),
-	),
-	'advance_responsiveCondition' => array(
-		'type'    => 'object',
-		'default' => array(
-			'isHiddenOnDesktop' => false,
-			'isHiddenOnTablet'  => false,
-			'isHiddenOnMobile'  => false,
-		),
-	),
-	'advance_zIndex' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Desktop' => '',
-		),
-	),
-	'advance_motionEffect' => array(
-		'type'    => 'object',
-		'default' => array(
-			'animationDelay'    => 0,
-			'animationDuration' => 'fast',
-			'entranceAnimation' => '',
-			'repeat'            => '1',
-		),
-	),
+	'style_boxshadow' => WCB_Block_Helper::get_box_shadow_schema(),
 );
+
+return array_merge( $attributes, WCB_Block_Helper::get_advance_attributes() );
