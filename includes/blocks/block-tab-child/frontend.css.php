@@ -17,20 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$selectors   = array();
-$t_selectors = array();
-$m_selectors = array();
+$css = array(
+	'desktop' => array(),
+	'tablet'  => array(),
+	'mobile'  => array(),
+);
 
 $wrap_sel = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
 
-// Advance (responsive conditions, z-index, motion effects)
-$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+// Advance (responsive conditions, z-index, motion effects).
+WCB_Block_Helper::add_advance_css( $css, $wrap_sel, $attr );
 
-$combined_selectors = array(
-	'desktop' => $selectors,
-	'tablet'  => $t_selectors,
-	'mobile'  => $m_selectors,
-);
-
-return WCB_Block_Helper::generate_all_css( $combined_selectors, '' );
-
+return WCB_Block_Helper::generate_all_css( $css, '' );

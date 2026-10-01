@@ -12,34 +12,49 @@ import { WcbAttrs } from "./attributes";
 interface Props extends WcbAttrsForSave {
 	attributes: WcbAttrs;
 	clientId: string;
+	parentAttributes?: any;
 }
 
 const GlobalCssChild: FC<Props> = (attrs) => {
 	const {
 		uniqueId,
-		// ATTRS OF BLOCK
 		general_layout,
 		style_desination,
 		style_Icon,
 		style_title,
-		//
 		advance_responsiveCondition,
 		advance_zIndex,
 		general_icon,
 		style_dimension,
 		advance_motionEffect,
+		attributes,
+		parentAttributes,
 	} = attrs;
+
 	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	// Higher specificity selector for child blocks
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}][data-block-type="icon-item"]`;
-	const ICON_CLASS = `${WRAP_CLASSNAME} .wcb-icon-list__icon`;
+
+	const hasCustomPosition = Boolean(attributes.isCustomGeneralIcon);
+	const hasCustomDimension = Boolean(attributes.isCustomStyleDimension);
+	const hasCustomIcon = Boolean(attributes.isCustomStyleIcon);
+	const hasCustomTitle = Boolean(attributes.isCustomStyleTitle);
+	const hasCustomDesignation = Boolean(attributes.isCustomStyleDesignation);
+
+	if (!uniqueId) {
+		return null;
+	}
+
+	// If no custom overrides, child inherits 100% from parent in editor
+	if (!hasCustomPosition && !hasCustomDimension && !hasCustomIcon && !hasCustomTitle && !hasCustomDesignation) {
+		return null;
+	}
 
 	// ------------------- WRAP DIV with higher specificity
 	const getDivWrapStyles = (): CSSObject[] => {
 		return [
 			{
-				// Inline style with specificity max level
 				[`${WRAP_CLASSNAME}.wcb-icon-list__wrap`]: {
 					".wcb-icon-list__icon-wrap, .wcb-icon-list__content": {
 						alignSelf:
@@ -64,23 +79,21 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 		];
 	};
 
-	if (!uniqueId) {
-		return null;
-	}
-
 	return (
 		<>
-			<Global styles={getDivWrapStyles()} />
-			<Global
-				styles={getPaddingMarginStyles({
-					className: WRAP_CLASSNAME,
-					margin: style_dimension.margin,
-					padding: style_dimension.padding,
-				})}
-			/>
+			{hasCustomPosition && <Global styles={getDivWrapStyles()} />}
+			{hasCustomDimension && (
+				<Global
+					styles={getPaddingMarginStyles({
+						className: WRAP_CLASSNAME,
+						margin: style_dimension.margin,
+						padding: style_dimension.padding,
+					})}
+				/>
+			)}
 
 			{/* --------- ICON with higher specificity --------- */}
-			{general_icon.enableIcon ? (
+			{hasCustomIcon && general_icon.enableIcon ? (
 				<Global
 					styles={[
 						getPaddingMarginStyles({
@@ -115,7 +128,7 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 			) : null}
 
 			{/* --------- TITLE with higher specificity --------- */}
-			{general_layout.enableTitle ? (
+			{hasCustomTitle && general_layout.enableTitle ? (
 				<Global
 					styles={[
 						getTypographyStyles({
@@ -138,8 +151,30 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 					]}
 				/>
 			) : null}
+
+			{/* --------- DESIGNATION with higher specificity --------- */}
+			{hasCustomDesignation && general_layout.enablePrefix ? (
+				<Global
+					styles={[
+						getTypographyStyles({
+							typography: style_desination.typography,
+							className: `${WRAP_CLASSNAME} .wcb-icon-list__designation`,
+						}),
+						getStyleObjectFromResponsiveAttr({
+							className: `${WRAP_CLASSNAME} .wcb-icon-list__designation`,
+							value: style_desination.marginBottom,
+							prefix: "marginBottom",
+						}),
+						{
+							[`${WRAP_CLASSNAME} .wcb-icon-list__designation`]: {
+								color: style_desination.textColor,
+							},
+						},
+					]}
+				/>
+			) : null}
 		</>
 	);
 };
 
-export default GlobalCssChild; 
+export default GlobalCssChild;

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * and all sub-panel *_DEMO constants.
  */
 
-return array(
+$attributes = array(
 	'uniqueId' => array(
 		'type'    => 'string',
 		'default' => '',
@@ -267,27 +267,6 @@ return array(
 			'preset' => '',
 		),
 	),
-	'advance_responsiveCondition' => array(
-		'type'    => 'object',
-		'default' => array(
-			'isHiddenOnDesktop' => false,
-			'isHiddenOnTablet'  => false,
-			'isHiddenOnMobile'  => false,
-		),
-	),
-	'advance_motionEffect' => array(
-		'type'    => 'object',
-		'default' => array(
-			'animationDelay'    => 0,
-			'animationDuration' => 'fast',
-			'entranceAnimation' => '',
-			'repeat'            => '1',
-		),
-	),
-	'advance_zIndex' => array(
-		'type'    => 'object',
-		'default' => array(
-			'Desktop' => '',
-		),
-	),
 );
+
+return array_merge( $attributes, WCB_Block_Helper::get_advance_attributes() );

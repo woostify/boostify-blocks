@@ -14,60 +14,7 @@ export interface WcbAttrsForSave
 export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
 		uniqueId,
-		general_layout,
-		style_dimension,
 	} = attributes;
-
-	const containerStyles = {
-		display: "flex",
-		flexDirection: general_layout.layout === "vertical" ? "column" : "row",
-		...(general_layout.layout === "vertical"
-			? {
-				alignItems: 
-					general_layout.textAlignment.Desktop === "center" || 
-					general_layout.textAlignment.Tablet === "center" || 
-					general_layout.textAlignment.Mobile === "center" ? 
-					"center" :
-					general_layout.textAlignment.Desktop === "left" || 
-					general_layout.textAlignment.Tablet === "left" || 
-					general_layout.textAlignment.Mobile === "left" ? 
-					"flex-start" :
-					general_layout.textAlignment.Desktop === "right" || 
-					general_layout.textAlignment.Tablet === "right" || 
-					general_layout.textAlignment.Mobile === "right" ?
-					"flex-end" : "flex-start",
-			}
-			: {
-				justifyContent: 
-					general_layout.textAlignment.Desktop === "center" || 
-					general_layout.textAlignment.Tablet === "center" || 
-					general_layout.textAlignment.Mobile === "center" ? 
-					"center" :
-					general_layout.textAlignment.Desktop === "left" || 
-					general_layout.textAlignment.Tablet === "left" || 
-					general_layout.textAlignment.Mobile === "left" ? 
-					"flex-start" :
-					general_layout.textAlignment.Desktop === "right" || 
-					general_layout.textAlignment.Tablet === "right" || 
-					general_layout.textAlignment.Mobile === "right" ?
-					"flex-end" : "flex-start",
-			}),
-		...(style_dimension?.padding?.Desktop && {
-			paddingTop: style_dimension.padding.Desktop.top || "",
-			paddingRight: style_dimension.padding.Desktop.right || "",
-			paddingBottom: style_dimension.padding.Desktop.bottom || "",
-			paddingLeft: style_dimension.padding.Desktop.left || "",
-		}),
-		...(style_dimension?.margin?.Desktop && {
-			marginTop: style_dimension.margin.Desktop.top || "",
-			marginRight: style_dimension.margin.Desktop.right || "",
-			marginBottom: style_dimension.margin.Desktop.bottom || "",
-			marginLeft: style_dimension.margin.Desktop.left || "",
-		}),
-		...(style_dimension?.gapBetweenItems?.Desktop && {
-			gap: style_dimension.gapBetweenItems.Desktop,
-		}),
-	};
 
 	// Wrapper block props with className same as Edit component
 	const wrapBlockProps = useBlockProps.save({
@@ -77,7 +24,6 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	// Container for list items - avoid useBlockProps.save to prevent duplicate wrapper.
 	const innerBlocksProps = useInnerBlocksProps.save({
 		className: "wcb-icon-list__icon-wrap",
-		style: containerStyles
 	});
 
 	return (

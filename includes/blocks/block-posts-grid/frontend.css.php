@@ -91,10 +91,10 @@ if ( isset( $g_srt['isEqualHeight'] ) && ! $g_srt['isEqualHeight'] ) {
 	$css['desktop'][ $card_sel ]['height'] = 'max-content';
 }
 if ( ! empty( $sl['textAlignment'] ) ) {
-	$css['desktop'][ $card_sel ]['text-align'] = $sl['textAlignment'];
+	WCB_Block_Helper::add_responsive_css( $css, $card_sel, 'text-align', $sl['textAlignment'] );
 }
 if ( ! empty( $sl['backgroundColor'] ) ) {
-	$css['desktop'][ $card_sel ]['background-color'] = $sl['backgroundColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $card_sel, 'background-color', $sl['backgroundColor'] );
 }
 if ( ! empty( $sb ) ) {
 	WCB_Block_Helper::add_border_css( $css, $card_sel, $sb, true );
@@ -115,7 +115,7 @@ if ( ! empty( $sf['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $top_img_sel, 'margin-bottom', $sf['marginBottom'] );
 }
 if ( ! empty( $sf['backgroundOverlay'] ) ) {
-	$css['desktop'][ $overlay_sel ]['background-color'] = $sf['backgroundOverlay'];
+	WCB_Block_Helper::add_responsive_css( $css, $overlay_sel, 'background-color', $sf['backgroundOverlay'] );
 }
 $css['desktop'][ $overlay_sel ]['border-radius'] = 'inherit';
 
@@ -143,10 +143,10 @@ if ( ! empty( $st['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $title_sel, $st['typography'] );
 }
 if ( ! empty( $st['textColor'] ) ) {
-	$css['desktop'][ $title_sel ]['color'] = $st['textColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $title_sel, 'color', $st['textColor'] );
 }
 if ( ! empty( $st['textHoverColor'] ) ) {
-	$css['desktop'][ $title_sel . ':hover' ]['color'] = $st['textHoverColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $title_sel . ':hover', 'color', $st['textHoverColor'] );
 }
 if ( ! empty( $st['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $title_wrap, 'margin-bottom', $st['marginBottom'] );
@@ -157,7 +157,7 @@ if ( ! empty( $se['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $excerpt_sel, $se['typography'] );
 }
 if ( ! empty( $se['textColor'] ) ) {
-	$css['desktop'][ $excerpt_sel ]['color'] = $se['textColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $excerpt_sel, 'color', $se['textColor'] );
 }
 if ( ! empty( $se['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $excerpt_sel, 'margin-bottom', $se['marginBottom'] );
@@ -171,14 +171,14 @@ if ( ! empty( $sm['authorTypography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $author_sel, $sm['authorTypography'] );
 }
 if ( ! empty( $sm['authorColor'] ) ) {
-	$css['desktop'][ $author_sel ]['color']                           = $sm['authorColor'];
-	$css['desktop'][ $card_sel . ' .wcbPostCard__meta-author' ]['color'] = $sm['authorColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $author_sel, 'color', $sm['authorColor'] );
+	WCB_Block_Helper::add_responsive_css( $css, $card_sel . ' .wcbPostCard__meta-author', 'color', $sm['authorColor'] );
 }
 if ( ! empty( $sm['dateTypography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $date_sel, $sm['dateTypography'] );
 }
 if ( ! empty( $sm['dateTextColor'] ) ) {
-	$css['desktop'][ $date_sel ]['color'] = $sm['dateTextColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $date_sel, 'color', $sm['dateTextColor'] );
 }
 
 // 7. Taxonomy
@@ -186,10 +186,10 @@ if ( ! empty( $stx['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $tax_sel, $stx['typography'] );
 }
 if ( ! empty( $stx['textColor'] ) ) {
-	$css['desktop'][ $tax_sel ]['color'] = $stx['textColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $tax_sel, 'color', $stx['textColor'] );
 }
 if ( ! empty( $stx['backgroundColor'] ) ) {
-	$css['desktop'][ $tax_high ]['background-color'] = $stx['backgroundColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $tax_high, 'background-color', $stx['backgroundColor'] );
 }
 if ( ! empty( $stx['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $tax_wrap, 'margin-bottom', $stx['marginBottom'] );
@@ -202,16 +202,16 @@ if ( ! empty( $sr['typography'] ) ) {
 if ( ! empty( $sr['colorAndBackgroundColor'] ) ) {
 	$cbc = $sr['colorAndBackgroundColor'];
 	if ( ! empty( $cbc['Normal']['color'] ) ) {
-		$css['desktop'][ $readmore_sel ]['color'] = $cbc['Normal']['color'];
+		WCB_Block_Helper::add_responsive_css( $css, $readmore_sel, 'color', $cbc['Normal']['color'] );
 	}
 	if ( ! empty( $cbc['Normal']['backgroundColor'] ) ) {
-		$css['desktop'][ $readmore_sel ]['background-color'] = $cbc['Normal']['backgroundColor'];
+		WCB_Block_Helper::add_responsive_css( $css, $readmore_sel, 'background-color', $cbc['Normal']['backgroundColor'] );
 	}
 	if ( ! empty( $cbc['Hover']['color'] ) ) {
-		$css['desktop'][ $readmore_sel . ':hover' ]['color'] = $cbc['Hover']['color'];
+		WCB_Block_Helper::add_responsive_css( $css, $readmore_sel . ':hover', 'color', $cbc['Hover']['color'] );
 	}
 	if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
-		$css['desktop'][ $readmore_sel . ':hover' ]['background-color'] = $cbc['Hover']['backgroundColor'];
+		WCB_Block_Helper::add_responsive_css( $css, $readmore_sel . ':hover', 'background-color', $cbc['Hover']['backgroundColor'] );
 	}
 }
 if ( ! empty( $sr['border'] ) ) {
@@ -226,25 +226,25 @@ if ( ! empty( $sr['marginBottom'] ) ) {
 
 // 9. Pagination
 if ( ! empty( $sp['justifyContent'] ) ) {
-	$css['desktop'][ $pag_wrap ]['justify-content'] = $sp['justifyContent'];
+	WCB_Block_Helper::add_responsive_css( $css, $pag_wrap, 'justify-content', $sp['justifyContent'] );
 }
 if ( ! empty( $sp['marginTop'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $pag_wrap, 'margin-top', $sp['marginTop'] );
 }
 if ( ! empty( $sp['mainStyle']['Normal']['color'] ) ) {
-	$css['desktop'][ $pag_sel ]['color'] = $sp['mainStyle']['Normal']['color'];
+	WCB_Block_Helper::add_responsive_css( $css, $pag_sel, 'color', $sp['mainStyle']['Normal']['color'] );
 }
 if ( ! empty( $sp['mainStyle']['Normal']['backgroundColor'] ) ) {
-	$css['desktop'][ $pag_sel ]['background-color'] = $sp['mainStyle']['Normal']['backgroundColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $pag_sel, 'background-color', $sp['mainStyle']['Normal']['backgroundColor'] );
 }
 if ( ! empty( $sp['mainStyle']['Normal']['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $pag_sel, $sp['mainStyle']['Normal']['border'], true );
 }
 if ( ! empty( $sp['mainStyle']['Active']['color'] ) ) {
-	$css['desktop'][ $pag_active ]['color'] = $sp['mainStyle']['Active']['color'];
+	WCB_Block_Helper::add_responsive_css( $css, $pag_active, 'color', $sp['mainStyle']['Active']['color'] );
 }
 if ( ! empty( $sp['mainStyle']['Active']['backgroundColor'] ) ) {
-	$css['desktop'][ $pag_active ]['background-color'] = $sp['mainStyle']['Active']['backgroundColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $pag_active, 'background-color', $sp['mainStyle']['Active']['backgroundColor'] );
 }
 if ( ! empty( $sp['mainStyle']['Active']['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $pag_active, $sp['mainStyle']['Active']['border'], true );

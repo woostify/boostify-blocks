@@ -14,9 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$selectors   = array();
-$t_selectors = array();
-$m_selectors = array();
+$css = array(
+	'desktop' => array(),
+	'tablet'  => array(),
+	'mobile'  => array(),
+);
 
 $gg  = $attr['general_general'] ?? array();
 $sn  = $attr['style_name'] ?? array();
@@ -42,145 +44,106 @@ $slick_arrow    = $wrap_sel . ' .slick-arrow';
 $slick_dots     = $wrap_sel . ' .slick-dots';
 $slick_dots_btn = $wrap_sel . ' .slick-dots li button:before';
 
-// 1. Text Alignment
+// 1. Text Alignment.
 if ( ! empty( $gg['textAlignment'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $item_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $item_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['textAlignment'], 'text-align', $item_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $item_sel, 'text-align', $gg['textAlignment'] );
 }
 
-// 2. ColGap on item
+// 2. ColGap on item.
 if ( ! empty( $gg['colGap'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $item_sel, 'desktop' ) );
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $item_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $item_sel, 'tablet' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $item_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-left', $item_sel, 'mobile' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $gg['colGap'], 'padding-right', $item_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $item_sel, 'padding-left', $gg['colGap'] );
+	WCB_Block_Helper::add_responsive_css( $css, $item_sel, 'padding-right', $gg['colGap'] );
 }
 
-// 3. Name
+// 3. Name.
 if ( ! empty( $sn['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sn['typography'], $name_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $sn['typography'], $name_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $sn['typography'], $name_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $name_sel, $sn['typography'] );
 }
 if ( ! empty( $sn['textColor'] ) ) {
-	$selectors[ $name_sel ]['color'] = $sn['textColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $name_sel, 'color', $sn['textColor'] );
 }
 if ( ! empty( $sn['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sn['marginBottom'], 'margin-bottom', $name_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sn['marginBottom'], 'margin-bottom', $name_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sn['marginBottom'], 'margin-bottom', $name_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $name_sel, 'margin-bottom', $sn['marginBottom'] );
 }
 
-// 4. Content
+// 4. Content.
 if ( ! empty( $sc['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sc['typography'], $content_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $sc['typography'], $content_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $sc['typography'], $content_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $content_sel, $sc['typography'] );
 }
 if ( ! empty( $sc['textColor'] ) ) {
-	$selectors[ $content_sel ]['color'] = $sc['textColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $content_sel, 'color', $sc['textColor'] );
 }
 if ( ! empty( $sc['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sc['marginBottom'], 'margin-bottom', $content_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sc['marginBottom'], 'margin-bottom', $content_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sc['marginBottom'], 'margin-bottom', $content_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $content_sel, 'margin-bottom', $sc['marginBottom'] );
 }
 
-// 5. Company
+// 5. Company.
 if ( ! empty( $sco['typography'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_typography_css( $sco['typography'], $company_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_typography_css( $sco['typography'], $company_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_typography_css( $sco['typography'], $company_sel, 'mobile' ) );
+	WCB_Block_Helper::add_typography_css( $css, $company_sel, $sco['typography'] );
 }
 if ( ! empty( $sco['textColor'] ) ) {
-	$selectors[ $company_sel ]['color'] = $sco['textColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $company_sel, 'color', $sco['textColor'] );
 }
 
-// 6. Image
+// 6. Image.
 if ( ! empty( $si['padding'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_dimension_css( $si['padding'], 'padding', $image_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_dimension_css( $si['padding'], 'padding', $image_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_dimension_css( $si['padding'], 'padding', $image_sel, 'mobile' ) );
+	WCB_Block_Helper::add_dimension_css( $css, $image_sel, 'padding', $si['padding'] );
 }
 if ( ! empty( $si['radius'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $si['radius'], 'border-radius', $image_img_sel, 'desktop', 'px' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $si['radius'], 'border-radius', $image_img_sel, 'tablet', 'px' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $si['radius'], 'border-radius', $image_img_sel, 'mobile', 'px' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $image_img_sel, 'border-radius', $si['radius'], 'px' );
 }
 if ( ! empty( $si['imageSize'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $si['imageSize'], 'width', $image_img_sel, 'desktop' ) );
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $si['imageSize'], 'height', $image_img_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $si['imageSize'], 'width', $image_img_sel, 'tablet' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $si['imageSize'], 'height', $image_img_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $si['imageSize'], 'width', $image_img_sel, 'mobile' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $si['imageSize'], 'height', $image_img_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $image_img_sel, 'width', $si['imageSize'] );
+	WCB_Block_Helper::add_responsive_css( $css, $image_img_sel, 'height', $si['imageSize'] );
 }
 if ( ! empty( $si['objectFit'] ) ) {
-	$selectors[ $image_img_sel ]['object-fit'] = $si['objectFit'];
+	WCB_Block_Helper::add_responsive_css( $css, $image_img_sel, 'object-fit', $si['objectFit'] );
 }
 
-// 7. Rating
+// 7. Rating.
 if ( ! empty( $sr['marginBottom'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sr['marginBottom'], 'margin-bottom', $rating_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sr['marginBottom'], 'margin-bottom', $rating_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sr['marginBottom'], 'margin-bottom', $rating_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $rating_sel, 'margin-bottom', $sr['marginBottom'] );
 }
 if ( ! empty( $sr['color'] ) ) {
-	$selectors[ $rating_sel ]['color']           = $sr['color'];
-	$selectors[ $rating_sel . ' .active' ]['color'] = $sr['color'];
+	WCB_Block_Helper::add_responsive_css( $css, $rating_sel, 'color', $sr['color'] );
+	WCB_Block_Helper::add_responsive_css( $css, $rating_sel . ' .active', 'color', $sr['color'] );
 }
 
-// 8. Background & Border
+// 8. Background & Border.
 if ( ! empty( $sab['border'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sab['border'], $item_sel, true ) );
+	WCB_Block_Helper::add_border_css( $css, $item_sel, $sab['border'], true );
 }
 if ( ! empty( $sab['background'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_background_css( $sab['background'], $item_bg_sel ) );
+	WCB_Block_Helper::add_background_css( $css, $item_bg_sel, $sab['background'] );
 }
 
-// 9. Dots margin top
+// 9. Dots margin top.
 if ( ! empty( $sa['dotsMarginTop'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-bottom', $item_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-bottom', $item_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_responsive_css( $sa['dotsMarginTop'], 'margin-bottom', $item_sel, 'mobile' ) );
+	WCB_Block_Helper::add_responsive_css( $css, $item_sel, 'margin-bottom', $sa['dotsMarginTop'] );
 }
 
-// 10. Slick Arrow & Dots
+// 10. Slick Arrow & Dots.
 if ( ! empty( $sa['border'] ) ) {
-	$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_border_css( $sa['border'], $slick_arrow, true ) );
+	WCB_Block_Helper::add_border_css( $css, $slick_arrow, $sa['border'], true );
 }
 if ( ! empty( $sa['arrowSize'] ) ) {
-	$selectors[ $slick_arrow . ' svg' ]['width']  = $sa['arrowSize'];
-	$selectors[ $slick_arrow . ' svg' ]['height'] = $sa['arrowSize'];
+	WCB_Block_Helper::add_responsive_css( $css, $slick_arrow . ' svg', 'width', $sa['arrowSize'] );
+	WCB_Block_Helper::add_responsive_css( $css, $slick_arrow . ' svg', 'height', $sa['arrowSize'] );
 }
 if ( ! empty( $sa['color'] ) ) {
-	$selectors[ $slick_arrow . ' svg' ]['color'] = $sa['color'];
-	$selectors[ $slick_dots_btn ]['color']       = $sa['color'];
+	WCB_Block_Helper::add_responsive_css( $css, $slick_arrow . ' svg', 'color', $sa['color'] );
+	WCB_Block_Helper::add_responsive_css( $css, $slick_dots_btn, 'color', $sa['color'] );
 }
 
-// 11. Dimensions
+// 11. Dimensions.
 if ( ! empty( $sdm['padding'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_dimension_css( $sdm['padding'], 'padding', $item_inner_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_dimension_css( $sdm['padding'], 'padding', $item_inner_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_dimension_css( $sdm['padding'], 'padding', $item_inner_sel, 'mobile' ) );
+	WCB_Block_Helper::add_dimension_css( $css, $item_inner_sel, 'padding', $sdm['padding'] );
 }
 if ( ! empty( $sdm['margin'] ) ) {
-	$selectors   = array_replace_recursive( $selectors, WCB_Block_Helper::get_dimension_css( $sdm['margin'], 'margin', $item_inner_sel, 'desktop' ) );
-	$t_selectors = array_replace_recursive( $t_selectors, WCB_Block_Helper::get_dimension_css( $sdm['margin'], 'margin', $item_inner_sel, 'tablet' ) );
-	$m_selectors = array_replace_recursive( $m_selectors, WCB_Block_Helper::get_dimension_css( $sdm['margin'], 'margin', $item_inner_sel, 'mobile' ) );
+	WCB_Block_Helper::add_dimension_css( $css, $item_inner_sel, 'margin', $sdm['margin'] );
 }
 
-// 12. Advance
-$selectors = array_replace_recursive( $selectors, WCB_Block_Helper::get_advance_css( $attr, $wrap_sel ) );
+// 12. Advance.
+WCB_Block_Helper::add_advance_css( $css, $wrap_sel, $attr );
 
-$combined_selectors = array(
-	'desktop' => $selectors,
-	'tablet'  => $t_selectors,
-	'mobile'  => $m_selectors,
-);
-
-return WCB_Block_Helper::generate_all_css( $combined_selectors, '' );
-
+return WCB_Block_Helper::generate_all_css( $css, '' );

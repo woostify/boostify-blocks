@@ -92,13 +92,13 @@ $layout = $gs['layout'] ?? 'normal';
 $so     = $attr['style_overlay'] ?? array();
 if ( 'overlay' === $layout ) {
 	if ( ! empty( $gs['contentAlignment'] ) ) {
-		$css['desktop'][ $ov_bg_sel ]['justify-content'] = $gs['contentAlignment'];
+		WCB_Block_Helper::add_responsive_css( $css, $ov_bg_sel, 'justify-content', $gs['contentAlignment'] );
 	}
 	if ( ! empty( $so['backgroundColor'] ) ) {
-		$css['desktop'][ $ov_bg_sel ]['background-color'] = $so['backgroundColor'];
+		WCB_Block_Helper::add_responsive_css( $css, $ov_bg_sel, 'background-color', $so['backgroundColor'] );
 	}
 	if ( ! empty( $so['backgroundColorHover'] ) ) {
-		$css['desktop'][ $ov_bg_sel . ':hover' ]['background-color'] = $so['backgroundColorHover'];
+		WCB_Block_Helper::add_responsive_css( $css, $ov_bg_sel . ':hover', 'background-color', $so['backgroundColorHover'] );
 	}
 }
 
@@ -135,7 +135,7 @@ if ( 'overlay' !== $layout ) {
 		WCB_Block_Helper::add_dimension_css( $css, $cap_sel, 'margin', $sc['margin'] );
 	}
 	if ( ! empty( $sc['textColor'] ) ) {
-		$css['desktop'][ $cap_sel ]['color'] = $sc['textColor'];
+		WCB_Block_Helper::add_responsive_css( $css, $cap_sel, 'color', $sc['textColor'] );
 	}
 }
 

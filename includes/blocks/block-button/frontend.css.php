@@ -70,11 +70,11 @@ $icon_hover_color = '';
 if ( $final_is_inherit ) {
 	$theme = $theme_inherit;
 
-	$css['desktop'][ $btn_sel ]['background-color'] = $theme['backgroundColor'];
+	WCB_Block_Helper::add_responsive_css( $css, $btn_sel, 'background-color', $theme['backgroundColor'] );
 	if ( '' !== $theme['borderRadius'] ) {
-		$css['desktop'][ $btn_sel ]['border-radius'] = $theme['borderRadius'];
+		WCB_Block_Helper::add_responsive_css( $css, $btn_sel, 'border-radius', $theme['borderRadius'] );
 	}
-	$css['desktop'][ $btn_sel . ':hover' ]['background-color'] = $theme['backgroundColorHover'];
+	WCB_Block_Helper::add_responsive_css( $css, $btn_sel . ':hover', 'background-color', $theme['backgroundColorHover'] );
 
 	$txt_color        = $theme['textColor'];
 	$txt_hover_color  = $theme['textColorHover'];
@@ -105,16 +105,16 @@ if ( $final_is_inherit ) {
 
 // Text & icon colors (+ hover).
 if ( '' !== $txt_color ) {
-	$css['desktop'][ $txt_sel ]['color'] = $txt_color;
+	WCB_Block_Helper::add_responsive_css( $css, $txt_sel, 'color', $txt_color );
 }
 if ( '' !== $icon_color ) {
-	$css['desktop'][ $icon_sel ]['color'] = $icon_color;
+	WCB_Block_Helper::add_responsive_css( $css, $icon_sel, 'color', $icon_color );
 }
 if ( '' !== $txt_hover_color ) {
-	$css['desktop'][ $btn_sel . ':hover .wcb-button__text' ]['color'] = $txt_hover_color;
+	WCB_Block_Helper::add_responsive_css( $css, $btn_sel . ':hover .wcb-button__text', 'color', $txt_hover_color );
 }
 if ( '' !== $icon_hover_color ) {
-	$css['desktop'][ $btn_sel . ':hover .wcb-button__icon' ]['color'] = $icon_hover_color;
+	WCB_Block_Helper::add_responsive_css( $css, $btn_sel . ':hover .wcb-button__icon', 'color', $icon_hover_color );
 }
 
 // =====================================================================
@@ -145,12 +145,12 @@ $build_button_shadow = function ( $shadow ) {
 
 $shadow_normal = $build_button_shadow( $sbs['Normal'] ?? array() );
 if ( '' !== $shadow_normal ) {
-	$css['desktop'][ $btn_sel ]['box-shadow'] = $shadow_normal;
+	WCB_Block_Helper::add_responsive_css( $css, $btn_sel, 'box-shadow', $shadow_normal );
 }
 
 $shadow_hover = $build_button_shadow( $sbs['Hover'] ?? array() );
 if ( '' !== $shadow_hover ) {
-	$css['desktop'][ $btn_sel . ':hover' ]['box-shadow'] = $shadow_hover;
+	WCB_Block_Helper::add_responsive_css( $css, $btn_sel . ':hover', 'box-shadow', $shadow_hover );
 }
 
 // =====================================================================
