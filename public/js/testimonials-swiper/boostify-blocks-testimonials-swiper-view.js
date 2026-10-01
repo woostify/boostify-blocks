@@ -62,6 +62,9 @@ function mountSwiper( ref, context ) {
 				? {
 						delay: autoplaySpeed || 3000,
 						pauseOnMouseEnter: !! hoverpause,
+						// Without loop, stop on the last slide instead of
+						// Swiper's default of rewinding back to the first.
+						stopOnLastSlide: ! rewind,
 				  }
 				: false,
 			autoHeight: !! adaptiveHeight,

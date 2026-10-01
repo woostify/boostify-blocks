@@ -652,6 +652,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		autoplaySpeed,
 		hoverpause,
 		isAutoPlay,
+		rewind,
 		showArrowsDots,
 		adaptiveHeight,
 	} = general_carousel;
@@ -886,7 +887,13 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating RichText nodes
 			speed: animationDuration || 500,
 			autoplay: isAutoPlay
-				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
+				? {
+					delay: autoplaySpeed,
+					pauseOnMouseEnter: hoverpause,
+					// Without loop, stop on the last slide instead of
+					// Swiper's default of rewinding back to the first.
+					stopOnLastSlide: !rewind,
+				}
 				: false,
 			slidesPerView: activeCols || columnsMobile || 1,
 			breakpoints: {
@@ -920,6 +927,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			isAutoPlay,
 			autoplaySpeed,
 			hoverpause,
+			rewind,
 			columnsDesktop,
 			columnsTablet,
 			columnsMobile,
@@ -961,7 +969,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				    turning autoplay off leaves it "running" with no delay and the
 				    hover (pauseOnMouseEnter) listeners then slide non-stop. */}
 				<Swiper
-					key={`autoplay-${isAutoPlay}-${autoplaySpeed}-${hoverpause}`}
+					key={`autoplay-${isAutoPlay}-${autoplaySpeed}-${hoverpause}-${rewind}`}
 					{...swiperCommonProps}
 				>
 					{CURRENT_DATA.map(renderTestimonialItem)}
