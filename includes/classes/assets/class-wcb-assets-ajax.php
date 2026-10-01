@@ -70,8 +70,19 @@ class WCB_Assets_Ajax {
 			? filter_var( wp_unslash( $_POST['debug'] ), FILTER_VALIDATE_BOOLEAN )
 			: null;
 
-		$result = $this->generator->regenerate_all_assets( $with_debug );
-		wp_send_json_success( $result );
+		try {
+			$result = $this->generator->regenerate_all_assets( $with_debug );
+			wp_send_json_success( $result );
+		} catch ( \Throwable $e ) {
+			wp_send_json_error(
+				array(
+					'message' => $e->getMessage() . ' (' . basename( $e->getFile() ) . ':' . $e->getLine() . ')',
+					'file'    => $e->getFile(),
+					'line'    => $e->getLine(),
+				),
+				500
+			);
+		}
 	}
 
 	/**
@@ -94,14 +105,25 @@ class WCB_Assets_Ajax {
 			wp_send_json_error( array( 'message' => 'Invalid post ID' ), 400 );
 		}
 
-		$success = $this->generator->regenerate_post_assets( $post_id, true );
+		try {
+			$success = $this->generator->regenerate_post_assets( $post_id, true );
 
-		wp_send_json_success(
-			array(
-				'success' => $success,
-				'message' => $success ? __( 'Assets regenerated for post.', 'boostify-blocks' ) : __( 'No Boostify blocks found in this post.', 'boostify-blocks' ),
-			)
-		);
+			wp_send_json_success(
+				array(
+					'success' => $success,
+					'message' => $success ? __( 'Assets regenerated for post.', 'boostify-blocks' ) : __( 'No Boostify blocks found in this post.', 'boostify-blocks' ),
+				)
+			);
+		} catch ( \Throwable $e ) {
+			wp_send_json_error(
+				array(
+					'message' => $e->getMessage() . ' (' . basename( $e->getFile() ) . ':' . $e->getLine() . ')',
+					'file'    => $e->getFile(),
+					'line'    => $e->getLine(),
+				),
+				500
+			);
+		}
 	}
 
 	/**
