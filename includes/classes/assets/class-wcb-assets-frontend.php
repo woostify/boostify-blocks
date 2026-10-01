@@ -124,6 +124,13 @@ class WCB_Assets_Frontend {
 			return;
 		}
 
+		// When file generation is disabled (OFF - Default):
+		// Post styles are rendered on the frontend by JavaScript (FrontendStyles.js / React Emotion).
+		// Do not enqueue static files or inject server-side inline CSS to prevent duplicate rules.
+		if ( ! $this->file_generation_enabled ) {
+			return;
+		}
+
 		$post_id = $this->get_effective_post_id();
 		if ( ! $post_id ) {
 			return;
@@ -132,71 +139,68 @@ class WCB_Assets_Frontend {
 		$file_id = $this->get_css_file_id_for_request( $post_id );
 
 		// 1. If file generation is enabled, attempt to serve the static CSS file.
-		if ( $this->file_generation_enabled ) {
-			$needs_regeneration = ( 'post' === $this->request_context ) ? $this->generator->should_regenerate_post_assets( $post_id ) : false;
+		$needs_regeneration = ( 'post' === $this->request_context ) ? $this->generator->should_regenerate_post_assets( $post_id ) : false;
 
-			if ( ! $needs_regeneration && $this->storage->css_file_exists( $file_id ) ) {
-				$file_path = $this->storage->get_css_file_path( $file_id );
-				$version   = $this->storage->get_stylesheet_version( $file_path );
-				wp_enqueue_style(
-					'boostify-blocks-' . $file_id,
-					$this->storage->get_css_file_url( $file_id ),
-					array( 'boostify-blocks-frontend-css' ),
-					$version
-				);
-				$this->file_css_enqueued   = true;
-				$this->assets_file_handler = array( 'css_url' => $this->storage->get_css_file_url( $file_id ) );
-				return;
-			}
+		if ( ! $needs_regeneration && $this->storage->css_file_exists( $file_id ) ) {
+			$file_path = $this->storage->get_css_file_path( $file_id );
+			$version   = $this->storage->get_stylesheet_version( $file_path );
+			wp_enqueue_style(
+				'boostify-blocks-' . $file_id,
+				$this->storage->get_css_file_url( $file_id ),
+				array( 'boostify-blocks-frontend-css' ),
+				$version
+			);
+			$this->file_css_enqueued   = true;
+			$this->assets_file_handler = array( 'css_url' => $this->storage->get_css_file_url( $file_id ) );
+			return;
+		}
 
-			// File missing OR needs regeneration (global asset version or plugin version updated).
-			if ( 'post' === $this->request_context ) {
-				if ( ! $this->generator->should_attempt_regeneration( $post_id ) ) {
-					if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-						// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-						error_log( sprintf(
-							'[Boostify Blocks] Skipped on-the-fly CSS regeneration for post %d (cooldown active).',
-							$post_id
-						) );
-					}
-					// If old file exists, serve it to avoid broken UI and prevent 404.
-					if ( $this->storage->css_file_exists( $file_id ) ) {
-						$file_path = $this->storage->get_css_file_path( $file_id );
-						$version   = $this->storage->get_stylesheet_version( $file_path );
-						wp_enqueue_style(
-							'boostify-blocks-' . $file_id,
-							$this->storage->get_css_file_url( $file_id ),
-							array( 'boostify-blocks-frontend-css' ),
-							$version
-						);
-						$this->file_css_enqueued   = true;
-						$this->assets_file_handler = array( 'css_url' => $this->storage->get_css_file_url( $file_id ) );
-						return;
-					}
-				} else {
-					// Regenerate safely — writes over existing file without deleting first.
-					$this->generator->regenerate_post_assets( $post_id, true );
+		// File missing OR needs regeneration (global asset version or plugin version updated).
+		if ( 'post' === $this->request_context ) {
+			if ( ! $this->generator->should_attempt_regeneration( $post_id ) ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+					error_log( sprintf(
+						'[Boostify Blocks] Skipped on-the-fly CSS regeneration for post %d (cooldown active).',
+						$post_id
+					) );
+				}
+				// If old file exists, serve it to avoid broken UI and prevent 404.
+				if ( $this->storage->css_file_exists( $file_id ) ) {
+					$file_path = $this->storage->get_css_file_path( $file_id );
+					$version   = $this->storage->get_stylesheet_version( $file_path );
+					wp_enqueue_style(
+						'boostify-blocks-' . $file_id,
+						$this->storage->get_css_file_url( $file_id ),
+						array( 'boostify-blocks-frontend-css' ),
+						$version
+					);
+					$this->file_css_enqueued   = true;
+					$this->assets_file_handler = array( 'css_url' => $this->storage->get_css_file_url( $file_id ) );
+					return;
+				}
+			} else {
+				// Regenerate safely — writes over existing file without deleting first.
+				$this->generator->regenerate_post_assets( $post_id, true );
 
-					// Enqueue regenerated file.
-					if ( $this->storage->css_file_exists( $file_id ) ) {
-						$file_path = $this->storage->get_css_file_path( $file_id );
-						$version   = $this->storage->get_stylesheet_version( $file_path );
-						wp_enqueue_style(
-							'boostify-blocks-' . $file_id,
-							$this->storage->get_css_file_url( $file_id ),
-							array( 'boostify-blocks-frontend-css' ),
-							$version
-						);
-						$this->file_css_enqueued   = true;
-						$this->assets_file_handler = array( 'css_url' => $this->storage->get_css_file_url( $file_id ) );
-						return;
-					}
+				// Enqueue regenerated file.
+				if ( $this->storage->css_file_exists( $file_id ) ) {
+					$file_path = $this->storage->get_css_file_path( $file_id );
+					$version   = $this->storage->get_stylesheet_version( $file_path );
+					wp_enqueue_style(
+						'boostify-blocks-' . $file_id,
+						$this->storage->get_css_file_url( $file_id ),
+						array( 'boostify-blocks-frontend-css' ),
+						$version
+					);
+					$this->file_css_enqueued   = true;
+					$this->assets_file_handler = array( 'css_url' => $this->storage->get_css_file_url( $file_id ) );
+					return;
 				}
 			}
 		}
 
-		// 2. Fallback / File Generation Disabled:
-		// Generate CSS on the server side and inject directly into <head> via wp_add_inline_style.
+		// 2. Fallback: If file generation is enabled but static file is unavailable, inject inline CSS into <head>.
 		$css = $this->get_current_request_css();
 		if ( ! empty( $css ) ) {
 			if ( ! wp_style_is( 'boostify-blocks-frontend-css', 'enqueued' ) ) {
