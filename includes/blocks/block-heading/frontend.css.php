@@ -47,15 +47,9 @@ if ( ! empty( $attr['styles_background']['background'] ) ) {
 	$bg      = $attr['styles_background']['background'];
 	$bg_type = $bg['bgType'] ?? 'color';
 	if ( 'color' === $bg_type && ! empty( $bg['color'] ) ) {
-<<<<<<< HEAD
-		$css['desktop'][ $wrap_sel ]['background-color'] = $bg['color'];
-	} elseif ( 'gradient' === $bg_type && ! empty( $bg['gradient'] ) ) {
-		$css['desktop'][ $wrap_sel ]['background-image'] = $bg['gradient'];
-=======
 		WCB_Block_Helper::add_responsive_css( $css, $wrap_sel, 'background-color', $bg['color'] );
 	} elseif ( 'gradient' === $bg_type && ! empty( $bg['gradient'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $wrap_sel, 'background-image', $bg['gradient'] );
->>>>>>> feature/settings-asset-generation
 	}
 }
 
@@ -65,17 +59,10 @@ if ( ! empty( $attr['styles_background']['background'] ) ) {
 if ( ! empty( $attr['styles_link']['linkColor'] ) ) {
 	$lc = $attr['styles_link']['linkColor'];
 	if ( ! empty( $lc['Normal']['color'] ) ) {
-<<<<<<< HEAD
-		$css['desktop'][ $link_sel ]['color'] = $lc['Normal']['color'];
-	}
-	if ( ! empty( $lc['Hover']['color'] ) ) {
-		$css['desktop'][ $link_sel . ':hover' ]['color'] = $lc['Hover']['color'];
-=======
 		WCB_Block_Helper::add_responsive_css( $css, $link_sel, 'color', $lc['Normal']['color'] );
 	}
 	if ( ! empty( $lc['Hover']['color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $link_sel . ':hover', 'color', $lc['Hover']['color'] );
->>>>>>> feature/settings-asset-generation
 	}
 }
 
@@ -106,17 +93,10 @@ if ( ! empty( $attr['styles_highlight'] ) ) {
 	$hl = $attr['styles_highlight'];
 
 	if ( ! empty( $hl['textColor'] ) ) {
-<<<<<<< HEAD
-		$css['desktop'][ $mark_sel ]['color'] = $hl['textColor'];
-	}
-	if ( ! empty( $hl['bgColor'] ) ) {
-		$css['desktop'][ $mark_sel ]['background-color'] = $hl['bgColor'];
-=======
 		WCB_Block_Helper::add_responsive_css( $css, $mark_sel, 'color', $hl['textColor'] );
 	}
 	if ( ! empty( $hl['bgColor'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $mark_sel, 'background-color', $hl['bgColor'] );
->>>>>>> feature/settings-asset-generation
 	}
 	if ( ! empty( $hl['padding'] ) ) {
 		WCB_Block_Helper::add_dimension_css( $css, $mark_sel, 'padding', $hl['padding'] );
@@ -146,15 +126,9 @@ if ( ! empty( $attr['styles_separator'] ) ) {
 		$st = $sep['border']['style'] ?? 'solid';
 		$c  = $sep['border']['color'] ?? '#d1d5db';
 		if ( 'none' === $st ) {
-<<<<<<< HEAD
-			$css['desktop'][ $sep_sel ]['border'] = 'none';
-		} else {
-			$css['desktop'][ $sep_sel ]['border'] = trim( $w . ' ' . $st . ' ' . $c );
-=======
 			WCB_Block_Helper::add_responsive_css( $css, $sep_sel, 'border', 'none' );
 		} else {
 			WCB_Block_Helper::add_responsive_css( $css, $sep_sel, 'border', trim( $w . ' ' . $st . ' ' . $c ) );
->>>>>>> feature/settings-asset-generation
 		}
 	}
 
