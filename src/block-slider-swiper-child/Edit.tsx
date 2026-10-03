@@ -311,7 +311,30 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 	};
 	
 	//  COMMON HOOKS
-	const wrapBlockProps = useBlockProps();
+	// useBlockProps() reads clientId from the nearest BlockListBlock, NOT from
+	// BlockEditContext. The slider parent renders slides via WPBlockEdit (no
+	// BlockListBlock of their own), so here it returns the PARENT's props:
+	// parent id/data-block, parent's block ref + focusin handler. The parent's
+	// element ref then ends up on the last slide, and focusing a RichText there
+	// re-selects the parent - so the last slide's text can't be edited. Only
+	// use the props when they really belong to this block.
+	// The fallback still marks this wrapper as its own block for Gutenberg:
+	// - block class + id: the parent's focusin handler (isInsideRootBlock) and
+	//   the selection observer (getBlockClientId) resolve focus inside this
+	//   slide to the slide, not to the parent.
+	// - tabIndex -1: clicking the slide moves focus here, so a later click on
+	//   the parent (arrows, dots, padding) fires focusin on the parent again
+	//   and Gutenberg selects it.
+	const blockProps = useBlockProps();
+	const wrapBlockProps =
+		blockProps["data-block"] === clientId
+			? blockProps
+			: {
+				id: `block-${clientId}`,
+				className: "block-editor-block-list__block",
+				tabIndex: -1,
+				"data-block": clientId,
+			};
 	
 	// Generate unique CSS class from clientId
 	const uniqueClientClass = converClientIdToUniqueClass(clientId);

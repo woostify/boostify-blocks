@@ -15,6 +15,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		uniqueId,
 		// ATTRS OF BLOCK
 		general_general,
+		general_carousel,
 		style_arrowAndDots,
 		style_backgroundAndBorder,
 		style_dimension,
@@ -33,6 +34,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const SWIPER_DOTS = `${WRAP_CLASSNAME} .swiper-pagination`;
 	const SWIPER_BULLET = `${WRAP_CLASSNAME} .swiper-pagination-bullet`;
 	const SWIPER_BULLET_ACTIVE = `${WRAP_CLASSNAME} .swiper-pagination-bullet-active`;
+	const WRAP_ITEMS = `${WRAP_CLASSNAME} .wcb-slider__wrap-items`;
+
+	// Dots are absolutely positioned at the bottom of .wcb-slider__wrap-items,
+	// so they overlap the slide content. Reserve room below the slides:
+	// dots offset + dot height (8px) + 10px gap to the content.
+	const showDots = general_carousel?.showArrowsDots !== "Arrow";
+	const dotsBottom = style_arrowAndDots.dotsMarginTop?.Desktop || "0px";
+	const DOTS_GAP = "10px";
+	const DOT_SIZE = "8px";
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject[] => {
@@ -122,25 +132,30 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 					},
 					{
-						[`${SWIPER_ARROW}`]: {
-							backgroundColor: style_arrowAndDots.backgroundColor,
-						},
+						[`${SWIPER_DOTS}`]: {
+							position: "absolute",
+							bottom: dotsBottom,
+							// Container height = dot height, so the gap is exact
+							lineHeight: 0,
+						}
 					},
-					getStyleObjectFromResponsiveAttr({
-						className: SWIPER_DOTS,
-						value: style_arrowAndDots.dotsMarginTop,
-						prefix: "marginTop",
-					}),
-					getStyleObjectFromResponsiveAttr({
-						className: SWIPER_PREV,
-						value: style_arrowAndDots.arrowDistance,
-						prefix: "left",
-					}),
-					getStyleObjectFromResponsiveAttr({
-						className: SWIPER_NEXT,
-						value: style_arrowAndDots.arrowDistance,
-						prefix: "right",
-					}),
+					showDots
+						? {
+							[`${WRAP_ITEMS}`]: {
+								paddingBottom: `calc(${dotsBottom} + ${DOT_SIZE} + ${DOTS_GAP})`,
+							},
+						}
+						: {},
+					{
+						[`${SWIPER_PREV}`]: {
+							left: style_arrowAndDots.arrowDistance?.Desktop || "0px",
+						}
+					},
+					{
+						[`${SWIPER_NEXT}`]: {
+							right: style_arrowAndDots.arrowDistance?.Desktop || "0px",
+						}
+					}
 				]}
 			/>
 
