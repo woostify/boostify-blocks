@@ -81,13 +81,23 @@ if ( ! empty( $sa['arrowSize'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow_svg, 'height', $sa['arrowSize'] );
 }
 
-if ( ! empty( $sa['dotsMarginTop'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'margin-top', $sa['dotsMarginTop'] );
+$gc         = $attr['general_carousel'] ?? array();
+$wrap_items = $wrap_sel . ' .wcb-slider__wrap-items';
+
+$show_dots   = ( $gc['showArrowsDots'] ?? '' ) !== 'Arrow';
+$dots_bottom = ! empty( $sa['dotsMarginTop']['Desktop'] ) ? $sa['dotsMarginTop']['Desktop'] : '0px';
+
+$css['desktop'][ $swiper_dots ]['position']    = 'absolute';
+$css['desktop'][ $swiper_dots ]['bottom']      = $dots_bottom;
+$css['desktop'][ $swiper_dots ]['line-height'] = '0';
+
+if ( $show_dots ) {
+	$css['desktop'][ $wrap_items ]['padding-bottom'] = 'calc(' . $dots_bottom . ' + 8px + 10px)';
 }
-if ( ! empty( $sa['arrowDistance'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $swiper_prev, 'left', $sa['arrowDistance'] );
-	WCB_Block_Helper::add_responsive_css( $css, $swiper_next, 'right', $sa['arrowDistance'] );
-}
+
+$arrow_dist = ! empty( $sa['arrowDistance']['Desktop'] ) ? $sa['arrowDistance']['Desktop'] : ( ( isset( $sa['arrowDistance'] ) && is_string( $sa['arrowDistance'] ) ) ? $sa['arrowDistance'] : '0px' );
+$css['desktop'][ $swiper_prev ]['left']  = $arrow_dist;
+$css['desktop'][ $swiper_next ]['right'] = $arrow_dist;
 
 // 6. Dimensions.
 if ( ! empty( $sdm['padding'] ) ) {
