@@ -886,15 +886,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			observeParents: true,
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating RichText nodes
 			speed: animationDuration || 500,
-			autoplay: isAutoPlay
-				? {
-					delay: autoplaySpeed,
-					pauseOnMouseEnter: hoverpause,
-					// Without loop, stop on the last slide instead of
-					// Swiper's default of rewinding back to the first.
-					stopOnLastSlide: !rewind,
-				}
-				: false,
+			autoplay: false,
 			slidesPerView: activeCols || columnsMobile || 1,
 			breakpoints: {
 				[BREAKPOINT_TABLET]: {
