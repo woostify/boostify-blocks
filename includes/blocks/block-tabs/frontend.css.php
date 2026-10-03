@@ -55,12 +55,10 @@ if ( ! empty( $sc['rowGap'] ) ) {
 }
 
 // 2. Layout Styles.
-$layout        = $gg['layout'] ?? '';
-$style         = $gg['style'] ?? '';
-$tab_align     = $gt['tabAlignment'] ?? 'left';
-$text_align    = $gt['textAlignment'] ?? 'left';
-$title_row_gap = $st['rowGap']['Desktop'] ?? ( $st['rowGap'] ?? '1rem' );
-$icon_col_gap  = $si['colGap']['Desktop'] ?? ( $si['colGap'] ?? '0.5rem' );
+$layout     = $gg['layout'] ?? '';
+$style      = $gg['style'] ?? '';
+$tab_align  = $gt['tabAlignment'] ?? 'left';
+$text_align = $gt['textAlignment'] ?? 'left';
 
 if ( 'grid' === $layout || 'verticalStyle1' === $style || 'verticalStyle2' === $style ) {
 	$css['desktop'][ $inner_sel ]['display']               = 'grid';
@@ -69,8 +67,8 @@ if ( 'grid' === $layout || 'verticalStyle1' === $style || 'verticalStyle2' === $
 
 	$css['desktop'][ $title_wrap_sel ]['display']         = 'flex';
 	$css['desktop'][ $title_wrap_sel ]['flex-direction']  = 'column';
-	$css['desktop'][ $title_wrap_sel ]['gap']             = $title_row_gap;
 	$css['desktop'][ $title_wrap_sel ]['justify-content'] = WCB_Block_Helper::get_flex_align( $tab_align );
+	WCB_Block_Helper::add_responsive_css( $css, $title_wrap_sel, 'gap', $st['rowGap'] ?? '1rem' );
 
 	$css['desktop'][ $title_child_sel ]['display']         = 'flex';
 	$css['desktop'][ $title_child_sel ]['flex-direction']  = 'row';
@@ -78,7 +76,7 @@ if ( 'grid' === $layout || 'verticalStyle1' === $style || 'verticalStyle2' === $
 	$css['desktop'][ $title_child_sel ]['padding']         = '0.5rem';
 	$css['desktop'][ $title_child_sel ]['box-sizing']      = 'border-box';
 	$css['desktop'][ $title_child_sel ]['justify-content'] = WCB_Block_Helper::get_flex_align( $text_align );
-	$css['desktop'][ $title_child_sel ]['gap']             = $icon_col_gap;
+	WCB_Block_Helper::add_responsive_css( $css, $title_child_sel, 'gap', $si['colGap'] ?? '0.5rem' );
 
 	$css['desktop'][ $body_sel ]['margin']     = '0px';
 	$css['desktop'][ $body_sel ]['padding']    = '1rem';
@@ -94,7 +92,7 @@ if ( 'grid' === $layout || 'verticalStyle1' === $style || 'verticalStyle2' === $
 	$css['desktop'][ $title_child_sel ]['display']         = 'flex';
 	$css['desktop'][ $title_child_sel ]['flex-direction']  = 'row';
 	$css['desktop'][ $title_child_sel ]['justify-content'] = WCB_Block_Helper::get_flex_align( $text_align );
-	$css['desktop'][ $title_child_sel ]['gap']             = $icon_col_gap;
+	WCB_Block_Helper::add_responsive_css( $css, $title_child_sel, 'gap', $si['colGap'] ?? '0.5rem' );
 } elseif ( 'horizontalStyle2' === $style ) {
 	$css['desktop'][ $title_wrap_sel ]['display']         = 'flex';
 	$css['desktop'][ $title_wrap_sel ]['flex-direction']  = 'row';

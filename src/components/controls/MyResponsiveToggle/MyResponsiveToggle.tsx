@@ -29,13 +29,17 @@ const MyResponsiveToggle: FC<Props> = ({
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 
-	const { __experimentalSetPreviewDeviceType: setPreviewDeviceType } =
-		dispatch("core/edit-post") as {
-			__experimentalSetPreviewDeviceType: (device: ResponsiveDevices) => void;
-		};
-
 	const handleSetDeviceType = useCallback((dv: ResponsiveDevices) => {
-		setPreviewDeviceType(DEVICE_TYPES[dv]);
+		const targetDevice = DEVICE_TYPES[dv];
+		const editorDispatch = (dispatch as any)("core/editor");
+		const editPostDispatch = (dispatch as any)("core/edit-post");
+
+		if (editorDispatch?.setDeviceType) {
+			editorDispatch.setDeviceType(targetDevice);
+		}
+		if (editPostDispatch?.__experimentalSetPreviewDeviceType) {
+			editPostDispatch.__experimentalSetPreviewDeviceType(targetDevice);
+		}
 	}, []);
 
 	const renderDeviceIcon = (dv: ResponsiveDevices, className = "h-4 w-4") => {

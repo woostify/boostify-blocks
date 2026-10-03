@@ -40,9 +40,19 @@ const GlobalCss: FC<Props> = (attrs) => {
 	// so they overlap the slide content. Reserve room below the slides:
 	// dots offset + dot height (8px) + 10px gap to the content.
 	const showDots = general_carousel?.showArrowsDots !== "Arrow";
-	const dotsBottom = style_arrowAndDots.dotsMarginTop?.Desktop || "0px";
 	const DOTS_GAP = "10px";
 	const DOT_SIZE = "8px";
+
+	const getWrapItemsPaddingBottom = () => {
+		const d = style_arrowAndDots.dotsMarginTop?.Desktop ?? "0px";
+		const t = style_arrowAndDots.dotsMarginTop?.Tablet ?? d;
+		const m = style_arrowAndDots.dotsMarginTop?.Mobile ?? t;
+		return {
+			Desktop: `calc(${d} + ${DOT_SIZE} + ${DOTS_GAP})`,
+			Tablet: `calc(${t} + ${DOT_SIZE} + ${DOTS_GAP})`,
+			Mobile: `calc(${m} + ${DOT_SIZE} + ${DOTS_GAP})`,
+		};
+	};
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject[] => {
@@ -134,28 +144,32 @@ const GlobalCss: FC<Props> = (attrs) => {
 					{
 						[`${SWIPER_DOTS}`]: {
 							position: "absolute",
-							bottom: dotsBottom,
 							// Container height = dot height, so the gap is exact
 							lineHeight: 0,
-						}
+						},
 					},
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_DOTS,
+						value: style_arrowAndDots.dotsMarginTop,
+						prefix: "bottom",
+					}),
 					showDots
-						? {
-							[`${WRAP_ITEMS}`]: {
-								paddingBottom: `calc(${dotsBottom} + ${DOT_SIZE} + ${DOTS_GAP})`,
-							},
-						}
-						: {},
-					{
-						[`${SWIPER_PREV}`]: {
-							left: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					},
-					{
-						[`${SWIPER_NEXT}`]: {
-							right: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					}
+						? getStyleObjectFromResponsiveAttr({
+							className: WRAP_ITEMS,
+							value: getWrapItemsPaddingBottom(),
+							prefix: "paddingBottom",
+						})
+						: null,
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_PREV,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "left",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_NEXT,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "right",
+					}),
 				]}
 			/>
 

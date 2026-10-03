@@ -573,9 +573,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 							/* ===  Animation === */
 							transform: "translateY(2.5rem)",
 							transition: "transform 0.2s ease-in-out",
-							zIndex: 2,
-							marginTop: "0px !important",
-							borderRadius: (style_addToCardBtn?.border?.radius?.Desktop as any) ?? "0px",
+							...(typeof style_addToCardBtn?.border?.radius?.Desktop === "string"
+								? { borderRadius: style_addToCardBtn.border.radius.Desktop }
+								: typeof style_addToCardBtn?.border?.radius?.Desktop === "object" && style_addToCardBtn?.border?.radius?.Desktop !== null
+								? {
+										borderTopLeftRadius: (style_addToCardBtn.border.radius.Desktop as any).topLeft,
+										borderTopRightRadius: (style_addToCardBtn.border.radius.Desktop as any).topRight,
+										borderBottomRightRadius: (style_addToCardBtn.border.radius.Desktop as any).bottomRight,
+										borderBottomLeftRadius: (style_addToCardBtn.border.radius.Desktop as any).bottomLeft,
+								  }
+								: { borderRadius: "0px" }),
 							"&::after": {
 								content: '""',
 								width: "1.2rem",
@@ -1189,6 +1196,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global
 						styles={getBorderStyles({
 							className: ADD_TO_CART_BTN,
+							border: style_addToCardBtn?.border,
+							isWithRadius: true,
+						})}
+					/>
+					<Global
+						styles={getBorderStyles({
+							className: `${POST_CARD_CLASS} .wcb-products__product--btnIconAddToCart--item`,
 							border: style_addToCardBtn?.border,
 							isWithRadius: true,
 						})}

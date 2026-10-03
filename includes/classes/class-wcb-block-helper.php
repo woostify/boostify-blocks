@@ -474,25 +474,13 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 	 * @param boolean $use_individual_corners Whether to output individual corner properties (border-*-radius).
 	 * @param boolean $skip_zero              Whether to skip outputting '0' radius.
 	 */
-	public static function add_border_css( &$css, $selector, $border, $is_with_radius = true, $use_individual_corners = false, $skip_zero = false ) {
+	public static function add_border_css( &$css, $selector, $border, $is_with_radius = true, $use_individual_corners = true, $skip_zero = false ) {
 		if ( empty( $border ) || ! is_array( $border ) ) {
 			return;
 		}
 		self::init_css_accumulator( $css );
 
-		if ( ! $use_individual_corners ) {
-			$b_rules = self::get_border_css( $border, $selector, $is_with_radius );
-			if ( ! empty( $b_rules ) ) {
-				foreach ( $b_rules as $sel => $props ) {
-					foreach ( $props as $p => $v ) {
-						$css['desktop'][ $sel ][ $p ] = $v;
-					}
-				}
-			}
-			return;
-		}
-
-		// Individual corners mode (mirrors src/utils/getBorderStyles.ts & getBorderRadiusStyles.ts).
+		// Border styles (mirrors src/utils/getBorderStyles.ts & getBorderRadiusStyles.ts).
 		$main = $border['mainSettings'] ?? null;
 		if ( empty( $main ) && ( isset( $border['width'] ) || isset( $border['style'] ) || isset( $border['color'] ) || isset( $border['top'] ) || isset( $border['right'] ) || isset( $border['bottom'] ) || isset( $border['left'] ) ) ) {
 			$main = $border;
@@ -580,10 +568,10 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 				if ( '' !== $d_v && null !== $d_v && ( ! $skip_zero || ( '0' !== (string) $d_v && 0 !== $d_v ) ) ) {
 					$css['desktop'][ $selector ][ $css_prop ] = self::get_css_value( $d_v );
 				}
-				if ( '' !== $t_v && null !== $t_v && $t_v !== $d_v && ( ! $skip_zero || ( '0' !== (string) $t_v && 0 !== $t_v ) ) ) {
+				if ( '' !== $t_v && null !== $t_v && $t_v !== $d_v ) {
 					$css['tablet'][ $selector ][ $css_prop ] = self::get_css_value( $t_v );
 				}
-				if ( '' !== $m_v && null !== $m_v && $m_v !== $t_v && ( ! $skip_zero || ( '0' !== (string) $m_v && 0 !== $m_v ) ) ) {
+				if ( '' !== $m_v && null !== $m_v && $m_v !== $t_v ) {
 					$css['mobile'][ $selector ][ $css_prop ] = self::get_css_value( $m_v );
 				}
 			}

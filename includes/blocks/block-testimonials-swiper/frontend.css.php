@@ -150,6 +150,10 @@ if ( ! empty( $sa['arrowSize'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow_svg, 'width', $sa['arrowSize'] );
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow_svg, 'height', $sa['arrowSize'] );
 }
+if ( ! empty( $sa['arrowDistance'] ) ) {
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_prev, 'left', $sa['arrowDistance'] );
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_next, 'right', $sa['arrowDistance'] );
+}
 
 // 11. Dimensions.
 if ( ! empty( $sdm['padding'] ) ) {
