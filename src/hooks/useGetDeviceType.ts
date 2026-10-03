@@ -1,20 +1,28 @@
-import React from "react";
 import { useSelect } from "@wordpress/data";
 
-const useGetDeviceType = () => {
-	const { deviceType } = useSelect((select) => {
-		const { __experimentalGetPreviewDeviceType: getPreviewDeviceType } =
-			select("core/edit-post") || false;
+export type ResponsiveDevices = "Desktop" | "Tablet" | "Mobile";
 
-		if (!getPreviewDeviceType) {
-			return {
-				deviceType: null,
-			};
-		}
+const normalizeDeviceType = (val: any): ResponsiveDevices | null => {
+	if (!val) return null;
+	const lower = String(val).toLowerCase();
+	if (lower === "mobile") return "Mobile";
+	if (lower === "tablet") return "Tablet";
+	if (lower === "desktop") return "Desktop";
+	return null;
+};
+
+const useGetDeviceType = (): ResponsiveDevices | null => {
+	const { deviceType } = useSelect((select) => {
+		const editorSelect = (select as any)("core/editor");
+		const editPostSelect = (select as any)("core/edit-post");
+
+		const rawType =
+			editorSelect?.getDeviceType?.() ||
+			editPostSelect?.__experimentalGetPreviewDeviceType?.() ||
+			null;
 
 		return {
-			// @ts-ignore
-			deviceType: getPreviewDeviceType(),
+			deviceType: normalizeDeviceType(rawType),
 		};
 	}, []);
 
@@ -22,3 +30,4 @@ const useGetDeviceType = () => {
 };
 
 export default useGetDeviceType;
+

@@ -693,27 +693,21 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const forceSliderRecalc = useCallback(() => {
 		const swiper = swiperRef.current;
 		if (swiper && !swiper.destroyed && swiper.el && swiper.el.isConnected) {
-			const colsDesk = Number(columnsDesktop) || 1;
-			const colsTab = Number(columnsTablet) || colsDesk;
-			const colsMob = Number(columnsMobile) || colsTab;
-
-			const newBreakpoints = {
-				[BREAKPOINT_TABLET]: {
-					slidesPerView: colsTab,
-				},
-				[BREAKPOINT_DESKTOP]: {
-					slidesPerView: colsDesk,
-				},
-			};
-
-			swiper.params.breakpoints = newBreakpoints;
-			if (swiper.originalParams) {
-				swiper.originalParams.breakpoints = { ...newBreakpoints };
-				swiper.originalParams.slidesPerView = colsMob;
+			delete swiper.params.breakpoints;
+			delete (swiper.params as any).breakpointsBase;
+			(swiper.params as any).autoplay = false;
+			if (swiper.autoplay && swiper.autoplay.running) {
+				swiper.autoplay.stop();
 			}
-
-			// In the editor, show the column count for the device being edited
+			// In the editor, show the column count for the device being edited directly
 			swiper.params.slidesPerView = activeCols;
+
+			if (swiper.originalParams) {
+				delete swiper.originalParams.breakpoints;
+				delete (swiper.originalParams as any).breakpointsBase;
+				swiper.originalParams.slidesPerView = activeCols;
+				(swiper.originalParams as any).autoplay = false;
+			}
 
 			swiper.currentBreakpoint = undefined;
 			swiper.update();
@@ -885,18 +879,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			observeParents: true,
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating RichText nodes
 			speed: animationDuration || 500,
-			autoplay: isAutoPlay
-				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
-				: false,
-			slidesPerView: activeCols || columnsMobile || 1,
-			breakpoints: {
-				[BREAKPOINT_TABLET]: {
-					slidesPerView: columnsTablet || columnsMobile || 1,
-				},
-				[BREAKPOINT_DESKTOP]: {
-					slidesPerView: columnsDesktop || columnsTablet || 1,
-				},
-			},
+			autoplay: false,
+			slidesPerView: activeCols || 1,
 			autoHeight: adaptiveHeight,
 			navigation: showArrows
 				? {

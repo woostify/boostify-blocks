@@ -180,11 +180,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							[`@media (max-width: 767px)`]: {
 								[ITEM_CONTENT]: {
 									textAlign:
-									style_content?.textAlignment?.Mobile === "left"
-										? "start"
-										: style_content?.textAlignment?.Mobile === "right"
-										? "end"
-										: "center",
+										(style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
+											? "start"
+											: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
+											? "end"
+											: "center",
 								},
 							},
 
@@ -192,11 +192,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							[`@media (min-width: 768px) and (max-width: 1023px)`]: {
 								[ITEM_CONTENT]: {
 									textAlign:
-									style_content?.textAlignment?.Tablet === "left"
-										? "start"
-										: style_content?.textAlignment?.Tablet === "right"
-										? "end"
-										: "center",
+										(style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
+											? "start"
+											: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
+											? "end"
+											: "center",
 								},
 							},
 
@@ -204,11 +204,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							[`@media (min-width: 1024px)`]: {
 								[ITEM_CONTENT]: {
 									textAlign:
-									style_content?.textAlignment?.Desktop === "left"
-										? "start"
-										: style_content?.textAlignment?.Desktop === "right"
-										? "end"
-										: "center",
+										style_content?.textAlignment?.Desktop === "left"
+											? "start"
+											: style_content?.textAlignment?.Desktop === "right"
+											? "end"
+											: "center",
 								},
 							},
 						},
@@ -260,17 +260,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 						[`@media (max-width: 767px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
 								alignItems:
-									style_content?.textAlignment?.Mobile === "left"
+									((style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
 									? "flex-start"
-									: style_content?.textAlignment?.Mobile === "right"
+									: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
 									? "flex-end"
-									: "center",
+									: "center"),
 								textAlign:
-									style_content?.textAlignment?.Mobile === "left"
+									((style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
 									? "start"
-									: style_content?.textAlignment?.Mobile === "right"
+									: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
 									? "end"
-									: "center",
+									: "center"),
 							},
 						},
 
@@ -278,17 +278,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 						[`@media (min-width: 768px) and (max-width: 1023px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
 								alignItems:
-									style_content?.textAlignment?.Tablet === "left"
+									((style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
 									? "flex-start"
-									: style_content?.textAlignment?.Tablet === "right"
+									: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
 									? "flex-end"
-									: "center",
+									: "center"),
 								textAlign:
-									style_content?.textAlignment?.Tablet === "left"
+									((style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
 									? "start"
-									: style_content?.textAlignment?.Tablet === "right"
+									: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
 									? "end"
-									: "center",
+									: "center"),
 							},
 						},
 
@@ -331,18 +331,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 						[CALL_TO_ACTION_TEXT]: {
 							color: style_callToActionButton?.colorText ?? "#ffffff",
 						},
-						[CALL_TO_ACTION_TEXT_SPACING]: 
-							style_buttonPreset?.iconPosition === "afterTitle"
-								? { marginRight: style_buttonPreset?.iconSpacing?.Desktop ?? "0px" }
-								: { marginLeft: style_buttonPreset?.iconSpacing?.Desktop ?? "0px" },
-						// [CALL_TO_ACTION_TEXT_SPACING]: 
-						// 	style_buttonPreset?.iconPosition === "afterTitle"
-						// 		? { marginRight: style_buttonPreset?.iconSpacing?.Tablet ?? "0px" }
-						// 		: { marginLeft: style_buttonPreset?.iconSpacing?.Tablet ?? "0px" },
-						// [CALL_TO_ACTION_TEXT_SPACING]: 
-						// 	style_buttonPreset?.iconPosition === "afterTitle"
-						// 		? { marginRight: style_buttonPreset?.iconSpacing?.Mobile ?? "0px" }
-						// 		: { marginLeft: style_buttonPreset?.iconSpacing?.Mobile ?? "0px" },
+					},
+					getStyleObjectFromResponsiveAttr({
+						className: CALL_TO_ACTION_TEXT_SPACING,
+						value: style_buttonPreset?.iconSpacing,
+						prefix: style_buttonPreset?.iconPosition === "afterTitle" ? "marginRight" : "marginLeft",
+					}),
+					{
 						// BUTTON HOVER
 						[CALL_TO_ACTION_INNER]: {
 							":hover": {

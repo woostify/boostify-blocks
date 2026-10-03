@@ -89,10 +89,14 @@ const GlobalCss: FC<Props> = (attrs) => {
                             [TITLE_WRAP_CLASSNAME]: {
                                 display: "flex",
                                 flexDirection: "column",
-                                gap: style_title.rowGap.Desktop,
                                 justifyContent: getFlexAlignment(general_tabTitle.tabAlignment),
                             },
                         },
+                        getStyleObjectFromResponsiveAttr({
+                            className: TITLE_WRAP_CLASSNAME,
+                            value: style_title.rowGap,
+                            prefix: "gap",
+                        }),
                         {
                             [TITLE_CHILD_CLASSNAME]: {
                                 display: "flex",
@@ -101,9 +105,13 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 padding: "0.5rem",
                                 boxSizing: "border-box",
                                 justifyContent: getFlexAlignment(general_tabTitle.textAlignment),
-                                gap: style_icon.colGap.Desktop,
                             },
                         },
+                        getStyleObjectFromResponsiveAttr({
+                            className: TITLE_CHILD_CLASSNAME,
+                            value: style_icon.colGap,
+                            prefix: "gap",
+                        }),
                         {
                             [BODY_CLASSNAME]: {
                                 margin: "0px",
@@ -135,9 +143,13 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 display: "flex",
                                 flexDirection: "row",
                                 justifyContent: getFlexAlignment(general_tabTitle.textAlignment),
-                                gap: style_icon.colGap.Desktop,
                             },
                         },
+                        getStyleObjectFromResponsiveAttr({
+                            className: TITLE_CHILD_CLASSNAME,
+                            value: style_icon.colGap,
+                            prefix: "gap",
+                        }),
                     ]}
                 />
             )}

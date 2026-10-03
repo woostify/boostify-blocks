@@ -84,20 +84,35 @@ if ( ! empty( $sa['arrowSize'] ) ) {
 $gc         = $attr['general_carousel'] ?? array();
 $wrap_items = $wrap_sel . ' .wcb-slider__wrap-items';
 
-$show_dots   = ( $gc['showArrowsDots'] ?? '' ) !== 'Arrow';
-$dots_bottom = ! empty( $sa['dotsMarginTop']['Desktop'] ) ? $sa['dotsMarginTop']['Desktop'] : '0px';
+$show_dots = ( $gc['showArrowsDots'] ?? '' ) !== 'Arrow';
 
 $css['desktop'][ $swiper_dots ]['position']    = 'absolute';
-$css['desktop'][ $swiper_dots ]['bottom']      = $dots_bottom;
 $css['desktop'][ $swiper_dots ]['line-height'] = '0';
 
-if ( $show_dots ) {
-	$css['desktop'][ $wrap_items ]['padding-bottom'] = 'calc(' . $dots_bottom . ' + 8px + 10px)';
+if ( ! empty( $sa['dotsMarginTop'] ) ) {
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'bottom', $sa['dotsMarginTop'] );
+
+	if ( $show_dots ) {
+		$dots_map = is_array( $sa['dotsMarginTop'] ) ? $sa['dotsMarginTop'] : array( 'Desktop' => $sa['dotsMarginTop'] );
+		$d_dots   = $dots_map['Desktop'] ?? ( $dots_map['desktop'] ?? '0px' );
+		$t_dots   = $dots_map['Tablet'] ?? ( $dots_map['tablet'] ?? $d_dots );
+		$m_dots   = $dots_map['Mobile'] ?? ( $dots_map['mobile'] ?? $t_dots );
+
+		$padding_bottom_resp = array(
+			'Desktop' => 'calc(' . $d_dots . ' + 8px + 10px)',
+			'Tablet'  => 'calc(' . $t_dots . ' + 8px + 10px)',
+			'Mobile'  => 'calc(' . $m_dots . ' + 8px + 10px)',
+		);
+		WCB_Block_Helper::add_responsive_css( $css, $wrap_items, 'padding-bottom', $padding_bottom_resp );
+	}
+} elseif ( $show_dots ) {
+	$css['desktop'][ $wrap_items ]['padding-bottom'] = 'calc(0px + 8px + 10px)';
 }
 
-$arrow_dist = ! empty( $sa['arrowDistance']['Desktop'] ) ? $sa['arrowDistance']['Desktop'] : ( ( isset( $sa['arrowDistance'] ) && is_string( $sa['arrowDistance'] ) ) ? $sa['arrowDistance'] : '0px' );
-$css['desktop'][ $swiper_prev ]['left']  = $arrow_dist;
-$css['desktop'][ $swiper_next ]['right'] = $arrow_dist;
+if ( ! empty( $sa['arrowDistance'] ) ) {
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_prev, 'left', $sa['arrowDistance'] );
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_next, 'right', $sa['arrowDistance'] );
+}
 
 // 6. Dimensions.
 if ( ! empty( $sdm['padding'] ) ) {

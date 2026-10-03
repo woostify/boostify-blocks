@@ -331,6 +331,7 @@ if ( ! empty( $sa['marginBottom'] ) ) {
 }
 if ( ! empty( $sa['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $add_cart_sel, $sa['border'], true, true );
+	WCB_Block_Helper::add_border_css( $css, $wrap_sel . ' .wcb-products__product--btnIconAddToCart--item', $sa['border'], true, true );
 }
 
 // 11. Pagination
