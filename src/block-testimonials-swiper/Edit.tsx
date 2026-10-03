@@ -652,6 +652,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		autoplaySpeed,
 		hoverpause,
 		isAutoPlay,
+		rewind,
 		showArrowsDots,
 		adaptiveHeight,
 	} = general_carousel;
@@ -885,9 +886,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			observeParents: true,
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating RichText nodes
 			speed: animationDuration || 500,
-			autoplay: isAutoPlay
-				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
-				: false,
+			autoplay: false,
 			slidesPerView: activeCols || columnsMobile || 1,
 			breakpoints: {
 				[BREAKPOINT_TABLET]: {
@@ -920,6 +919,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			isAutoPlay,
 			autoplaySpeed,
 			hoverpause,
+			rewind,
 			columnsDesktop,
 			columnsTablet,
 			columnsMobile,
@@ -956,7 +956,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const renderEditContent = () => {
 		return (
 			<div className="wcb-testimonials-swiper__wrap-items swiper">
-				<Swiper {...swiperCommonProps}>
+				{/* Remount when autoplay settings change: swiper/react only swaps
+				    params.autoplay on update and never calls autoplay.stop(), so
+				    turning autoplay off leaves it "running" with no delay and the
+				    hover (pauseOnMouseEnter) listeners then slide non-stop. */}
+				<Swiper
+					key={`autoplay-${isAutoPlay}-${autoplaySpeed}-${hoverpause}-${rewind}`}
+					{...swiperCommonProps}
+				>
 					{CURRENT_DATA.map(renderTestimonialItem)}
 				</Swiper>
 				{renderNav()}
