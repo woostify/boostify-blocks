@@ -27,11 +27,15 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid="${uniqueId}"]`;
 	const ITEM_CLASSNAME = `${WRAP_CLASSNAME}.wcb-slider__wrap`;
-	// const ITEM_INNER_CLASSNAME = `${ITEM_CLASSNAME} .wcb-slider__item-inner`;
 	const SLICK_ARROW = `${WRAP_CLASSNAME} .slick-arrow`;
 	const SLICK_DOTS = `${WRAP_CLASSNAME} .slick-dots`;
 	const SLICK_PREV = `${WRAP_CLASSNAME} .slick-prev`;
 	const SLICK_NEXT = `${WRAP_CLASSNAME} .slick-next`;
+
+	const colsDesk = Number(general_general.columns?.Desktop) || 1;
+	const colsTab = Number(general_general.columns?.Tablet) || colsDesk;
+	const colsMob = Number(general_general.columns?.Mobile) || colsTab;
+	const hasMultipleCols = colsDesk > 1 || colsTab > 1 || colsMob > 1;
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject[] => {
@@ -60,14 +64,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 						className: ITEM_CLASSNAME,
 						isWithRadius: true,
 					}),
-					getStyleObjectFromResponsiveAttr({
-						className: ITEM_CLASSNAME,
-						value: general_general.colGap,
-						prefix: "paddingLeft",
-						prefix_2: "paddingRight",
-					}),
+					hasMultipleCols
+						? getStyleObjectFromResponsiveAttr({
+								className: `${WRAP_CLASSNAME} .slick-slide`,
+								value: general_general.colGap,
+								prefix: "paddingLeft",
+								prefix_2: "paddingRight",
+						  })
+						: null,
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME}`,
+						className: `${ITEM_CLASSNAME}`,
 						padding: style_dimension.padding,
 						margin: style_dimension.margin,
 					}),
@@ -111,25 +117,28 @@ const GlobalCss: FC<Props> = (attrs) => {
 					},
 					{
 						[`${SLICK_ARROW}`]: {
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
 							backgroundColor: style_arrowAndDots.backgroundColor,
+							cursor: "pointer",
 						},
 					},
-					{
-						[`${SLICK_DOTS}`]: {
-							position: "absolute",
-							bottom: style_arrowAndDots.dotsMarginTop.Desktop,
-						}
-					},
-					{
-						[`${SLICK_PREV}`]: {
-							left: style_arrowAndDots.arrowDistance.Desktop,
-						}
-					}
-					,{
-						[`${SLICK_NEXT}`]: {
-							right: style_arrowAndDots.arrowDistance.Desktop,
-						}
-					}
+					getStyleObjectFromResponsiveAttr({
+						className: SLICK_DOTS,
+						value: style_arrowAndDots.dotsMarginTop,
+						prefix: "marginTop",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SLICK_PREV,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "left",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SLICK_NEXT,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "right",
+					}),
 				]}
 			/>
 

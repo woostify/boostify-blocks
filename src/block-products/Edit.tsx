@@ -808,6 +808,19 @@ const Edit: FC<Props> = (props) => {
 	]);
 
 	const WcbAttrsForSaveValue = WcbAttrsForSave();
+	const numCol = style_layout?.numberOfColumn;
+	const colDesk = typeof numCol === "object" && numCol !== null ? (numCol.Desktop ?? 2) : (numCol ?? 2);
+	const colTab = typeof numCol === "object" && numCol !== null ? (numCol.Tablet ?? colDesk) : colDesk;
+	const colMob = typeof numCol === "object" && numCol !== null ? (numCol.Mobile ?? colTab) : colTab;
+
+	const rowGapDesk = style_layout?.rowGap?.Desktop ?? "1rem";
+	const rowGapTab = style_layout?.rowGap?.Tablet ?? rowGapDesk;
+	const rowGapMob = style_layout?.rowGap?.Mobile ?? rowGapTab;
+
+	const colGapDesk = style_layout?.colunmGap?.Desktop ?? "1rem";
+	const colGapTab = style_layout?.colunmGap?.Tablet ?? colGapDesk;
+	const colGapMob = style_layout?.colunmGap?.Mobile ?? colGapTab;
+
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
@@ -817,11 +830,17 @@ const Edit: FC<Props> = (props) => {
 				} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX.toString()}`}
 				style={{
 					...wrapBlockProps.style,
-					'--wcb-editor-col-mobile': style_layout?.numberOfColumn?.Mobile ?? style_layout?.numberOfColumn?.Desktop ?? 2,
-					'--wcb-editor-col-tablet': style_layout?.numberOfColumn?.Tablet ?? style_layout?.numberOfColumn?.Desktop ?? 2,
-					'--wcb-editor-col-desktop': style_layout?.numberOfColumn?.Desktop ?? 2,
-					'--wcb-editor-row-gap': style_layout?.rowGap?.Desktop ?? '1rem',
-					'--wcb-editor-col-gap': style_layout?.colunmGap?.Desktop ?? '1rem',
+					"--wcb-editor-col-mobile": colMob,
+					"--wcb-editor-col-tablet": colTab,
+					"--wcb-editor-col-desktop": colDesk,
+					"--wcb-editor-row-gap": rowGapDesk,
+					"--wcb-editor-col-gap": colGapDesk,
+					"--wcb-editor-row-gap-mobile": rowGapMob,
+					"--wcb-editor-row-gap-tablet": rowGapTab,
+					"--wcb-editor-row-gap-desktop": rowGapDesk,
+					"--wcb-editor-col-gap-mobile": colGapMob,
+					"--wcb-editor-col-gap-tablet": colGapTab,
+					"--wcb-editor-col-gap-desktop": colGapDesk,
 				} as React.CSSProperties}
 			>
 				{/* CONTROL SETTINGS */}

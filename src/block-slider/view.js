@@ -28,8 +28,13 @@ const equalize = (wrap) => {
 };
 
 const bootstrap = () => {
-	const wraps = document.querySelectorAll(".wcb-slider__wrap");
+	const wraps = document.querySelectorAll(".wcb-slider__wrap:not(.wcb-slider-swiper__wrap)");
 	wraps.forEach((wrap) => {
+		const wrapItems = wrap.querySelector(".wcb-slider__wrap-items");
+		if (wrapItems && wrapItems.classList.contains("slick-initialized")) {
+			return;
+		}
+
 		// Read attributes JSON saved in markup
 		const pre = wrap.querySelector("pre[data-wcb-block-attrs]");
 		let props = {};
@@ -44,21 +49,6 @@ const bootstrap = () => {
 			initCarouselForWcbSliders(wrap, props);
 		} catch (e) {
 			// no-op
-		}
-
-		// Equalize once after init
-		equalize(wrap);
-
-		// Hook slick lifecycle if jQuery present
-		if (window.jQuery) {
-			const $wrapItems = window.jQuery(wrap).find(".wcb-slider__wrap-items");
-			$wrapItems.on("init setPosition afterChange reInit", () => equalize(wrap));
-		}
-
-		// Re-equalize on resize/layout changes
-		if ("ResizeObserver" in window) {
-			const ro = new ResizeObserver(() => equalize(wrap));
-			ro.observe(wrap);
 		}
 	});
 };

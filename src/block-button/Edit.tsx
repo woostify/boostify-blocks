@@ -241,6 +241,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								});
 							}}
 							panelData={style_text}
+							isInheritFromTheme={finalIsInheritFromTheme}
 						/>
 
 						<WcbButtonPanel_StyleIcon
@@ -255,6 +256,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								});
 							}}
 							panelData={style_icon}
+							isInheritFromTheme={finalIsInheritFromTheme}
 						/>
 
 						{ !finalIsInheritFromTheme && (

@@ -528,18 +528,35 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		} = general_carousel;
 		const { colGap, columns } = general_general;
 
-		const { currentDeviceValue: currentColumns } = getValueFromAttrsResponsives(
+		const {
+			currentDeviceValue: currentColumns,
+			value_Desktop: columnsDesktop,
+			value_Tablet: columnsTablet,
+			value_Mobile: columnsMobile,
+		} = getValueFromAttrsResponsives(
 			columns,
 			deviceType
 		);
 
+		const colsDesk = Number(columnsDesktop) || 1;
+		const colsTab = Number(columnsTablet) || colsDesk;
+		const colsMob = Number(columnsMobile) || colsTab;
+		const activeCols =
+			Number(currentColumns) ||
+			(deviceType === "Mobile"
+				? colsMob
+				: deviceType === "Tablet"
+				? colsTab
+				: colsDesk) ||
+			1;
+
 		const settings: Settings = {
-			infinite: rewind,
+			infinite: false,
 			speed: animationDuration || 500,
-			autoplay: isAutoPlay,
+			autoplay: false,
 			autoplaySpeed,
 			//
-			slidesToShow: currentColumns,
+			slidesToShow: activeCols,
 			slidesToScroll: 1,
 			nextArrow: <SampleNextArrow />,
 			prevArrow: <SamplePrevArrow />,
@@ -550,7 +567,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			pauseOnHover: hoverpause,
 		};
 		return (
-			<Slider {...settings}>{CURRENT_DATA.map(renderTestimonialItem)}</Slider>
+			<Slider key={`${deviceType}-${activeCols}`} {...settings}>{CURRENT_DATA.map(renderTestimonialItem)}</Slider>
 		);
 	};
 
