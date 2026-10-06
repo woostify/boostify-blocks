@@ -8,12 +8,24 @@
 		position: relative;
 		display: flex;
 		justify-content: center;
+		gap: 6px;
+		z-index: 1000;
 	}
 
 	.swiper-pagination-bullet {
-		margin: 0 4px;
-		width: 8px;
-		height: 8px;
+		position: relative;
+		width: 10px;
+		height: 10px;
+		cursor: pointer !important;
+
+		// Invisible, larger hit area around the dot - the visible dot stays
+		// 10px. Horizontal overflow is half the flex gap (6px / 2) so
+		// neighbouring dots' hit areas never overlap.
+		&::before {
+			content: "";
+			position: absolute;
+			inset: -8px -3px;
+		}
 	}
 
 	.swiper-button-prev,
