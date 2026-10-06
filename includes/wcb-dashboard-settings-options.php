@@ -20,12 +20,12 @@ function boostify_blocks_dashboard_settings_options_init()
         add_option('boostify_blocks_settings_options', boostify_blocks_get_default_blocks_settings());
     } else {
         // When new fields are added, merge them with existing options.
-        // Check if new options exist and merge accordingly. 
-        // 01-03-2023
-        $hasNewOption = !array_key_exists('customColorPallete', get_option('boostify_blocks_settings_options') ?? []);
+        // Check if new options exist and merge accordingly.
+        $existing_settings = get_option('boostify_blocks_settings_options') ?: [];
+        $hasNewOption = !array_key_exists('customColorPallete', $existing_settings) || !array_key_exists('site_visibility_mode', $existing_settings);
         // 
         if ($hasNewOption) {
-            update_option('boostify_blocks_settings_options', array_merge(boostify_blocks_get_default_blocks_settings(), get_option('boostify_blocks_settings_options')));
+            update_option('boostify_blocks_settings_options', array_merge(boostify_blocks_get_default_blocks_settings(), $existing_settings));
         }
     }
 }

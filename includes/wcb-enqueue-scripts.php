@@ -301,10 +301,16 @@ function boostify_blocks_enqueue_script_to_setting_page()
             boostify_blocks_get_layout_global_settings()
         );
         // 1 - JS Global -> Follow by typeof window.boostify_blocks_global_variables
+        $settings_options = get_option('boostify_blocks_settings_options');
+        if ( is_array( $settings_options ) && ! empty( $settings_options['site_visibility_page'] ) ) {
+            $v_page_id = absint( $settings_options['site_visibility_page'] );
+            $v_page_title = get_the_title( $v_page_id );
+            $settings_options['site_visibility_page_title'] = $v_page_title ? $v_page_title : sprintf( esc_html__( '#%d (Untitled)', 'boostify-blocks' ), $v_page_id );
+        }
         wp_localize_script(
             'boostify-blocks-dashboard-app',
             'boostify_blocks_global_variables',
-            get_option('boostify_blocks_settings_options')
+            $settings_options
         );
         wp_localize_script(
             'boostify-blocks-dashboard-app',
