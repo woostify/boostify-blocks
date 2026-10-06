@@ -96,6 +96,16 @@ class WCB_Site_Visibility {
 			return true;
 		}
 
+		// Ajax requests.
+		if ( wp_doing_ajax() ) {
+			return true;
+		}
+
+		// REST API requests.
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return true;
+		}
+
 		// Login and registration page checks.
 		global $pagenow;
 		if ( ! empty( $pagenow ) && in_array( $pagenow, array( 'wp-login.php', 'wp-register.php' ), true ) ) {
@@ -104,6 +114,16 @@ class WCB_Site_Visibility {
 
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 		if ( false !== strpos( $request_uri, 'wp-login.php' ) || false !== strpos( $request_uri, 'wp-register.php' ) ) {
+			return true;
+		}
+
+		// Do not redirect REST API endpoints or AJAX via URL.
+		if ( false !== strpos( $request_uri, '/wp-json/' ) || false !== strpos( $request_uri, 'admin-ajax.php' ) ) {
+			return true;
+		}
+
+		// Do not redirect static assets (JS, CSS, images, fonts, maps) so missing files return 404 rather than HTML.
+		if ( preg_match( '/\.(css|js|map|json|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot)(\?.*)?$/i', $request_uri ) ) {
 			return true;
 		}
 
