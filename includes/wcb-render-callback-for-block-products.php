@@ -923,11 +923,14 @@ function boostify_blocks_block_products_get_image_html($product, $attributes = [
  * @param string $link The URL to link the product title to.
  * @return string The generated HTML for the product title, wrapped in the specified heading tag and linked to the product page.
  */
-function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link)
+function boostify_blocks_block_products_get_title_html($product, $headingTag = "div", $link = '')
 {
     if (empty($headingTag)) {
         $headingTag = 'div';
-    };
+    }
+    if (empty($link) && $product instanceof WC_Product) {
+        $link = get_permalink($product->get_id());
+    }
     return '<' . tag_escape($headingTag) . ' class="wcb-products__product-title wc-block-grid__product-title"> <a href="' . esc_url($link) . '">' . wp_kses_post($product->get_title()) . '</a></' . tag_escape($headingTag) . '>';
 }
 
