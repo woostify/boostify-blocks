@@ -94,6 +94,11 @@ function boostify_blocks_get_default_blocks_settings()
             ["name" => "black", "color" => "#000"],
             ["name" => "blue", "color" => "#00f"],
         ],
+        // Site Visibility (Coming Soon & Maintenance Mode)
+        'site_visibility_mode'        => 'disabled',
+        'site_visibility_page'        => '',
+        'site_visibility_page_title'  => '',
+        'site_visibility_template'    => 'blank',
     ];
 }
 
