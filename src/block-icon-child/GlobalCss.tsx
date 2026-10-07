@@ -61,37 +61,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		];
 	};
 
-	// ICON CSS
-	const renderIconCss = () => {
-		const { color, hoverColor, iconSize, dimensions, border } = style_Icon;
 
-		return `
-			${ICON_CLASS} {
-				color: ${color};
-				font-size: ${iconSize.Desktop};
-				padding: ${dimensions.padding.Desktop.top} ${dimensions.padding.Desktop.right} ${dimensions.padding.Desktop.bottom} ${dimensions.padding.Desktop.left};
-				margin: ${dimensions.margin.Desktop.top} ${dimensions.margin.Desktop.right} ${dimensions.margin.Desktop.bottom} ${dimensions.margin.Desktop.left};
-				border-radius: ${border.radius.Desktop};
-			}
-			${ICON_CLASS}:hover {
-				color: ${hoverColor || color};
-			}
-
-			@media (max-width: 768px) {
-				${ICON_CLASS} {
-					font-size: ${iconSize.Tablet};
-					border-radius: ${border.radius.Tablet};
-				}
-			}
-
-			@media (max-width: 576px) {
-				${ICON_CLASS} {
-					font-size: ${iconSize.Mobile};
-					border-radius: ${border.radius.Mobile};
-				}
-			}
-		`;
-	};
 
 	if (!uniqueId) {
 		return null;
@@ -200,8 +170,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 					className: WRAP_CLASSNAME,
 				})}
 			/>
-
-			<style>{renderIconCss()}</style>
 		</>
 	);
 };

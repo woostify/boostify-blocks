@@ -3,6 +3,7 @@ import { InnerBlocks, useBlockProps, 	// @ts-ignore
 	useInnerBlocksProps, store as blockEditorStore} from "@wordpress/block-editor";
 import { useSelect, useDispatch } from "@wordpress/data";
 import React, { useEffect, FC, useRef, useCallback } from "react";
+import { BlockInstance } from "@wordpress/blocks";
 import { WcbAttrs } from "./attributes";
 import HOCInspectorControls, {
 	InspectorControlsTabs,
@@ -95,9 +96,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							//
 							setAttr__={(data) => {
 								setAttributes({ general_layout: data });
-								// Update layout for all child blocks
-								innerBlockClientIds.forEach((childId) => {
-									updateBlockAttributes(childId, { general_layout: data });
+								innerBlocks.forEach((child: BlockInstance) => {
+									updateBlockAttributes(child.clientId, { general_layout: data });
 								});
 							}}
 							panelData={general_layout}
@@ -112,9 +112,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							//
 							setAttr__={(data) => {
 								const { preset } = data;
-								setAttributes({
-									general_preset: data,
-								});
 								const newStyleIcon = preset === "wcb-icon-list-1"
 									? WCB_ICON_LIST_PANEL_STYLE_ICON_PRESET_1
 									: preset === "wcb-icon-list-2"
@@ -124,14 +121,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									: WCB_ICON_LIST_PANEL_STYLE_ICON_DEMO;
 								
 								setAttributes({
+									general_preset: data,
 									style_Icon: newStyleIcon,
-								});
-								
-								// Update layout for all child blocks with new preset
-								innerBlockClientIds.forEach((childId) => {
-									updateBlockAttributes(childId, { 
-										style_Icon: newStyleIcon,
-									});
 								});
 							}}
 							panelData={general_preset}
@@ -149,12 +140,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								//
 								setAttr__={(data) => {
 									setAttributes({ style_Icon: data });
-									// Update icon for all child blocks
-									innerBlockClientIds.forEach((childId) => {
-										updateBlockAttributes(childId, { 
-											style_Icon: data,
-											});
-										});
 								}}
 								panelData={style_Icon}
 							/>
@@ -188,12 +173,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								//
 								setAttr__={(data) => {
 									setAttributes({ style_title: data });
-									// Update title style for all child blocks
-									innerBlockClientIds.forEach((childId) => {
-										updateBlockAttributes(childId, { 
-											style_title: data,
-										});
-									});
 								}}
 								panelData={style_title}
 							/>
@@ -267,17 +246,18 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	 */
 	const { updateBlockAttributes } = useDispatch(blockEditorStore);
 
-	// Get list clientId if child blocks
-	const innerBlockClientIds = useSelect(
-		(select: typeof wp.data.select) =>
-			select(blockEditorStore).getBlockOrder
-				? select(blockEditorStore).getBlockOrder(clientId)
-				: [],
+	// Get child blocks with their attributes
+	const innerBlocks = useSelect(
+		(select) => {
+			const blockEditor = select(blockEditorStore) as {
+				getBlocks?: (rootClientId?: string) => BlockInstance[];
+			};
+			return (blockEditor.getBlocks ? blockEditor.getBlocks(clientId) : []) as BlockInstance[];
+		},
 		[clientId]
 	);
 
-	// update icon for all child blocks
-	const handleChangeIcon = (data) => {
+	const handleChangeIcon = (data: WcbAttrs["general_icon"]) => {
 		setAttributes({
 			general_icon: data,
 			style_Icon: {
@@ -292,9 +272,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				},
 			},
 		});
-		// Update icon for all child blocks
-		innerBlockClientIds.forEach((childId) => {
-			updateBlockAttributes(childId, { general_icon: data });
+		innerBlocks.forEach((child: BlockInstance) => {
+			if (!child.attributes?.isCustomGeneralIcon && !child.attributes?.isCustomIcon) {
+				updateBlockAttributes(child.clientId, { general_icon: data });
+			}
 		});
 	};
 

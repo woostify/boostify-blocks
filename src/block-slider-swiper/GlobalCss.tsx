@@ -28,7 +28,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid="${uniqueId}"]`;
 	const ITEM_CLASSNAME = `${WRAP_CLASSNAME}.wcb-slider__wrap`;
-	// const ITEM_INNER_CLASSNAME = `${ITEM_CLASSNAME} .wcb-slider__item-inner`;
 	const SWIPER_PREV = `${WRAP_CLASSNAME} .swiper-button-prev`;
 	const SWIPER_NEXT = `${WRAP_CLASSNAME} .swiper-button-next`;
 	const SWIPER_ARROW = `${SWIPER_PREV}, ${SWIPER_NEXT}`;
@@ -41,9 +40,19 @@ const GlobalCss: FC<Props> = (attrs) => {
 	// so they overlap the slide content. Reserve room below the slides:
 	// dots offset + dot height (8px) + 10px gap to the content.
 	const showDots = general_carousel?.showArrowsDots !== "Arrow";
-	const dotsBottom = style_arrowAndDots.dotsMarginTop?.Desktop || "0px";
 	const DOTS_GAP = "10px";
 	const DOT_SIZE = "8px";
+
+	const getWrapItemsPaddingBottom = () => {
+		const d = style_arrowAndDots.dotsMarginTop?.Desktop ?? "0px";
+		const t = style_arrowAndDots.dotsMarginTop?.Tablet ?? d;
+		const m = style_arrowAndDots.dotsMarginTop?.Mobile ?? t;
+		return {
+			Desktop: `calc(${d} + ${DOT_SIZE} + ${DOTS_GAP})`,
+			Tablet: `calc(${t} + ${DOT_SIZE} + ${DOTS_GAP})`,
+			Mobile: `calc(${m} + ${DOT_SIZE} + ${DOTS_GAP})`,
+		};
+	};
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject[] => {
@@ -72,14 +81,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 						className: ITEM_CLASSNAME,
 						isWithRadius: true,
 					}),
-					getStyleObjectFromResponsiveAttr({
-						className: ITEM_CLASSNAME,
-						value: general_general.colGap,
-						prefix: "paddingLeft",
-						prefix_2: "paddingRight",
-					}),
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME}`,
+						className: `${ITEM_CLASSNAME}`,
 						padding: style_dimension.padding,
 						margin: style_dimension.margin,
 					}),
@@ -139,35 +142,34 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 					},
 					{
-						[`${SWIPER_ARROW}`]: {
-							backgroundColor: style_arrowAndDots.backgroundColor,
-						},
-					},
-					{
 						[`${SWIPER_DOTS}`]: {
 							position: "absolute",
-							bottom: dotsBottom,
 							// Container height = dot height, so the gap is exact
 							lineHeight: 0,
-						}
+						},
 					},
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_DOTS,
+						value: style_arrowAndDots.dotsMarginTop,
+						prefix: "bottom",
+					}),
 					showDots
-						? {
-							[`${WRAP_ITEMS}`]: {
-								paddingBottom: `calc(${dotsBottom} + ${DOT_SIZE} + ${DOTS_GAP})`,
-							},
-						}
-						: {},
-					{
-						[`${SWIPER_PREV}`]: {
-							left: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					},
-					{
-						[`${SWIPER_NEXT}`]: {
-							right: style_arrowAndDots.arrowDistance?.Desktop || "0px",
-						}
-					}
+						? getStyleObjectFromResponsiveAttr({
+							className: WRAP_ITEMS,
+							value: getWrapItemsPaddingBottom(),
+							prefix: "paddingBottom",
+						})
+						: null,
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_PREV,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "left",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_NEXT,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "right",
+					}),
 				]}
 			/>
 

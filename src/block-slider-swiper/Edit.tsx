@@ -791,8 +791,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		isAutoPlay,
 		showArrowsDots,
 		adaptiveHeight,
+		rewind,
 	} = general_carousel;
-	const { columns } = general_general;
+	const { columns, colGap } = general_general;
 
 	const {
 		value_Desktop: columnsDesktop,
@@ -800,6 +801,25 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		value_Mobile: columnsMobile,
 		currentDeviceValue: currentColumns,
 	} = getValueFromAttrsResponsives(columns, deviceType);
+
+	const {
+		value_Desktop: colGapDesktop,
+		value_Tablet: colGapTablet,
+		value_Mobile: colGapMobile,
+	} = getValueFromAttrsResponsives(colGap, deviceType);
+
+	const parseGapToPx = (gapVal?: string | number | null): number => {
+		if (!gapVal) return 0;
+		if (typeof gapVal === "number") return gapVal;
+		const num = parseFloat(gapVal);
+		if (isNaN(num)) return 0;
+		if (typeof gapVal === "string" && gapVal.endsWith("rem")) return num * 16;
+		return num;
+	};
+
+	const gapDesk = parseGapToPx(colGapDesktop);
+	const gapTab = parseGapToPx(colGapTablet ?? colGapDesktop);
+	const gapMob = parseGapToPx(colGapMobile ?? colGapTablet ?? colGapDesktop);
 
 	const activeCols =
 		Number(currentColumns) ||
@@ -810,35 +830,42 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				: Number(columnsDesktop)) ||
 		1;
 
+	const activeGap =
+		activeCols > 1
+			? deviceType === "Mobile"
+				? gapMob
+				: deviceType === "Tablet"
+					? gapTab
+					: gapDesk
+			: 0;
+
 	// forceSliderRecalc: calls update() and forces pagination to re-render.
-	// Writes params.breakpoints/slidesPerView directly onto the Swiper
-	// instance so sidebar column changes apply instantly without reload.
+	// Writes params.breakpoints/slidesPerView/spaceBetween directly onto the Swiper
+	// instance so sidebar column and gap changes apply instantly without reload.
 	const forceSliderRecalc = useCallback(() => {
 		const swiper = swiperRef.current;
 		if (swiper && !swiper.destroyed && swiper.el && swiper.el.isConnected) {
 			equalizeItemHeights(ref.current);
 
-			const colsDesk = Number(columnsDesktop) || 1;
-			const colsTab = Number(columnsTablet) || colsDesk;
-			const colsMob = Number(columnsMobile) || colsTab;
-
-			const newBreakpoints = {
-				[BREAKPOINT_TABLET]: {
-					slidesPerView: colsTab,
-				},
-				[BREAKPOINT_DESKTOP]: {
-					slidesPerView: colsDesk,
-				},
-			};
-
-			swiper.params.breakpoints = newBreakpoints;
-			if (swiper.originalParams) {
-				swiper.originalParams.breakpoints = { ...newBreakpoints };
-				swiper.originalParams.slidesPerView = colsMob;
+			delete swiper.params.breakpoints;
+			delete (swiper.params as any).breakpointsBase;
+			swiper.params.spaceBetween = activeGap;
+			swiper.params.rewind = !! rewind;
+			(swiper.params as any).autoplay = false;
+			if (swiper.autoplay && swiper.autoplay.running) {
+				swiper.autoplay.stop();
 			}
-
-			// In the editor, show the column count for the device being edited
+			// In the editor, show the column count for the device being edited directly
 			swiper.params.slidesPerView = activeCols;
+
+			if (swiper.originalParams) {
+				delete swiper.originalParams.breakpoints;
+				delete (swiper.originalParams as any).breakpointsBase;
+				swiper.originalParams.slidesPerView = activeCols;
+				swiper.originalParams.spaceBetween = activeGap;
+				swiper.originalParams.rewind = !! rewind;
+				(swiper.originalParams as any).autoplay = false;
+			}
 
 			swiper.currentBreakpoint = undefined;
 			swiper.update();
@@ -862,7 +889,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				swiper.pagination.update();
 			}
 		}
-	}, [columnsDesktop, columnsTablet, columnsMobile, activeCols]);
+	}, [columnsDesktop, columnsTablet, columnsMobile, activeCols, colGapDesktop, colGapTablet, colGapMobile, activeGap, gapDesk, gapTab, gapMob, rewind]);
 
 	// Progressive recalculation so the slider resizes correctly as child
 	// blocks (RichText, Button, GlobalCss) finish mounting one by one
@@ -1132,19 +1159,11 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			observeParents: true,
 			observeSlideChildren: true,
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating InspectorControls
+			rewind: !! rewind,
 			speed: animationDuration || 500,
-			autoplay: isAutoPlay
-				? { delay: autoplaySpeed, pauseOnMouseEnter: hoverpause }
-				: false,
-			slidesPerView: activeCols || columnsMobile || 1,
-			breakpoints: {
-				[BREAKPOINT_TABLET]: {
-					slidesPerView: columnsTablet || columnsMobile || 1,
-				},
-				[BREAKPOINT_DESKTOP]: {
-					slidesPerView: columnsDesktop || columnsTablet || 1,
-				},
-			},
+			autoplay: false,
+			slidesPerView: activeCols || 1,
+			spaceBetween: activeGap,
 			autoHeight: adaptiveHeight,
 			navigation: showArrows
 				? {
@@ -1175,9 +1194,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			columnsTablet,
 			columnsMobile,
 			activeCols,
+			activeGap,
+			gapDesk,
+			gapTab,
+			gapMob,
 			adaptiveHeight,
 			showArrows,
 			showDots,
+			rewind,
 			swiperSelectorScope,
 			handleAfterInit,
 			handleSwiper,

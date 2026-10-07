@@ -218,6 +218,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 							opacity: 1,
 						},
 					},
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_PREV,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "left",
+					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_NEXT,
+						value: style_arrowAndDots.arrowDistance,
+						prefix: "right",
+					}),
 				]}
 			/>
 
