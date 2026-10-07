@@ -19,15 +19,16 @@ function boostify_blocks_dashboard_settings_options_init()
     if (FALSE === get_option('boostify_blocks_settings_options') && FALSE === update_option('boostify_blocks_settings_options', FALSE)) {
         add_option('boostify_blocks_settings_options', boostify_blocks_get_default_blocks_settings());
     } else {
-        // When new fields are added, merge them with existing options.
-        // Check if new options exist and merge accordingly.
-        $existing_settings = get_option('boostify_blocks_settings_options') ?: [];
-        $hasNewOption = !array_key_exists('customColorPallete', $existing_settings) 
-            || !array_key_exists('site_visibility_mode', $existing_settings)
-            || !array_key_exists('enableDisplayConditions', $existing_settings);
-        // 
-        if ($hasNewOption) {
-            update_option('boostify_blocks_settings_options', array_merge(boostify_blocks_get_default_blocks_settings(), $existing_settings));
+        // When new settings are added to default settings, automatically detect
+        // and merge missing keys without needing to hardcode key names.
+        $default_settings  = function_exists('boostify_blocks_get_default_blocks_settings') ? boostify_blocks_get_default_blocks_settings() : [];
+        $existing_settings = get_option('boostify_blocks_settings_options');
+        $existing_settings = is_array($existing_settings) ? $existing_settings : [];
+
+        $missing_settings = array_diff_key($default_settings, $existing_settings);
+
+        if (!empty($missing_settings)) {
+            update_option('boostify_blocks_settings_options', array_merge($default_settings, $existing_settings));
         }
     }
 }
