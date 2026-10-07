@@ -1,10 +1,12 @@
 import React, { useEffect, useState, FC } from "react";
+import { __ } from "@wordpress/i18n";
 import {
 	Cog6ToothIcon,
 	RectangleGroupIcon,
 	CubeIcon,
 	Squares2X2Icon,
 	RocketLaunchIcon,
+	EyeIcon,
 } from "@heroicons/react/24/outline";
 import SettingsPageEditorOptions from "./SettingsPageEditorOptions";
 import toast, { Toaster } from "react-hot-toast";
@@ -12,6 +14,7 @@ import SettingsPageTemplates from "./SettingsPageTemplates";
 import SettingsPageBlockSettings from "./SettingsPageBlockSettings";
 import SettingsPageAssetGeneration from "./SettingPageAssetGeneration";
 import SettingsPagePerformance from "./SettingsPagePerformance";
+import SettingsPageSiteVisibility from "./SettingsPageSiteVisibility";
 import { Wcb_theme_layout_global_settings } from "../../types";
 
 interface Tab {
@@ -23,12 +26,12 @@ interface Tab {
 const TABS: Tab[] = [
 	{
 		name: "editor-options",
-		label: "Editor options",
+		label: __( "Editor options", "boostify-blocks" ),
 		icon: Cog6ToothIcon,
 	},
 	{
 		name: "templates",
-		label: "Templates",
+		label: __( "Templates", "boostify-blocks" ),
 		icon: RectangleGroupIcon,
 	},
 	{
@@ -38,13 +41,18 @@ const TABS: Tab[] = [
 	},
 	{
 		name: "block-settings",
-		label: "Block settings",
+		label: __( "Block settings", "boostify-blocks" ),
 		icon: Squares2X2Icon,
 	},
 	{
 		name: "performance",
-		label: "Performance",
+		label: __( "Performance", "boostify-blocks" ),
 		icon: RocketLaunchIcon,
+	},
+	{
+		name: "site-visibility",
+		label: __( "Site visibility", "boostify-blocks" ),
+		icon: EyeIcon,
 	},
 ];
 
@@ -99,9 +107,9 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 				console.log("Got this from the server: ", response);
 			}),
 			{
-				loading: "Saving...",
-				success: <div>Successful saved!</div>,
-				error: <div>Could not save.</div>,
+				loading: __( "Saving...", "boostify-blocks" ),
+				success: <div>{__( "Successfully saved!", "boostify-blocks" )}</div>,
+				error: <div>{__( "Could not save.", "boostify-blocks" )}</div>,
 			}
 		);
 	};
@@ -185,8 +193,18 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 					/>
 				);
 
+			case "site-visibility":
+				return (
+					<SettingsPageSiteVisibility
+						onChange={(data) => {
+							handleUpdateSettings(data);
+						}}
+						allSettings={allSettings}
+					/>
+				);
+
 			default:
-				return <div className="text-lg font-medium">Coming soon ...</div>;
+				return <div className="text-lg font-medium">{__( "Coming soon ...", "boostify-blocks" )}</div>;
 		}
 	};
 

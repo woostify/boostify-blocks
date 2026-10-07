@@ -34,6 +34,10 @@ declare global {
 		preloadLocalFonts?: "true" | "false";
 		allowOnlySelectedFonts?: "true" | "false";
 		selectedFonts?: string;
+		site_visibility_mode?: "disabled" | "comingsoon" | "maintenance";
+		site_visibility_page?: string | number;
+		site_visibility_page_title?: string;
+		site_visibility_template?: "blank" | "default";
 	};
 	var boostify_blocks_frontend_ajax_object: {
 		ajaxurl: string;
@@ -65,7 +69,11 @@ const INIT_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks_global
 		textColor: window?.boostify_blocks_layout_global_settings?.buttonTheme?.textColor || "#ffffff",
 		textColorHover: window?.boostify_blocks_layout_global_settings?.buttonTheme?.textColorHover || "#ffffff",
 		borderRadius: window?.boostify_blocks_layout_global_settings?.buttonTheme?.borderRadius || "50px",
-	}
+	},
+	site_visibility_mode: "disabled",
+	site_visibility_page: "",
+	site_visibility_page_title: "",
+	site_visibility_template: "blank",
 };
 
 export const DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES: typeof window.boostify_blocks_global_variables = {
