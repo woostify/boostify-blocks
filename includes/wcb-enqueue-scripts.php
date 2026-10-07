@@ -190,14 +190,43 @@ add_action( 'enqueue_block_editor_assets', function() {
         BOOSTIFY_BLOCKS_VERSION
     );
 
+    $extensions_asset_file = BOOSTIFY_BLOCKS_PATH . 'build/extensions/index.asset.php';
+    $extensions_asset      = file_exists( $extensions_asset_file )
+        ? require $extensions_asset_file
+        : array(
+            'dependencies' => array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-compose', 'wp-data', 'wp-hooks', 'wp-i18n' ),
+            'version'      => BOOSTIFY_BLOCKS_VERSION,
+        );
+
     wp_enqueue_script(
         'boostify-blocks-extensions', 
-        plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/extensions/index.js', 
-        ['wp-blocks', 'wp-element', 'jquery'], 
-        BOOSTIFY_BLOCKS_VERSION, 
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/extensions/index.js', 
+        $extensions_asset['dependencies'], 
+        $extensions_asset['version'], 
         true
     );
 
+    wp_localize_script(
+        'boostify-blocks-extensions',
+        'boostify_blocks_display_conditions_data',
+        array(
+            'user_roles' => class_exists( 'WCB_Display_Conditions' ) ? WCB_Display_Conditions::get_instance()->get_user_roles() : array(),
+        )
+    );
+
+    wp_localize_script(
+        'wp-block-editor',
+        'boostify_blocks_display_conditions_data',
+        array(
+            'user_roles' => class_exists( 'WCB_Display_Conditions' ) ? WCB_Display_Conditions::get_instance()->get_user_roles() : array(),
+        )
+    );
+
+    wp_localize_script(
+        'wp-block-editor',
+        'boostify_blocks_global_variables',
+        get_option( 'boostify_blocks_settings_options', array() )
+    );
 });
 
 // Enqueue for admin
