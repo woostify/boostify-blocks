@@ -135,20 +135,6 @@ const SettingsPageEditorOptions: FC<Props> = ({
 					id="MyToggle_CopyPasteStyles"
 				/>
 			</div>
-			<div className="py-8">
-				<MyToggle
-					checked={allSettings.enableDisplayConditions !== "false"}
-					onChange={(checked) => {
-						debounce_fun({
-							...allSettings,
-							enableDisplayConditions: checked ? "true" : "false",
-						});
-					}}
-					label="Display Conditions"
-					desc='Enable the "Display Conditions" option in the Advanced tab of blocks to conditionally display blocks based on user state, user role, operating system, browser, or day of the week.'
-					id="MyToggle_DisplayConditions"
-				/>
-			</div>
 		</div>
 	);
 };

@@ -8,8 +8,8 @@ import {
 	DAY_OPTIONS,
 } from './options';
 
-interface Props {
-	attributes: {
+export interface DisplayConditionsProps {
+	attributes?: {
 		wcbDisplayConditions?: string;
 		wcbLoggedIn?: boolean;
 		wcbLoggedOut?: boolean;
@@ -19,6 +19,8 @@ interface Props {
 		wcbDay?: string[];
 	};
 	setAttributes: ( attrs: Record<string, any> ) => void;
+	showHeader?: boolean;
+	className?: string;
 }
 
 declare global {
@@ -29,7 +31,12 @@ declare global {
 	}
 }
 
-export const DisplayConditionsControls: FC<Props> = ( { attributes, setAttributes } ) => {
+export const DisplayConditionsControls: FC<DisplayConditionsProps> = ( {
+	attributes = {},
+	setAttributes,
+	showHeader = true,
+	className,
+} ) => {
 	const {
 		wcbDisplayConditions = 'none',
 		wcbLoggedIn = false,
@@ -60,17 +67,24 @@ export const DisplayConditionsControls: FC<Props> = ( { attributes, setAttribute
 	};
 
 	return (
-		<div className="wcb-display-conditions-settings" style={ { marginTop: '16px' } }>
-			<hr style={ { border: 0, borderTop: '1px solid #e0e0e0', margin: '16px 0' } } />
-			<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '8px' } }>
-				{ __( 'Display Conditions', 'boostify-blocks' ) }
-			</p>
-			<p className="components-base-control__help" style={ { marginTop: 0, marginBottom: '12px' } }>
-				{ __(
-					"Below setting will only take effect once you are on the live page, and not while you're editing.",
-					'boostify-blocks'
-				) }
-			</p>
+		<div
+			className={ className || ( showHeader ? 'wcb-display-conditions-settings' : 'wcb-display-conditions-control space-y-3' ) }
+			style={ showHeader ? { marginTop: '16px' } : undefined }
+		>
+			{ showHeader && (
+				<>
+					<hr style={ { border: 0, borderTop: '1px solid #e0e0e0', margin: '16px 0' } } />
+					<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '8px' } }>
+						{ __( 'Display Conditions', 'boostify-blocks' ) }
+					</p>
+					<p className="components-base-control__help" style={ { marginTop: 0, marginBottom: '12px' } }>
+						{ __(
+							"Below setting will only take effect once you are on the live page, and not while you're editing.",
+							'boostify-blocks'
+						) }
+					</p>
+				</>
+			) }
 
 			<SelectControl
 				label={ __( 'Condition Type', 'boostify-blocks' ) }
@@ -181,6 +195,24 @@ export const DisplayConditionsControls: FC<Props> = ( { attributes, setAttribute
 						) ) }
 					</div>
 				</div>
+			) }
+
+			{ ! showHeader && (
+				<p
+					className="components-base-control__help"
+					style={ {
+						fontStyle: 'italic',
+						color: '#757575',
+						marginTop: '12px',
+						fontSize: '12px',
+						lineHeight: '1.4',
+					} }
+				>
+					{ __(
+						"Above setting will only take effect once you are on the live page, and not while you're editing.",
+						'boostify-blocks'
+					) }
+				</p>
 			) }
 		</div>
 	);

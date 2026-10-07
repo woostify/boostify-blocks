@@ -51,10 +51,18 @@ const TABS: Tab[] = [
 interface Props {
 	initData: typeof window.boostify_blocks_global_variables;
 	themeLayoutGlobal?: Wcb_theme_layout_global_settings;
+	allSettings?: typeof window.boostify_blocks_global_variables;
+	onUpdateSettings?: (newData: typeof window.boostify_blocks_global_variables) => void;
 }
 
-const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
-	const [allSettings, setAllSettings] = useState(initData);
+const SettingsPage: FC<Props> = ({
+	initData,
+	themeLayoutGlobal,
+	allSettings: externalSettings,
+	onUpdateSettings,
+}) => {
+	const [localSettings, setLocalSettings] = useState(initData);
+	const allSettings = externalSettings ?? localSettings;
 	const [currentTab, setcurrentTab] = useState(TABS[0].name);
 
 	useEffect(() => {
@@ -78,6 +86,11 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 	};
 
 	const handleUpdateSettings = (newData: typeof window.boostify_blocks_global_variables) => {
+		if (onUpdateSettings) {
+			onUpdateSettings(newData);
+			return;
+		}
+
 		if (typeof jQuery !== "function") {
 			return;
 		}
@@ -86,7 +99,7 @@ const SettingsPage: FC<Props> = ({ initData, themeLayoutGlobal }) => {
 			...allSettings,
 			...newData,
 		};
-		setAllSettings(newSettings);
+		setLocalSettings(newSettings);
 		const data = {
 			action: "boostify_blocks_dashboard_update_settings",
 			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,

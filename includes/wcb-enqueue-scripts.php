@@ -198,11 +198,16 @@ add_action( 'enqueue_block_editor_assets', function() {
             'version'      => BOOSTIFY_BLOCKS_VERSION,
         );
 
+    $extensions_deps = array_unique( array_merge(
+        $extensions_asset['dependencies'],
+        array( 'wp-blocks', 'wp-block-editor', 'wp-element', 'wp-components', 'wp-compose', 'wp-data', 'wp-hooks', 'wp-i18n' )
+    ) );
+
     wp_enqueue_script(
         'boostify-blocks-extensions', 
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/extensions/index.js', 
-        $extensions_asset['dependencies'], 
-        $extensions_asset['version'], 
+        $extensions_deps, 
+        time(), 
         true
     );
 
@@ -215,15 +220,7 @@ add_action( 'enqueue_block_editor_assets', function() {
     );
 
     wp_localize_script(
-        'wp-block-editor',
-        'boostify_blocks_display_conditions_data',
-        array(
-            'user_roles' => class_exists( 'WCB_Display_Conditions' ) ? WCB_Display_Conditions::get_instance()->get_user_roles() : array(),
-        )
-    );
-
-    wp_localize_script(
-        'wp-block-editor',
+        'boostify-blocks-extensions',
         'boostify_blocks_global_variables',
         get_option( 'boostify_blocks_settings_options', array() )
     );
@@ -291,8 +288,8 @@ function boostify_blocks_enqueue_script_to_setting_page()
         //
         wp_enqueue_style('boostify-blocks-dashboard-tailwind',plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/dashboard-tailwind.css', [], BOOSTIFY_BLOCKS_VERSION);
         wp_add_inline_script('boostify-blocks-dashboard-app-tailwind', 'tailwind.config = { important: true }', 'after');
-        //
-        wp_enqueue_script('boostify-blocks-dashboard-app', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js', ['wp-blocks', 'wp-element', 'jquery'], BOOSTIFY_BLOCKS_VERSION, true);
+        wp_enqueue_script('boostify-blocks-dashboard-app', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js', ['wp-blocks', 'wp-element', 'jquery', 'wp-i18n'], BOOSTIFY_BLOCKS_VERSION, true);
+        wp_set_script_translations('boostify-blocks-dashboard-app', 'boostify-blocks');
 
         wp_localize_script(
             'boostify-blocks-dashboard-app',
@@ -312,6 +309,14 @@ function boostify_blocks_enqueue_script_to_setting_page()
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'homeUrl' => home_url(),
                 'nonce'   => wp_create_nonce('boostifyblocks_dashboard_settings_nonce'),
+            )
+        );
+        wp_localize_script(
+            'boostify-blocks-dashboard-app',
+            'boostify_blocks_urls',
+            array(
+                'website_url' => apply_filters('boostify_blocks_website_url', BOOSTIFY_BLOCKS_WEBSITE_URL),
+                'docs_url'    => apply_filters('boostify_blocks_docs_url', BOOSTIFY_BLOCKS_DOCS_URL),
             )
         );
     }

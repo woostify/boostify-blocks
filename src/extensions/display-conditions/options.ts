@@ -41,6 +41,7 @@ export const DAY_OPTIONS = [
 ];
 
 export const EXCLUDED_BLOCKS = [
+	// Boostify Blocks internal & dependent child blocks
 	'boostify-blocks/extensions',
 	'boostify-blocks/default',
 	'boostify-blocks/dashboard',
@@ -49,4 +50,15 @@ export const EXCLUDED_BLOCKS = [
 	'boostify-blocks/icon-child',
 	'boostify-blocks/slider-child',
 	'boostify-blocks/slider-swiper-child',
+
+	// WordPress Core blocks excluded (following wp-spectra standard: dynamic widgets, navigation & system blocks)
+	'core/archives',
+	'core/calendar',
+	'core/latest-comments',
+	'core/tag-cloud',
+	'core/rss',
+	'core/legacy-widget',
+	'core/navigation',
+	'core/search',
+	'core/file',
 ];

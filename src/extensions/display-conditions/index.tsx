@@ -34,7 +34,13 @@ function addDisplayConditionsAttributes( settings: any ) {
  */
 const withDisplayConditions = createHigherOrderComponent( ( BlockEdit: any ) => {
 	return ( props: any ) => {
-		const { name, isSelected } = props;
+		const { name } = props;
+
+		// Dynamically check if feature is globally disabled
+		const globalSettings = ( window as any ).boostify_blocks_global_variables || {};
+		if ( globalSettings.enableDisplayConditions === 'false' ) {
+			return <BlockEdit { ...props } />;
+		}
 
 		const isCoreBlock =
 			name &&
@@ -48,30 +54,25 @@ const withDisplayConditions = createHigherOrderComponent( ( BlockEdit: any ) => 
 		return (
 			<>
 				<BlockEdit { ...props } />
-				{ isSelected && (
-					<InspectorAdvancedControls>
-						<DisplayConditionsControls { ...props } />
-					</InspectorAdvancedControls>
-				) }
+				<InspectorAdvancedControls>
+					<DisplayConditionsControls { ...props } />
+				</InspectorAdvancedControls>
 			</>
 		);
 	};
 }, 'withDisplayConditions' );
 
-// Check if feature is globally enabled in Boostify Blocks settings
-const globalSettings = ( window as any ).boostify_blocks_global_variables || {};
-if ( globalSettings.enableDisplayConditions !== 'false' ) {
-	addFilter(
-		'blocks.registerBlockType',
-		'boostify-blocks/display-conditions-attributes',
-		addDisplayConditionsAttributes
-	);
+// Register Gutenberg filters
+addFilter(
+	'blocks.registerBlockType',
+	'boostify-blocks/display-conditions-attributes',
+	addDisplayConditionsAttributes
+);
 
-	addFilter(
-		'editor.BlockEdit',
-		'boostify-blocks/display-conditions-controls',
-		withDisplayConditions
-	);
-}
+addFilter(
+	'editor.BlockEdit',
+	'boostify-blocks/display-conditions-controls',
+	withDisplayConditions
+);
 
 export default withDisplayConditions;

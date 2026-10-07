@@ -27,7 +27,8 @@ define('BOOSTIFY_BLOCKS_PLUGIN_BASE', plugin_basename(BOOSTIFY_BLOCKS_FILE));
 define('BOOSTIFY_BLOCKS_PATH', plugin_dir_path(BOOSTIFY_BLOCKS_FILE));
 define('BOOSTIFY_BLOCKS_URI', plugins_url('/', BOOSTIFY_BLOCKS_FILE));
 define('BOOSTIFY_BLOCKS_BUILD_PATH', __DIR__ . '/build');
-
+define('BOOSTIFY_BLOCKS_WEBSITE_URL', 'https://woostifyblocks.com/');
+define('BOOSTIFY_BLOCKS_DOCS_URL', BOOSTIFY_BLOCKS_WEBSITE_URL . 'docs/');
 
 
 require plugin_dir_path(__FILE__) . 'includes/wcb-custom-funcs.php';

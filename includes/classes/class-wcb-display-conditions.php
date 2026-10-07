@@ -39,7 +39,7 @@ class WCB_Display_Conditions {
 	 */
 	public function __construct() {
 		$options = get_option( 'boostify_blocks_settings_options', array() );
-		$enabled = ! isset( $options['enableDisplayConditions'] ) || 'true' === $options['enableDisplayConditions'];
+		$enabled = ! isset( $options['enableDisplayConditions'] ) || rest_sanitize_boolean( $options['enableDisplayConditions'] );
 
 		if ( $enabled && ! is_admin() ) {
 			add_filter( 'render_block', array( $this, 'render_block_display_conditions' ), 10, 2 );
@@ -83,6 +83,35 @@ class WCB_Display_Conditions {
 	public function render_block_display_conditions( $block_content, $block ) {
 		if ( empty( $block_content ) || empty( $block['attrs'] ) || ! is_array( $block['attrs'] ) ) {
 			return $block_content;
+		}
+
+		// Skip excluded blocks if defined.
+		if ( ! empty( $block['blockName'] ) ) {
+			$excluded_blocks = apply_filters(
+				'boostify_blocks_display_conditions_excluded_blocks',
+				array(
+					'boostify-blocks/extensions',
+					'boostify-blocks/default',
+					'boostify-blocks/dashboard',
+					'boostify-blocks/tab-child',
+					'boostify-blocks/faq-child',
+					'boostify-blocks/icon-child',
+					'boostify-blocks/slider-child',
+					'boostify-blocks/slider-swiper-child',
+					'core/archives',
+					'core/calendar',
+					'core/latest-comments',
+					'core/tag-cloud',
+					'core/rss',
+					'core/legacy-widget',
+					'core/navigation',
+					'core/search',
+					'core/file',
+				)
+			);
+			if ( in_array( $block['blockName'], $excluded_blocks, true ) ) {
+				return $block_content;
+			}
 		}
 
 		$attrs = $block['attrs'];
@@ -137,11 +166,14 @@ class WCB_Display_Conditions {
 	 * @return bool True if block should be hidden.
 	 */
 	private function check_user_state_visibility( $attrs ) {
-		if ( ! empty( $attrs['wcbLoggedIn'] ) && is_user_logged_in() ) {
+		$hide_logged_in  = ! empty( $attrs['wcbLoggedIn'] ) && rest_sanitize_boolean( $attrs['wcbLoggedIn'] );
+		$hide_logged_out = ! empty( $attrs['wcbLoggedOut'] ) && rest_sanitize_boolean( $attrs['wcbLoggedOut'] );
+
+		if ( $hide_logged_in && is_user_logged_in() ) {
 			return true;
 		}
 
-		if ( ! empty( $attrs['wcbLoggedOut'] ) && ! is_user_logged_in() ) {
+		if ( $hide_logged_out && ! is_user_logged_in() ) {
 			return true;
 		}
 
@@ -188,7 +220,7 @@ class WCB_Display_Conditions {
 		}
 
 		$os_patterns = array(
-			'iphone'   => '(iPhone)',
+			'iphone'   => '(iPhone)|(iPad)|(iPod)',
 			'android'  => '(Android)',
 			'windows'  => 'Win16|(Windows 95)|(Win95)|(Windows_95)|(Windows 98)|(Win98)|(Windows NT 5.0)|(Windows 2000)|(Windows NT 5.1)|(Windows XP)|(Windows NT 5.2)|(Windows NT 6.0)|(Windows Vista)|(Windows NT 6.1)|(Windows 7)|(Windows NT 4.0)|(WinNT4.0)|(WinNT)|(Windows NT)|Windows ME|(Windows NT 10.0)',
 			'open_bsd' => 'OpenBSD',
@@ -258,13 +290,27 @@ class WCB_Display_Conditions {
 	 * @return bool True if block should be hidden.
 	 */
 	private function check_day_visibility( $attrs ) {
-		if ( empty( $attrs['wcbDay'] ) || ! is_array( $attrs['wcbDay'] ) ) {
+		if ( empty( $attrs['wcbDay'] ) ) {
+			return false;
+		}
+
+		$days = $attrs['wcbDay'];
+		if ( is_string( $days ) ) {
+			$decoded = json_decode( $days, true );
+			if ( is_array( $decoded ) ) {
+				$days = $decoded;
+			} else {
+				$days = array_filter( array_map( 'trim', explode( ',', $days ) ) );
+			}
+		}
+
+		if ( ! is_array( $days ) || empty( $days ) ) {
 			return false;
 		}
 
 		$current_day = strtolower( current_datetime()->format( 'l' ) );
 
-		return in_array( $current_day, $attrs['wcbDay'], true );
+		return in_array( $current_day, array_map( 'strtolower', $days ), true );
 	}
 }
 
