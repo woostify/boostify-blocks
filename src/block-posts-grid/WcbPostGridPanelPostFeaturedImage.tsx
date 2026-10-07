@@ -1,16 +1,25 @@
 import { PanelBody, ToggleControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import React, { FC, CSSProperties } from "react";
+import React, { FC } from "react";
 import MySelect from "../components/controls/MySelect";
-import { useSelect, useDispatch } from "@wordpress/data";
+import { useSelect } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
+import MyUnitControl from "../components/controls/MyUnitControl";
+import { MY_GAP_UNITS } from "../components/controls/MyDimensionsControl/MyDimensionsControl";
+import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
+import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
+import useGetDeviceType from "../hooks/useGetDeviceType";
+import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 
 export interface WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE {
 	isShowFeaturedImage: boolean;
 	featuredImageSize: string;
 	featuredImagePosition: "top" | "left" | "right" | "background";
 	linkCompleteBox: boolean;
+	imageRatio?: string;
+	customHeight?: HasResponsive<string>;
+	imageFit?: "cover" | "contain" | "fill";
 }
 
 export const WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE =
@@ -19,7 +28,26 @@ export const WCB_POST_GRID_PANEL_POST_FEATURED_IMAGE_DEMO: WCB_POST_GRID_PANEL_P
 		featuredImageSize: "large",
 		featuredImagePosition: "top",
 		linkCompleteBox: false,
+		imageRatio: "16/9",
+		customHeight: { Desktop: "220px" },
+		imageFit: "cover",
 	};
+
+const RATIO_OPTIONS = [
+	{ value: "16/9", label: __("16:9 (Landscape)", "boostify-blocks") },
+	{ value: "4/3", label: __("4:3 (Standard)", "boostify-blocks") },
+	{ value: "3/2", label: __("3:2 (Classic)", "boostify-blocks") },
+	{ value: "1/1", label: __("1:1 (Square)", "boostify-blocks") },
+	{ value: "9/16", label: __("9:16 (Portrait)", "boostify-blocks") },
+	{ value: "custom", label: __("Custom Height", "boostify-blocks") },
+	{ value: "auto", label: __("Inherit / Original", "boostify-blocks") },
+];
+
+const FIT_OPTIONS = [
+	{ value: "cover", label: __("Cover", "boostify-blocks") },
+	{ value: "contain", label: __("Contain", "boostify-blocks") },
+	{ value: "fill", label: __("Fill", "boostify-blocks") },
+];
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
@@ -34,12 +62,22 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 	onToggle,
 	opened,
 }) => {
+	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
+
 	const {
 		isShowFeaturedImage,
 		featuredImageSize,
 		featuredImagePosition,
 		linkCompleteBox,
+		imageRatio = "16/9",
+		customHeight = { Desktop: "220px" },
+		imageFit = "cover",
 	} = panelData;
+
+	const { currentDeviceValue: CUSTOM_HEIGHT } = getValueFromAttrsResponsives(
+		customHeight,
+		deviceType
+	);
 
 	const { imageSizes } = useSelect((select) => {
 		const settings = select(blockEditorStore).getSettings();
@@ -93,9 +131,6 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 				{isShowFeaturedImage ? (
 					<MyRadioGroup
 						label="Position"
-						// labelClassName=""
-						// className="flex items-center justify-between space-x-3"
-						// contentClassName="flex-shrink-0 flex-1"
 						onChange={(selected) =>
 							setAttr__({
 								...panelData,
@@ -107,6 +142,47 @@ const WcbPostGridPanelPostFeaturedImage: FC<Props> = ({
 						hasResponsive={false}
 						isWrap
 					/>
+				) : null}
+
+				{isShowFeaturedImage && featuredImagePosition !== "background" ? (
+					<>
+						<MySelect
+							value={imageRatio}
+							options={RATIO_OPTIONS}
+							label={__("Image ratio", "boostify-blocks")}
+							onChange={(ratio) => {
+								setAttr__({ ...panelData, imageRatio: ratio });
+							}}
+						/>
+
+						{imageRatio === "custom" && (
+							<MyUnitControl
+								onChange={(value) => {
+									setAttr__({
+										...panelData,
+										customHeight: {
+											...(panelData.customHeight || { Desktop: "220px" }),
+											[deviceType]: value,
+										},
+									});
+								}}
+								value={CUSTOM_HEIGHT || ""}
+								units={MY_GAP_UNITS}
+								label={__("Custom height", "boostify-blocks")}
+								hasResponsive
+								className="flex-col space-y-2"
+							/>
+						)}
+
+						<MySelect
+							value={imageFit}
+							options={FIT_OPTIONS}
+							label={__("Image fit", "boostify-blocks")}
+							onChange={(fit) => {
+								setAttr__({ ...panelData, imageFit: fit as any });
+							}}
+						/>
+					</>
 				) : null}
 
 				{isShowFeaturedImage ? (

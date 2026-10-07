@@ -24,6 +24,7 @@ interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_BUTTON_PANEL_STYLE_ICON;
 	setAttr__: (data: WCB_BUTTON_PANEL_STYLE_ICON) => void;
+	isInheritFromTheme?: boolean;
 }
 
 const WcbButtonPanel_StyleIcon: FC<Props> = ({
@@ -32,6 +33,7 @@ const WcbButtonPanel_StyleIcon: FC<Props> = ({
 	initialOpen,
 	onToggle,
 	opened,
+	isInheritFromTheme,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	const { size, color, hoverColor } = panelData;
@@ -66,21 +68,25 @@ const WcbButtonPanel_StyleIcon: FC<Props> = ({
 					max={200}
 				/>
 
-				<MyColorPicker
-					onChange={(color) => {
-						setAttr__({ ...panelData, color });
-					}}
-					color={color}
-					label={__("Color", "boostify-blocks")}
-				/>
+				{!isInheritFromTheme && (
+					<>
+						<MyColorPicker
+							onChange={(color) => {
+								setAttr__({ ...panelData, color });
+							}}
+							color={color}
+							label={__("Color", "boostify-blocks")}
+						/>
 
-				<MyColorPicker
-					onChange={(color) => {
-						setAttr__({ ...panelData, hoverColor: color });
-					}}
-					color={hoverColor}
-					label={__("Hover color", "boostify-blocks")}
-				/>
+						<MyColorPicker
+							onChange={(color) => {
+								setAttr__({ ...panelData, hoverColor: color });
+							}}
+							color={hoverColor}
+							label={__("Hover color", "boostify-blocks")}
+						/>
+					</>
+				)}
 			</div>
 		</PanelBody>
 	);

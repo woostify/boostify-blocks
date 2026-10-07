@@ -142,16 +142,50 @@ const GlobalCss: FC<Props> = (attrs) => {
 		} = getCssProperyHasResponsive<string>({
 			cssProperty: style_featuredImage.marginBottom,
 		});
+
+		const isBgImage =
+			general_postFeaturedImage.featuredImagePosition === "background";
+		const hasCardBorderColor = Boolean(
+			style_border?.mainSettings &&
+				(("color" in (style_border.mainSettings as any) &&
+					(style_border.mainSettings as any).color) ||
+					("top" in (style_border.mainSettings as any) &&
+						((style_border.mainSettings as any).top?.color ||
+							(style_border.mainSettings as any).left?.color ||
+							(style_border.mainSettings as any).right?.color ||
+							(style_border.mainSettings as any).bottom?.color)))
+		);
+
+		const imageRatio = general_postFeaturedImage?.imageRatio || "16/9";
+		const imageFit = general_postFeaturedImage?.imageFit || "cover";
+		const isCustomRatio = imageRatio === "custom";
+		const isAutoRatio = imageRatio === "auto";
+
+		const {
+			value_mobile: imageHeight_mobile,
+			value_tablet: imageHeight_tablet,
+			value_desktop: imageHeight_desktop,
+		} = getCssProperyHasResponsive<string>({
+			cssProperty: general_postFeaturedImage?.customHeight || {
+				Desktop: "220px",
+			},
+		});
+
 		return [
 			{
 				[POST_CARD_CLASS]: {
 					position: "relative",
+					overflow: "hidden",
 					height: !general_sortingAndFiltering.isEqualHeight
 						? "max-content"
 						: undefined,
 					"&--image-background": {
 						".wcbPostCard__featuredImage-overlay": {
 							backgroundColor: style_featuredImage.backgroundOverlay,
+							borderRadius: "inherit",
+						},
+						".wcbPostCard__featuredImage, .wcbPostCard__featuredImage img": {
+							borderRadius: "inherit",
 						},
 					},
 					"&--image-top": {
@@ -202,11 +236,40 @@ const GlobalCss: FC<Props> = (attrs) => {
 				},
 			},
 
+			{
+				[`${WRAP_CLASSNAME} .wcbPostCard:not(.wcbPostCard--image-background) .wcbPostCard__featuredImage img`]: {
+					width: "100%",
+					objectFit: imageFit as any,
+					aspectRatio: isCustomRatio || isAutoRatio ? "auto" : imageRatio,
+					height: isCustomRatio ? imageHeight_mobile : "auto",
+					...(isCustomRatio
+						? {
+								[`@media (min-width: ${media_tablet})`]: {
+									height: imageHeight_tablet,
+								},
+								[`@media (min-width: ${media_desktop})`]: {
+									height: imageHeight_desktop,
+								},
+						  }
+						: {}),
+				},
+			},
+
 			getBorderStyles({
-				className: `${WRAP_CLASSNAME} .wcbPostCard--image-top .wcbPostCard__featuredImage img`,
+				className: `${WRAP_CLASSNAME} .wcbPostCard:not(.wcbPostCard--image-background) .wcbPostCard__featuredImage img`,
 				border: style_featuredImage.border,
 				isWithRadius: true,
 			}),
+
+			...(isBgImage && !hasCardBorderColor && style_featuredImage?.border
+				? [
+						getBorderStyles({
+							className: `${POST_CARD_CLASS}`,
+							border: style_featuredImage.border,
+							isWithRadius: true,
+						}),
+				  ]
+				: []),
 		];
 	};
 

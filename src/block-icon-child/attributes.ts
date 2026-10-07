@@ -73,6 +73,13 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	link: string;
 	openInNewWindow: boolean;
 	addNofollowToLink: boolean;
+	// Custom style override flags
+	isCustomIcon?: boolean;
+	isCustomStyleIcon?: boolean;
+	isCustomStyleTitle?: boolean;
+	isCustomStyleDesignation?: boolean;
+	isCustomStyleDimension?: boolean;
+	isCustomGeneralIcon?: boolean;
 }
 
 const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
@@ -151,6 +158,31 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 		default: false,
 	},
 	addNofollowToLink: {
+		type: "boolean",
+		default: false,
+	},
+	// Custom style override flags
+	isCustomIcon: {
+		type: "boolean",
+		default: false,
+	},
+	isCustomStyleIcon: {
+		type: "boolean",
+		default: false,
+	},
+	isCustomStyleTitle: {
+		type: "boolean",
+		default: false,
+	},
+	isCustomStyleDesignation: {
+		type: "boolean",
+		default: false,
+	},
+	isCustomStyleDimension: {
+		type: "boolean",
+		default: false,
+	},
+	isCustomGeneralIcon: {
 		type: "boolean",
 		default: false,
 	},

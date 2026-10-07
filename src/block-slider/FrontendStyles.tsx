@@ -8,7 +8,7 @@ export function initCarouselForWcbSliders(div: Element, props: Props) {
 	const dataUniqueid = div.getAttribute("data-uniqueid") || "";
 
 	let $ = jQuery;
-	if (typeof jQuery !== "function") {
+	if (typeof jQuery !== "function" || typeof (jQuery.fn as any)?.slick !== "function") {
 		return;
 	}
 
@@ -77,7 +77,7 @@ export function initCarouselForWcbSliders(div: Element, props: Props) {
 	const targetSelector = `.${dataUniqueid} .wcb-slider__wrap-items`;
 	const targetElement = $(targetSelector);
 	
-	if (targetElement.length === 0) {
+	if (targetElement.length === 0 || targetElement.hasClass("slick-initialized")) {
 		return;
 	}
 

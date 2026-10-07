@@ -48,6 +48,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		link,
 		openInNewWindow,
 		addNofollowToLink,
+		isCustomIcon,
+		isCustomStyleIcon,
+		isCustomStyleTitle,
+		isCustomStyleDesignation,
+		isCustomStyleDimension,
+		isCustomGeneralIcon,
 	} = attributes;
 	//  COMMON HOOKS
 	const ref = useRef<HTMLDivElement>(null);
@@ -87,6 +93,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							setAttr__={(data) => {
 								return setAttributes({
 									general_icon: data,
+									isCustomGeneralIcon: true,
+									isCustomIcon: true,
 									style_Icon: {
 										...style_Icon,
 										dimensions: {
@@ -100,7 +108,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									},
 								});
 							}}
-							panelData={general_icon}
+							panelData={(isCustomGeneralIcon || isCustomIcon) ? general_icon : (parentAttributes?.general_icon || general_icon)}
 						/>
 
 						<PanelBody
@@ -159,9 +167,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								opened={tabStylesIsPanelOpen === "_StyleIcons" || undefined}
 								//
 								setAttr__={(data) => {
-									setAttributes({ style_Icon: data });
+									setAttributes({ style_Icon: data, isCustomStyleIcon: true });
 								}}
-								panelData={style_Icon}
+								panelData={isCustomStyleIcon ? style_Icon : (parentAttributes?.style_Icon || style_Icon)}
 							/>
 						)}
 						{general_layout.enablePrefix && (
@@ -175,9 +183,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								}
 								//
 								setAttr__={(data) => {
-									setAttributes({ style_desination: data });
+									setAttributes({ style_desination: data, isCustomStyleDesignation: true });
 								}}
-								panelData={style_desination}
+								panelData={isCustomStyleDesignation ? style_desination : (parentAttributes?.style_desination || style_desination)}
 							/>
 						)}
 						{general_layout.enableTitle && (
@@ -192,9 +200,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								opened={tabStylesIsPanelOpen === "_StyleTitle" || undefined}
 								//
 								setAttr__={(data) => {
-									setAttributes({ style_title: data });
+									setAttributes({ style_title: data, isCustomStyleTitle: true });
 								}}
-								panelData={style_title}
+								panelData={isCustomStyleTitle ? style_title : (parentAttributes?.style_title || style_title)}
 							/>
 						)}
 
@@ -216,9 +224,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 							opened={tabStylesIsPanelOpen === "_StyleDimension" || undefined}
 							//
 							setAttr__={(data) => {
-								setAttributes({ style_dimension: data });
+								setAttributes({ style_dimension: data, isCustomStyleDimension: true });
 							}}
-							panelData={style_dimension}
+							panelData={isCustomStyleDimension ? style_dimension : (parentAttributes?.style_dimension || style_dimension)}
 						/>
 					</>
 				);
@@ -262,6 +270,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			link,
 			openInNewWindow,
 			addNofollowToLink,
+			isCustomIcon,
+			isCustomStyleIcon,
+			isCustomStyleTitle,
+			isCustomStyleDesignation,
+			isCustomStyleDimension,
+			isCustomGeneralIcon,
 		};
 	}, [
 		uniqueId,
@@ -281,24 +295,40 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		link,
 		openInNewWindow,
 		addNofollowToLink,
+		isCustomIcon,
+		isCustomStyleIcon,
+		isCustomStyleTitle,
+		isCustomStyleDesignation,
+		isCustomStyleDimension,
+		isCustomGeneralIcon,
 	]);
 
+	const activeGeneralIcon = (isCustomGeneralIcon || isCustomIcon)
+		? general_icon
+		: (parentAttributes?.general_icon || general_icon);
+
+	const activeGeneralLayout = parentAttributes?.general_layout || general_layout;
+
+	const activeIcon = activeGeneralIcon?.icon;
+	const activeEnableIcon = activeGeneralIcon?.enableIcon ?? true;
+	const activeIconPosition = activeGeneralIcon?.iconPosition || "leftOfTitle";
+	const HeadingTag = activeGeneralLayout?.headingTag || "p";
+	const activeEnableTitle = activeGeneralLayout?.enableTitle ?? true;
 
 	const renderIcon = () => {
 		return (
 			<div className="wcb-icon-list__icon-wrap"
-				style={!general_icon.enableIcon ? { display: "none" } : undefined}
+				style={!activeEnableIcon ? { display: "none" } : undefined}
 			>
 				<div
 					className="wcb-icon-list__icon"
 				>
-					<MyIconFull icon={general_icon.icon} />
+					<MyIconFull icon={activeIcon} />
 				</div>
 			</div>
 		);
 	};
 
-	const HeadingTag = general_layout.headingTag;
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
@@ -315,7 +345,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 				{/* CSS IN JS */}
 				{isChildOfIconList ? (
-					<GlobalCssChild {...WcbAttrsForSave()} attributes={attributes} clientId={clientId} />
+					<GlobalCssChild {...WcbAttrsForSave()} attributes={attributes} clientId={clientId} parentAttributes={parentAttributes} />
 				) : (
 					<GlobalCss {...WcbAttrsForSave()} attributes={attributes} clientId={clientId} />
 				)}
@@ -323,9 +353,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				{/* CHILD CONTENT  */}
 				<div className="wcb-icon-list__content">
 					<div className="wcb-icon-list__content-title-wrap">
-						{general_icon.iconPosition === "leftOfTitle" && renderIcon()}
+						{activeIconPosition === "leftOfTitle" && renderIcon()}
 						<div className="wcb-icon-list__content-title">
-							{general_layout.enableTitle && (
+							{activeEnableTitle && (
 								<RichText
 									tagName={HeadingTag}
 									value={heading}
@@ -336,10 +366,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								/>
 							)}
 						</div>
-						{(general_icon.iconPosition === "rightOfTitle") &&
+						{(activeIconPosition === "rightOfTitle") &&
 							renderIcon()}
 					</div>
-					</div>
+				</div>
 			</div>
 		</MyCacheProvider>
 	);

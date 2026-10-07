@@ -8,9 +8,14 @@ export function initCarouselForWcbTestimonials(div: Element, props: Props) {
 	const dataUniqueid = div.getAttribute("data-uniqueid") || "";
 
 	let $ = jQuery;
-	if (typeof jQuery !== "function") {
+	if (typeof jQuery !== "function" || typeof (jQuery.fn as any)?.slick !== "function") {
 		return;
 	}
+
+	if (!props.general_carousel || !props.general_general) {
+		return;
+	}
+
 	const {
 		animationDuration,
 		autoplaySpeed,
@@ -69,7 +74,11 @@ export function initCarouselForWcbTestimonials(div: Element, props: Props) {
 	};
 
 	const $slider = $(`.${dataUniqueid} .wcb-testimonials__wrap-items`);
-	const slideCount = $slider ? $slider.children().length : 0;
+	if (!$slider.length || $slider.hasClass("slick-initialized")) {
+		return;
+	}
+
+	const slideCount = $slider.children().length;
 
 	const finalSettings = {
 		...settings,
@@ -78,5 +87,5 @@ export function initCarouselForWcbTestimonials(div: Element, props: Props) {
 	};
 
 	// @ts-ignore
-	$(`.${dataUniqueid} .wcb-testimonials__wrap-items`)?.slick?.(finalSettings);
+	$slider.slick(finalSettings);
 }

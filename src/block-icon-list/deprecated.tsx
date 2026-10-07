@@ -1,9 +1,15 @@
 import React from "react";
+import { 
+    useBlockProps, 
+	//@ts-ignore
+    useInnerBlocksProps 
+} from "@wordpress/block-editor";
 import Save__260523 from "./Save__260523";
 import Save__100623 from "./Save__100623";
 import blokc1Attrs from "./attributes";
 import { DEFAULT_MY_ICON } from "../components/controls/SelectIcon/SelecIcon";
 import Save from "./Save";
+import SaveCommon from "../components/SaveCommon";
 
 const v1 = {};
 const v2 = {};
@@ -148,6 +154,90 @@ const v6 = {
 	}
 };
 
-const deprecated = [v6, v5, v4, v3, v2, v1];
+// Migration version v7 - remove inline containerStyles from save
+const SaveWithInlineStyles = ({ attributes }: { attributes: any }) => {
+	const {
+		uniqueId,
+		general_layout,
+		style_dimension,
+	} = attributes;
+
+	const containerStyles: React.CSSProperties = {
+		display: "flex",
+		flexDirection: general_layout?.layout === "vertical" ? "column" : "row",
+		...(general_layout?.layout === "vertical"
+			? {
+				alignItems: 
+					general_layout?.textAlignment?.Desktop === "center" || 
+					general_layout?.textAlignment?.Tablet === "center" || 
+					general_layout?.textAlignment?.Mobile === "center" ? 
+					"center" :
+					general_layout?.textAlignment?.Desktop === "left" || 
+					general_layout?.textAlignment?.Tablet === "left" || 
+					general_layout?.textAlignment?.Mobile === "left" ? 
+					"flex-start" :
+					general_layout?.textAlignment?.Desktop === "right" || 
+					general_layout?.textAlignment?.Tablet === "right" || 
+					general_layout?.textAlignment?.Mobile === "right" ? 
+					"flex-end" : "flex-start",
+			}
+			: {
+				justifyContent: 
+					general_layout?.textAlignment?.Desktop === "center" || 
+					general_layout?.textAlignment?.Tablet === "center" || 
+					general_layout?.textAlignment?.Mobile === "center" ? 
+					"center" :
+					general_layout?.textAlignment?.Desktop === "left" || 
+					general_layout?.textAlignment?.Tablet === "left" || 
+					general_layout?.textAlignment?.Mobile === "left" ? 
+					"flex-start" :
+					general_layout?.textAlignment?.Desktop === "right" || 
+					general_layout?.textAlignment?.Tablet === "right" || 
+					general_layout?.textAlignment?.Mobile === "right" ? 
+					"flex-end" : "flex-start",
+			}),
+		...(style_dimension?.padding?.Desktop && {
+			paddingTop: style_dimension.padding.Desktop.top || "",
+			paddingRight: style_dimension.padding.Desktop.right || "",
+			paddingBottom: style_dimension.padding.Desktop.bottom || "",
+			paddingLeft: style_dimension.padding.Desktop.left || "",
+		}),
+		...(style_dimension?.margin?.Desktop && {
+			marginTop: style_dimension.margin.Desktop.top || "",
+			marginRight: style_dimension.margin.Desktop.right || "",
+			marginBottom: style_dimension.margin.Desktop.bottom || "",
+			marginLeft: style_dimension.margin.Desktop.left || "",
+		}),
+		...(style_dimension?.gapBetweenItems?.Desktop && {
+			gap: style_dimension.gapBetweenItems.Desktop,
+		}),
+	};
+
+	const wrapBlockProps = useBlockProps.save({
+		className: "wcb-icon-list__wrap",
+	});
+
+	const innerBlocksProps = useInnerBlocksProps.save({
+		className: "wcb-icon-list__icon-wrap",
+		style: containerStyles,
+	});
+
+	return (
+		<SaveCommon
+			{...wrapBlockProps}
+			attributes={attributes}
+			uniqueId={uniqueId}
+		>
+			<div {...innerBlocksProps} />
+		</SaveCommon>
+	);
+};
+
+const v7 = {
+	attributes: blokc1Attrs,
+	save: SaveWithInlineStyles,
+};
+
+const deprecated = [v7, v6, v5, v4, v3, v2, v1];
 
 export default deprecated;

@@ -29,6 +29,12 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		link,
 		openInNewWindow,
 		addNofollowToLink,
+		isCustomIcon,
+		isCustomStyleIcon,
+		isCustomStyleTitle,
+		isCustomStyleDesignation,
+		isCustomStyleDimension,
+		isCustomGeneralIcon,
 	} = attributes;
 	//
 
@@ -50,6 +56,12 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		link,
 		openInNewWindow,
 		addNofollowToLink,
+		isCustomIcon,
+		isCustomStyleIcon,
+		isCustomStyleTitle,
+		isCustomStyleDesignation,
+		isCustomStyleDimension,
+		isCustomGeneralIcon,
 	};
 	//
 
