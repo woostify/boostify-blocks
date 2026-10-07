@@ -31,6 +31,14 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
     $newBlocksStatus = array_merge($boostify_block_status_init, $blocksStatus);
 
     update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
+
+    // Bump global asset version timestamp to invalidate post caches safely without unlinking files.
+    if ( class_exists( 'WCB_Post_Assets' ) ) {
+        WCB_Post_Assets::update_global_asset_version();
+    } else {
+        update_option( 'boostify_blocks_asset_version', time() );
+    }
+
     $array_result = array(
         'data' => $newBlocksStatus,
         'message' => 'your message'
@@ -79,6 +87,14 @@ function boostify_blocks_ajax_dashboard_update_settings()
 
     if ( function_exists( 'boostify_blocks_maybe_clear_font_cache' ) ) {
         boostify_blocks_maybe_clear_font_cache( $old_settings, $settings );
+    }
+
+    // Bump global asset version timestamp to invalidate post caches safely without mass unlinking files.
+    // Pages will regenerate and safely overwrite files on next request without 404 windows.
+    if ( class_exists( 'WCB_Post_Assets' ) ) {
+        WCB_Post_Assets::update_global_asset_version();
+    } else {
+        update_option( 'boostify_blocks_asset_version', time() );
     }
 
     $array_result = array(

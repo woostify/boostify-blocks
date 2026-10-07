@@ -75,6 +75,7 @@ function boostify_blocks_get_default_blocks_settings()
         'enableTemplatesButton'     => 'true',
         'enableCopyPasteStyles'     => 'true',
         'enableDisplayConditions'   => 'true',
+        'enableFileGeneration'      => 'false',
         'loadGoogleFontsLocally'    => 'false',
         'preloadLocalFonts'         => 'false',
         'allowOnlySelectedFonts'    => 'false',

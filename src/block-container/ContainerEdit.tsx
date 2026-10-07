@@ -283,18 +283,20 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 	const GAPS_VARIABLES = {};
 	//
 
-	const blockProps = useBlockProps({
-		className: `wcb-container__inner is-layout-flow`,
-	});
-	const innerBlocksProps = useInnerBlocksProps(blockProps, {
-		allowedBlocks: ALLOWED_BLOCKS,
-		renderAppender: () => {
-			if (!hasInnerBlocks) {
-				return <InnerBlocks.ButtonBlockAppender />;
-			}
-			return isSelected ? <InnerBlocks.DefaultBlockAppender /> : null;
+	const innerBlocksProps = useInnerBlocksProps(
+		{
+			className: `wcb-container__inner is-layout-flow ${!hasInnerBlocks ? "is-empty" : ""}`.trim(),
 		},
-	});
+		{
+			allowedBlocks: ALLOWED_BLOCKS,
+			renderAppender: () => {
+				if (!hasInnerBlocks) {
+					return <InnerBlocks.ButtonBlockAppender />;
+				}
+				return isSelected ? <InnerBlocks.DefaultBlockAppender /> : null;
+			},
+		}
+	);
 	//
 
 	const WcbAttrsForSave = useCallback((): WcbAttrsForSave => {
@@ -330,7 +332,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 
 	const blockWrapProps = useBlockProps({
 		ref,
-		className: `wcb-container__wrap ${uniqueId} ${containerClassName}`.trim(),
+		className: `wcb-container__wrap ${uniqueId} ${containerClassName} ${!hasInnerBlocks ? "is-empty" : ""}`.trim(),
 	});
 
 	// make uniqueid

@@ -44,17 +44,18 @@ const hiddenPreviewOverlay = css`
 	}
 `;
 
-export const getAdvanveDivWrapStyles = ({
+/**
+ * Initialize motion effect (animate__ classes) via IntersectionObserver.
+ * This runs independently of emotion CSS rendering so it works even when
+ * file generation is enabled and inline CSS is skipped.
+ */
+export const initAdvanceMotionEffect = ({
 	advance_motionEffect,
-	advance_zIndex,
-	advance_responsiveCondition,
 	className,
-	defaultDisplay,
-}: Params) => {
-	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
-	//
-	//
-	// Trigger animation only when in viewport
+}: {
+	advance_motionEffect?: MyMotionEffectData;
+	className: string;
+}) => {
 	try {
 		if (advance_motionEffect?.entranceAnimation) {
 			const thisELs = document.querySelectorAll(className);
@@ -96,6 +97,15 @@ export const getAdvanveDivWrapStyles = ({
 	} catch (error) {
 		console.log("error, advance_motionEffect", error);
 	}
+};
+
+export const getAdvanveDivWrapStyles = ({
+	advance_zIndex,
+	advance_responsiveCondition,
+	className,
+	defaultDisplay,
+}: Params) => {
+	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const {
 		mobile_v: zIndexMobile,

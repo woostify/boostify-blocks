@@ -49,18 +49,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const WRAP_CLASSNAME_UNIVERSAL = `.wcb-slider-child__wrap.${uniqueCssClass}`;
 	const WRAP_CLASSNAME_SCOPED = `.wcb-slider__wrap .wcb-slider-child__wrap.${uniqueCssClass}`;
 	
-	// Create comprehensive dual selectors that handle various wrapper scenarios
+	// Create clean dual selectors (universal for save mode, scoped for edit mode)
 	const createRobustSelector = (childSelector: string) => [
-		// Direct targeting (most reliable for save mode)
 		`${WRAP_CLASSNAME_UNIVERSAL} ${childSelector}`,
-		// Scoped targeting (for edit mode context)
 		`${WRAP_CLASSNAME_SCOPED} ${childSelector}`,
-		// Additional targeting for potential slider wrapper scenarios
-		`${WRAP_CLASSNAME_UNIVERSAL} .wcb-slider__item ${childSelector}`,
-		`${WRAP_CLASSNAME_SCOPED} .wcb-slider__item ${childSelector}`,
-		// Even more specific for deeply nested scenarios
-		`${WRAP_CLASSNAME_UNIVERSAL} .wcb-slider__item .wcb-slider__item-inner ${childSelector}`,
-		`${WRAP_CLASSNAME_SCOPED} .wcb-slider__item .wcb-slider__item-inner ${childSelector}`
 	].join(', ');
 
 	// Create CSS selectors using robust approach
@@ -83,6 +75,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 				[ITEM_CLASSNAME]: {
 					display: "flex",
 					flexDirection: "column",
+				},
+				[ITEM_CLASSNAME_INNER]: {
+					display: "flex",
+					flexDirection: "column",
+					width: "100%",
+				},
+				[CALL_TO_ACTION_INNER]: {
+					display: "inline-flex",
+					alignItems: "center",
+					justifyContent: "center",
+					width: "fit-content",
+					maxWidth: "100%",
+					boxSizing: "border-box",
+					cursor: "pointer",
 				},
 			},
 		];
@@ -174,11 +180,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							[`@media (max-width: 767px)`]: {
 								[ITEM_CONTENT]: {
 									textAlign:
-									style_content?.textAlignment?.Mobile === "left"
-										? "start"
-										: style_content?.textAlignment?.Mobile === "right"
-										? "end"
-										: "center",
+										(style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
+											? "start"
+											: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
+											? "end"
+											: "center",
 								},
 							},
 
@@ -186,11 +192,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							[`@media (min-width: 768px) and (max-width: 1023px)`]: {
 								[ITEM_CONTENT]: {
 									textAlign:
-									style_content?.textAlignment?.Tablet === "left"
-										? "start"
-										: style_content?.textAlignment?.Tablet === "right"
-										? "end"
-										: "center",
+										(style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
+											? "start"
+											: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
+											? "end"
+											: "center",
 								},
 							},
 
@@ -198,11 +204,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							[`@media (min-width: 1024px)`]: {
 								[ITEM_CONTENT]: {
 									textAlign:
-									style_content?.textAlignment?.Desktop === "left"
-										? "start"
-										: style_content?.textAlignment?.Desktop === "right"
-										? "end"
-										: "center",
+										style_content?.textAlignment?.Desktop === "left"
+											? "start"
+											: style_content?.textAlignment?.Desktop === "right"
+											? "end"
+											: "center",
 								},
 							},
 						},
@@ -215,21 +221,37 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					{
 						[ITEM_CLASSNAME_INNER]: {
-							justifyItems: (() => {
-							if (
-								style_layoutPreset?.preset === "wcb-layout-2" ||
-								style_layoutPreset?.preset === "wcb-layout-3" ||
-								style_layoutPreset?.preset === "wcb-layout-5" ||
-								style_image?.iconPosition === "left"
-							) {
-								return "start";
-							}
+							alignItems: (() => {
+								if (
+									style_layoutPreset?.preset === "wcb-layout-2" ||
+									style_layoutPreset?.preset === "wcb-layout-3" ||
+									style_layoutPreset?.preset === "wcb-layout-5" ||
+									style_image?.iconPosition === "left"
+								) {
+									return "flex-start";
+								}
 
-							if (style_image?.iconPosition === "right") {
-								return "end";
-							}
+								if (style_image?.iconPosition === "right") {
+									return "flex-end";
+								}
 
-							return undefined; // fallback
+								return "center";
+							})(),
+							textAlign: (() => {
+								if (
+									style_layoutPreset?.preset === "wcb-layout-2" ||
+									style_layoutPreset?.preset === "wcb-layout-3" ||
+									style_layoutPreset?.preset === "wcb-layout-5" ||
+									style_image?.iconPosition === "left"
+								) {
+									return "start";
+								}
+
+								if (style_image?.iconPosition === "right") {
+									return "end";
+								}
+
+								return "center";
 							})(),
 						},
 					},
@@ -237,38 +259,56 @@ const GlobalCss: FC<Props> = (attrs) => {
 						// Mobile
 						[`@media (max-width: 767px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
-								justifyItems:
-									style_content?.textAlignment?.Mobile === "left"
+								alignItems:
+									((style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
+									? "flex-start"
+									: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
+									? "flex-end"
+									: "center"),
+								textAlign:
+									((style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
 									? "start"
-									: style_content?.textAlignment?.Mobile === "right"
+									: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
 									? "end"
-									: "center",
-								},
+									: "center"),
 							},
+						},
 
 						// Tablet
 						[`@media (min-width: 768px) and (max-width: 1023px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
-								justifyItems:
-									style_content?.textAlignment?.Tablet === "left"
+								alignItems:
+									((style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
+									? "flex-start"
+									: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
+									? "flex-end"
+									: "center"),
+								textAlign:
+									((style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
 									? "start"
-									: style_content?.textAlignment?.Tablet === "right"
+									: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
 									? "end"
-									: "center",
-								},
+									: "center"),
 							},
+						},
 
 						// Desktop
 						[`@media (min-width: 1024px)`]: {
 							[ITEM_CLASSNAME_INNER]: {
-								justifyItems:
+								alignItems:
+									style_content?.textAlignment?.Desktop === "left"
+									? "flex-start"
+									: style_content?.textAlignment?.Desktop === "right"
+									? "flex-end"
+									: "center",
+								textAlign:
 									style_content?.textAlignment?.Desktop === "left"
 									? "start"
 									: style_content?.textAlignment?.Desktop === "right"
 									? "end"
 									: "center",
-								},
 							},
+						},
 					},
 					{
 						[CALL_TO_ACTION_INNER]: {
@@ -291,18 +331,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 						[CALL_TO_ACTION_TEXT]: {
 							color: style_callToActionButton?.colorText ?? "#ffffff",
 						},
-						[CALL_TO_ACTION_TEXT_SPACING]: 
-							style_buttonPreset?.iconPosition === "afterTitle"
-								? { marginRight: style_buttonPreset?.iconSpacing?.Desktop ?? "0px" }
-								: { marginLeft: style_buttonPreset?.iconSpacing?.Desktop ?? "0px" },
-						// [CALL_TO_ACTION_TEXT_SPACING]: 
-						// 	style_buttonPreset?.iconPosition === "afterTitle"
-						// 		? { marginRight: style_buttonPreset?.iconSpacing?.Tablet ?? "0px" }
-						// 		: { marginLeft: style_buttonPreset?.iconSpacing?.Tablet ?? "0px" },
-						// [CALL_TO_ACTION_TEXT_SPACING]: 
-						// 	style_buttonPreset?.iconPosition === "afterTitle"
-						// 		? { marginRight: style_buttonPreset?.iconSpacing?.Mobile ?? "0px" }
-						// 		: { marginLeft: style_buttonPreset?.iconSpacing?.Mobile ?? "0px" },
+					},
+					getStyleObjectFromResponsiveAttr({
+						className: CALL_TO_ACTION_TEXT_SPACING,
+						value: style_buttonPreset?.iconSpacing,
+						prefix: style_buttonPreset?.iconPosition === "afterTitle" ? "marginRight" : "marginLeft",
+					}),
+					{
 						// BUTTON HOVER
 						[CALL_TO_ACTION_INNER]: {
 							":hover": {

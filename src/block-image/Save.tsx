@@ -33,7 +33,7 @@ export interface WcbAttrsForSave
 		| "sizeSlug"
 		| "title"
 		| "url"
-	> {}
+	> { }
 
 export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
@@ -66,11 +66,11 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		general_settings: {
 			...general_settings,
 			// Make sure Height and Width are always object, not array
-			height: typeof general_settings.height === 'object' && !Array.isArray(general_settings.height) 
-				? general_settings.height 
+			height: typeof general_settings.height === 'object' && !Array.isArray(general_settings.height)
+				? general_settings.height
 				: { Desktop: undefined },
-			width: typeof general_settings.width === 'object' && !Array.isArray(general_settings.width) 
-				? general_settings.width 
+			width: typeof general_settings.width === 'object' && !Array.isArray(general_settings.width)
+				? general_settings.width
 				: { Desktop: undefined },
 		},
 		style_image,
@@ -147,19 +147,15 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				<RichText.Content
 					className={__experimentalGetElementClassName("caption")}
 					tagName="figcaption"
-				value={caption || ""}
+					value={caption || ""}
 				/>
 				{general_settings.layout === "overlay" && renderOverlay()}
 			</figure>
 		</>
 	);
-	
+
 	const wrapBlockProps = useBlockProps.save({
 		className: `woostify-container wcb-image__wrap wcb-image__wrap--${general_settings.layout} ${classes}`.trim(),
-		style: {
-			display: "flex",
-			justifyContent: attributes.general_settings?.alignment?.Desktop
-		},
 	});
 
 	return (

@@ -155,6 +155,7 @@ const WcbPostGridPanel_StyleMessages: FC<Props> = ({
 										setAttr__({
 											...panelData,
 											[tab.name]: {
+												...panelData[tab.name as TabsHere],
 												border,
 											},
 										});

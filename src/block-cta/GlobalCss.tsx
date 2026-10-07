@@ -46,12 +46,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 		value_Desktop: textAlignment_Desktop,
 		value_Tablet: textAlignment_tablet,
 		value_Mobile: textAlignment_mobile,
-	} = getValueFromAttrsResponsives(general_layout.textAlignment);
+	} = getValueFromAttrsResponsives(general_layout?.textAlignment);
 	const {
 		value_Desktop: flexDirection_Desktop,
 		value_Tablet: flexDirection_tablet,
 		value_Mobile: flexDirection_mobile,
-	} = getValueFromAttrsResponsives(general_layout.flexDirection);
+	} = getValueFromAttrsResponsives(general_layout?.flexDirection);
 	// FLEX COL
 	let ALIGN_ITEMS: HasResponsive<CSSProperties["alignItems"]> = {
 		Desktop:

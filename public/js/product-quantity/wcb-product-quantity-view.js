@@ -13,7 +13,7 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 // Step 2: Register the store under the "boostify-blocks/product-quantity" namespace.
 // Directives in the rendered HTML (data-wp-on--click="actions.increaseQuantity", etc.)
 // reference these actions/callbacks by name.
-store( 'boostify-blocks/product-quantity', {
+const quantityStore = {
 	actions: {
 		// Step 3a: "+" button handler — increment the quantity in context by 1.
 		increaseQuantity: () => {
@@ -51,6 +51,10 @@ store( 'boostify-blocks/product-quantity', {
 			const context = getContext();
 			const { ref } = getElement();
 
+			if ( ! context ) {
+				return;
+			}
+
 			// Step 4b: Bail out if jQuery isn't loaded (nothing to sync).
 			if ( typeof window.jQuery === 'undefined' ) {
 				return;
@@ -58,9 +62,15 @@ store( 'boostify-blocks/product-quantity', {
 
 			// Step 4c: Push the latest quantity into jQuery's .data() cache
 			// for every "Add to cart" button inside this element.
-			ref.querySelectorAll( '.add_to_cart_button' ).forEach( ( btn ) => {
-				window.jQuery( btn ).data( 'quantity', context.quantity );
-			} );
+			if ( ref ) {
+				ref.querySelectorAll( '.add_to_cart_button' ).forEach( ( btn ) => {
+					window.jQuery( btn ).data( 'quantity', context.quantity );
+				} );
+			}
 		},
 	},
-} );
+};
+
+store( 'boostify-blocks/product-quantity', quantityStore );
+store( 'boostify-blocks/quantity', quantityStore );
+
