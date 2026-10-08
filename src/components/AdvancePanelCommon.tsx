@@ -1,5 +1,6 @@
 import { __ } from "@wordpress/i18n";
 import { PanelBody } from "@wordpress/components";
+import { useSelect } from "@wordpress/data";
 import React, { FC, ReactNode } from "react";
 import { InspectorControlsTabTitle } from "./HOCInspectorControls";
 import MyResponsiveConditionControl, {
@@ -12,6 +13,8 @@ import MyMyMotionEffectControl, {
 	MY_MOTION_EFFECT_DEMO,
 	MyMotionEffectData,
 } from "./controls/MyMotionEffectControl/MyMotionEffectControl";
+import MyDisplayConditionsControl from "./controls/MyDisplayConditionsControl/MyDisplayConditionsControl";
+import { EXCLUDED_BLOCKS } from "../extensions/display-conditions/options";
 
 interface Props {
 	handleTogglePanel: (
@@ -25,6 +28,7 @@ interface Props {
 	advance_motionEffect?: MyMotionEffectData;
 	setAttributes: (data: any) => void;
 	children?: ReactNode;
+	attributes?: any;
 }
 
 const AdvancePanelCommon: FC<Props> = ({
@@ -35,7 +39,21 @@ const AdvancePanelCommon: FC<Props> = ({
 	advance_motionEffect,
 	setAttributes,
 	children,
+	attributes,
 }) => {
+	const selectedBlock = useSelect((select: any) => {
+		const blockEditor = select("core/block-editor");
+		return blockEditor ? blockEditor.getSelectedBlock() : null;
+	}, []);
+
+	const currentAttrs = attributes || selectedBlock?.attributes || {};
+	const blockName = selectedBlock?.name || "";
+
+	const globalSettings = (window as any).boostify_blocks_global_variables || {};
+	const isDisplayConditionsEnabled =
+		globalSettings.enableDisplayConditions !== "false";
+	const isExcluded = EXCLUDED_BLOCKS.includes(blockName);
+
 	return (
 		<>
 			{!!advance_motionEffect ? (
@@ -52,6 +70,23 @@ const AdvancePanelCommon: FC<Props> = ({
 					<MyMyMotionEffectControl
 						data={advance_motionEffect}
 						onChange={(data) => setAttributes({ advance_motionEffect: data })}
+					/>
+				</PanelBody>
+			) : null}
+			{isDisplayConditionsEnabled && !isExcluded ? (
+				<PanelBody
+					onToggle={() =>
+						handleTogglePanel("Advances", "Display Conditions")
+					}
+					initialOpen={tabAdvancesIsPanelOpen === "Display Conditions"}
+					opened={
+						tabAdvancesIsPanelOpen === "Display Conditions" || undefined
+					}
+					title={__("Display Conditions", "boostify-blocks")}
+				>
+					<MyDisplayConditionsControl
+						attributes={currentAttrs}
+						setAttributes={setAttributes}
 					/>
 				</PanelBody>
 			) : null}
@@ -85,3 +120,4 @@ const AdvancePanelCommon: FC<Props> = ({
 };
 
 export default AdvancePanelCommon;
+
