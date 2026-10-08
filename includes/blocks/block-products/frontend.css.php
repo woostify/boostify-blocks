@@ -369,15 +369,56 @@ if ( ! empty( $sd['margin'] ) ) {
 }
 
 // 13. Wishlist Button
-if ( ! empty( $sw ) ) {
-	$wishlist_btn_sel = $wrap_sel . ' .wcb-products__product--wishlistTopRight--item';
-	if ( ( $sw['position'] ?? '' ) === 'top-right' ) {
-		$css['desktop'][ $wishlist_btn_sel ]['position'] = 'absolute';
-		$css['desktop'][ $wishlist_btn_sel ]['top']      = '0';
-		$css['desktop'][ $wishlist_btn_sel ]['right']    = '0';
-		$css['desktop'][ $wishlist_btn_sel ]['z-index']  = '2';
-	}
-}
+$top_right_sel = $wrap_sel . ' .wcb-products__product--topRight';
+$css['desktop'][ $top_right_sel ]['position'] = 'absolute';
+$css['desktop'][ $top_right_sel ]['top']      = '0';
+$css['desktop'][ $top_right_sel ]['right']    = '0';
+$css['desktop'][ $top_right_sel ]['z-index']  = '3';
+
+$wishlist_btn_sel   = $wrap_sel . ' .wcb-products__product--wishlistTopRight--item';
+$wishlist_hover_sel = $wrap_sel . ' .wcb-products__product--wishlistTopRight:hover .wcb-products__product--wishlistTopRight--item';
+$wishlist_btn_hover = $wishlist_btn_sel . ':hover';
+
+$css['desktop'][ $wishlist_btn_sel ]['position']        = 'relative';
+$css['desktop'][ $wishlist_btn_sel ]['top']             = '-2.5rem';
+$css['desktop'][ $wishlist_btn_sel ]['right']           = '0';
+$css['desktop'][ $wishlist_btn_sel ]['width']           = '2.5rem';
+$css['desktop'][ $wishlist_btn_sel ]['height']          = '2.5rem';
+$css['desktop'][ $wishlist_btn_sel ]['display']         = 'flex';
+$css['desktop'][ $wishlist_btn_sel ]['align-items']     = 'center';
+$css['desktop'][ $wishlist_btn_sel ]['justify-content'] = 'center';
+$css['desktop'][ $wishlist_btn_sel ]['background']      = '#ffffff';
+$css['desktop'][ $wishlist_btn_sel ]['border']          = 'none';
+$css['desktop'][ $wishlist_btn_sel ]['border-radius']   = '0';
+$css['desktop'][ $wishlist_btn_sel ]['text-decoration'] = 'none';
+$css['desktop'][ $wishlist_btn_sel ]['transition']      = 'transform 0.3s ease, opacity 0.3s ease, background-color 0.2s ease';
+$css['desktop'][ $wishlist_btn_sel ]['z-index']         = '2';
+$css['desktop'][ $wishlist_btn_sel ]['cursor']          = 'pointer';
+
+$css['desktop'][ $wishlist_hover_sel ]['transform'] = 'translateY(2.5rem)';
+
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['content']                 = '"\\e909"';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['color']                   = '#000000';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['margin']                  = 'auto';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['position']                = 'relative';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['z-index']                 = '1';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['display']                 = 'inline-block';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['font-family']             = 'tinvwl-webfont !important';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['font-style']              = 'normal';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['font-weight']             = '400';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['line-height']             = '1';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['font-size']               = '20px';
+$css['desktop'][ $wishlist_btn_sel . '::before' ]['-webkit-font-smoothing'] = 'antialiased';
+
+$css['desktop'][ $wishlist_btn_sel . '.is-in-wishlist::before' ]['content'] = '"\\e908"';
+$css['desktop'][ $wishlist_btn_sel . '.is-in-wishlist::before' ]['color']   = '#000000';
+
+$css['desktop'][ $wishlist_btn_hover ]['background'] = '#474747';
+$css['desktop'][ $wishlist_btn_hover ]['color']      = '#ffffff';
+$css['desktop'][ $wishlist_btn_hover . '::before' ]['color'] = '#ffffff';
+
+// Hide duplicate TI Wishlist loop button auto-injected by TI plugin filter
+$css['desktop'][ $wrap_sel . ' .tinv-wraper.tinvwl-loop-button-wrapper' ]['display'] = 'none !important';
 
 // 14. Quick View Button & Hover Gallery Preview
 $qv_btn_sel        = $wrap_sel . ' .wcb-products__product--quickViewBottomImage--item';
@@ -472,26 +513,47 @@ if ( ! $qv_enabled ) {
 		$css['desktop'][ $qv_btn_sel ]['right']    = '0rem';
 
 		// Hover state: centered horizontally on image
-		$qv_bottom = ( $cart_pos === 'icon' ) ? '10rem' : '6rem';
+		$is_cart_show   = $attr['general_addToCartBtn']['isShowButton'] ?? true;
+		$is_both_center = ( $cart_pos === 'inside image' && $is_cart_show );
+
 		$css['desktop'][ $qv_prod_hover_sel ]['display']         = 'flex !important';
 		$css['desktop'][ $qv_prod_hover_sel ]['align-items']     = 'center !important';
 		$css['desktop'][ $qv_prod_hover_sel ]['justify-content'] = 'center !important';
 		$css['desktop'][ $qv_prod_hover_sel ]['padding']         = '0.5rem 1.4rem !important';
 		$css['desktop'][ $qv_prod_hover_sel ]['position']        = 'absolute';
-		$css['desktop'][ $qv_prod_hover_sel ]['top']             = 'auto';
-		$css['desktop'][ $qv_prod_hover_sel ]['left']            = 'auto';
-		$css['desktop'][ $qv_prod_hover_sel ]['bottom']          = $qv_bottom;
-		$css['desktop'][ $qv_prod_hover_sel ]['right']           = '50%';
-		$css['desktop'][ $qv_prod_hover_sel ]['transform']       = 'translateX(50%)';
 		$css['desktop'][ $qv_prod_hover_sel ]['height']          = 'auto';
 		$css['desktop'][ $qv_prod_hover_sel ]['white-space']     = 'nowrap';
 		$css['desktop'][ $qv_prod_hover_sel ]['border']          = 'none';
 		$css['desktop'][ $qv_prod_hover_sel ]['box-shadow']      = '0 4px 10px rgba(0,0,0,0.1)';
 		$css['desktop'][ $qv_prod_hover_sel ]['z-index']         = '10';
+
+		if ( $is_both_center ) {
+			// Stack vertically: Add to Cart on top, Quick View on bottom with a clean gap
+			$css['desktop'][ $qv_prod_hover_sel ]['top']       = 'calc(50% + 6px)';
+			$css['desktop'][ $qv_prod_hover_sel ]['left']      = 'auto';
+			$css['desktop'][ $qv_prod_hover_sel ]['bottom']    = 'auto';
+			$css['desktop'][ $qv_prod_hover_sel ]['right']     = '50%';
+			$css['desktop'][ $qv_prod_hover_sel ]['transform'] = 'translateX(50%)';
+
+			$add_cart_inside_hover_sel = $wrap_sel . ' .wcb-products__product--btnInsideImage:hover .wcb-products__product-add-to-cart';
+			$css['desktop'][ $add_cart_inside_hover_sel ]['top']       = 'auto';
+			$css['desktop'][ $add_cart_inside_hover_sel ]['bottom']    = 'calc(50% + 6px)';
+			$css['desktop'][ $add_cart_inside_hover_sel ]['left']      = '50%';
+			$css['desktop'][ $add_cart_inside_hover_sel ]['right']     = 'auto';
+			$css['desktop'][ $add_cart_inside_hover_sel ]['transform'] = 'translateX(-50%)';
+		} else {
+			// Only Quick View is centered on image
+			$css['desktop'][ $qv_prod_hover_sel ]['top']       = '50%';
+			$css['desktop'][ $qv_prod_hover_sel ]['left']      = 'auto';
+			$css['desktop'][ $qv_prod_hover_sel ]['bottom']    = 'auto';
+			$css['desktop'][ $qv_prod_hover_sel ]['right']     = '50%';
+			$css['desktop'][ $qv_prod_hover_sel ]['transform'] = 'translate(50%, -50%)';
+		}
 	}
 }
 
-$css['desktop'][ $product_sel . ' .wcb-products__product-featured' ]['overflow'] = 'hidden';
+$css['desktop'][ $product_sel . ' .wcb-products__product-featured' ]['aspect-ratio'] = '1 / 1';
+$css['desktop'][ $product_sel . ' .wcb-products__product-featured' ]['overflow']     = 'hidden';
 
 // Hover Gallery Preview (Interactivity API wrapper & tiny-slider)
 $qv_preview_sel = $wrap_sel . ' .wcb-products__product-quickview-preview';

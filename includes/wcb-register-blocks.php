@@ -105,6 +105,9 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         'style_countdownUrgency' => array(
                             'type'      => 'object',
                         ),
+                        'style_dimension' => array(
+                            'type'      => 'object',
+                        ),
                         'advance_responsiveCondition' => array(
                             'type'      => 'object',
                         ),
@@ -134,93 +137,74 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
 
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-posts-grid',
-       [
-                    'attributes'      => array(
-                        'uniqueId'    => array(
-                            'type'      => 'string',
-                            'default'   => '',
-                        ),
-                        'general_sortingAndFiltering' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_postContent' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_postMeta' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_postFeaturedImage' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_readmoreLink' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_layout' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_content' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_featuredImage' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_addToCartBtn' => array(
-                            'type'      => 'object',
-                        ),
-                        'general_pagination' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_title' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_featuredImage' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_price' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_layout' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_addToCardBtn' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_pagination' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_saleBadge' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_border' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_rating' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_category' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_wishlistBtn' => array(
-                            'type'      => 'object',
-                        ),
-                        'style_quickViewBtn' => array(
-                            'type'      => 'object',
-                        ),
-                        'advance_responsiveCondition' => array(
-                            'type'      => 'object',
-                        ),
-                        'advance_zIndex' => array(
-                            'type'      => 'object',
-                        ),
-                        'advance_motionEffect' => array(
-                            'type'      => 'object',
-                        ),
-
+            [
+                'attributes'      => array(
+                    'uniqueId'    => array(
+                        'type'      => 'string',
+                        'default'   => '',
                     ),
-                    "render_callback"     => "boostify_blocks_block_posts_grid_render_callback",
-                    "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/posts-grid'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
-                    "view_script_handles" => []
-                ]
+                    'general_sortingAndFiltering' => array(
+                        'type'      => 'object',
+                    ),
+                    'general_postContent' => array(
+                        'type'      => 'object',
+                    ),
+                    'general_postMeta' => array(
+                        'type'      => 'object',
+                    ),
+                    'general_postFeaturedImage' => array(
+                        'type'      => 'object',
+                    ),
+                    'general_readmoreLink' => array(
+                        'type'      => 'object',
+                    ),
+                    'general_pagination' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_layout' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_title' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_excerpt' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_taxonomy' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_meta' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_readmoreLink' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_pagination' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_featuredImage' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_border' => array(
+                        'type'      => 'object',
+                    ),
+                    'style_boxShadow' => array(
+                        'type'      => 'object',
+                    ),
+                    'advance_responsiveCondition' => array(
+                        'type'      => 'object',
+                    ),
+                    'advance_zIndex' => array(
+                        'type'      => 'object',
+                    ),
+                    'advance_motionEffect' => array(
+                        'type'      => 'object',
+                    ),
+                ),
+                "render_callback"     => "boostify_blocks_block_posts_grid_render_callback",
+                "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/posts-grid'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
+            ]
         );
 
         // FORM

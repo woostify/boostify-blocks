@@ -41,9 +41,77 @@ class WCB_Display_Conditions {
 		$options = get_option( 'boostify_blocks_settings_options', array() );
 		$enabled = ! isset( $options['enableDisplayConditions'] ) || rest_sanitize_boolean( $options['enableDisplayConditions'] );
 
-		if ( $enabled && ! is_admin() ) {
-			add_filter( 'render_block', array( $this, 'render_block_display_conditions' ), 10, 2 );
+		if ( $enabled ) {
+			add_filter( 'register_block_type_args', array( $this, 'register_block_type_args' ), 10, 2 );
+
+			if ( ! is_admin() ) {
+				add_filter( 'render_block', array( $this, 'render_block_display_conditions' ), 10, 2 );
+			}
 		}
+	}
+
+	/**
+	 * Register Display Conditions block attributes for supported blocks.
+	 *
+	 * @param array  $args       Array of arguments for registering a block type.
+	 * @param string $block_type Block type name.
+	 * @return array Modified block type arguments.
+	 */
+	public function register_block_type_args( $args, $block_type ) {
+		$excluded = array(
+			'boostify-blocks/extensions',
+			'boostify-blocks/default',
+			'boostify-blocks/dashboard',
+			'boostify-blocks/tab-child',
+			'boostify-blocks/faq-child',
+			'boostify-blocks/icon-child',
+			'boostify-blocks/slider-child',
+			'boostify-blocks/slider-swiper-child',
+		);
+
+		if ( in_array( $block_type, $excluded, true ) ) {
+			return $args;
+		}
+
+		if ( 0 === strpos( $block_type, 'boostify-blocks/' ) || 0 === strpos( $block_type, 'core/' ) ) {
+			if ( ! isset( $args['attributes'] ) || ! is_array( $args['attributes'] ) ) {
+				$args['attributes'] = array();
+			}
+
+			$args['attributes']['wcbDisplayConditions'] = array(
+				'type'    => 'string',
+				'default' => 'none',
+			);
+			$args['attributes']['wcbLoggedIn'] = array(
+				'type'    => 'boolean',
+				'default' => false,
+			);
+			$args['attributes']['wcbLoggedOut'] = array(
+				'type'    => 'boolean',
+				'default' => false,
+			);
+			$args['attributes']['wcbUserRole'] = array(
+				'type'    => 'string',
+				'default' => '',
+			);
+			$args['attributes']['wcbSystem'] = array(
+				'type'    => 'string',
+				'default' => '',
+			);
+			$args['attributes']['wcbBrowser'] = array(
+				'type'    => 'string',
+				'default' => '',
+			);
+			$args['attributes']['wcbDay'] = array(
+				'type'    => 'array',
+				'items'   => array(
+					'type' => 'string',
+				),
+				'default' => array(),
+			);
+		}
+
+		return $args;
 	}
 
 	/**
