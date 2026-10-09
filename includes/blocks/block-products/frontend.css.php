@@ -334,6 +334,36 @@ if ( ! empty( $sa['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $wrap_sel . ' .wcb-products__product--btnIconAddToCart--item', $sa['border'], true, true );
 }
 
+$cart_pos = $attr['general_addToCartBtn']['position'] ?? '';
+if ( 'inside image' === $cart_pos ) {
+	$inside_btn_sel       = $wrap_sel . ' .wcb-products__product--btnInsideImage .wcb-products__product-featured .wcb-products__product-add-to-cart';
+	$inside_btn_hover_sel = $wrap_sel . ' .wcb-products__product--btnInsideImage:hover .wcb-products__product-featured .wcb-products__product-add-to-cart';
+	$css['desktop'][ $inside_btn_sel ]['position']   = 'absolute';
+	$css['desktop'][ $inside_btn_sel ]['left']       = '50%';
+	$css['desktop'][ $inside_btn_sel ]['top']        = '50%';
+	$css['desktop'][ $inside_btn_sel ]['transform']  = 'translate(-50%, -50%)';
+	$css['desktop'][ $inside_btn_sel ]['z-index']    = '10';
+	$css['desktop'][ $inside_btn_sel ]['opacity']    = '0';
+	$css['desktop'][ $inside_btn_sel ]['visibility'] = 'hidden';
+	$css['desktop'][ $inside_btn_sel ]['transition'] = 'opacity 0.25s ease, visibility 0.25s ease';
+	$css['desktop'][ $inside_btn_sel ]['white-space'] = 'nowrap';
+	$css['desktop'][ $inside_btn_sel ]['margin']     = '0';
+
+	$css['desktop'][ $inside_btn_hover_sel ]['opacity']    = '1';
+	$css['desktop'][ $inside_btn_hover_sel ]['visibility'] = 'visible';
+}
+
+if ( 'icon' === $cart_pos ) {
+	$top_right_atc_sel = $wrap_sel . ' .wcb-products__product--btnIconAddToCart--item';
+	$css['desktop'][ $top_right_atc_sel ]['width']           = '2.4rem';
+	$css['desktop'][ $top_right_atc_sel ]['height']          = '2.4rem';
+	$css['desktop'][ $top_right_atc_sel ]['display']         = 'flex';
+	$css['desktop'][ $top_right_atc_sel ]['align-items']     = 'center';
+	$css['desktop'][ $top_right_atc_sel ]['justify-content'] = 'center';
+	$css['desktop'][ $top_right_atc_sel ]['border-radius']   = '50%';
+	$css['desktop'][ $top_right_atc_sel ]['cursor']          = 'pointer';
+}
+
 // 11. Pagination
 if ( ! empty( $sg['justifyContent'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $pag_wrap_sel, 'justify-content', $sg['justifyContent'] );
@@ -368,19 +398,86 @@ if ( ! empty( $sd['margin'] ) ) {
 	WCB_Block_Helper::add_dimension_css( $css, $wrap_sel, 'margin', $sd['margin'] );
 }
 
-// 13. Wishlist Button
-if ( ! empty( $sw ) ) {
-	$wishlist_btn_sel = $wrap_sel . ' .wcb-products__product--wishlistTopRight--item';
-	if ( ( $sw['position'] ?? '' ) === 'top-right' ) {
-		$css['desktop'][ $wishlist_btn_sel ]['position'] = 'absolute';
-		$css['desktop'][ $wishlist_btn_sel ]['top']      = '0';
-		$css['desktop'][ $wishlist_btn_sel ]['right']    = '0';
-		$css['desktop'][ $wishlist_btn_sel ]['z-index']  = '2';
-	}
-}
+// 13. Wishlist Button & Top Right icons
+$top_right_wrap_sel = $wrap_sel . ' .wcb-products__product--topRight';
+$css['desktop'][ $top_right_wrap_sel ]['position']       = 'absolute';
+$css['desktop'][ $top_right_wrap_sel ]['top']            = '0.5rem';
+$css['desktop'][ $top_right_wrap_sel ]['right']          = '0.5rem';
+$css['desktop'][ $top_right_wrap_sel ]['z-index']        = '30';
+$css['desktop'][ $top_right_wrap_sel ]['display']        = 'flex';
+$css['desktop'][ $top_right_wrap_sel ]['flex-direction'] = 'column';
+$css['desktop'][ $top_right_wrap_sel ]['gap']            = '0.5rem';
+$css['desktop'][ $top_right_wrap_sel ]['opacity']        = '0';
+$css['desktop'][ $top_right_wrap_sel ]['transform']      = 'translateY(-100%)';
+$css['desktop'][ $top_right_wrap_sel ]['pointer-events'] = 'none';
+$css['desktop'][ $top_right_wrap_sel ]['transition']     = 'transform 0.3s ease, opacity 0.3s ease';
+
+$top_right_hover_sel = $wrap_sel . ' .wcb-products__product:hover .wcb-products__product--topRight';
+$top_right_focus_sel = $wrap_sel . ' .wcb-products__product:focus-within .wcb-products__product--topRight';
+$css['desktop'][ $top_right_hover_sel ]['opacity']        = '1';
+$css['desktop'][ $top_right_hover_sel ]['transform']      = 'translateY(0)';
+$css['desktop'][ $top_right_hover_sel ]['pointer-events'] = 'auto';
+$css['desktop'][ $top_right_focus_sel ]['opacity']        = '1';
+$css['desktop'][ $top_right_focus_sel ]['transform']      = 'translateY(0)';
+$css['desktop'][ $top_right_focus_sel ]['pointer-events'] = 'auto';
+
+$css['tablet'][ $top_right_wrap_sel ]['opacity']        = '1';
+$css['tablet'][ $top_right_wrap_sel ]['transform']      = 'translateY(0)';
+$css['tablet'][ $top_right_wrap_sel ]['pointer-events'] = 'auto';
+$css['mobile'][ $top_right_wrap_sel ]['opacity']        = '1';
+$css['mobile'][ $top_right_wrap_sel ]['transform']      = 'translateY(0)';
+$css['mobile'][ $top_right_wrap_sel ]['pointer-events'] = 'auto';
+
+$wishlist_tr_sel = $wrap_sel . ' .wcb-products__product--wishlistTopRight--item';
+$css['desktop'][ $wishlist_tr_sel ]['width']           = '40px';
+$css['desktop'][ $wishlist_tr_sel ]['height']          = '40px';
+$css['desktop'][ $wishlist_tr_sel ]['display']         = 'flex';
+$css['desktop'][ $wishlist_tr_sel ]['align-items']     = 'center';
+$css['desktop'][ $wishlist_tr_sel ]['justify-content'] = 'center';
+$css['desktop'][ $wishlist_tr_sel ]['border-radius']   = '50%';
+$css['desktop'][ $wishlist_tr_sel ]['border']          = 'none';
+$css['desktop'][ $wishlist_tr_sel ]['background']      = '#ffffff';
+$css['desktop'][ $wishlist_tr_sel ]['box-shadow']      = '0 1px 3px rgba(0, 0, 0, 0.1)';
+$css['desktop'][ $wishlist_tr_sel ]['cursor']          = 'pointer';
+$css['desktop'][ $wishlist_tr_sel ]['z-index']         = '30';
+$css['desktop'][ $wishlist_tr_sel . ':hover' ]['background'] = '#474747';
+
+$wishlist_br_sel = $wrap_sel . ' .wcb-products__product--wishlistBottomRight--item';
+$css['desktop'][ $wishlist_br_sel ]['position']        = 'absolute';
+$css['desktop'][ $wishlist_br_sel ]['bottom']          = '0.5rem';
+$css['desktop'][ $wishlist_br_sel ]['right']           = '0.5rem';
+$css['desktop'][ $wishlist_br_sel ]['width']           = '40px';
+$css['desktop'][ $wishlist_br_sel ]['height']          = '40px';
+$css['desktop'][ $wishlist_br_sel ]['display']         = 'flex';
+$css['desktop'][ $wishlist_br_sel ]['align-items']     = 'center';
+$css['desktop'][ $wishlist_br_sel ]['justify-content'] = 'center';
+$css['desktop'][ $wishlist_br_sel ]['border-radius']   = '50%';
+$css['desktop'][ $wishlist_br_sel ]['border']          = 'none';
+$css['desktop'][ $wishlist_br_sel ]['background']      = '#ffffff';
+$css['desktop'][ $wishlist_br_sel ]['box-shadow']      = '0 1px 3px rgba(0, 0, 0, 0.1)';
+$css['desktop'][ $wishlist_br_sel ]['cursor']          = 'pointer';
+$css['desktop'][ $wishlist_br_sel ]['z-index']         = '30';
+$css['desktop'][ $wishlist_br_sel . ':hover' ]['background'] = '#474747';
+$css['desktop'][ $wishlist_br_sel . ':hover' ]['z-index']    = '30';
+
+$icon_cart_sel = $wrap_sel . ' .wcb-products__product--btnIconAddToCart--item';
+$css['desktop'][ $icon_cart_sel ]['width']           = '2.4rem';
+$css['desktop'][ $icon_cart_sel ]['height']          = '2.4rem';
+$css['desktop'][ $icon_cart_sel ]['display']         = 'flex';
+$css['desktop'][ $icon_cart_sel ]['align-items']     = 'center';
+$css['desktop'][ $icon_cart_sel ]['justify-content'] = 'center';
+$css['desktop'][ $icon_cart_sel ]['border-radius']   = '50%';
+$css['desktop'][ $icon_cart_sel ]['border']          = 'none';
+$css['desktop'][ $icon_cart_sel ]['background']      = '#ffffff';
+$css['desktop'][ $icon_cart_sel ]['cursor']          = 'pointer';
+$css['desktop'][ $icon_cart_sel . ':hover' ]['background'] = '#474747';
+
+// Suppress duplicate wishlist buttons injected by third-party plugins in product content
+$css['desktop'][ $wrap_sel . ' .wcb-products__product-content .tinv-wraper' ]['display'] = 'none !important';
+$css['desktop'][ $wrap_sel . ' .wcb-products__product-content .yith-wcwl-add-to-wishlist' ]['display'] = 'none !important';
 
 // 14. Quick View Button & Hover Gallery Preview
-$qv_btn_sel        = $wrap_sel . ' .wcb-products__product--quickViewBottomImage--item';
+$qv_btn_sel        = $wrap_sel . ' .wcb-products__product .wcb-products__product--quickViewBottomImage--item';
 $qv_prod_hover_sel = $wrap_sel . ' .wcb-products__product:hover .wcb-products__product--quickViewBottomImage--item';
 $qv_btn_hover_sel  = $qv_btn_sel . ':hover';
 
@@ -404,7 +501,7 @@ if ( ! $qv_enabled ) {
 	WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'background-color', $bg_color );
 	WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'color', $text_color );
 
-	if ( ! empty( $sq['border_radius'] ) ) {
+	if ( isset( $sq['border_radius'] ) && $sq['border_radius'] !== '' ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
 		WCB_Block_Helper::add_responsive_css( $css, $qv_prod_hover_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
 	}
@@ -488,6 +585,12 @@ if ( ! $qv_enabled ) {
 		$css['desktop'][ $qv_prod_hover_sel ]['border']          = 'none';
 		$css['desktop'][ $qv_prod_hover_sel ]['box-shadow']      = '0 4px 10px rgba(0,0,0,0.1)';
 		$css['desktop'][ $qv_prod_hover_sel ]['z-index']         = '10';
+
+		if ( $cart_pos === 'inside image' ) {
+			$css['desktop'][ $qv_prod_hover_sel ]['top']    = 'calc(50% + 24px) !important';
+			$css['desktop'][ $qv_prod_hover_sel ]['bottom'] = 'auto !important';
+			$css['desktop'][ $wrap_sel . ' .wcb-products__product--btnInsideImage .wcb-products__product-featured .wcb-products__product-add-to-cart' ]['top'] = 'calc(50% - 24px) !important';
+		}
 	}
 }
 
@@ -551,7 +654,7 @@ $css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['justify-content'] = 'center';
 $css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['align-items']     = 'center';
 $css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['gap']             = '6px';
 $css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['z-index']         = '25';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['pointer-events']  = 'auto';
+$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['pointer-events']  = 'none';
 $css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['height']          = 'auto';
 
 $css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['width']            = '8px';
@@ -614,6 +717,82 @@ $css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['width']       
 $css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['height']         = '14px';
 $css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['stroke']         = 'currentColor';
 $css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['pointer-events'] = 'none';
+
+// Core Tiny Slider styles for hover gallery & modal
+$css['desktop']['.tns-outer']['position']  = 'relative';
+$css['desktop']['.tns-outer']['direction'] = 'ltr';
+$css['desktop']['.tns-outer [hidden]']['display'] = 'none !important';
+$css['desktop']['.tns-slider']['transition'] = 'all 0s';
+$css['desktop']['.tns-slider > .tns-item']['box-sizing'] = 'border-box';
+$css['desktop']['.tns-horizontal.tns-subpixel']['white-space'] = 'nowrap';
+$css['desktop']['.tns-horizontal.tns-subpixel > .tns-item']['display']        = 'inline-block';
+$css['desktop']['.tns-horizontal.tns-subpixel > .tns-item']['vertical-align'] = 'top';
+$css['desktop']['.tns-horizontal.tns-subpixel > .tns-item']['white-space']    = 'normal';
+$css['desktop']['.tns-horizontal.tns-no-subpixel > .tns-item']['float']        = 'left';
+$css['desktop']['.tns-horizontal.tns-no-subpixel > .tns-item']['margin-right'] = '-100%';
+
+// Quick View Modal Gallery Carousel
+$qv_modal_sel = '.quick-view-images';
+$css['desktop'][ $qv_modal_sel ]['position'] = 'relative';
+$css['desktop'][ $qv_modal_sel . ' .tns-outer' ]['position'] = 'relative';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['position']        = 'absolute';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['top']             = '50%';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['transform']       = 'translateY(-50%)';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['left']            = '0px';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['right']           = '0px';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['display']         = 'flex';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['justify-content'] = 'space-between';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['z-index']         = '10';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['pointer-events']  = 'none';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['opacity']         = '0';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['transition']      = 'opacity 0.25s ease';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls' ]['padding']         = '0 10px';
+
+$css['desktop'][ $qv_modal_sel . ':hover .tns-controls' ]['opacity'] = '1';
+
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['width']            = '40px';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['height']           = '40px';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['min-width']        = '40px';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['min-height']       = '40px';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['border-radius']    = '50%';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['background-color'] = 'rgba(255, 255, 255, 0.95)';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['color']            = '#222222';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['border']           = 'none';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['padding']          = '0px';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['cursor']           = 'pointer';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['box-shadow']       = '0 2px 8px rgba(0, 0, 0, 0.2)';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['display']          = 'inline-flex';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['align-items']      = 'center';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['justify-content']  = 'center';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['pointer-events']   = 'auto';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['z-index']          = '10';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button' ]['transition']       = 'background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease';
+
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button:hover' ]['background-color'] = '#ffffff';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button:hover' ]['color']            = '#000000';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button:hover' ]['box-shadow']       = '0 4px 12px rgba(0, 0, 0, 0.3)';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button:hover' ]['transform']        = 'scale(1.08)';
+$css['desktop'][ $qv_modal_sel . ' .tns-controls button:disabled' ]['display']        = 'none';
+
+$css['desktop'][ $qv_modal_sel . ' .tns-nav' ]['position']        = 'relative';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav' ]['display']         = 'flex';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav' ]['justify-content'] = 'center';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav' ]['align-items']     = 'center';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav' ]['gap']             = '6px';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav' ]['margin-top']      = '12px';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav' ]['z-index']         = '10';
+
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['width']            = '8px';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['height']           = '8px';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['border-radius']    = '50%';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['background-color'] = 'rgba(0, 0, 0, 0.2)';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['border']           = '1px solid transparent';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['padding']          = '0px';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['margin']           = '0 2px';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['cursor']           = 'pointer';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button' ]['transition']       = 'all 0.2s ease';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button.tns-nav-active' ]['background-color'] = '#000000';
+$css['desktop'][ $qv_modal_sel . ' .tns-nav button.tns-nav-active' ]['transform']        = 'scale(1.25)';
 
 // 15. Countdown Urgency
 if ( ! empty( $scu ) ) {

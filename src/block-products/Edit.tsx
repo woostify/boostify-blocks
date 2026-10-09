@@ -200,6 +200,9 @@ const Edit: FC<Props> = (props) => {
 				style_title: buildStyleTitleDefault(undefined),
 				style_price: buildStylePriceDefault(undefined),
 				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined),
+				style_wishlistBtn: buildStyleWishlistButtonDefault(undefined),
+				style_quickViewBtn: buildStyleQuickViewButtonDefault(undefined),
+				style_countdownUrgency: buildStyleCountdownUrgencyDefault(undefined),
 			});
 		}
 	}, [general_layout?.isCustomizerGeneralLayout]);
@@ -217,13 +220,17 @@ const Edit: FC<Props> = (props) => {
 	}, [style_category]);
 
 	useEffect(() => {
-		const hasWishlistConfig =
-			style_wishlistBtn && Object.keys(style_wishlistBtn).length > 0;
-		if (!hasWishlistConfig) {
+		const currentWishlist = buildStyleWishlistButtonDefault(
+			attributes.style_wishlistBtn as any
+		);
+		if (
+			!style_wishlistBtn ||
+			style_wishlistBtn.position !== currentWishlist.position ||
+			style_wishlistBtn.style !== currentWishlist.style ||
+			style_wishlistBtn.wishlist_plugin_active !== currentWishlist.wishlist_plugin_active
+		) {
 			setAttributes({
-				style_wishlistBtn: buildStyleWishlistButtonDefault(
-					attributes.style_wishlistBtn as any
-				),
+				style_wishlistBtn: currentWishlist,
 			});
 		}
 	}, [style_wishlistBtn]);
@@ -242,13 +249,17 @@ const Edit: FC<Props> = (props) => {
 	}, [style_countdownUrgency]);
 
 	useEffect(() => {
-		const hasQuickViewConfig =
-			style_quickViewBtn && Object.keys(style_quickViewBtn).length > 0;
-		if (!hasQuickViewConfig) {
+		const currentQuickView = buildStyleQuickViewButtonDefault(
+			attributes.style_quickViewBtn as any
+		);
+		if (
+			!style_quickViewBtn ||
+			style_quickViewBtn.position !== currentQuickView.position ||
+			style_quickViewBtn.enabled !== currentQuickView.enabled ||
+			style_quickViewBtn.show_icon !== currentQuickView.show_icon
+		) {
 			setAttributes({
-				style_quickViewBtn: buildStyleQuickViewButtonDefault(
-					attributes.style_quickViewBtn as any
-				),
+				style_quickViewBtn: currentQuickView,
 			});
 		}
 	}, [style_quickViewBtn]);

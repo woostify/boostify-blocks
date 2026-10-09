@@ -279,58 +279,55 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
         ]
     );
 
-    // Wishlist button
+    // Wishlist button — always follows Customizer since there is no block UI panel for wishlist
     $wishlist = $theme['shop_archive_wishlist_btn'] ?? [];
     $attributes['style_wishlistBtn'] = array_merge(
         $attributes['style_wishlistBtn'] ?? [],
         [
-            'position'               => $pick($wishlist['position'] ?? null, $attributes['style_wishlistBtn']['position'] ?? null),
-            'style'                  => $pick($wishlist['style'] ?? null, $attributes['style_wishlistBtn']['style'] ?? null),
-            'wishlist_plugin_active' => $pick($wishlist['wishlist_plugin_active'] ?? null, $attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
+            'position'               => $wishlist['position'] ?? ($attributes['style_wishlistBtn']['position'] ?? 'none'),
+            'style'                  => $wishlist['style'] ?? ($attributes['style_wishlistBtn']['style'] ?? 'ti'),
+            'wishlist_plugin_active' => $wishlist['wishlist_plugin_active'] ?? ($attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
         ]
     );
 
-    // Quick view button
+    // Quick view button — always follows Customizer since there is no block UI panel for quick view
     $quickview = $theme['shop_quick_view_btn'] ?? [];
     $attributes['style_quickViewBtn'] = array_merge(
         $attributes['style_quickViewBtn'] ?? [],
         [
-            'enabled'             => $pick($quickview['enabled'] ?? null, $attributes['style_quickViewBtn']['enabled'] ?? null),
-            'position'            => $pick($quickview['position'] ?? null, $attributes['style_quickViewBtn']['position'] ?? null),
-            'show_icon'           => $pick($quickview['show_icon'] ?? null, $attributes['style_quickViewBtn']['show_icon'] ?? null),
-            'bg_color'            => $pick($quickview['bg_color'] ?? null, $attributes['style_quickViewBtn']['bg_color'] ?? null),
-            'text_color'          => $pick($quickview['text_color'] ?? null, $attributes['style_quickViewBtn']['text_color'] ?? null),
-            'hover_bg_color'      => $pick($quickview['hover_bg_color'] ?? null, $attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
-            'hover_text_color'    => $pick($quickview['hover_text_color'] ?? null, $attributes['style_quickViewBtn']['hover_text_color'] ?? null),
-            'border_radius'       => $pick(
-                isset($quickview['border_radius']) ? $quickview['border_radius'] . 'px' : null,
-                $attributes['style_quickViewBtn']['border_radius'] ?? null
-            ),
-            'woostify_pro_active' => $pick($quickview['woostify_pro_active'] ?? null, $attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
+            'enabled'             => $quickview['enabled'] ?? ($attributes['style_quickViewBtn']['enabled'] ?? null),
+            'position'            => $quickview['position'] ?? ($attributes['style_quickViewBtn']['position'] ?? null),
+            'show_icon'           => $quickview['show_icon'] ?? ($attributes['style_quickViewBtn']['show_icon'] ?? null),
+            'bg_color'            => $quickview['bg_color'] ?? ($attributes['style_quickViewBtn']['bg_color'] ?? null),
+            'text_color'          => $quickview['text_color'] ?? ($attributes['style_quickViewBtn']['text_color'] ?? null),
+            'hover_bg_color'      => $quickview['hover_bg_color'] ?? ($attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
+            'hover_text_color'    => $quickview['hover_text_color'] ?? ($attributes['style_quickViewBtn']['hover_text_color'] ?? null),
+            'border_radius'       => isset($quickview['border_radius']) ? (is_numeric($quickview['border_radius']) ? (int)$quickview['border_radius'] : $quickview['border_radius']) : ($attributes['style_quickViewBtn']['border_radius'] ?? null),
+            'woostify_pro_active' => $quickview['woostify_pro_active'] ?? ($attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
         ]
     );
 
-    // Countdown urgency
+    // Countdown urgency — always follows Customizer since there is no block UI panel for countdown urgency
     $cu = $theme['countdown_urgency'] ?? [];
     $attributes['style_countdownUrgency'] = array_merge(
         $attributes['style_countdownUrgency'] ?? [],
         [
-            'countdownUrgencyActive' => $pick($cu['active'] ?? null, $attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
-            'style'                  => $pick($cu['style'] ?? null, $attributes['style_countdownUrgency']['style'] ?? null),
-            'applyFor'               => $pick($cu['apply_for'] ?? null, $attributes['style_countdownUrgency']['applyFor'] ?? null),
-            'categoriesSelected'     => $pick($cu['categories_selected'] ?? null, $attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
-            'productsSelected'       => $pick($cu['products_selected'] ?? null, $attributes['style_countdownUrgency']['productsSelected'] ?? null),
-            'categoriesExclude'      => $pick($cu['categories_exclude'] ?? null, $attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
-            'productsExclude'        => $pick($cu['products_exclude'] ?? null, $attributes['style_countdownUrgency']['productsExclude'] ?? null),
-            'timeDuration'           => $pick($cu['time_duration'] ?? null, $attributes['style_countdownUrgency']['timeDuration'] ?? null),
-            'timeType'               => $pick($cu['time_type'] ?? null, $attributes['style_countdownUrgency']['timeType'] ?? null),
-            'message'                => $pick($cu['message'] ?? null, $attributes['style_countdownUrgency']['message'] ?? null),
-            'daysLabel'              => $pick($cu['days_label'] ?? null, $attributes['style_countdownUrgency']['daysLabel'] ?? null),
-            'hoursLabel'             => $pick($cu['hours_label'] ?? null, $attributes['style_countdownUrgency']['hoursLabel'] ?? null),
-            'minutesLabel'           => $pick($cu['minutes_label'] ?? null, $attributes['style_countdownUrgency']['minutesLabel'] ?? null),
-            'secondsLabel'           => $pick($cu['seconds_label'] ?? null, $attributes['style_countdownUrgency']['secondsLabel'] ?? null),
-            'displayOnThumbnail'     => $pick($cu['display_on_thumbnail'] ?? null, $attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
-            'hideAfterTimeUp'        => $pick($cu['hide_after_time_up'] ?? null, $attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
+            'countdownUrgencyActive' => $cu['active'] ?? ($attributes['style_countdownUrgency']['countdownUrgencyActive'] ?? null),
+            'style'                  => $cu['style'] ?? ($attributes['style_countdownUrgency']['style'] ?? null),
+            'applyFor'               => $cu['apply_for'] ?? ($attributes['style_countdownUrgency']['applyFor'] ?? null),
+            'categoriesSelected'     => $cu['categories_selected'] ?? ($attributes['style_countdownUrgency']['categoriesSelected'] ?? null),
+            'productsSelected'       => $cu['products_selected'] ?? ($attributes['style_countdownUrgency']['productsSelected'] ?? null),
+            'categoriesExclude'      => $cu['categories_exclude'] ?? ($attributes['style_countdownUrgency']['categoriesExclude'] ?? null),
+            'productsExclude'        => $cu['products_exclude'] ?? ($attributes['style_countdownUrgency']['productsExclude'] ?? null),
+            'timeDuration'           => $cu['time_duration'] ?? ($attributes['style_countdownUrgency']['timeDuration'] ?? null),
+            'timeType'               => $cu['time_type'] ?? ($attributes['style_countdownUrgency']['timeType'] ?? null),
+            'message'                => $cu['message'] ?? ($attributes['style_countdownUrgency']['message'] ?? null),
+            'daysLabel'              => $cu['days_label'] ?? ($attributes['style_countdownUrgency']['daysLabel'] ?? null),
+            'hoursLabel'             => $cu['hours_label'] ?? ($attributes['style_countdownUrgency']['hoursLabel'] ?? null),
+            'minutesLabel'           => $cu['minutes_label'] ?? ($attributes['style_countdownUrgency']['minutesLabel'] ?? null),
+            'secondsLabel'           => $cu['seconds_label'] ?? ($attributes['style_countdownUrgency']['secondsLabel'] ?? null),
+            'displayOnThumbnail'     => $cu['display_on_thumbnail'] ?? ($attributes['style_countdownUrgency']['displayOnThumbnail'] ?? null),
+            'hideAfterTimeUp'        => $cu['hide_after_time_up'] ?? ($attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
         ]
     );
 
@@ -601,9 +598,9 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $classes .= $btnInsideImage ? " wcb-products__product--btnInsideImage" : "";
     $classes .= $btnIconAddToCart ? " wcb-products__product--btnIconAddToCart" : "";
 
-    // Add to Wishlist default
-    // $btn1 = $btnInsideImage ? $data->button : "";
-    $btn2 = $data->button;
+    // Add to Cart button
+    $btn1 = $btnInsideImage ? $data->button : "";
+    $btn2 = $btnInsideImage ? "" : $data->button;
 
     // sale badge
     $classes .= $saleInsideImage ? " wcb-products__product--onsaleInsideImage" : "";
@@ -707,9 +704,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         $quantity_interactivity_attrs = " data-wp-interactive=\"boostify-blocks/product-quantity\" data-wp-context='" . esc_attr( $quantity_context ) . "' data-wp-watch=\"callbacks.syncQuantityJqueryData\"";
     }
 
-    return apply_filters(
-        'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-		"<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\"{$quantity_interactivity_attrs}>
+    $item_html = "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\"{$quantity_interactivity_attrs}>
                 <div class=\"wcb-products__product-featured \">
                     <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
@@ -718,6 +713,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$topRightIconsHtml}
                     {$bottomRightIconHtml}
                     {$btnQuickViewBottomImageHtml}
+                    {$btn1}
                     {$countdownHtml}
                     {$saleOutOfStock}
                     {$saleBadge1}
@@ -730,10 +726,37 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$data->rating}
                     " . ($data->price_button_group ?? ($data->price . $data->quantity_input . $btn2)) . "
                 </div>
-			</div>",
+			</div>";
+
+    // Prevent TI Wishlist and YITH Wishlist from injecting duplicate buttons into product grid items.
+    $ti_removed = false;
+    if ( class_exists( 'TInvWL_Public_AddToWishlist' ) ) {
+        $ti_instance = TInvWL_Public_AddToWishlist::instance();
+        $ti_removed  = remove_filter( 'woocommerce_blocks_product_grid_item_html', array( $ti_instance, 'htmloutput_block' ), 9 );
+        if ( ! $ti_removed ) {
+            $ti_removed = remove_filter( 'woocommerce_blocks_product_grid_item_html', array( $ti_instance, 'htmloutput_block' ), 10 );
+        }
+    }
+    $yith_removed = false;
+    if ( function_exists( 'YITH_WCWL_Frontend' ) ) {
+        $yith_removed = remove_filter( 'woocommerce_blocks_product_grid_item_html', array( YITH_WCWL_Frontend(), 'add_button_for_blocks_product_grid_item' ), 10 );
+    }
+
+    $filtered_html = apply_filters(
+        'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
+        $item_html,
         $data,
         $product
     );
+
+    if ( $ti_removed && class_exists( 'TInvWL_Public_AddToWishlist' ) ) {
+        add_filter( 'woocommerce_blocks_product_grid_item_html', array( TInvWL_Public_AddToWishlist::instance(), 'htmloutput_block' ), 9, 3 );
+    }
+    if ( $yith_removed && function_exists( 'YITH_WCWL_Frontend' ) ) {
+        add_filter( 'woocommerce_blocks_product_grid_item_html', array( YITH_WCWL_Frontend(), 'add_button_for_blocks_product_grid_item' ), 10, 3 );
+    }
+
+    return $filtered_html;
 }
 
 /**
@@ -907,30 +930,28 @@ function boostify_blocks_block_products_get_image_html($product, $attributes = [
     // Get Woostify theme settings
     $woostify = get_option('woostify_setting') ?: [];
 
-    // Get image height from theme setting, default to 300 if not set
-     if (($attributes['general_featuredImage']['hoverType'] ?? "") === 'swap') {
+    // Get image height from theme setting
+    if (($attributes['general_featuredImage']['hoverType'] ?? "") === 'swap') {
         $imageHeight = !empty($woostify['shop_page_product_image_height'])
                 ? intval($woostify['shop_page_product_image_height'])
                 : 'auto';
-     } else {
+    } else {
         $imageHeight = 'auto';
-     }
-   
-
-    error_log('Image height for product ID ' . $product->get_id() . ': ' . $imageHeight);
+    }
 
     // Get the default WooCommerce thumbnail HTML
     $image_html = $product->get_image('woocommerce_thumbnail', $attr);
 
     // Add inline style to control rendered height
     // This forces the browser to display the image at that height
-    $style = 'style="height:' . esc_attr($imageHeight) . 'px; object-fit:cover;"';
+    $height_value = ($imageHeight === 'auto' || empty($imageHeight)) ? 'auto' : intval($imageHeight) . 'px';
+    $style = 'style="height:' . esc_attr($height_value) . '; object-fit:cover;"';
 
     // Inject the style attribute into the <img> tag
     $image_html = preg_replace('/<img(.*?)>/', '<img$1 ' . $style . '>', $image_html);
 
     // Return the final HTML wrapped in a container
-    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscapedaped
 }
 
 /**

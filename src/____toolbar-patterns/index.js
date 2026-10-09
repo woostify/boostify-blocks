@@ -18,9 +18,7 @@ import {
 domReady( () => {
 	const syncCSS = () => {
 		const css = window.wp?.data?.select( "core/editor" )?.getEditedPostAttribute( "meta" )?._boostify_blocks_custom_css;
-		if ( typeof css === "string" ) {
-			applyScopedCSS( css );
-		}
+		applyScopedCSS( typeof css === "string" ? css : "" );
 	};
 
 	let tries = 0;
@@ -34,7 +32,7 @@ domReady( () => {
 	}, 200 );
 } );
 
-const PluginSidebarTest = () => (
+const WoostifyPageSettingsSidebar = () => (
 	<>
 		<PageSettingsCustomCSSApplier />
 		<PluginSidebar
@@ -63,4 +61,4 @@ const PluginSidebarTest = () => (
 </>
 );
 
-registerPlugin("wcb-plugin-sidebar-woostify", { render: PluginSidebarTest });
+registerPlugin("wcb-plugin-sidebar-woostify", { render: WoostifyPageSettingsSidebar });

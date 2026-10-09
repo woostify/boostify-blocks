@@ -18,8 +18,48 @@ const injectIntoDoc = ( doc: Document | null | undefined, scopedCSS: string ) =>
 	}
 };
 
+const removeStyleFromDoc = ( doc: Document | null | undefined ) => {
+	if ( ! doc?.head ) {
+		return;
+	}
+	const isExistStyle = doc.getElementById( "boostify-blocks-editor-custom-css" );
+	if ( isExistStyle ) {
+		isExistStyle.remove();
+	}
+};
+
+const isCustomCSSEnabled = (): boolean => {
+	const val = ( window as any )?.boostify_blocks_global_variables?.enableCustomCss;
+	return val !== "false" && val !== false;
+};
+
 export const applyScopedCSS = ( css: string ) => {
-	if ( typeof css !== "string" ) {
+	const isEnabled = isCustomCSSEnabled();
+
+	const removeAll = () => {
+		removeStyleFromDoc( document );
+		const editorIframe = document.querySelector<HTMLIFrameElement>(
+			'iframe[name="editor-canvas"]'
+		);
+		if ( editorIframe ) {
+			const iframeDoc = editorIframe.contentDocument || editorIframe.contentWindow?.document;
+			removeStyleFromDoc( iframeDoc );
+		}
+		const allIframes = document.querySelectorAll<HTMLIFrameElement>( "iframe" );
+		allIframes.forEach( ( iframe ) => {
+			if ( iframe !== editorIframe ) {
+				try {
+					const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+					removeStyleFromDoc( iframeDoc );
+				} catch ( e ) {
+					// Ignore cross-origin error
+				}
+			}
+		} );
+	};
+
+	if ( ! isEnabled || typeof css !== "string" || ! css.trim() ) {
+		removeAll();
 		return;
 	}
 
@@ -234,7 +274,13 @@ export const WcbCustomCSS = () => {
 				`}</style>
 				<textarea value={ customCSS } ref={ tabRef }></textarea>
 			</div>
-			<HelpText className="text-xs text-gray-500 m-0 italic">
+			<HelpText className="text-xs text-gray-500 m-0 leading-relaxed">
+				{ __(
+					"Use custom class added in block's advanced settings to target your desired block. Examples: .my-class {text-align: center;} // my-class is a custom selector",
+					"boostify-blocks"
+				) }
+			</HelpText>
+			<HelpText className="text-xs text-gray-400 m-0 italic">
 				{ __(
 					"Add CSS code here. Do not include <style> tags.",
 					"boostify-blocks"

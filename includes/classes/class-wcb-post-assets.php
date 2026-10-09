@@ -141,6 +141,9 @@ class WCB_Post_Assets {
 	public static function update_global_asset_version() {
 		$version = time();
 		update_option( 'boostify_blocks_asset_version', $version );
+		if ( null !== self::$instance ) {
+			self::$instance->get_storage()->delete_all_css_files();
+		}
 		return $version;
 	}
 
@@ -203,7 +206,7 @@ class WCB_Post_Assets {
 		add_action( 'save_post', array( $this, 'on_save_post' ), 20, 2 );
 
 		// Clean up assets when a post is permanently deleted.
-		add_action( 'before_delete_post', array( $this, 'delete_css_file' ) );
+		add_action( 'before_delete_post', array( $this, 'delete_all_post_assets' ) );
 
 		// Invalidate assets cache when Woostify theme or Product Label settings are updated.
 		$theme_options_to_watch = array(
@@ -298,6 +301,10 @@ class WCB_Post_Assets {
 		return $this->storage->delete_css_file( $post_id );
 	}
 
+	public function delete_post_files( $post_id ) {
+		return $this->storage->delete_post_files( $post_id );
+	}
+
 	public function delete_all_css_files() {
 		return $this->storage->delete_all_css_files();
 	}
@@ -336,6 +343,10 @@ class WCB_Post_Assets {
 
 	public function on_save_post( $post_id, $post ) {
 		$this->generator->on_save_post( $post_id, $post );
+	}
+
+	public function delete_all_post_assets( $post_id ) {
+		$this->generator->delete_all_post_assets( $post_id );
 	}
 
 	public function get_regenerate_cooldown( $post_id = 0 ) {
