@@ -582,11 +582,13 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $btnWishListTopRight = false;
     $btnWishListBottomRight = false;
     $wishlistPluginActive = !empty($attributes['style_wishlistBtn']['wishlist_plugin_active']);
-    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "top-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+    $wishlistPosition = $attributes['style_wishlistBtn']['position'] ?? 'none';
+    $wishlistStyle = $attributes['style_wishlistBtn']['style'] ?? 'ti';
+    if ($wishlistPluginActive && $wishlistPosition === "top-right") {
         $btnWishListTopRight = true;
     }
 
-    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "bottom-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+    if ($wishlistPluginActive && $wishlistPosition === "bottom-right") {
         $btnWishListBottomRight = true;
     }   
 
@@ -601,9 +603,9 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $classes .= $btnInsideImage ? " wcb-products__product--btnInsideImage" : "";
     $classes .= $btnIconAddToCart ? " wcb-products__product--btnIconAddToCart" : "";
 
-    // Add to Wishlist default
-    // $btn1 = $btnInsideImage ? $data->button : "";
-    $btn2 = $data->button;
+    // Add to cart inside image or content
+    $btn1 = $btnInsideImage ? $data->button : "";
+    $btn2 = $btnInsideImage ? "" : $data->button;
 
     // sale badge
     $classes .= $saleInsideImage ? " wcb-products__product--onsaleInsideImage" : "";
@@ -667,27 +669,38 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         }
 
         if ($btnWishListTopRight) {
-            $topRightItems[] = 
+            if ($wishlistStyle === "yith" && shortcode_exists('yith_wcwl_add_to_wishlist')) {
+                $topRightItems[] = do_shortcode('[yith_wcwl_add_to_wishlist product_id="' . $product_id_attr . '"]');
+            } else {
+                $topRightItems[] = 
+                    '<button 
+                        class="wcb-products__product--wishlistTopRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
+                        data-tinv-wl-list="[]"
+                        data-tinv-wl-product="' . $product_id_attr . '"
+                        data-tinv-wl-action="add"
+                        type="button"
+                    ></button>';
+            }
+        }
+
+        $topRightIconsHtml = '<div class="wcb-products__product--topRight">' . implode('', $topRightItems) . '</div>';
+    }
+
+    $bottomRightIconHtml = '';
+    if ($btnWishListBottomRight) {
+        if ($wishlistStyle === "yith" && shortcode_exists('yith_wcwl_add_to_wishlist')) {
+            $bottomRightIconHtml = do_shortcode('[yith_wcwl_add_to_wishlist product_id="' . $product_id_attr . '"]');
+        } else {
+            $bottomRightIconHtml = 
                 '<button 
-                    class="wcb-products__product--wishlistTopRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
+                    class="wcb-products__product--wishlistBottomRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
                     data-tinv-wl-list="[]"
                     data-tinv-wl-product="' . $product_id_attr . '"
                     data-tinv-wl-action="add"
                     type="button"
                 ></button>';
         }
-
-        $topRightIconsHtml = '<div class="wcb-products__product--topRight">' . implode('', $topRightItems) . '</div>';
     }
-
-    $bottomRightIconHtml = $btnWishListBottomRight ? 
-        '<button 
-            class="wcb-products__product--wishlistBottomRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
-            data-tinv-wl-list="[]"
-            data-tinv-wl-product="' . $product_id_attr . '"
-            data-tinv-wl-action="add"
-            type="button"
-        ></button>' : '';
     
     // Quick view button at bottom of image
     $btnQuickViewBottomImageHtml = $btnQuickViewBottomImage ?
@@ -710,7 +723,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     return apply_filters(
         'woocommerce_blocks_product_grid_item_html', // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
 		"<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\"{$quantity_interactivity_attrs}>
-                <div class=\"wcb-products__product-featured \">
+                <div class=\"wcb-products__product-featured\">
                     <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
                         {$isSwapHover}
@@ -718,6 +731,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$topRightIconsHtml}
                     {$bottomRightIconHtml}
                     {$btnQuickViewBottomImageHtml}
+                    {$btn1}
                     {$countdownHtml}
                     {$saleOutOfStock}
                     {$saleBadge1}
@@ -907,27 +921,20 @@ function boostify_blocks_block_products_get_image_html($product, $attributes = [
     // Get Woostify theme settings
     $woostify = get_option('woostify_setting') ?: [];
 
-    // Get image height from theme setting, default to 300 if not set
-     if (($attributes['general_featuredImage']['hoverType'] ?? "") === 'swap') {
-        $imageHeight = !empty($woostify['shop_page_product_image_height'])
-                ? intval($woostify['shop_page_product_image_height'])
-                : 'auto';
-     } else {
-        $imageHeight = 'auto';
-     }
-   
-
-    error_log('Image height for product ID ' . $product->get_id() . ': ' . $imageHeight);
+    // Get image height from theme setting when hoverType is 'swap'
+    $imageHeight = 0;
+    if (($attributes['general_featuredImage']['hoverType'] ?? '') === 'swap' && !empty($woostify['shop_page_product_image_height'])) {
+        $imageHeight = intval($woostify['shop_page_product_image_height']);
+    }
 
     // Get the default WooCommerce thumbnail HTML
     $image_html = $product->get_image('woocommerce_thumbnail', $attr);
 
-    // Add inline style to control rendered height
-    // This forces the browser to display the image at that height
-    $style = 'style="height:' . esc_attr($imageHeight) . 'px; object-fit:cover;"';
-
-    // Inject the style attribute into the <img> tag
-    $image_html = preg_replace('/<img(.*?)>/', '<img$1 ' . $style . '>', $image_html);
+    // Add inline style to control rendered height only when a numeric height is configured
+    if ($imageHeight > 0) {
+        $style = 'style="height:' . $imageHeight . 'px; object-fit:cover;"';
+        $image_html = preg_replace('/<img(.*?)>/', '<img$1 ' . $style . '>', $image_html);
+    }
 
     // Return the final HTML wrapped in a container
     return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
