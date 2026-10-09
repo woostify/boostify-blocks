@@ -158,6 +158,12 @@ add_action( 'enqueue_block_editor_assets', function() {
         BOOSTIFY_BLOCKS_VERSION
     );
 
+    if ( function_exists( 'wp_enqueue_code_editor' ) ) {
+        wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
+        wp_enqueue_script( 'wp-theme-plugin-editor' );
+        wp_enqueue_style( 'wp-codemirror' );
+    }
+
     wp_add_inline_script(
 		'wp-edit-post',
 		'

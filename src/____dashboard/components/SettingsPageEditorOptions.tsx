@@ -135,6 +135,20 @@ const SettingsPageEditorOptions: FC<Props> = ({
 					id="MyToggle_CopyPasteStyles"
 				/>
 			</div>
+			<div className="py-8">
+				<MyToggle
+					checked={allSettings.enableCustomCss !== "false"}
+					onChange={(checked) => {
+						debounce_fun({
+							...allSettings,
+							enableCustomCss: checked ? "true" : "false",
+						});
+					}}
+					label="Custom CSS"
+					desc='Enable the "Custom CSS" option if you want to add your own CSS code on post/page to customize the page as per your expectations.'
+					id="MyToggle_CustomCss"
+				/>
+			</div>
 		</div>
 	);
 };

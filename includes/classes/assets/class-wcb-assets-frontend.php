@@ -111,6 +111,9 @@ class WCB_Assets_Frontend {
 			add_action( 'wp_print_styles', array( $this, 'dequeue_individual_block_styles' ), 0 );
 			add_action( 'wp_print_footer_scripts', array( $this, 'dequeue_individual_block_styles' ), 0 );
 		}
+
+		// Render Custom CSS added via the editor side panel.
+		add_action( 'wp_head', array( $this, 'render_custom_css' ), 999 );
 	}
 
 	/**
@@ -303,6 +306,12 @@ class WCB_Assets_Frontend {
 	 * @return int|string Post ID, template slug hash, or 0 if not applicable.
 	 */
 	public function get_effective_post_id() {
+		// WooCommerce Shop page.
+		if ( function_exists( 'is_shop' ) && is_shop() && function_exists( 'wc_get_page_id' ) ) {
+			$this->request_context = 'post';
+			return wc_get_page_id( 'shop' );
+		}
+
 		// Singular posts, pages, and custom post types.
 		if ( is_singular() || is_page() ) {
 			$this->request_context = 'post';
@@ -504,5 +513,34 @@ class WCB_Assets_Frontend {
 	 */
 	public function get_assets_file_handler() {
 		return $this->assets_file_handler;
+	}
+
+	/**
+	 * Render Custom CSS added via the editor side panel.
+	 */
+	public function render_custom_css() {
+		// If generated static CSS file is enqueued, Custom CSS is already bundled within it.
+		if ( $this->file_css_enqueued ) {
+			return;
+		}
+
+		$settings = get_option( 'boostify_blocks_settings_options', array() );
+		if ( isset( $settings['enableCustomCss'] ) && 'false' === $settings['enableCustomCss'] ) {
+			return;
+		}
+
+		$post_id = 0;
+		if ( is_singular() ) {
+			$post_id = get_the_ID();
+		} elseif ( function_exists( 'is_shop' ) && is_shop() && function_exists( 'wc_get_page_id' ) ) {
+			$post_id = wc_get_page_id( 'shop' );
+		}
+
+		if ( $post_id ) {
+			$custom_css = get_post_meta( $post_id, '_boostify_blocks_custom_css', true );
+			if ( ! empty( $custom_css ) ) {
+				echo '<style id="boostify-blocks-custom-css">' . wp_strip_all_tags( $custom_css ) . '</style>';
+			}
+		}
 	}
 }

@@ -17,6 +17,22 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
     {
         $boostify_blocks_enable_disable = get_option('boostify_blocks_enable_disable_options') ?? [];
 
+        register_post_meta(
+            '',
+            '_boostify_blocks_custom_css',
+            [
+                'show_in_rest' => true,
+                'single'       => true,
+                'type'         => 'string',
+                'auth_callback'     => function() {
+                    return current_user_can( 'edit_posts' );
+                },
+                'sanitize_callback' => function( $meta_value ) {
+                    return wp_strip_all_tags( $meta_value );
+                },
+            ]
+        );
+
         // common - not deactive
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-common-css',

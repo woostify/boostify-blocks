@@ -83,8 +83,12 @@ class WCB_Assets_Generator {
 			return;
 		}
 
-		// Check if post contains any Boostify blocks.
-		if ( false === strpos( $post->post_content, '<!-- wp:boostify-blocks/' ) ) {
+		// Check if post contains any Boostify blocks or Custom CSS.
+		$has_boostify_blocks = ( false !== strpos( $post->post_content, '<!-- wp:boostify-blocks/' ) );
+		$custom_css          = get_post_meta( $post_id, '_boostify_blocks_custom_css', true );
+		$has_custom_css      = ! empty( $custom_css ) && is_string( $custom_css ) && trim( $custom_css ) !== '';
+
+		if ( ! $has_boostify_blocks && ! $has_custom_css ) {
 			$this->storage->delete_css_file( $post_id );
 			$this->storage->delete_js_file( $post_id );
 			delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );

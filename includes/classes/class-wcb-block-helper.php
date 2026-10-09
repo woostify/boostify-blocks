@@ -1076,7 +1076,18 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 		}
 
 		$blocks = parse_blocks( $post->post_content );
-		return self::extract_css_from_blocks( $blocks );
+		$css    = self::extract_css_from_blocks( $blocks );
+
+		// Append Custom Page CSS if feature is enabled.
+		$settings = get_option( 'boostify_blocks_settings_options', array() );
+		if ( ! isset( $settings['enableCustomCss'] ) || 'false' !== $settings['enableCustomCss'] ) {
+			$custom_css = get_post_meta( $post_id, '_boostify_blocks_custom_css', true );
+			if ( ! empty( $custom_css ) && is_string( $custom_css ) ) {
+				$css .= "\n/* Boostify Page Custom CSS */\n" . wp_strip_all_tags( $custom_css );
+			}
+		}
+
+		return $css;
 	}
 
 	/**
