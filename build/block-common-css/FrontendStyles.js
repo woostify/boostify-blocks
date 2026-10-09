@@ -26,21 +26,22 @@
 		background-color: rgba(255, 255, 255, 0.6);
 		z-index: 9997;
 	}
-`,a=({advance_motionEffect:e,className:t})=>{try{if(e?.entranceAnimation){const n=document.querySelectorAll(t),r=new IntersectionObserver((t=>{t.forEach((t=>{if(t.isIntersecting){const n=t.target,o=/\banimate__\S+/g,i=n?.className.replace(o,"");n.setAttribute("class",i),setTimeout((()=>{n?.classList.add("animate__animated",`animate__${e?.entranceAnimation}`,`animate__${e?.animationDuration}`,`animate__delay-${e?.animationDelay}ms`,`animate__repeat-${e?.repeat}`)}),50),r.unobserve(n)}}))}),{threshold:.2});n.forEach((e=>r.observe(e)))}}catch(e){console.log("error, advance_motionEffect",e)}},c=({advance_zIndex:e,advance_responsiveCondition:t,className:n,defaultDisplay:a})=>{const{media_desktop:c,media_tablet:l}=o.s,{mobile_v:d,tablet_v:u,desktop_v:p}=(0,i.A)({mobile_v:e?.Mobile||e?.Tablet||e?.Desktop,tablet_v:e?.Tablet||e?.Desktop,desktop_v:e?.Desktop}),b=e=>""===e?"":e?s:r.AH`display: ${a};`;return r.AH`
+`,a=({advance_motionEffect:e,className:t})=>{try{if(e?.entranceAnimation){const n=document.querySelectorAll(t),r=new IntersectionObserver((t=>{t.forEach((t=>{if(t.isIntersecting){const n=t.target,o=/\banimate__\S+/g,i=n?.className.replace(o,"");n.setAttribute("class",i),setTimeout((()=>{n?.classList.add("animate__animated",`animate__${e?.entranceAnimation}`,`animate__${e?.animationDuration}`,`animate__delay-${e?.animationDelay}ms`,`animate__repeat-${e?.repeat}`)}),50),r.unobserve(n)}}))}),{threshold:.2});n.forEach((e=>r.observe(e)))}}catch(e){console.log("error, advance_motionEffect",e)}},c=({advance_zIndex:e,advance_responsiveCondition:t,className:n,defaultDisplay:a})=>{const{media_desktop:c,media_tablet:l}=o.s,{mobile_v:d,tablet_v:u,desktop_v:p}=(0,i.A)({mobile_v:e?.Mobile||e?.Tablet||e?.Desktop,tablet_v:e?.Tablet||e?.Desktop,desktop_v:e?.Desktop}),b=e=>""===e?"":e?s:r.AH`display: ${a||"block"};`;return r.AH`
 		${n} {
 			visibility: visible;
+			${a?r.AH`display: ${a};`:""}
 			@media (min-width: ${c}) {
-				z-index: ${p};
+				${p?`z-index: ${p};`:""}
 				${b(t?.isHiddenOnDesktop)}
 			}
 
 			@media (min-width: ${l}) and (max-width: ${c}) {
-				z-index: ${u};
+				${u?`z-index: ${u};`:""}
 				${b(t?.isHiddenOnTablet)}
 			}
 
 			@media (max-width: ${l}) {
-				z-index: ${d};
+				${d?`z-index: ${d};`:""}
 				${b(t?.isHiddenOnMobile)}
 			}
 		}

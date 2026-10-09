@@ -24,10 +24,14 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                 'show_in_rest' => true,
                 'single'       => true,
                 'type'         => 'string',
+                'default'      => '',
                 'auth_callback'     => function() {
                     return current_user_can( 'edit_posts' );
                 },
                 'sanitize_callback' => function( $meta_value ) {
+                    if ( empty( $meta_value ) || ! is_string( $meta_value ) ) {
+                        return '';
+                    }
                     return wp_strip_all_tags( $meta_value );
                 },
             ]

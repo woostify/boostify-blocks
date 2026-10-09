@@ -135,24 +135,25 @@ export const getAdvanveDivWrapStyles = ({
 	// Helper
 	const getHiddenCss = (isHidden: any) => {
 		if (isHidden === "") return "";
-		return isHidden ? hiddenPreviewOverlay : css`display: ${defaultDisplay};`;
+		return isHidden ? hiddenPreviewOverlay : css`display: ${defaultDisplay || "block"};`;
 	};
 
 	return css`
 		${className} {
 			visibility: visible;
+			${defaultDisplay ? css`display: ${defaultDisplay};` : ""}
 			@media (min-width: ${media_desktop}) {
-				z-index: ${zIndexDesktop};
+				${zIndexDesktop ? `z-index: ${zIndexDesktop};` : ""}
 				${getHiddenCss(advance_responsiveCondition?.isHiddenOnDesktop)}
 			}
 
 			@media (min-width: ${media_tablet}) and (max-width: ${media_desktop}) {
-				z-index: ${zIndexTablet};
+				${zIndexTablet ? `z-index: ${zIndexTablet};` : ""}
 				${getHiddenCss(advance_responsiveCondition?.isHiddenOnTablet)}
 			}
 
 			@media (max-width: ${media_tablet}) {
-				z-index: ${zIndexMobile};
+				${zIndexMobile ? `z-index: ${zIndexMobile};` : ""}
 				${getHiddenCss(advance_responsiveCondition?.isHiddenOnMobile)}
 			}
 		}

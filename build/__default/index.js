@@ -26,21 +26,22 @@
 		background-color: rgba(255, 255, 255, 0.6);
 		z-index: 9997;
 	}
-`,Le=({advance_zIndex:e,advance_responsiveCondition:t,className:n,defaultDisplay:r})=>{const{media_desktop:o,media_tablet:a}=Oe,{mobile_v:l,tablet_v:i,desktop_v:s}=(({mobile_v:e=null,tablet_v:t=null,desktop_v:n=null})=>{let r=t,o=n;return e===t&&t===n?{mobile_v:e,tablet_v:null,desktop_v:null}:(t===e&&(r=null),n===t&&(o=null),{mobile_v:null!=e?e:null,tablet_v:null!=r?r:null,desktop_v:null!=o?o:null})})({mobile_v:e?.Mobile||e?.Tablet||e?.Desktop,tablet_v:e?.Tablet||e?.Desktop,desktop_v:e?.Desktop}),c=e=>""===e?"":e?Ne:Ae`display: ${r};`;return Ae`
+`,Le=({advance_zIndex:e,advance_responsiveCondition:t,className:n,defaultDisplay:r})=>{const{media_desktop:o,media_tablet:a}=Oe,{mobile_v:l,tablet_v:i,desktop_v:s}=(({mobile_v:e=null,tablet_v:t=null,desktop_v:n=null})=>{let r=t,o=n;return e===t&&t===n?{mobile_v:e,tablet_v:null,desktop_v:null}:(t===e&&(r=null),n===t&&(o=null),{mobile_v:null!=e?e:null,tablet_v:null!=r?r:null,desktop_v:null!=o?o:null})})({mobile_v:e?.Mobile||e?.Tablet||e?.Desktop,tablet_v:e?.Tablet||e?.Desktop,desktop_v:e?.Desktop}),c=e=>""===e?"":e?Ne:Ae`display: ${r||"block"};`;return Ae`
 		${n} {
 			visibility: visible;
+			${r?Ae`display: ${r};`:""}
 			@media (min-width: ${o}) {
-				z-index: ${s};
+				${s?`z-index: ${s};`:""}
 				${c(t?.isHiddenOnDesktop)}
 			}
 
 			@media (min-width: ${a}) and (max-width: ${o}) {
-				z-index: ${i};
+				${i?`z-index: ${i};`:""}
 				${c(t?.isHiddenOnTablet)}
 			}
 
 			@media (max-width: ${a}) {
-				z-index: ${l};
+				${l?`z-index: ${l};`:""}
 				${c(t?.isHiddenOnMobile)}
 			}
 		}

@@ -21,6 +21,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK {
 	backgroundColor: string;
 	marginBottom: HasResponsive<string>;
 	position: "top-left" | "top-right" | "none";
+	shape?: "round" | "square" | string;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK =

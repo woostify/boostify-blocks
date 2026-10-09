@@ -3,120 +3,120 @@ import { useSelect, useDispatch } from "@wordpress/data";
 import { __ } from "@wordpress/i18n";
 import HelpText from "../components/controls/HelpText";
 
-const injectIntoDoc = ( doc: Document | null | undefined, scopedCSS: string ) => {
-	if ( ! doc?.head ) {
+const injectIntoDoc = (doc: Document | null | undefined, scopedCSS: string) => {
+	if (!doc?.head) {
 		return;
 	}
-	const isExistStyle = doc.getElementById( "boostify-blocks-editor-custom-css" );
-	if ( ! isExistStyle ) {
-		const node = doc.createElement( "style" );
-		node.setAttribute( "id", "boostify-blocks-editor-custom-css" );
+	const isExistStyle = doc.getElementById("boostify-blocks-editor-custom-css");
+	if (!isExistStyle) {
+		const node = doc.createElement("style");
+		node.setAttribute("id", "boostify-blocks-editor-custom-css");
 		node.textContent = scopedCSS;
-		doc.head.appendChild( node );
-	} else if ( isExistStyle.textContent !== scopedCSS ) {
+		doc.head.appendChild(node);
+	} else if (isExistStyle.textContent !== scopedCSS) {
 		isExistStyle.textContent = scopedCSS;
 	}
 };
 
-const removeStyleFromDoc = ( doc: Document | null | undefined ) => {
-	if ( ! doc?.head ) {
+const removeStyleFromDoc = (doc: Document | null | undefined) => {
+	if (!doc?.head) {
 		return;
 	}
-	const isExistStyle = doc.getElementById( "boostify-blocks-editor-custom-css" );
-	if ( isExistStyle ) {
+	const isExistStyle = doc.getElementById("boostify-blocks-editor-custom-css");
+	if (isExistStyle) {
 		isExistStyle.remove();
 	}
 };
 
 const isCustomCSSEnabled = (): boolean => {
-	const val = ( window as any )?.boostify_blocks_global_variables?.enableCustomCss;
+	const val = (window as any)?.boostify_blocks_global_variables?.enableCustomCss;
 	return val !== "false" && val !== false;
 };
 
-export const applyScopedCSS = ( css: string ) => {
+export const applyScopedCSS = (css: string) => {
 	const isEnabled = isCustomCSSEnabled();
 
 	const removeAll = () => {
-		removeStyleFromDoc( document );
+		removeStyleFromDoc(document);
 		const editorIframe = document.querySelector<HTMLIFrameElement>(
 			'iframe[name="editor-canvas"]'
 		);
-		if ( editorIframe ) {
+		if (editorIframe) {
 			const iframeDoc = editorIframe.contentDocument || editorIframe.contentWindow?.document;
-			removeStyleFromDoc( iframeDoc );
+			removeStyleFromDoc(iframeDoc);
 		}
-		const allIframes = document.querySelectorAll<HTMLIFrameElement>( "iframe" );
-		allIframes.forEach( ( iframe ) => {
-			if ( iframe !== editorIframe ) {
+		const allIframes = document.querySelectorAll<HTMLIFrameElement>("iframe");
+		allIframes.forEach((iframe) => {
+			if (iframe !== editorIframe) {
 				try {
 					const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-					removeStyleFromDoc( iframeDoc );
-				} catch ( e ) {
+					removeStyleFromDoc(iframeDoc);
+				} catch (e) {
 					// Ignore cross-origin error
 				}
 			}
-		} );
+		});
 	};
 
-	if ( ! isEnabled || typeof css !== "string" || ! css.trim() ) {
+	if (!isEnabled || typeof css !== "string" || !css.trim()) {
 		removeAll();
 		return;
 	}
 
 	const scopedCSS = css
-		.replace( /\\/g, "" )
-		.split( "}" )
-		.map( ( rule ) => ( rule.trim() ? `.block-editor-block-list__layout ${rule}}` : "" ) )
-		.join( " " );
+		.replace(/\\/g, "")
+		.split("}")
+		.map((rule) => (rule.trim() ? `.block-editor-block-list__layout ${rule}}` : ""))
+		.join(" ");
 
 	// 1. Inject into main document
-	injectIntoDoc( document, scopedCSS );
+	injectIntoDoc(document, scopedCSS);
 
 	// 2. Inject into canvas iframe
 	const editorIframe = document.querySelector<HTMLIFrameElement>(
 		'iframe[name="editor-canvas"]'
 	);
-	if ( editorIframe ) {
+	if (editorIframe) {
 		const iframeDoc = editorIframe.contentDocument || editorIframe.contentWindow?.document;
-		if ( iframeDoc ) {
-			injectIntoDoc( iframeDoc, scopedCSS );
+		if (iframeDoc) {
+			injectIntoDoc(iframeDoc, scopedCSS);
 		}
 	}
 
 	// 3. Inject into all other iframes (e.g. preview iframes or variant names)
-	const allIframes = document.querySelectorAll<HTMLIFrameElement>( "iframe" );
-	allIframes.forEach( ( iframe ) => {
-		if ( iframe !== editorIframe ) {
+	const allIframes = document.querySelectorAll<HTMLIFrameElement>("iframe");
+	allIframes.forEach((iframe) => {
+		if (iframe !== editorIframe) {
 			try {
 				const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-				if ( iframeDoc?.head ) {
-					injectIntoDoc( iframeDoc, scopedCSS );
+				if (iframeDoc?.head) {
+					injectIntoDoc(iframeDoc, scopedCSS);
 				}
-			} catch ( e ) {
+			} catch (e) {
 				// Ignore cross-origin error
 			}
 		}
-	} );
+	});
 };
 
 export const PageSettingsCustomCSSApplier = () => {
-	const customCSS = useSelect( ( select: any ) => {
+	const customCSS = useSelect((select: any) => {
 		return (
-			select( "core/editor" )?.getEditedPostAttribute( "meta" )
+			select("core/editor")?.getEditedPostAttribute("meta")
 				?._boostify_blocks_custom_css || ""
 		);
-	}, [] );
+	}, []);
 
-	useEffect( () => {
+	useEffect(() => {
 		let isMounted = true;
 		let tries = 0;
 		let timeoutId: any = null;
 
 		const apply = () => {
-			if ( ! isMounted ) {
+			if (!isMounted) {
 				return;
 			}
-			applyScopedCSS( customCSS );
+			applyScopedCSS(customCSS);
 		};
 
 		// 1. Immediate application
@@ -127,12 +127,12 @@ export const PageSettingsCustomCSSApplier = () => {
 			const iframe = document.querySelector<HTMLIFrameElement>(
 				'iframe[name="editor-canvas"]'
 			);
-			if ( iframe ) {
+			if (iframe) {
 				apply();
-				if ( iframe.contentDocument?.readyState === "complete" ) {
+				if (iframe.contentDocument?.readyState === "complete") {
 					apply();
 				} else {
-					iframe.addEventListener( "load", apply, { once: true } );
+					iframe.addEventListener("load", apply, { once: true });
 				}
 				return true;
 			}
@@ -141,47 +141,47 @@ export const PageSettingsCustomCSSApplier = () => {
 
 		// 3. Polling retry for iframe appearance
 		const pollIframe = () => {
-			if ( ! isMounted ) {
+			if (!isMounted) {
 				return;
 			}
 			const found = attachToIframe();
-			if ( ! found && tries < 30 ) {
+			if (!found && tries < 30) {
 				tries++;
-				timeoutId = setTimeout( pollIframe, 150 );
+				timeoutId = setTimeout(pollIframe, 150);
 			}
 		};
 		pollIframe();
 
 		// 4. MutationObserver on document.body for iframe creation / replacement
-		const observer = new MutationObserver( () => {
+		const observer = new MutationObserver(() => {
 			attachToIframe();
-		} );
-		observer.observe( document.body, { childList: true, subtree: true } );
+		});
+		observer.observe(document.body, { childList: true, subtree: true });
 
 		return () => {
 			isMounted = false;
-			if ( timeoutId ) {
-				clearTimeout( timeoutId );
+			if (timeoutId) {
+				clearTimeout(timeoutId);
 			}
 			observer.disconnect();
 		};
-	}, [ customCSS ] );
+	}, [customCSS]);
 
 	return null;
 };
 
 export const WcbCustomCSS = () => {
-	const tabRef = useRef<HTMLTextAreaElement>( null );
-	const { editPost } = useDispatch( "core/editor" );
-	const customCSS = useSelect( ( select: any ) => {
+	const tabRef = useRef<HTMLTextAreaElement>(null);
+	const { editPost } = useDispatch("core/editor");
+	const customCSS = useSelect((select: any) => {
 		return (
-			select( "core/editor" ).getEditedPostAttribute( "meta" )
+			select("core/editor").getEditedPostAttribute("meta")
 				?._boostify_blocks_custom_css || ""
 		);
-	}, [] );
+	}, []);
 
-	useEffect( () => {
-		if ( ! tabRef.current || ! window.wp?.codeEditor ) {
+	useEffect(() => {
+		if (!tabRef.current || !window.wp?.codeEditor) {
 			return;
 		}
 
@@ -191,14 +191,14 @@ export const WcbCustomCSS = () => {
 		const existingEditors = boostifyCustomCSSPanel?.querySelectorAll(
 			".CodeMirror-wrap"
 		);
-		if ( existingEditors ) {
-			existingEditors.forEach( ( editor ) => editor.remove() );
+		if (existingEditors) {
+			existingEditors.forEach((editor) => editor.remove());
 		}
 
-		const editor = window.wp.codeEditor.initialize( tabRef.current, {
-			...( window.wp.codeEditor.defaultSettings?.codemirror || {} ),
+		const editor = window.wp.codeEditor.initialize(tabRef.current, {
+			...(window.wp.codeEditor.defaultSettings?.codemirror || {}),
 			scrollbarStyle: null,
-		} );
+		});
 
 		const codeMirrorEditor = document.querySelector(
 			".boostify-css-editor .CodeMirror-code"
@@ -208,34 +208,34 @@ export const WcbCustomCSS = () => {
 			editor?.codemirror?.save();
 			const value = editor?.codemirror?.getValue();
 			// @ts-ignore
-			editPost( { meta: { _boostify_blocks_custom_css: value } } );
+			editPost({ meta: { _boostify_blocks_custom_css: value } });
 		};
 
-		if ( codeMirrorEditor ) {
-			codeMirrorEditor.addEventListener( "keyup", handleKeyUp );
+		if (codeMirrorEditor) {
+			codeMirrorEditor.addEventListener("keyup", handleKeyUp);
 		}
 
-		if ( editor?.codemirror ) {
-			editor.codemirror.on( "change", () => {
+		if (editor?.codemirror) {
+			editor.codemirror.on("change", () => {
 				editor.codemirror.save();
 				const value = editor.codemirror.getValue();
 				// @ts-ignore
-				editPost( { meta: { _boostify_blocks_custom_css: value } } );
-			} );
+				editPost({ meta: { _boostify_blocks_custom_css: value } });
+			});
 		}
 
 		return () => {
-			if ( codeMirrorEditor ) {
-				codeMirrorEditor.removeEventListener( "keyup", handleKeyUp );
+			if (codeMirrorEditor) {
+				codeMirrorEditor.removeEventListener("keyup", handleKeyUp);
 			}
 			const editorsToCleanup = document.querySelectorAll(
 				".boostify-custom-css-panel .CodeMirror-wrap"
 			);
-			if ( editorsToCleanup ) {
-				editorsToCleanup.forEach( ( e ) => e.remove() );
+			if (editorsToCleanup) {
+				editorsToCleanup.forEach((e) => e.remove());
 			}
 		};
-	}, [] );
+	}, []);
 
 	return (
 		<div className="boostify-custom-css-wrapper flex flex-col gap-3 w-full py-1">
@@ -272,19 +272,19 @@ export const WcbCustomCSS = () => {
 						background-color: #f8fafc;
 					}
 				`}</style>
-				<textarea value={ customCSS } ref={ tabRef }></textarea>
+				<textarea value={customCSS} ref={tabRef}></textarea>
 			</div>
 			<HelpText className="text-xs text-gray-500 m-0 leading-relaxed">
-				{ __(
+				{__(
 					"Use custom class added in block's advanced settings to target your desired block. Examples: .my-class {text-align: center;} // my-class is a custom selector",
 					"boostify-blocks"
-				) }
+				)}
 			</HelpText>
 			<HelpText className="text-xs text-gray-400 m-0 italic">
-				{ __(
+				{__(
 					"Add CSS code here. Do not include <style> tags.",
 					"boostify-blocks"
-				) }
+				)}
 			</HelpText>
 		</div>
 	);
