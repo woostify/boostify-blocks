@@ -58,9 +58,7 @@ const BlocksPage: FC<Props> = ({
 		};
 		toast.promise(
 			// @ts-ignore
-			jQuery.post(ajaxurl, data, function (response) {
-				console.log("Got this from the server: ", response);
-			}),
+			jQuery.post(ajaxurl, data, function () {}),
 			{
 				loading: __( "Saving...", "boostify-blocks" ),
 				success: <div>{__( "Successful saved!", "boostify-blocks" )}</div>,

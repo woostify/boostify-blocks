@@ -17,6 +17,11 @@
 		width: 10px;
 		height: 10px;
 		cursor: pointer !important;
+		opacity: 0.4;
+
+		&-active {
+			opacity: 1;
+		}
 
 		// Invisible, larger hit area around the dot - the visible dot stays
 		// 10px. Horizontal overflow is half the flex gap (6px / 2) so
@@ -43,6 +48,9 @@
 		margin-top: 0;
 		transform: translateY(-50%);
 		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 
 		&::after {
 			content: none;

@@ -17,6 +17,7 @@ import MyDisclosure from "../components/controls/MyDisclosure";
 export interface WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS {
 	arrowSize: string;
 	border: MyBorderControlData;
+	arrowDistance?: HasResponsive<string>;
 	dotsMarginTop: HasResponsive<string>;
 	color: string;
 }

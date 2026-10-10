@@ -193,9 +193,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 						prefix: "marginTop",
 					}),
 					{
-						[`${SWIPER_ARROW}`]: {
-							cursor: "pointer",
-						},
 						[`${SWIPER_ARROW_SVG}`]: {
 							width: style_arrowAndDots.arrowSize,
 							height: style_arrowAndDots.arrowSize,
@@ -212,10 +209,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 						[`${SWIPER_BULLET}`]: {
 							backgroundColor: style_arrowAndDots.color,
-							opacity: 0.4,
-						},
-						[`${SWIPER_BULLET_ACTIVE}`]: {
-							opacity: 1,
 						},
 					},
 					getStyleObjectFromResponsiveAttr({
