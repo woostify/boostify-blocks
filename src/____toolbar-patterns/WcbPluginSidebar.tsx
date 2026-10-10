@@ -43,15 +43,6 @@ const WcbPluginSidebar = (props: any) => {
 
 	const colorGradientSettings = useMultipleOriginColorsAndGradients();
 
-	// console.log(11, "____WcbPluginSidebar____log", {
-	// 	props,
-	// 	themePalette,
-	// 	defaultPalette,
-	// 	colorGradientSettings,
-	// 	mycolors,
-	// 	nweww: window.boostify_blocks_global_variables?.customColorPallete,
-	// });
-
 	// update save setting to database options via ajax
 	const handleUpdateSettings = (newColors: typeof mycolors) => {
 		if (typeof jQuery !== "function") {
@@ -71,9 +62,7 @@ const WcbPluginSidebar = (props: any) => {
 		setUpdateStatus("loading");
 		jQuery
 			// @ts-ignore
-			.post(ajaxurl, data, function (response) {
-				console.log("Got this from the server: ", response);
-			})
+			.post(ajaxurl, data, function () {})
 			.done(function () {
 				setUpdateStatus("ok");
 			})

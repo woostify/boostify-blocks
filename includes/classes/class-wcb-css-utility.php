@@ -17,7 +17,6 @@ class WCB_CSS_Utility {
 
 	/**
 	 * Generate CSS from selectors array.
-	 * Mirrors UAGB_Helper::generate_css in Spectra.
 	 *
 	 * @param array  $selectors Array of selectors with their properties.
 	 * @param string $id        Base selector ID.
@@ -97,8 +96,7 @@ class WCB_CSS_Utility {
 	}
 
 	/**
-	 * Generate all CSS for desktop, tablet, mobile.
-	 * Mirrors UAGB_Helper::generate_all_css in Spectra.
+	 * Generate all CSS for desktop, tablet, and mobile.
 	 *
 	 * @param array  $combined_selectors Array with 'desktop', 'tablet', 'mobile' keys.
 	 * @param string $id                 Base selector ID.

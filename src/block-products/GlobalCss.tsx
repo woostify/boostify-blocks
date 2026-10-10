@@ -247,18 +247,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 				...(style_saleBadge?.position === "top-left"
 					? {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge": {
-								position: "absolute",
-								left: "0.5rem", // Tailwind left-2
-								top: "0.5rem", // Tailwind top-2
-								zIndex: 10,
+								left: "0.5rem",
 							},
 					  }
 					: {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge": {
-								position: "absolute",
 								right: "0.5rem",
-								top: "0.5rem",
-								zIndex: 10,
 							},
 					  }),
 
@@ -266,19 +260,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 				...(style_outOfStock?.position === "top-left"
 					? {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
-								position: "absolute",
 								left: "0.5rem",
-								top: "0.5rem",
-								zIndex: 10,
 							},
 					  }
 					: style_outOfStock?.position === "top-right"
 					? {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
-								position: "absolute",
 								right: "0.5rem",
-								top: "0.5rem",
-								zIndex: 10,
 							},
 					  }
 					: {
@@ -520,65 +508,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 							? { color: style_quickViewBtn.text_color }
 							: {}),
 						...(style_quickViewBtn?.border_radius ? { borderRadius: getQuickViewBorderRadius() } : {}),
-						...(style_quickViewBtn?.position === "bottom-image" && isQvEnabled) ? {
-							position: "absolute",
-							left: 0,
-							bottom: "10px",
-							height: "0px",
-							width: "100%",
-							opacity: 0,
-							visibility: "hidden",
-							transition: "height 0.3s ease, opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease",
-							zIndex: 10,
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-						} : {
-							display: style_quickViewBtn?.position === "center-image" ? "none !important" : "unset",
-							position: "absolute",
-							top: "-10rem",
-							right: "0rem",
-						},
+						...(!isQvEnabled ? { display: "none !important" } : {}),
 					},
 					":hover": {
 						".wcb-products__product--quickViewBottomImage--item": {
-							...(style_quickViewBtn?.position === "bottom-image" && isQvEnabled) ? {
-								opacity: 1,
-								visibility: "visible",
-								height: "40px",
-								display: "flex !important",
-							} : {
-								display: isQvEnabled ? "flex !important" : "none !important",
-								alignItems: "center !important",
-								justifyContent: "center !important",
-								padding: style_quickViewBtn?.position === "center-image" ? "0.5rem 1.4rem !important" : "auto",
-								position: "absolute",
-								bottom: (style_quickViewBtn?.position === "center-image" && ((general_addToCartBtn?.position as string) === "inside image" || (general_addToCartBtn?.position as string) === "image"))
-									? "auto !important"
-									: (style_quickViewBtn?.position === "center-image" && general_addToCartBtn?.position === "icon")
-									? "10rem"
-									: (style_quickViewBtn?.position === "center-image" && general_addToCartBtn?.position !== "icon")
-									? "6rem"
-									: "auto",
-								top: (style_quickViewBtn?.position === "center-image" && ((general_addToCartBtn?.position as string) === "inside image" || (general_addToCartBtn?.position as string) === "image"))
-									? "calc(50% + 24px) !important"
-									: ((general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") || 
-									   (general_addToCartBtn?.position === "icon" && style_wishlistBtn?.position !== "top-right" && style_quickViewBtn?.position === "top-right")) ? "0rem"
-									: ((general_addToCartBtn?.position !== "icon" && style_wishlistBtn?.position === "top-right" && style_quickViewBtn?.position === "top-right") || 
-									   (general_addToCartBtn?.position !== "icon" && style_wishlistBtn?.position !== "top-right" && style_quickViewBtn?.position === "top-right")) ? "-2.5rem"
-									: "auto",
-								right: style_quickViewBtn?.position === "center-image" ? "50%" : 
-									style_quickViewBtn?.position === "top-right" ? "-0.1rem" : "auto",
-								width: style_quickViewBtn?.position === "center-image" ? "auto" : 
-									style_quickViewBtn?.position === "top-right" ? "2.6rem" : "unset",
-								transform: style_quickViewBtn?.position === "center-image" ? "translateX(50%)" : 
-									style_quickViewBtn?.position === "top-right" ? "translateY(2.5rem)" : "none",
-								height: style_quickViewBtn?.position === "center-image" ? "auto !important" : 
-									style_quickViewBtn?.position === "top-right" ? "2.48rem" : "auto",
-								borderRadius: getQuickViewBorderRadius(),
-								boxShadow: style_quickViewBtn?.position === "center-image" ? "0 4px 10px rgba(0,0,0,0.1)" : "none",
-								zIndex: 10,
-							},
+							...(style_quickViewBtn?.border_radius ? { borderRadius: getQuickViewBorderRadius() } : {}),
 							":hover": {
 								...(style_quickViewBtn?.hover_text_color && style_quickViewBtn.hover_text_color !== "#fff" && style_quickViewBtn.hover_text_color !== "#ffffff"
 									? { color: style_quickViewBtn.hover_text_color }
@@ -633,20 +567,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 							  }
 							: {}),
 					},
-					...(style_quickViewBtn?.position === "bottom-image"
-						? {
-								".wcb-products__product-quickview-preview .tns-nav": {
-									bottom: "54px",
-								},
-						  }
-						: {}),
 				},
 			},
 			{
 				[POST_CARD_CLASS]: {
-					display: "flex",
-					flexDirection: "column",
-					position: "relative",
 					height: !style_layout?.isEqualHeight ? "max-content" : undefined,
 					textAlign: style_layout?.textAlignment,
 					backgroundColor: style_layout?.backgroundColor,
@@ -704,11 +628,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 								transition: general_addToCartBtn?.position === "bottom" ? "all 0.3s ease-in-out" : "unset",
 							},
 						},
-						".wcb-products__product-add-to-cart .add_to_cart_button--loading": {
-							".wcb-products__add-to-cart-icon": {
-								display: "none !important",
-							}
-						},
 						".wcb-products__product-add-to-cart:hover": {
 							".add_to_cart_button span": {
 								color: (style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any),
@@ -757,47 +676,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 					".wcb-products__product-salebadge": {
 						marginBottom: saleBadgeMarginBottom_mobile_new ?? undefined,
 						".wcb-products__product-onsale": {
-							display: "inline-flex",
-							alignItems: "center",
-							justifyContent: "center",
-							lineHeight: 1.2,
-							whiteSpace: "nowrap",
 							color: style_saleBadge?.textColor,
 							backgroundColor: style_saleBadge?.backgroundColor,
 							...getBadgeShapeStyles(style_saleBadge?.shape || "round"),
-							"span.onsale, span": {
-								position: "static",
-								margin: "0px",
-								padding: "0px",
-								display: "inline",
-								fontSize: "inherit",
-								lineHeight: "inherit",
-								color: "inherit",
-								backgroundColor: "transparent",
-							},
 						},
 					},
 					".wcb-products__product-outofstock-badge": {
 						marginBottom: outofstockBadgeMarginBottom_mobile_new ?? undefined,
 						".wcb-products__product-on-outofstock": {
-							display: "inline-flex",
-							alignItems: "center",
-							justifyContent: "center",
-							lineHeight: 1.2,
-							whiteSpace: "nowrap",
 							color: style_outOfStock?.textColor,
 							backgroundColor: style_outOfStock?.backgroundColor,
 							...getBadgeShapeStyles(style_outOfStock?.shape || "round"),
-							"span": {
-								position: "static",
-								margin: "0px",
-								padding: "0px",
-								display: "inline",
-								fontSize: "inherit",
-								lineHeight: "inherit",
-								color: "inherit",
-								backgroundColor: "transparent",
-							},
 						},
 					},
 					// Alignment for the rating stars row.
@@ -948,12 +837,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 		return {
 			[ADD_TO_CART_BTN_BG]: {
-				display: "flex",
-				flexDirection: "column",
-				// Use textAlignment from layout settings instead of hardcoded "center",
-				// so the button respects the user's alignment choice.
 				alignItems: textAlignToAlignItems(style_layout?.textAlignment),
-				justifyContent: "center",
 				":hover span": {
 					color: color_h ? color_h : "white",
 				}
@@ -998,9 +882,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 				  }
 				: {}),
-			[`${ADD_TO_CART_BTN}.added`]: {
-				display: "none",
-			},
 			[ADD_TO_CART_BTN_ICON]: {
 				color,
 				backgroundColor,

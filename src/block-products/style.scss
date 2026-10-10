@@ -12,6 +12,10 @@
 	display: none;
 	position: relative;
 
+	.wcb-products__list {
+		display: grid;
+	}
+
 	.wcb-products__product-image-link {
 		position: relative;
 		display: block;
@@ -137,8 +141,10 @@
 .wcb-products__product {
 	font-size: 16px;
 	height: auto;
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
 	position: relative;
+	overflow: hidden;
 
 	.wcb-products__product--topRight {
 		position: absolute;
@@ -409,10 +415,108 @@
 	}
 
 	&.wcb-products__product--onsaleInsideImage {
+		.wcb-products__product-salebadge,
+		.wcb-products__product-outofstock-badge {
+			position: absolute;
+			top: 0.5rem;
+			z-index: 10;
+		}
 
 		.wcb-products__product-outofstock-badge~.wcb-products__product-salebadge,
 		.wcb-products__product-salebadge~.wcb-products__product-outofstock-badge {
 			top: calc(0.5rem + 32px);
+		}
+	}
+
+	&.wcb-products__product--qv-bottom-image {
+		.wcb-products__product--quickViewBottomImage--item {
+			position: absolute;
+			left: 0;
+			bottom: 10px;
+			width: 100%;
+			height: 0;
+			opacity: 0;
+			visibility: hidden;
+			z-index: 10;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: height 0.3s ease, opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+		}
+
+		&:hover .wcb-products__product--quickViewBottomImage--item {
+			opacity: 1;
+			visibility: visible;
+			height: 40px;
+			display: flex !important;
+		}
+
+		.wcb-products__product-quickview-preview .tns-nav {
+			bottom: 54px;
+		}
+	}
+
+	&.wcb-products__product--qv-top-right {
+		.wcb-products__product--quickViewBottomImage--item {
+			display: none !important;
+			position: absolute;
+			top: -10rem;
+			right: 0;
+		}
+
+		&:hover .wcb-products__product--quickViewBottomImage--item {
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			position: absolute;
+			top: -2.5rem;
+			bottom: auto;
+			right: -0.1rem;
+			width: 2.6rem;
+			height: 2.48rem;
+			transform: translateY(2.5rem);
+			border: none;
+			z-index: 10;
+		}
+
+		&.wcb-products__product--btnIconAddToCart:hover .wcb-products__product--quickViewBottomImage--item {
+			top: 0rem;
+		}
+	}
+
+	&.wcb-products__product--qv-center-image {
+		.wcb-products__product--quickViewBottomImage--item {
+			display: none !important;
+			position: absolute;
+			top: -10rem;
+			right: 0;
+		}
+
+		&:hover .wcb-products__product--quickViewBottomImage--item {
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			padding: 0.5rem 1.4rem !important;
+			position: absolute;
+			top: auto;
+			left: auto;
+			bottom: 6rem;
+			right: 50%;
+			transform: translateX(50%);
+			height: auto;
+			white-space: nowrap;
+			border: none;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+			z-index: 10;
+		}
+
+		&.wcb-products__product--btnIconAddToCart:hover .wcb-products__product--quickViewBottomImage--item {
+			bottom: 10rem;
+		}
+
+		&.wcb-products__product--btnInsideImage:hover .wcb-products__product--quickViewBottomImage--item {
+			top: calc(50% + 24px) !important;
+			bottom: auto !important;
 		}
 	}
 
@@ -451,62 +555,64 @@
 	.wcb-products__product-onsale {
 		border: none;
 		padding: 2px 8px;
+		min-width: 32px;
+		min-height: 20px;
+		line-height: 1.2;
+		border-radius: 2px;
+		white-space: nowrap;
 		text-align: center;
-		// Fix WooCommerce styles causing vertical text
 		writing-mode: initial;
 		text-orientation: initial;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		line-height: 1.2;
-		white-space: nowrap;
 
-		// Ensure content displays horizontally  
+		// Reset WooCommerce theme styles causing distortion
+		span.onsale,
+		.onsale,
 		span {
+			position: static;
+			margin: 0;
+			padding: 0;
 			display: inline;
+			font-size: inherit;
+			line-height: inherit;
+			color: inherit;
+			background-color: transparent;
 			writing-mode: initial;
 			text-orientation: initial;
-			background-color: inherit;
-		}
-
-		// Target specific span classes that might override
-		span.onsale,
-		.onsale {
-			margin-top: -0.75rem;
-			margin-left: -0.75rem;
-			padding-left: 0.75rem;
-			padding-right: 0.75rem;
-			background-color: inherit;
-			color: inherit;
-			display: inline;
 		}
 	}
 
 	.wcb-products__product-on-outofstock {
-		// format text
 		font-weight: 500;
 		text-decoration: none;
 		font-size: 12px;
-
 		border: none;
 		padding: 2px 8px;
+		min-width: 32px;
+		min-height: 20px;
+		line-height: 1.2;
+		border-radius: 2px;
+		white-space: nowrap;
 		text-align: center;
-		// text-transform: uppercase;
-		// Fix WooCommerce styles causing vertical text
 		writing-mode: initial;
 		text-orientation: initial;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		line-height: 1.2;
-		white-space: nowrap;
 
-		// Ensure content displays horizontally  
 		span {
+			position: static;
+			margin: 0;
+			padding: 0;
 			display: inline;
+			font-size: inherit;
+			line-height: inherit;
+			color: inherit;
+			background-color: transparent;
 			writing-mode: initial;
 			text-orientation: initial;
-			background-color: inherit;
 		}
 	}
 
@@ -671,7 +777,9 @@
 }
 
 .wcb-products__product-add-to-cart {
-	display: inline-grid;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 	gap: 8px;
 
 	.wp-block-button__link,
@@ -705,6 +813,20 @@
 .wcb-products__product-add-to-cart a {
 	display: flex !important;
 	gap: 4px;
+
+	svg path {
+		transition: fill 0.3s ease;
+	}
+
+	&.added {
+		display: none;
+	}
+}
+
+.wcb-products__product-add-to-cart .add_to_cart_button--loading {
+	.wcb-products__add-to-cart-icon {
+		display: none !important;
+	}
 }
 
 .wcb-products__add-to-cart-icon {
@@ -725,7 +847,7 @@ body:not(.wp-admin) {
 }
 
 .wcb-products__wrap {
-	.scroll-snap-slider {
+	.scroll-snap-slider:not(.swithToScrollSnapX--None) {
 		display: flex;
 		flex-wrap: nowrap;
 		justify-content: normal;
@@ -734,6 +856,10 @@ body:not(.wp-admin) {
 		scroll-behavior: smooth;
 		scroll-snap-stop: always;
 		scroll-snap-type: x mandatory;
+	}
+
+	.scroll-snap-slider.swithToScrollSnapX--None {
+		display: grid;
 	}
 
 	.p-arrow.-disabled {
@@ -1090,4 +1216,22 @@ body:not(.wp-admin) {
 			}
 		}
 	}
+}
+
+/* Pre-order */
+.wcb-products__product-preorder-message {
+	color: #000000;
+	font-size: 15px;
+	font-weight: 400;
+}
+
+.wcb-products__product-preorder-countdown {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+.wcb-products__product-preorder-countdown-item {
+	font-size: 13px;
+	font-weight: 600;
 }

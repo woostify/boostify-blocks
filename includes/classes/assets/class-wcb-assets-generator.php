@@ -151,7 +151,7 @@ class WCB_Assets_Generator {
 	/**
 	 * Update page assets meta for version tracking.
 	 *
-	 * Pattern from UAGB: stores version and generation status so we know when to regenerate.
+	 * Stores asset version and generation status to determine when to regenerate.
 	 *
 	 * @param int  $post_id           Post ID.
 	 * @param bool $generation_failed Whether generation failed. Default false.
@@ -226,8 +226,6 @@ class WCB_Assets_Generator {
 	/**
 	 * Determine if a post's assets should be regenerated.
 	 *
-	 * Pattern from UAGB / WP-Spectra: allow_assets_generation().
-	 *
 	 * @param int $post_id Post ID.
 	 * @return bool True if regeneration is needed.
 	 */
@@ -301,10 +299,6 @@ class WCB_Assets_Generator {
 		foreach ( $all_post_ids as $post_id ) {
 			if ( $time_limit > 0 && ( microtime( true ) - $start_time ) > $time_limit ) {
 				$is_partial = true;
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( sprintf( '[Boostify Blocks] Time limit of %ds reached during bulk asset regeneration. Processed %d posts; remaining posts will lazily regenerate on request.', $time_limit, $regenerated ) );
-				}
 				break;
 			}
 
@@ -358,9 +352,6 @@ class WCB_Assets_Generator {
 			$template_regenerated = $this->regenerate_template_assets();
 		}
 
-		// Step 5: Build common static CSS from all block style-index.css files.
-		$common_static_built = $this->build_common_static_css();
-
 		$total_posts = count( $all_post_ids );
 		$processed   = $regenerated + $skipped;
 		$remaining   = max( 0, $total_posts - $processed );
@@ -376,7 +367,7 @@ class WCB_Assets_Generator {
 			$message = __( 'Assets regenerated successfully!', 'boostify-blocks' );
 		}
 
-		// Default mode (matching Spectra standard): return concise, lightweight success message.
+		// Return concise, lightweight success message.
 		if ( ! $with_debug ) {
 			return array(
 				'success'       => true,
@@ -743,81 +734,22 @@ class WCB_Assets_Generator {
 	}
 
 	/**
-	 * Get the merged static CSS content from all block style-index.css files.
+	 * Deprecated stub: common static CSS is no longer bundled globally (replaced by on-demand post CSS).
 	 *
-	 * @return string Merged static CSS.
+	 * @deprecated 1.1.13
+	 * @return string Empty string.
 	 */
 	public function get_common_static_css_content() {
-		$file = $this->storage->get_assets_dir() . '/custom-style-blocks.css';
-
-		if ( ! file_exists( $file ) ) {
-			$this->build_common_static_css();
-		}
-
-		if ( file_exists( $file ) && filesize( $file ) > 0 ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			return file_get_contents( $file );
-		}
-
 		return '';
 	}
 
 	/**
-	 * Build a single CSS file containing all block static styles (style-index.css).
+	 * Deprecated stub: common static CSS is no longer bundled globally (replaced by on-demand post CSS).
 	 *
-	 * @return string|false URL of the common CSS file, or false on failure.
+	 * @deprecated 1.1.13
+	 * @return false Always returns false.
 	 */
 	public function build_common_static_css() {
-		$this->storage->ensure_assets_dir_exists();
-
-		$dir      = BOOSTIFY_BLOCKS_PATH . 'build/';
-		$out_file = $this->storage->get_assets_dir() . '/custom-style-blocks.css';
-		$css      = '';
-
-		$style_files = glob( $dir . 'block-*/style-index.css' );
-		if ( empty( $style_files ) ) {
-			return false;
-		}
-
-		foreach ( $style_files as $file ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$content = file_get_contents( $file );
-			if ( empty( $content ) ) {
-				continue;
-			}
-
-			// Strip webpack banner comments.
-			$content = preg_replace( '/\/\*![\s\S]*?\*\/\s*/', '', $content );
-			$content = preg_replace( '/\/\*# sourceMappingURL=.*?\*\/\s*/', '', $content );
-			$content = preg_replace( '/@charset\s+"[^"]*";\s*/', '', $content );
-
-			$css .= trim( $content ) . "\n";
-		}
-
-		if ( empty( trim( $css ) ) ) {
-			return false;
-		}
-
-		$css = "@charset \"UTF-8\";\n" . $css;
-		$css = preg_replace( '/\/\*[\s\S]*?\*\//', '', $css );
-		$css = preg_replace( "/\n{3,}/", "\n\n", $css );
-
-		// Compare with existing — only write if changed.
-		if ( file_exists( $out_file ) ) {
-			// phpcs:ignore
-			$old = file_get_contents( $out_file );
-			if ( $old === $css ) {
-				return $this->storage->get_assets_url() . '/custom-style-blocks.css';
-			}
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		$result = file_put_contents( $out_file, $css, LOCK_EX );
-
-		if ( false !== $result ) {
-			return $this->storage->get_assets_url() . '/custom-style-blocks.css';
-		}
-
 		return false;
 	}
 

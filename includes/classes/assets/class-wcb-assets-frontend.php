@@ -101,10 +101,9 @@ class WCB_Assets_Frontend {
 		// Frontend: enqueue generated JS if present.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_post_js' ), 21 );
 
-		// When file generation is enabled, bundle all block static styles into one file
-		// and dequeue individual style-index.css files to reduce HTTP requests.
+		// When file generation is enabled, individual block style-index.css files are
+		// bundled on-demand into post/template CSS files, so individual files can be dequeued.
 		if ( $this->file_generation_enabled ) {
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_common_static_css' ), 5 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_individual_block_styles' ), 999 );
 			add_action( 'wp_head', array( $this, 'dequeue_individual_block_styles' ), 0 );
 			add_action( 'wp_footer', array( $this, 'dequeue_individual_block_styles' ), 0 );
@@ -127,22 +126,15 @@ class WCB_Assets_Frontend {
 			return;
 		}
 
-		// When file generation is disabled (OFF - Default):
-		// Post styles are rendered on the frontend by JavaScript (FrontendStyles.js / React Emotion).
-		// Do not enqueue static files or inject server-side inline CSS to prevent duplicate rules.
-		if ( ! $this->file_generation_enabled ) {
-			return;
-		}
-
 		$post_id = $this->get_effective_post_id();
 		if ( ! $post_id ) {
 			return;
 		}
 
-		$file_id = $this->get_css_file_id_for_request( $post_id );
-
 		// 1. If file generation is enabled, attempt to serve the static CSS file.
-		$needs_regeneration = ( 'post' === $this->request_context ) ? $this->generator->should_regenerate_post_assets( $post_id ) : false;
+		if ( $this->file_generation_enabled ) {
+			$file_id = $this->get_css_file_id_for_request( $post_id );
+			$needs_regeneration = ( 'post' === $this->request_context ) ? $this->generator->should_regenerate_post_assets( $post_id ) : false;
 
 		if ( ! $needs_regeneration && $this->storage->css_file_exists( $file_id ) ) {
 			$file_path = $this->storage->get_css_file_path( $file_id );
@@ -161,13 +153,6 @@ class WCB_Assets_Frontend {
 		// File missing OR needs regeneration (global asset version or plugin version updated).
 		if ( 'post' === $this->request_context ) {
 			if ( ! $this->generator->should_attempt_regeneration( $post_id ) ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( sprintf(
-						'[Boostify Blocks] Skipped on-the-fly CSS regeneration for post %d (cooldown active).',
-						$post_id
-					) );
-				}
 				// If old file exists, serve it to avoid broken UI and prevent 404.
 				if ( $this->storage->css_file_exists( $file_id ) ) {
 					$file_path = $this->storage->get_css_file_path( $file_id );
@@ -202,9 +187,11 @@ class WCB_Assets_Frontend {
 				}
 			}
 		}
+	}
 
-		// 2. Fallback: If file generation is enabled but static file is unavailable, inject inline CSS into <head>.
-		$css = $this->get_current_request_css();
+	// 2. Inline Style Mode (File Generation OFF) or Static File Fallback (file missing):
+	// Inject server-side inline CSS into <head> via wp_add_inline_style to eliminate FOUC / layout shift.
+	$css = $this->get_current_request_css();
 		if ( ! empty( $css ) ) {
 			if ( ! wp_style_is( 'boostify-blocks-frontend-css', 'enqueued' ) ) {
 				wp_enqueue_style( 'boostify-blocks-frontend-css' );
@@ -247,40 +234,18 @@ class WCB_Assets_Frontend {
 	}
 
 	/**
-	 * Enqueue the common static CSS file if it exists.
-	 */
-	public function enqueue_common_static_css() {
-		if ( ! $this->file_generation_enabled ) {
-			return;
-		}
-
-		$file = $this->storage->get_assets_dir() . '/custom-style-blocks.css';
-
-		// Build on-the-fly if missing.
-		if ( ! file_exists( $file ) ) {
-			$this->generator->build_common_static_css();
-		}
-
-		if ( file_exists( $file ) && filesize( $file ) > 0 ) {
-			$common_url = (string) apply_filters( 'boostify_blocks_common_css_url', $this->storage->get_assets_url() . '/custom-style-blocks.css' );
-			wp_enqueue_style(
-				'boostify-blocks-custom-style-blocks',
-				$common_url,
-				array(),
-				$this->storage->get_stylesheet_version( $file )
-			);
-		}
-	}
-
 	/**
-	 * Dequeue individual block style-index.css files when merged file is enqueued.
+	 * Dequeue individual block style-index.css files when post CSS file is enqueued.
 	 */
 	public function dequeue_individual_block_styles() {
 		if ( ! $this->file_generation_enabled ) {
 			return;
 		}
 
-		if ( ! wp_style_is( 'boostify-blocks-custom-style-blocks', 'enqueued' ) ) {
+		$is_post_enqueued = $this->is_file_css_enqueued();
+
+		// Only dequeue individual styles if post CSS file is enqueued.
+		if ( ! $is_post_enqueued ) {
 			return;
 		}
 
@@ -470,8 +435,10 @@ class WCB_Assets_Frontend {
 		$effective_id = $this->get_effective_post_id();
 
 		// Singular post or page.
+		// When serving inline CSS, only dynamic attribute styles are needed because WordPress
+		// already enqueues each block's static style-index.css stylesheet.
 		if ( 'post' === $this->request_context && $effective_id ) {
-			return WCB_Block_Helper::extract_css_from_post( intval( $effective_id ) );
+			return WCB_Block_Helper::extract_css_from_post( intval( $effective_id ), false );
 		}
 
 		// Block theme template or archive.
@@ -480,8 +447,9 @@ class WCB_Assets_Frontend {
 			if ( function_exists( 'get_block_templates' ) ) {
 				$templates = get_block_templates( array( 'slug__in' => array( $template_slug ) ) );
 				if ( ! empty( $templates ) && ! empty( $templates[0]->content ) ) {
-					$blocks = parse_blocks( $templates[0]->content );
-					return WCB_Block_Helper::extract_css_from_blocks( $blocks );
+					$blocks      = parse_blocks( $templates[0]->content );
+					$dynamic_css = WCB_Block_Helper::extract_css_from_blocks( $blocks );
+					return trim( $dynamic_css );
 				}
 			}
 		}
@@ -490,7 +458,7 @@ class WCB_Assets_Frontend {
 		if ( function_exists( 'get_the_ID' ) ) {
 			$the_id = get_the_ID();
 			if ( $the_id ) {
-				return WCB_Block_Helper::extract_css_from_post( intval( $the_id ) );
+				return WCB_Block_Helper::extract_css_from_post( intval( $the_id ), false );
 			}
 		}
 

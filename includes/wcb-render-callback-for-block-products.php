@@ -290,20 +290,20 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
         ]
     );
 
-    // Quick view button — always follows Customizer since there is no block UI panel for quick view
+    // Quick view button — follows Customizer unless block overrides are enabled
     $quickview = $theme['shop_quick_view_btn'] ?? [];
     $attributes['style_quickViewBtn'] = array_merge(
         $attributes['style_quickViewBtn'] ?? [],
         [
-            'enabled'             => $quickview['enabled'] ?? ($attributes['style_quickViewBtn']['enabled'] ?? null),
-            'position'            => $quickview['position'] ?? ($attributes['style_quickViewBtn']['position'] ?? null),
-            'show_icon'           => $quickview['show_icon'] ?? ($attributes['style_quickViewBtn']['show_icon'] ?? null),
-            'bg_color'            => $quickview['bg_color'] ?? ($attributes['style_quickViewBtn']['bg_color'] ?? null),
-            'text_color'          => $quickview['text_color'] ?? ($attributes['style_quickViewBtn']['text_color'] ?? null),
-            'hover_bg_color'      => $quickview['hover_bg_color'] ?? ($attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
-            'hover_text_color'    => $quickview['hover_text_color'] ?? ($attributes['style_quickViewBtn']['hover_text_color'] ?? null),
-            'border_radius'       => isset($quickview['border_radius']) ? (is_numeric($quickview['border_radius']) ? (int)$quickview['border_radius'] : $quickview['border_radius']) : ($attributes['style_quickViewBtn']['border_radius'] ?? null),
-            'woostify_pro_active' => $quickview['woostify_pro_active'] ?? ($attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
+            'enabled'             => $pick_bool($quickview['enabled'] ?? null, $attributes['style_quickViewBtn']['enabled'] ?? null),
+            'position'            => $pick($quickview['position'] ?? null, $attributes['style_quickViewBtn']['position'] ?? null),
+            'show_icon'           => $pick($quickview['show_icon'] ?? null, $attributes['style_quickViewBtn']['show_icon'] ?? null),
+            'bg_color'            => $pick($quickview['bg_color'] ?? null, $attributes['style_quickViewBtn']['bg_color'] ?? null),
+            'text_color'          => $pick($quickview['text_color'] ?? null, $attributes['style_quickViewBtn']['text_color'] ?? null),
+            'hover_bg_color'      => $pick($quickview['hover_bg_color'] ?? null, $attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
+            'hover_text_color'    => $pick($quickview['hover_text_color'] ?? null, $attributes['style_quickViewBtn']['hover_text_color'] ?? null),
+            'border_radius'       => $pick(isset($quickview['border_radius']) ? (is_numeric($quickview['border_radius']) ? (int)$quickview['border_radius'] : $quickview['border_radius']) : null, $attributes['style_quickViewBtn']['border_radius'] ?? null),
+            'woostify_pro_active' => $pick($quickview['woostify_pro_active'] ?? null, $attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
         ]
     );
 
@@ -416,8 +416,10 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
 
             // do_action('woocommerce_before_shop_loop');
             // woocommerce_product_loop_start();
+            $layoutAttrs        = $attributes['style_layout'] ?? [];
+            $swithToScrollSnapX = !empty($layoutAttrs['swithToScrollSnapX']) ? $layoutAttrs['swithToScrollSnapX'] : 'None';
         ?>
-            <div class="scroll-snap-slider -multi wcb-products__list swithToScrollSnapX--<?php echo esc_attr($sortingAndFilteringAttrs['swithToScrollSnapX'] ?? ""); ?>">
+            <div class="scroll-snap-slider -multi wcb-products__list swithToScrollSnapX--<?php echo esc_attr($swithToScrollSnapX); ?>">
                 <?php
                 while ($loop->have_posts()) :
                     $loop->the_post();
@@ -597,6 +599,12 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     // button
     $classes .= $btnInsideImage ? " wcb-products__product--btnInsideImage" : "";
     $classes .= $btnIconAddToCart ? " wcb-products__product--btnIconAddToCart" : "";
+
+    // quick view position
+    if ( $btnQuickViewBottomImage ) {
+        $qv_pos   = $attributes['style_quickViewBtn']['position'] ?? 'center-image';
+        $classes .= ' wcb-products__product--qv-' . sanitize_html_class( $qv_pos );
+    }
 
     // Add to Cart button
     $btn1 = $btnInsideImage ? $data->button : "";

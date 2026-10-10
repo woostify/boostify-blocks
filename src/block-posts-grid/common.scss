@@ -1,5 +1,9 @@
 .wcb-posts-grid__wrap {
 	display: none;
+
+	.wcb-posts-grid__list-posts {
+		display: grid;
+	}
 }
 
 .wcbPostCard {

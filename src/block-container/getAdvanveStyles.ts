@@ -95,7 +95,7 @@ export const initAdvanceMotionEffect = ({
 			thisELs.forEach((el) => observer.observe(el));
 		}
 	} catch (error) {
-		console.log("error, advance_motionEffect", error);
+		console.warn("[Boostify Blocks] Failed to initialize motion effects:", error);
 	}
 };
 

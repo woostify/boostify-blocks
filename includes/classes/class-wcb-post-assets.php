@@ -116,8 +116,6 @@ class WCB_Post_Assets {
 	/**
 	 * Get the global asset version timestamp.
 	 *
-	 * Mirrors WP-Spectra pattern: UAGB_ASSET_VER / __uagb_asset_version.
-	 *
 	 * @return string Asset version timestamp or plugin version.
 	 */
 	public static function get_global_asset_version() {

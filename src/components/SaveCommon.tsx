@@ -65,11 +65,7 @@ function SaveCommon<T>({
 		const normalizedAttributes = normalizeData(attributes);
 		blockJson = _.escape(JSON.stringify(normalizedAttributes));
 	} catch (error) {
-		console.log("attributes JSON.stringify error on SAVE function", {
-			error,
-			className,
-			attributes,
-		});
+		console.error("[Boostify Blocks] Failed to serialize block attributes for save:", error);
 	}
 
 	const rc = attributes?.advance_responsiveCondition || {};

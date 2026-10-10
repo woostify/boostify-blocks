@@ -32,7 +32,7 @@ class WCB_Assets_Storage {
 	/**
 	 * Get the assets upload directory info.
 	 *
-	 * Supports CDN / custom storage rewrite via boostify_blocks_get_upload_dir filter (matching Spectra's uag_get_upload_dir).
+	 * Supports CDN / custom storage rewrite via boostify_blocks_get_upload_dir filter.
 	 *
 	 * @return array{dir: string, url: string}
 	 */
