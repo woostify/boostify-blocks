@@ -128,63 +128,10 @@ if ( 'middle' === $vert_align ) {
 // Title wrap display.
 $css['desktop'][ $title_wrap_sel ]['display'] = $is_icon_beside_title ? 'flex' : 'block';
 
-// Progress circle structure base styles (mirrors GlobalCss.tsx lines 130-169).
-$css['desktop'][ $circle_wrap_sel ]['position']       = 'relative';
-$css['desktop'][ $circle_wrap_sel ]['display']        = 'inline-block';
-$css['desktop'][ $circle_wrap_sel ]['vertical-align'] = 'top';
-
-$css['desktop'][ $circle_svg_sel ]['transform'] = 'rotate(-90deg)';
-
-$css['desktop'][ $circle_content_sel ]['position']        = 'absolute';
-$css['desktop'][ $circle_content_sel ]['top']             = '50%';
-$css['desktop'][ $circle_content_sel ]['left']            = '50%';
-$css['desktop'][ $circle_content_sel ]['transform']       = 'translate(-50%, -50%)';
-$css['desktop'][ $circle_content_sel ]['text-align']      = 'center';
-$css['desktop'][ $circle_content_sel ]['display']         = 'flex';
-$css['desktop'][ $circle_content_sel ]['flex-direction']  = $is_icon_beside_content ? 'row' : 'column';
-$css['desktop'][ $circle_content_sel ]['align-items']     = 'center';
-$css['desktop'][ $circle_content_sel ]['gap']             = '10px';
-$css['desktop'][ $circle_content_sel ]['max-width']       = '100%';
-$css['desktop'][ $circle_content_sel ]['width']           = '100%';
-$css['desktop'][ $circle_content_sel ]['padding']         = '10px';
-
-$css['desktop'][ $circle_content_inner_sel ]['display']        = 'flex';
-$css['desktop'][ $circle_content_inner_sel ]['flex-direction'] = 'column';
-$css['desktop'][ $circle_content_inner_sel ]['align-items']    = 'center';
-$css['desktop'][ $circle_content_inner_sel ]['gap']            = '10px';
-
-$css['desktop'][ $circle_content_row_sel ]['display']         = 'flex';
-$css['desktop'][ $circle_content_row_sel ]['flex-direction']  = 'row';
-$css['desktop'][ $circle_content_row_sel ]['align-items']     = 'center';
-$css['desktop'][ $circle_content_row_sel ]['justify-content'] = 'center';
-$css['desktop'][ $circle_content_row_sel ]['gap']             = '10px';
-
-// Progress bar structure base styles (mirrors GlobalCss.tsx lines 170-194).
-$css['desktop'][ $bar_wrap_sel ]['position'] = 'relative';
-$css['desktop'][ $bar_wrap_sel ]['width']    = '100%';
-
-$css['desktop'][ $bar_track_sel ]['width']            = '100%';
-$css['desktop'][ $bar_track_sel ]['background-color'] = '#e0e0e0';
-$css['desktop'][ $bar_track_sel ]['height']           = '100%';
-$css['desktop'][ $bar_track_sel ]['border-radius']    = '5px';
-$css['desktop'][ $bar_track_sel ]['overflow']         = 'hidden';
-$css['desktop'][ $bar_track_sel ]['position']         = 'relative';
-
-$css['desktop'][ $bar_sel ]['height']          = '100%';
-$css['desktop'][ $bar_sel ]['transition']      = 'transparent';
-$css['desktop'][ $bar_sel ]['color']           = 'white';
-$css['desktop'][ $bar_sel ]['display']         = 'flex';
-$css['desktop'][ $bar_sel ]['align-items']     = 'center';
-$css['desktop'][ $bar_sel ]['justify-content'] = 'end';
-$css['desktop'][ $bar_sel ]['padding-right']   = '4px';
-$css['desktop'][ $bar_sel ]['padding-top']     = '5px';
-$css['desktop'][ $bar_sel ]['padding-bottom']  = '5px';
-
-$css['desktop'][ $title_class_sel ]['font-size']  = '16px';
-$css['desktop'][ $title_class_sel ]['color']      = '#666';
-$css['desktop'][ $title_class_sel ]['margin-top'] = '10px';
-
-$css['desktop'][ $icon_sel ]['font-size'] = '20px';
+// Dynamic circle content flex direction when icon is beside content
+if ( $is_icon_beside_content ) {
+	$css['desktop'][ $circle_content_sel ]['flex-direction'] = 'row';
+}
 
 // Margin and padding on wrap.
 if ( ! empty( $sdm['margin'] ) ) {

@@ -96,6 +96,6 @@ export function initCarouselForWcbSliders(div: Element, props: Props) {
 		// @ts-ignore
 		targetElement.slick(finalSettings);
 	} catch (error) {
-		console.error('🎠 Slider initialization failed:', error);
+		console.error("[Boostify Blocks] Slider initialization failed:", error);
 	}
 }

@@ -368,7 +368,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		style_text,
 	]);
 
-	// console.log(5, "---- Buttons edit  ---" + uniqueId);
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div

@@ -32,7 +32,7 @@ class WCB_Assets_Storage {
 	/**
 	 * Get the assets upload directory info.
 	 *
-	 * Supports CDN / custom storage rewrite via boostify_blocks_get_upload_dir filter (matching Spectra's uag_get_upload_dir).
+	 * Supports CDN / custom storage rewrite via boostify_blocks_get_upload_dir filter.
 	 *
 	 * @return array{dir: string, url: string}
 	 */
@@ -169,7 +169,9 @@ class WCB_Assets_Storage {
 
 		if ( ! is_dir( $target_dir ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.dir_mkdir_dirname
-			wp_mkdir_p( $target_dir );
+			if ( ! wp_mkdir_p( $target_dir ) && ! is_dir( $target_dir ) ) {
+				return false;
+			}
 		}
 
 		$file_name = is_numeric( $post_id ) ? 'post-' . absint( $post_id ) . '.css' : 'template-' . sanitize_key( $post_id ) . '.css';
@@ -189,15 +191,32 @@ class WCB_Assets_Storage {
 			}
 		}
 
+		// Atomic write: write to a temporary file then rename into place.
+		$temp_file = $file_path . '.tmp.' . uniqid( '', true );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		$result = file_put_contents( $file_path, $css, LOCK_EX );
+		$result    = file_put_contents( $temp_file, $css, LOCK_EX );
 
 		if ( false !== $result ) {
-			if ( file_exists( $flat_file ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				@unlink( $flat_file );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+			if ( @rename( $temp_file, $file_path ) ) {
+				if ( file_exists( $flat_file ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					@unlink( $flat_file );
+				}
+				return true;
 			}
-			return true;
+			// Fallback: direct write if rename fails.
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $temp_file );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			$direct_result = file_put_contents( $file_path, $css, LOCK_EX );
+			if ( false !== $direct_result ) {
+				if ( file_exists( $flat_file ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					@unlink( $flat_file );
+				}
+				return true;
+			}
 		}
 
 		return false;
@@ -371,21 +390,40 @@ class WCB_Assets_Storage {
 
 		if ( ! is_dir( $target_dir ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.dir_mkdir_dirname
-			wp_mkdir_p( $target_dir );
+			if ( ! wp_mkdir_p( $target_dir ) && ! is_dir( $target_dir ) ) {
+				return false;
+			}
 		}
 
 		$file_path = $target_dir . '/post-' . absint( $post_id ) . '.js';
 		$flat_file = $this->get_assets_dir() . '/post-' . absint( $post_id ) . '.js';
 
+		// Atomic write: write to a temporary file then rename into place.
+		$temp_file = $file_path . '.tmp.' . uniqid( '', true );
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		$result = file_put_contents( $file_path, $js, LOCK_EX );
+		$result    = file_put_contents( $temp_file, $js, LOCK_EX );
 
 		if ( false !== $result ) {
-			if ( file_exists( $flat_file ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				@unlink( $flat_file );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+			if ( @rename( $temp_file, $file_path ) ) {
+				if ( file_exists( $flat_file ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					@unlink( $flat_file );
+				}
+				return true;
 			}
-			return true;
+			// Fallback: direct write if rename fails.
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			@unlink( $temp_file );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			$direct_result = file_put_contents( $file_path, $js, LOCK_EX );
+			if ( false !== $direct_result ) {
+				if ( file_exists( $flat_file ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					@unlink( $flat_file );
+				}
+				return true;
+			}
 		}
 
 		return false;
@@ -430,6 +468,18 @@ class WCB_Assets_Storage {
 		}
 
 		return $deleted || ( ! file_exists( $partition_file ) && ! file_exists( $flat_file ) );
+	}
+
+	/**
+	 * Delete all generated asset files (CSS & JS) for a post.
+	 *
+	 * @param int|string $post_id Post ID or template slug.
+	 * @return bool True if at least one file was deleted or neither exists.
+	 */
+	public function delete_post_files( $post_id ) {
+		$css_deleted = $this->delete_css_file( $post_id );
+		$js_deleted  = is_numeric( $post_id ) ? $this->delete_js_file( (int) $post_id ) : true;
+		return $css_deleted || $js_deleted;
 	}
 
 	/**

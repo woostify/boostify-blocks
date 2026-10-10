@@ -43,9 +43,7 @@ const BlocksPage: FC<Props> = ({
 		};
 		toast.promise(
 			// @ts-ignore
-			jQuery.post(ajaxurl, data, function (response) {
-				console.log("Got this from the server: ", response);
-			}),
+			jQuery.post(ajaxurl, data, function () {}),
 			{
 				loading: "Saving...",
 				success: <div>Successful saved!</div>,

@@ -15,7 +15,6 @@ const ProductsQueries = () => {
 			data: "ProductsQueries",
 		};
 		jQuery.post((window as any).ajaxurl, data, function (response) {
-			console.log(123, "Got this from the server: ", { data, response });
 			setProductHtmls(response.data);
 			setLoading(false);
 		});

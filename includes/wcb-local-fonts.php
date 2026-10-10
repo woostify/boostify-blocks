@@ -299,7 +299,7 @@ $boostify_blocks_late_preload_urls = [];
 /**
  * Filter: intercepts every Google Fonts <link> tag as WordPress prints it.
  *
- * This catches plugins like Elementor that enqueue fonts at wp_head priority 7,
+ * Catches third-party styles that enqueue fonts during wp_head,
  * AFTER wp_enqueue_scripts has already finished. For those, the
  * wp_enqueue_scripts interceptor above never gets a chance to see them.
  *

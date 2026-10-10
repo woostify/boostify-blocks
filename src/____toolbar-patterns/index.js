@@ -1,24 +1,41 @@
 import { registerBlockType } from "@wordpress/blocks";
 import { registerPlugin } from "@wordpress/plugins";
-import { PluginMoreMenuItem } from "@wordpress/edit-post";
+import { PluginMoreMenuItem, PluginSidebar } from "@wordpress/edit-post";
 import { image } from "@wordpress/icons";
-import { PluginSidebar } from "@wordpress/edit-post";
+import domReady from "@wordpress/dom-ready";
 /**
  * Internal dependencies
  */
 import "./App";
 import "../________";
 import WcbPluginSidebar from "./WcbPluginSidebar";
-// import metadata from "./block.json";
-//
-// registerBlockType(metadata.name, {
-// 	edit: () => null,
-// 	save: () => null,
-// 	attributes: [],
-// });
+import {
+	applyScopedCSS,
+	PageSettingsCustomCSSApplier,
+} from "./WcbCustomCSS";
 
-const PluginSidebarTest = () => (
-	<PluginSidebar
+// Auto sync Custom CSS on DOM ready and editor load
+domReady( () => {
+	const syncCSS = () => {
+		const css = window.wp?.data?.select( "core/editor" )?.getEditedPostAttribute( "meta" )?._boostify_blocks_custom_css;
+		applyScopedCSS( typeof css === "string" ? css : "" );
+	};
+
+	let tries = 0;
+	const interval = setInterval( () => {
+		syncCSS();
+		tries++;
+		const iframe = document.querySelector( 'iframe[name="editor-canvas"]' );
+		if ( ( iframe && iframe.contentDocument?.readyState === "complete" && tries > 10 ) || tries > 40 ) {
+			clearInterval( interval );
+		}
+	}, 200 );
+} );
+
+const WoostifyPageSettingsSidebar = () => (
+	<>
+		<PageSettingsCustomCSSApplier />
+		<PluginSidebar
 		name="wcb-plugin-sidebar-woostify"
 		title="Woostify Page Settings"
 		icon={
@@ -41,6 +58,7 @@ const PluginSidebarTest = () => (
 	>
 		<WcbPluginSidebar />
 	</PluginSidebar>
+</>
 );
 
-registerPlugin("wcb-plugin-sidebar-woostify", { render: PluginSidebarTest });
+registerPlugin("wcb-plugin-sidebar-woostify", { render: WoostifyPageSettingsSidebar });

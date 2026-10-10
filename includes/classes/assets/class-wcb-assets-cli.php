@@ -121,7 +121,7 @@ class WCB_Assets_CLI {
 	 *     # Regenerate a specific post
 	 *     wp boostify-blocks regenerate --post_id=123
 	 *
-	 *     # Spectra-compatible alias
+	 *     # Regenerate CSS alias
 	 *     wp boostify-blocks regenerate-css
 	 *
 	 * @param array $args       Command positional arguments.

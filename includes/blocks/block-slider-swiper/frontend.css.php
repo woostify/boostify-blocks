@@ -59,18 +59,12 @@ if ( ! empty( $sbs ) ) {
 if ( ! empty( $sa['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $swiper_arrow, $sa['border'], true );
 }
-$css['desktop'][ $swiper_arrow ]['display']         = 'flex';
-$css['desktop'][ $swiper_arrow ]['align-items']     = 'center';
-$css['desktop'][ $swiper_arrow ]['justify-content'] = 'center';
-$css['desktop'][ $swiper_arrow ]['cursor']          = 'pointer';
 
 if ( ! empty( $sa['color'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow, 'color', $sa['color'] );
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow_svg, 'color', $sa['color'] );
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, '--swiper-pagination-color', $sa['color'] );
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_bullet, 'background-color', $sa['color'] );
-	$css['desktop'][ $swiper_bullet ]['opacity']                 = '0.4';
-	$css['desktop'][ $swiper_bullet_active ]['opacity']          = '1';
 }
 if ( ! empty( $sa['backgroundColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow, 'background-color', $sa['backgroundColor'] );
@@ -85,9 +79,6 @@ $gc         = $attr['general_carousel'] ?? array();
 $wrap_items = $wrap_sel . ' .wcb-slider__wrap-items';
 
 $show_dots = ( $gc['showArrowsDots'] ?? '' ) !== 'Arrow';
-
-$css['desktop'][ $swiper_dots ]['position']    = 'absolute';
-$css['desktop'][ $swiper_dots ]['line-height'] = '0';
 
 if ( ! empty( $sa['dotsMarginTop'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'bottom', $sa['dotsMarginTop'] );

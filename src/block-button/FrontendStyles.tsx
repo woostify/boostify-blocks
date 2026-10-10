@@ -23,8 +23,6 @@ renderBlockGlobalStyles(divsToUpdateButton, GlobalCssButton);
 renderBlockGlobalStyles(divsToUpdateCTA, GlobalCssCTALazy);
 
 function renderBlockGlobalStyles(divsToUpdate: NodeListOf<Element>, GlobalCss: React.ComponentType<any>) {
-	console.log(111);
-
 	divsToUpdate.forEach((div: any) => {
 		const preEl = div.querySelector(
 			`pre[data-wcb-block-attrs=${div.id}]`

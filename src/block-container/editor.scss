@@ -1,10 +1,10 @@
 .wcb-container__wrap {
-	// Empty container styling following Spectra layout
+	// Empty container styling
 	&.is-empty {
 		position: relative;
 		min-height: 60px;
 
-		// Dashed border around empty container (Spectra style)
+		// Dashed border around empty container
 		&::before {
 			content: "";
 			position: absolute;
@@ -27,7 +27,7 @@
 		}
 	}
 
-	// Hover outline to easily identify & select containers/nested columns (Spectra style)
+	// Hover outline to easily identify & select containers/nested columns
 	&:not(.is-selected):hover {
 		outline: 1.5px solid var(--wp-admin-theme-color, #4f46e5);
 		outline-offset: -1px;
@@ -69,7 +69,7 @@
 				width: auto;
 			}
 
-			// Clean, minimalistic + button without inner box/border (Spectra style)
+			// Clean, minimalistic appender button
 			.block-editor-button-block-appender {
 				display: flex !important;
 				align-items: center;

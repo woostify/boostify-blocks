@@ -1074,10 +1074,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				} else {
 					const paginationEl = paginationRef.current;
 
-					// Same pattern as Spectra (setSwiperNavigationPagination in
-					// wp-spectra-master/src/blocks/slider/render.js): force el to
-					// the real ref then init/render/update directly, no destroy()
-					// needed - pagination.init() handles the el swap itself.
+					// Bind element to current ref and reinit/render/update pagination directly.
 					swiper.params.pagination.el = paginationEl;
 					swiper.params.pagination.clickable = true;
 					swiper.pagination.init();
@@ -1093,13 +1090,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		[]
 	);
 
-	// scheduleReinitNavigationPagination: the first attempt is deferred via
-	// setTimeout (same pattern as Spectra's setSwiperNavigationPagination),
-	// since swiper/react's onAfterInit fires inside the container ref
-	// callback, BEFORE React attaches sibling refs (nav/pagination). A 0ms
-	// setTimeout waits for React's commit to finish, so the first attempt
-	// almost always succeeds. The retry loop is a safety net for Gutenberg
-	// destroying/recreating the Swiper instance mid-flight.
+	// Schedule pagination/navigation reinit after React commits sibling refs.
 	const scheduleReinitNavigationPagination = useCallback(
 		(instanceOverride?: SwiperInstance | null) => {
 			let attempts = 0;
@@ -1149,9 +1140,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	// swiperCommonProps
 	// - Memoized to avoid unnecessary instance destroy/recreate
-	// - Passes a selector string for navigation/pagination (like Spectra) so
-	//   Swiper builds the module structure correctly, even though it fails
-	//   in the iframe - the real binding happens via ref in reinitNavigationPagination.
+	// - Initial selector allows module initialization; real binding occurs via ref.
 	const swiperCommonProps = useMemo(
 		() => ({
 			modules: SWIPER_MODULES,
@@ -1171,9 +1160,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 					nextEl: `${swiperSelectorScope} .swiper-button-next`,
 				}
 				: false,
-			// Selector el (like Spectra): fails in the iframe but still lets
-			// the Pagination module init with the right structure;
-			// reinitNavigationPagination later overwrites el with paginationRef.current
+			// Fallback selector for initial module setup; rebound via ref later.
 			pagination: showDots
 				? {
 					el: `${swiperSelectorScope} .swiper-pagination`,

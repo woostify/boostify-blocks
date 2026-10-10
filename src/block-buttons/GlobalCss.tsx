@@ -46,8 +46,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 		value_Mobile: alignment_mobile,
 	} = getValueFromAttrsResponsives(alignment);
 
-	// console.log(1, "---- butons global css ---", { style_dimension });
-
 	if (!uniqueId) {
 		return null;
 	}

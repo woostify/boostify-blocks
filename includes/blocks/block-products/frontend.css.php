@@ -72,33 +72,139 @@ $pag_sel           = $pag_wrap_sel . ' .page-numbers';
 $pag_active        = $pag_wrap_sel . ' .page-numbers.current';
 
 // Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
+// Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
 $css['desktop'][ $wrap_sel ]['display'] = 'block';
 
-// 1. Products List Grid
-$css['desktop'][ $list_sel ]['display'] = 'grid';
+// 1. Products List Layout: Grid vs Carousel (Scroll Snap Slider)
+$switch_snap     = $sl['swithToScrollSnapX'] ?? 'None';
+$is_snap_desktop = ( 'Desktop' === $switch_snap );
+$is_snap_tablet  = ( $is_snap_desktop || 'Tablet' === $switch_snap );
+$is_snap_mobile  = ( $is_snap_tablet  || 'Mobile' === $switch_snap );
 
-$num_col = $sl['numberOfColumn'] ?? 3;
-$nc_d = is_array( $num_col ) ? ( $num_col['Desktop'] ?? 3 ) : $num_col;
+$indicators_sel = $wrap_sel . ' .indicators';
+$item_sel       = $list_sel . ' > div';
+
+// Visibility of carousel indicators / arrows
+$css['desktop'][ $indicators_sel ]['display'] = $is_snap_desktop ? 'block' : 'none';
+$css['tablet'][ $indicators_sel ]['display']  = $is_snap_tablet ? 'block' : 'none';
+$css['mobile'][ $indicators_sel ]['display']  = $is_snap_mobile ? 'block' : 'none';
+
+// Number of columns responsive
+$num_col = $sl['numberOfColumn'] ?? 4;
+$nc_d = is_array( $num_col ) ? ( $num_col['Desktop'] ?? 4 ) : $num_col;
 $nc_t = is_array( $num_col ) ? ( $num_col['Tablet'] ?? $nc_d ) : $nc_d;
 $nc_m = is_array( $num_col ) ? ( $num_col['Mobile'] ?? $nc_t ) : $nc_t;
 
-$css['desktop'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_d}, minmax(0, 1fr))";
-$css['tablet'][ $list_sel ]['grid-template-columns']  = "repeat({$nc_t}, minmax(0, 1fr))";
-$css['mobile'][ $list_sel ]['grid-template-columns']  = "repeat({$nc_m}, minmax(0, 1fr))";
+// Column & Row Gaps responsive
+$col_gap = $sl['colunmGap'] ?? array();
+$cg_d = is_array( $col_gap ) ? ( $col_gap['Desktop'] ?? '1.5rem' ) : ( $col_gap ?: '1.5rem' );
+$cg_t = is_array( $col_gap ) ? ( $col_gap['Tablet'] ?? $cg_d ) : $cg_d;
+$cg_m = is_array( $col_gap ) ? ( $col_gap['Mobile'] ?? $cg_t ) : $cg_t;
 
-if ( ! empty( $sl['colunmGap'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $list_sel, 'column-gap', $sl['colunmGap'] );
+$row_gap = $sl['rowGap'] ?? array();
+$rg_d = is_array( $row_gap ) ? ( $row_gap['Desktop'] ?? '1.5rem' ) : ( $row_gap ?: '1.5rem' );
+$rg_t = is_array( $row_gap ) ? ( $row_gap['Tablet'] ?? $rg_d ) : $rg_d;
+$rg_m = is_array( $row_gap ) ? ( $row_gap['Mobile'] ?? $rg_t ) : $rg_t;
+
+// Helper to format unit
+$wcb_format_unit = function( $val, $default = '0px' ) {
+	if ( empty( $val ) && '0' !== (string) $val && 0 !== $val ) {
+		return $default;
+	}
+	$val_str = trim( (string) $val );
+	if ( is_numeric( $val_str ) ) {
+		return $val_str . 'px';
+	}
+	return $val_str;
+};
+
+$cg_d_fmt = $wcb_format_unit( $cg_d, '1.5rem' );
+$cg_t_fmt = $wcb_format_unit( $cg_t, $cg_d_fmt );
+$cg_m_fmt = $wcb_format_unit( $cg_m, $cg_t_fmt );
+
+$rg_d_fmt = $wcb_format_unit( $rg_d, '1.5rem' );
+$rg_t_fmt = $wcb_format_unit( $rg_t, $rg_d_fmt );
+$rg_m_fmt = $wcb_format_unit( $rg_m, $rg_t_fmt );
+
+// Peek after responsive (Carousel peek overflow)
+$peek = $sl['peekAfter'] ?? array();
+$pk_d = is_array( $peek ) ? ( $peek['Desktop'] ?? '0px' ) : ( $peek ?: '0px' );
+$pk_t = is_array( $peek ) ? ( $peek['Tablet'] ?? $pk_d ) : $pk_d;
+$pk_m = is_array( $peek ) ? ( $peek['Mobile'] ?? $pk_t ) : $pk_t;
+
+$pk_d_fmt = $wcb_format_unit( $pk_d, '0px' );
+$pk_t_fmt = $wcb_format_unit( $pk_t, $pk_d_fmt );
+$pk_m_fmt = $wcb_format_unit( $pk_m, $pk_t_fmt );
+
+// --- Desktop (Base CSS) ---
+$css['desktop'][ $list_sel ]['row-gap']    = $rg_d_fmt;
+$css['desktop'][ $list_sel ]['column-gap'] = $cg_d_fmt;
+if ( $is_snap_desktop ) {
+	$css['desktop'][ $list_sel ]['display']          = 'flex';
+	$css['desktop'][ $list_sel ]['overflow-x']       = 'auto';
+	$css['desktop'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
+	$nc_d_num = max( 1, intval( $nc_d ) );
+	$css['desktop'][ $item_sel ]['scroll-snap-align'] = 'start';
+	$css['desktop'][ $item_sel ]['flex-shrink']        = '0';
+	$css['desktop'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_d_num - 1 ) . " * {$cg_d_fmt})) / {$nc_d_num} - {$pk_d_fmt})";
+} else {
+	$css['desktop'][ $list_sel ]['display']               = 'grid';
+	$css['desktop'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_d}, minmax(0, 1fr))";
 }
-if ( ! empty( $sl['rowGap'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $list_sel, 'row-gap', $sl['rowGap'] );
+
+// --- Tablet (Media Query) ---
+$css['tablet'][ $list_sel ]['row-gap']    = $rg_t_fmt;
+$css['tablet'][ $list_sel ]['column-gap'] = $cg_t_fmt;
+if ( $is_snap_tablet ) {
+	$css['tablet'][ $list_sel ]['display']          = 'flex';
+	$css['tablet'][ $list_sel ]['overflow-x']       = 'auto';
+	$css['tablet'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
+	$nc_t_num = max( 1, intval( $nc_t ) );
+	$css['tablet'][ $item_sel ]['scroll-snap-align'] = 'start';
+	$css['tablet'][ $item_sel ]['flex-shrink']        = '0';
+	$css['tablet'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_t_num - 1 ) . " * {$cg_t_fmt})) / {$nc_t_num} - {$pk_t_fmt})";
+} else {
+	$css['tablet'][ $list_sel ]['display']               = 'grid';
+	$css['tablet'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_t}, minmax(0, 1fr))";
+}
+
+// --- Mobile (Media Query) ---
+$css['mobile'][ $list_sel ]['row-gap']    = $rg_m_fmt;
+$css['mobile'][ $list_sel ]['column-gap'] = $cg_m_fmt;
+if ( $is_snap_mobile ) {
+	$css['mobile'][ $list_sel ]['display']          = 'flex';
+	$css['mobile'][ $list_sel ]['overflow-x']       = 'auto';
+	$css['mobile'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
+	$nc_m_num = max( 1, intval( $nc_m ) );
+	$css['mobile'][ $item_sel ]['scroll-snap-align'] = 'start';
+	$css['mobile'][ $item_sel ]['flex-shrink']        = '0';
+	$css['mobile'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_m_num - 1 ) . " * {$cg_m_fmt})) / {$nc_m_num} - {$pk_m_fmt})";
+} else {
+	$css['mobile'][ $list_sel ]['display']               = 'grid';
+	$css['mobile'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_m}, minmax(0, 1fr))";
 }
 
 // 2. Product Card Base
-$css['desktop'][ $product_sel ]['display']        = 'flex';
-$css['desktop'][ $product_sel ]['flex-direction'] = 'column';
-$css['desktop'][ $product_sel ]['position']       = 'relative';
-$css['desktop'][ $product_sel ]['overflow']       = 'hidden';
+$ga = $attr['general_addToCartBtn'] ?? array();
+if ( isset( $sl['isEqualHeight'] ) && false === $sl['isEqualHeight'] ) {
+	$css['desktop'][ $product_sel ]['height'] = 'max-content';
+}
+// Quantity & hidden button layout settings
+$cart_pos = $ga['position'] ?? 'inside image';
+$show_qty = ! empty( $ga['isShowQuantity'] );
+$btn_wrap_sel = $wrap_sel . ' .wcb-products__price-button-wrapper';
+$hidden_btn_sel = $wrap_sel . ' .wcb-products__product-style-hidden-btn-add-to-cart';
 
+$css['desktop'][ $btn_wrap_sel ]['height']      = ( 'bottom visible' === $cart_pos ) ? 'auto' : ( $show_qty ? '84px' : '50px' );
+$css['desktop'][ $btn_wrap_sel ]['line-height'] = ( 'bottom visible' === $cart_pos ) ? 'normal' : '36px';
+$css['desktop'][ $btn_wrap_sel ]['overflow']    = 'hidden';
+
+if ( 'bottom' === $cart_pos || 'inside image' === $cart_pos ) {
+	$css['desktop'][ $hidden_btn_sel ]['display'] = 'none !important';
+} else {
+	$css['desktop'][ $hidden_btn_sel ]['display'] = 'unset';
+}
+$css['desktop'][ $hidden_btn_sel ]['align-items'] = 'center';
 if ( ! empty( $sl['textAlignment'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $product_sel, 'text-align', $sl['textAlignment'] );
 	$justify = 'center';
@@ -188,29 +294,9 @@ $apply_badge_shape_css = function ( $shape, $sel ) use ( &$css ) {
 	}
 };
 
-$css['desktop'][ $sale_badge_sel ]['display']         = 'inline-flex';
-$css['desktop'][ $sale_badge_sel ]['align-items']     = 'center';
-$css['desktop'][ $sale_badge_sel ]['justify-content'] = 'center';
-$css['desktop'][ $sale_badge_sel ]['padding']         = '2px 8px';
-$css['desktop'][ $sale_badge_sel ]['min-width']       = '32px';
-$css['desktop'][ $sale_badge_sel ]['min-height']      = '20px';
-$css['desktop'][ $sale_badge_sel ]['line-height']     = '1.2';
-$css['desktop'][ $sale_badge_sel ]['border-radius']   = '2px';
-$css['desktop'][ $sale_badge_sel ]['white-space']     = 'nowrap';
-
 if ( ! empty( $ss['shape'] ) ) {
 	$apply_badge_shape_css( $ss['shape'], $sale_badge_sel );
 }
-
-$sale_span_sel = $wrap_sel . ' .wcb-products__product-salebadge .wcb-products__product-onsale span.onsale';
-$css['desktop'][ $sale_span_sel ]['position']         = 'static';
-$css['desktop'][ $sale_span_sel ]['margin']           = '0px';
-$css['desktop'][ $sale_span_sel ]['padding']          = '0px';
-$css['desktop'][ $sale_span_sel ]['display']          = 'inline';
-$css['desktop'][ $sale_span_sel ]['font-size']        = 'inherit';
-$css['desktop'][ $sale_span_sel ]['line-height']      = 'inherit';
-$css['desktop'][ $sale_span_sel ]['color']            = 'inherit';
-$css['desktop'][ $sale_span_sel ]['background-color'] = 'transparent';
 
 if ( ! empty( $ss['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $sale_badge_sel, $ss['typography'] );
@@ -226,26 +312,12 @@ if ( ! empty( $ss['marginBottom'] ) ) {
 }
 if ( ! empty( $ss['position'] ) ) {
 	$sale_inside = $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge';
-	$css['desktop'][ $sale_inside ]['position'] = 'absolute';
-	$css['desktop'][ $sale_inside ]['top']      = '0.5rem';
-	$css['desktop'][ $sale_inside ]['z-index']  = '10';
 	if ( 'top-left' === $ss['position'] || 'left' === $ss['position'] ) {
 		$css['desktop'][ $sale_inside ]['left'] = '0.5rem';
 	} else {
 		$css['desktop'][ $sale_inside ]['right'] = '0.5rem';
 	}
 }
-
-// 9. Out of Stock
-$css['desktop'][ $out_of_stock_bdg ]['display']         = 'inline-flex';
-$css['desktop'][ $out_of_stock_bdg ]['align-items']     = 'center';
-$css['desktop'][ $out_of_stock_bdg ]['justify-content'] = 'center';
-$css['desktop'][ $out_of_stock_bdg ]['padding']         = '2px 8px';
-$css['desktop'][ $out_of_stock_bdg ]['min-width']       = '32px';
-$css['desktop'][ $out_of_stock_bdg ]['min-height']      = '20px';
-$css['desktop'][ $out_of_stock_bdg ]['line-height']     = '1.2';
-$css['desktop'][ $out_of_stock_bdg ]['border-radius']   = '2px';
-$css['desktop'][ $out_of_stock_bdg ]['white-space']     = 'nowrap';
 
 if ( ! empty( $so['shape'] ) ) {
 	$apply_badge_shape_css( $so['shape'], $out_of_stock_bdg );
@@ -266,15 +338,9 @@ if ( ! empty( $so['marginBottom'] ) ) {
 if ( ! empty( $so['position'] ) ) {
 	$oos_inside = $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge';
 	if ( 'top-left' === $so['position'] || 'left' === $so['position'] ) {
-		$css['desktop'][ $oos_inside ]['position'] = 'absolute';
-		$css['desktop'][ $oos_inside ]['top']      = '0.5rem';
-		$css['desktop'][ $oos_inside ]['left']     = '0.5rem';
-		$css['desktop'][ $oos_inside ]['z-index']  = '10';
+		$css['desktop'][ $oos_inside ]['left'] = '0.5rem';
 	} elseif ( 'top-right' === $so['position'] || 'right' === $so['position'] ) {
-		$css['desktop'][ $oos_inside ]['position'] = 'absolute';
-		$css['desktop'][ $oos_inside ]['top']      = '0.5rem';
-		$css['desktop'][ $oos_inside ]['right']    = '0.5rem';
-		$css['desktop'][ $oos_inside ]['z-index']  = '10';
+		$css['desktop'][ $oos_inside ]['right'] = '0.5rem';
 	} else {
 		$css['desktop'][ $oos_inside ]['display'] = 'none';
 	}
@@ -298,10 +364,7 @@ if ( ! empty( $sl['textAlignment'] ) ) {
 	} elseif ( 'right' === $sl['textAlignment'] ) {
 		$align_items = 'flex-end';
 	}
-	$css['desktop'][ $add_cart_wrap_sel ]['display']         = 'flex';
-	$css['desktop'][ $add_cart_wrap_sel ]['flex-direction']  = 'column';
-	$css['desktop'][ $add_cart_wrap_sel ]['align-items']     = $align_items;
-	$css['desktop'][ $add_cart_wrap_sel ]['justify-content'] = 'center';
+	$css['desktop'][ $add_cart_wrap_sel ]['align-items'] = $align_items;
 }
 if ( ! empty( $sa['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $add_cart_sel, $sa['typography'] );
@@ -317,7 +380,6 @@ if ( ! empty( $sa['colorAndBackgroundColor'] ) ) {
 	if ( ! empty( $cbc['Hover']['color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover', 'color', $cbc['Hover']['color'] );
 		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover svg path', 'fill', $cbc['Hover']['color'] . ' !important' );
-		$css['desktop'][ $add_cart_sel . ':hover svg path' ]['transition'] = 'fill 0.3s ease';
 	}
 	if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover', 'background-color', $cbc['Hover']['backgroundColor'] );
@@ -333,6 +395,7 @@ if ( ! empty( $sa['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $add_cart_sel, $sa['border'], true, true );
 	WCB_Block_Helper::add_border_css( $css, $wrap_sel . ' .wcb-products__product--btnIconAddToCart--item', $sa['border'], true, true );
 }
+
 
 // 11. Pagination
 if ( ! empty( $sg['justifyContent'] ) ) {
@@ -368,252 +431,37 @@ if ( ! empty( $sd['margin'] ) ) {
 	WCB_Block_Helper::add_dimension_css( $css, $wrap_sel, 'margin', $sd['margin'] );
 }
 
-// 13. Wishlist Button
-if ( ! empty( $sw ) ) {
-	$wishlist_btn_sel = $wrap_sel . ' .wcb-products__product--wishlistTopRight--item';
-	if ( ( $sw['position'] ?? '' ) === 'top-right' ) {
-		$css['desktop'][ $wishlist_btn_sel ]['position'] = 'absolute';
-		$css['desktop'][ $wishlist_btn_sel ]['top']      = '0';
-		$css['desktop'][ $wishlist_btn_sel ]['right']    = '0';
-		$css['desktop'][ $wishlist_btn_sel ]['z-index']  = '2';
-	}
-}
 
-// 14. Quick View Button & Hover Gallery Preview
-$qv_btn_sel        = $wrap_sel . ' .wcb-products__product--quickViewBottomImage--item';
+// 14. Quick View Button
+$qv_btn_sel        = $wrap_sel . ' .wcb-products__product .wcb-products__product--quickViewBottomImage--item';
 $qv_prod_hover_sel = $wrap_sel . ' .wcb-products__product:hover .wcb-products__product--quickViewBottomImage--item';
 $qv_btn_hover_sel  = $qv_btn_sel . ':hover';
 
-$qv_position = $sq['position'] ?? 'center-image';
-$qv_enabled  = ! empty( $sq['enabled'] );
+$qv_enabled = ! empty( $sq['enabled'] );
 
 if ( ! $qv_enabled ) {
 	$css['desktop'][ $qv_btn_sel ]['display'] = 'none !important';
 } else {
-	// Base button resets & styles
-	$css['desktop'][ $qv_btn_sel ]['border']          = 'none';
-	$css['desktop'][ $qv_btn_sel ]['cursor']          = 'pointer';
-	$css['desktop'][ $qv_btn_sel ]['gap']             = '6px';
-	$css['desktop'][ $qv_btn_sel ]['text-decoration'] = 'none';
-	$css['desktop'][ $qv_btn_sel ]['font-size']       = '14px';
-	$css['desktop'][ $qv_btn_sel ]['font-weight']     = '500';
-	$css['desktop'][ $qv_btn_sel ]['transition']      = 'transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease';
+	// Dynamic colors & border radius (only when customized, static defaults are in style.scss)
+	if ( ! empty( $sq['bg_color'] ) && '#ffffff' !== $sq['bg_color'] ) {
+		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'background-color', $sq['bg_color'] );
+	}
+	if ( ! empty( $sq['text_color'] ) && '#000000' !== $sq['text_color'] ) {
+		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'color', $sq['text_color'] );
+	}
 
-	$bg_color   = ! empty( $sq['bg_color'] ) ? $sq['bg_color'] : '#ffffff';
-	$text_color = ! empty( $sq['text_color'] ) ? $sq['text_color'] : '#000000';
-	WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'background-color', $bg_color );
-	WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'color', $text_color );
-
-	if ( ! empty( $sq['border_radius'] ) ) {
+	if ( isset( $sq['border_radius'] ) && '' !== $sq['border_radius'] ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
 		WCB_Block_Helper::add_responsive_css( $css, $qv_prod_hover_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
 	}
 
-	$hover_bg   = ! empty( $sq['hover_bg_color'] ) ? $sq['hover_bg_color'] : '#474747';
-	$hover_text = ! empty( $sq['hover_text_color'] ) ? $sq['hover_text_color'] : '#ffffff';
-	WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'background-color', $hover_bg );
-	WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'color', $hover_text );
-
-	$css['desktop'][ $qv_btn_sel . ' .wcb-products__product--quickViewBottomImage__text' ]['color']       = 'inherit';
-	$css['desktop'][ $qv_btn_sel . ' svg' ]['color']                                                      = 'inherit';
-	$css['desktop'][ $qv_btn_sel . ' svg' ]['fill']                                                       = 'currentColor';
-	$css['desktop'][ $qv_btn_hover_sel . ' .wcb-products__product--quickViewBottomImage__text' ]['color'] = 'inherit';
-	$css['desktop'][ $qv_btn_hover_sel . ' svg' ]['color']                                               = 'inherit';
-	$css['desktop'][ $qv_btn_hover_sel . ' svg' ]['fill']                                                = 'currentColor';
-
-	$cart_pos = $attr['general_addToCartBtn']['position'] ?? '';
-
-	if ( $qv_position === 'bottom-image' ) {
-		// Normal state: hidden at bottom of image
-		$css['desktop'][ $qv_btn_sel ]['position']        = 'absolute';
-		$css['desktop'][ $qv_btn_sel ]['left']            = '0';
-		$css['desktop'][ $qv_btn_sel ]['bottom']          = '10px';
-		$css['desktop'][ $qv_btn_sel ]['width']           = '100%';
-		$css['desktop'][ $qv_btn_sel ]['height']          = '0px';
-		$css['desktop'][ $qv_btn_sel ]['opacity']         = '0';
-		$css['desktop'][ $qv_btn_sel ]['visibility']      = 'hidden';
-		$css['desktop'][ $qv_btn_sel ]['z-index']         = '10';
-		$css['desktop'][ $qv_btn_sel ]['display']         = 'flex';
-		$css['desktop'][ $qv_btn_sel ]['align-items']     = 'center';
-		$css['desktop'][ $qv_btn_sel ]['justify-content'] = 'center';
-		$css['desktop'][ $qv_btn_sel ]['transition']      = 'height 0.3s ease, opacity 0.2s ease, background-color 0.3s ease, color 0.3s ease';
-
-		// Hover state: animate into view
-		$css['desktop'][ $qv_prod_hover_sel ]['opacity']    = '1';
-		$css['desktop'][ $qv_prod_hover_sel ]['visibility'] = 'visible';
-		$css['desktop'][ $qv_prod_hover_sel ]['height']     = '40px';
-		$css['desktop'][ $qv_prod_hover_sel ]['display']    = 'flex !important';
-	} elseif ( $qv_position === 'top-right' ) {
-		// Normal state: offscreen/hidden
-		$css['desktop'][ $qv_btn_sel ]['display']  = 'none !important';
-		$css['desktop'][ $qv_btn_sel ]['position'] = 'absolute';
-		$css['desktop'][ $qv_btn_sel ]['top']      = '-10rem';
-		$css['desktop'][ $qv_btn_sel ]['right']    = '0rem';
-
-		// Hover state
-		$qv_tr_top = ( $cart_pos === 'icon' ) ? '0rem' : '-2.5rem';
-		$css['desktop'][ $qv_prod_hover_sel ]['display']         = 'flex !important';
-		$css['desktop'][ $qv_prod_hover_sel ]['align-items']     = 'center !important';
-		$css['desktop'][ $qv_prod_hover_sel ]['justify-content'] = 'center !important';
-		$css['desktop'][ $qv_prod_hover_sel ]['position']        = 'absolute';
-		$css['desktop'][ $qv_prod_hover_sel ]['top']             = $qv_tr_top;
-		$css['desktop'][ $qv_prod_hover_sel ]['bottom']          = 'auto';
-		$css['desktop'][ $qv_prod_hover_sel ]['right']           = '-0.1rem';
-		$css['desktop'][ $qv_prod_hover_sel ]['width']           = '2.6rem';
-		$css['desktop'][ $qv_prod_hover_sel ]['height']          = '2.48rem';
-		$css['desktop'][ $qv_prod_hover_sel ]['transform']       = 'translateY(2.5rem)';
-		$css['desktop'][ $qv_prod_hover_sel ]['border']          = 'none';
-		$css['desktop'][ $qv_prod_hover_sel ]['z-index']         = '10';
-	} else {
-		// Default: center-image
-		$css['desktop'][ $qv_btn_sel ]['display']  = 'none !important';
-		$css['desktop'][ $qv_btn_sel ]['position'] = 'absolute';
-		$css['desktop'][ $qv_btn_sel ]['top']      = '-10rem';
-		$css['desktop'][ $qv_btn_sel ]['right']    = '0rem';
-
-		// Hover state: centered horizontally on image
-		$qv_bottom = ( $cart_pos === 'icon' ) ? '10rem' : '6rem';
-		$css['desktop'][ $qv_prod_hover_sel ]['display']         = 'flex !important';
-		$css['desktop'][ $qv_prod_hover_sel ]['align-items']     = 'center !important';
-		$css['desktop'][ $qv_prod_hover_sel ]['justify-content'] = 'center !important';
-		$css['desktop'][ $qv_prod_hover_sel ]['padding']         = '0.5rem 1.4rem !important';
-		$css['desktop'][ $qv_prod_hover_sel ]['position']        = 'absolute';
-		$css['desktop'][ $qv_prod_hover_sel ]['top']             = 'auto';
-		$css['desktop'][ $qv_prod_hover_sel ]['left']            = 'auto';
-		$css['desktop'][ $qv_prod_hover_sel ]['bottom']          = $qv_bottom;
-		$css['desktop'][ $qv_prod_hover_sel ]['right']           = '50%';
-		$css['desktop'][ $qv_prod_hover_sel ]['transform']       = 'translateX(50%)';
-		$css['desktop'][ $qv_prod_hover_sel ]['height']          = 'auto';
-		$css['desktop'][ $qv_prod_hover_sel ]['white-space']     = 'nowrap';
-		$css['desktop'][ $qv_prod_hover_sel ]['border']          = 'none';
-		$css['desktop'][ $qv_prod_hover_sel ]['box-shadow']      = '0 4px 10px rgba(0,0,0,0.1)';
-		$css['desktop'][ $qv_prod_hover_sel ]['z-index']         = '10';
+	if ( ! empty( $sq['hover_bg_color'] ) && '#474747' !== $sq['hover_bg_color'] ) {
+		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'background-color', $sq['hover_bg_color'] );
+	}
+	if ( ! empty( $sq['hover_text_color'] ) && '#ffffff' !== $sq['hover_text_color'] ) {
+		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'color', $sq['hover_text_color'] );
 	}
 }
-
-$css['desktop'][ $product_sel . ' .wcb-products__product-featured' ]['overflow'] = 'hidden';
-
-// Hover Gallery Preview (Interactivity API wrapper & tiny-slider)
-$qv_preview_sel = $wrap_sel . ' .wcb-products__product-quickview-preview';
-$css['desktop'][ $qv_preview_sel ]['position']       = 'absolute';
-$css['desktop'][ $qv_preview_sel ]['top']            = '0px';
-$css['desktop'][ $qv_preview_sel ]['left']           = '0px';
-$css['desktop'][ $qv_preview_sel ]['right']          = '0px';
-$css['desktop'][ $qv_preview_sel ]['bottom']         = '0px';
-$css['desktop'][ $qv_preview_sel ]['pointer-events'] = 'none';
-$css['desktop'][ $qv_preview_sel ]['z-index']        = '4';
-
-$css['desktop'][ $qv_preview_sel . ' > *' ]['pointer-events'] = 'auto';
-
-$qv_gallery_sel = $wrap_sel . ' .wcb-quick-view-hover-gallery';
-$css['desktop'][ $qv_gallery_sel ]['position']       = 'absolute';
-$css['desktop'][ $qv_gallery_sel ]['top']            = '0px';
-$css['desktop'][ $qv_gallery_sel ]['left']           = '0px';
-$css['desktop'][ $qv_gallery_sel ]['right']          = '0px';
-$css['desktop'][ $qv_gallery_sel ]['bottom']         = '0px';
-$css['desktop'][ $qv_gallery_sel ]['z-index']        = '1';
-$css['desktop'][ $qv_gallery_sel ]['overflow']       = 'hidden';
-$css['desktop'][ $qv_gallery_sel ]['pointer-events'] = 'auto';
-$css['desktop'][ $qv_gallery_sel . '[hidden]' ]['display'] = 'none !important';
-$css['desktop'][ $qv_gallery_sel . ' img' ]['width']           = '100%';
-$css['desktop'][ $qv_gallery_sel . ' img' ]['height']          = '100%';
-$css['desktop'][ $qv_gallery_sel . ' img' ]['object-fit']      = 'cover';
-$css['desktop'][ $qv_gallery_sel . ' img' ]['object-position'] = 'center';
-$css['desktop'][ $qv_gallery_sel . ' img' ]['display']         = 'block';
-
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['position'] = 'absolute';
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['top']      = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['left']     = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['right']    = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['bottom']   = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['height']   = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['width']    = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-outer' ]['overflow'] = 'hidden';
-$css['desktop'][ $qv_preview_sel . ' .tns-ovh' ]['height']     = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-ovh' ]['width']      = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-inner' ]['height']   = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-inner' ]['width']    = '100%';
-$css['desktop'][ $qv_preview_sel . ' .wcb-quick-view-hover-gallery' ]['height'] = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-item' ]['height']          = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-item' ]['max-height']      = '100%';
-$css['desktop'][ $qv_preview_sel . ' .tns-item' ]['object-fit']      = 'cover';
-$css['desktop'][ $qv_preview_sel . ' .tns-item' ]['object-position'] = 'center';
-$css['desktop'][ $qv_preview_sel . ' .tns-item' ]['vertical-align']  = 'top';
-$css['desktop'][ $qv_preview_sel . ' img.tns-item' ]['display']      = 'inline-block';
-
-$nav_bottom = ( $qv_position === 'bottom-image' ) ? '54px' : '10px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['position']        = 'absolute';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['bottom']          = $nav_bottom;
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['left']            = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['right']           = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['display']         = 'flex';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['justify-content'] = 'center';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['align-items']     = 'center';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['gap']             = '6px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['z-index']         = '25';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['pointer-events']  = 'auto';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav' ]['height']          = 'auto';
-
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['width']            = '8px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['height']           = '8px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['border-radius']    = '50%';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['background-color'] = 'rgba(255, 255, 255, 0.7)';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['border']           = '1px solid rgba(0, 0, 0, 0.2)';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['box-shadow']       = '0 1px 3px rgba(0, 0, 0, 0.35)';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['padding']          = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['margin']           = '0 2px';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['cursor']           = 'pointer';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['pointer-events']   = 'auto';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button' ]['transition']       = 'all 0.2s ease';
-
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['background-color'] = '#ffffff';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['border-color']       = '#000000';
-$css['desktop'][ $qv_preview_sel . ' .tns-nav button.tns-nav-active' ]['transform']          = 'scale(1.25)';
-
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['position']        = 'absolute';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['top']             = '50%';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['transform']       = 'translateY(-50%)';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['left']            = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['right']           = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['display']         = 'flex';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['justify-content'] = 'space-between';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['z-index']         = '25';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['pointer-events']  = 'none';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['opacity']         = '0';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls' ]['transition']      = 'opacity 0.25s ease';
-
-$css['desktop'][ $product_sel . ':hover .wcb-products__product-quickview-preview .tns-controls' ]['opacity'] = '1';
-
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['width']            = '32px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['height']           = '32px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['min-width']        = '32px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['min-height']       = '32px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['border-radius']    = '50%';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['background-color'] = 'rgba(255, 255, 255, 0.95)';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['color']            = '#222222';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['border']           = 'none';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['padding']          = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['cursor']           = 'pointer';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['box-shadow']       = '0 2px 8px rgba(0, 0, 0, 0.2)';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['display']          = 'inline-flex';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['align-items']      = 'center';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['justify-content']  = 'center';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['font-size']        = '0px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['line-height']      = '1';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['pointer-events']   = 'auto';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['z-index']          = '25';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['transform']        = 'none';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button' ]['transition']       = 'background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease';
-
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button:hover' ]['background-color'] = '#ffffff';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button:hover' ]['color']            = '#000000';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button:hover' ]['box-shadow']       = '0 4px 12px rgba(0, 0, 0, 0.3)';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button:hover' ]['transform']        = 'scale(1.08)';
-
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['width']          = '14px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['height']         = '14px';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['stroke']         = 'currentColor';
-$css['desktop'][ $qv_preview_sel . ' .tns-controls button svg' ]['pointer-events'] = 'none';
 
 // 15. Countdown Urgency
 if ( ! empty( $scu ) ) {
@@ -629,22 +477,7 @@ if ( ! empty( $scu ) ) {
 	}
 }
 
-// 16. Pre-order
-$preorder_msg_sel = $wrap_sel . ' .wcb-products__product-preorder-message';
-$css['desktop'][ $preorder_msg_sel ]['color']       = '#000000';
-$css['desktop'][ $preorder_msg_sel ]['font-size']   = '15px';
-$css['desktop'][ $preorder_msg_sel ]['font-weight'] = '400';
-
-$preorder_cd_sel = $wrap_sel . ' .wcb-products__product-preorder-countdown';
-$css['desktop'][ $preorder_cd_sel ]['display']       = 'flex';
-$css['desktop'][ $preorder_cd_sel ]['gap']           = '8px';
-$css['desktop'][ $preorder_cd_sel ]['margin-bottom'] = '6px';
-
-$preorder_item_sel = $wrap_sel . ' .wcb-products__product-preorder-countdown-item';
-$css['desktop'][ $preorder_item_sel ]['font-size']   = '13px';
-$css['desktop'][ $preorder_item_sel ]['font-weight'] = '600';
-
-// 17. Advance
+// 16. Advance
 WCB_Block_Helper::add_advance_css( $css, $wrap_sel, $attr );
 
 return WCB_Block_Helper::generate_all_css( $css, '' );
