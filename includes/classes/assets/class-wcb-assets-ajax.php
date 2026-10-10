@@ -47,7 +47,6 @@ class WCB_Assets_Ajax {
 		add_action( 'wp_ajax_boostify_blocks_regenerate_assets', array( $this, 'ajax_regenerate_assets' ) );
 		add_action( 'wp_ajax_boostify_blocks_save_post_assets', array( $this, 'ajax_save_post_assets' ) );
 		add_action( 'wp_ajax_boostify_blocks_save_collected_css', array( $this, 'ajax_save_collected_css' ) );
-		add_action( 'wp_ajax_nopriv_boostify_blocks_save_collected_css', array( $this, 'ajax_save_collected_css' ) );
 		add_action( 'wp_ajax_boostify_blocks_get_fallback_posts', array( $this, 'ajax_get_fallback_posts' ) );
 	}
 
@@ -74,12 +73,15 @@ class WCB_Assets_Ajax {
 			$result = $this->generator->regenerate_all_assets( $with_debug );
 			wp_send_json_success( $result );
 		} catch ( \Throwable $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'Boostify Blocks asset regeneration error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
+
 			wp_send_json_error(
 				array(
-					'message' => $e->getMessage() . ' (' . basename( $e->getFile() ) . ':' . $e->getLine() . ')',
-					'file'    => $e->getFile(),
-					'line'    => $e->getLine(),
-				)
+					'message' => esc_html__( 'Asset regeneration failed.', 'boostify-blocks' ),
+				),
+				500
 			);
 		}
 	}
@@ -114,12 +116,15 @@ class WCB_Assets_Ajax {
 				)
 			);
 		} catch ( \Throwable $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'Boostify Blocks save post assets error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
+
 			wp_send_json_error(
 				array(
-					'message' => $e->getMessage() . ' (' . basename( $e->getFile() ) . ':' . $e->getLine() . ')',
-					'file'    => $e->getFile(),
-					'line'    => $e->getLine(),
-				)
+					'message' => esc_html__( 'Failed to regenerate post assets.', 'boostify-blocks' ),
+				),
+				500
 			);
 		}
 	}
@@ -127,21 +132,29 @@ class WCB_Assets_Ajax {
 	/**
 	 * AJAX handler: Save CSS collected from the frontend.
 	 *
-	 * Accessible by both logged-in and guest users (wp_ajax + wp_ajax_nopriv).
+	 * Accessible only by authenticated users with edit permissions.
 	 *
 	 * @return void — sends JSON response and dies.
 	 */
 	public function ajax_save_collected_css() {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Invalid nonce', 'boostify-blocks' ) ), 403 );
+		}
+
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$post_id = isset( $_POST['postId'] ) ? absint( wp_unslash( $_POST['postId'] ) ) : 0;
 		if ( ! $post_id ) {
-			wp_send_json_error( array( 'message' => 'Invalid post ID' ), 400 );
+			wp_send_json_error( array( 'message' => esc_html__( 'Invalid post ID', 'boostify-blocks' ) ), 400 );
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Permission denied', 'boostify-blocks' ) ), 403 );
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$css = isset( $_POST['css'] ) ? wp_unslash( $_POST['css'] ) : '';
 		if ( empty( $css ) ) {
-			wp_send_json_error( array( 'message' => 'No CSS data provided' ), 400 );
+			wp_send_json_error( array( 'message' => esc_html__( 'No CSS data provided', 'boostify-blocks' ) ), 400 );
 		}
 
 		// Sanitize: strip any HTML/script tags from CSS content.
@@ -151,7 +164,7 @@ class WCB_Assets_Ajax {
 		wp_send_json_success(
 			array(
 				'success' => $saved,
-				'message' => $saved ? __( 'CSS file saved.', 'boostify-blocks' ) : __( 'Failed to save CSS file.', 'boostify-blocks' ),
+				'message' => $saved ? esc_html__( 'CSS file saved.', 'boostify-blocks' ) : esc_html__( 'Failed to save CSS file.', 'boostify-blocks' ),
 			)
 		);
 	}
@@ -262,8 +275,12 @@ class WCB_Assets_Ajax {
 	 * AJAX endpoint: Get list of posts currently falling back.
 	 */
 	public function ajax_get_fallback_posts() {
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
+			wp_send_json_error( array( 'message' => esc_html__( 'Invalid nonce', 'boostify-blocks' ) ), 403 );
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized user.', 'boostify-blocks' ) ), 403 );
+			wp_send_json_error( array( 'message' => esc_html__( 'Unauthorized user.', 'boostify-blocks' ) ), 403 );
 		}
 
 		$report = $this->get_fallback_posts_report();
