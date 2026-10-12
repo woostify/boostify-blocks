@@ -43,5 +43,6 @@ require plugin_dir_path(__FILE__) . 'includes/wcb-ajax-for-pattern-favorites.php
 require plugin_dir_path(__FILE__) . 'includes/wcb-blocks-render-callback.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-register-blocks.php';
 require plugin_dir_path(__FILE__) . 'includes/wcb-menu-page.php';
+require plugin_dir_path(__FILE__) . 'includes/classes/class-wcb-site-visibility.php';
 
 // end
