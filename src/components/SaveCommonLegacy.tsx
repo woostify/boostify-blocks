@@ -39,11 +39,7 @@ function SaveCommonLegacy<T>({
 		 */
 		blockJson = _.escape(JSON.stringify(attributes));
 	} catch (error) {
-		console.log("attributes JSON.stringify error on SAVE function", {
-			error,
-			className,
-			attributes,
-		});
+		console.error("[Boostify Blocks] Failed to serialize legacy block attributes for save:", error);
 	}
 
 	const rc = attributes?.advance_responsiveCondition || {};

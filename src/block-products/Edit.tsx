@@ -71,7 +71,7 @@ import { Z_INDEX_DEMO } from "../components/controls/MyZIndexControl/MyZIndexCon
 import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectControl/MyMotionEffectControl";
 import WcbProducstPanelGeneralLayout, {
 	WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO
-} from "./WcbProducstPanel_GeneralLayout";	
+} from "./WcbProducstPanel_GeneralLayout";
 import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock";
 import WcbProductsPanel_StyleDimension, {
 	WCB_PRODUCTS_PANEL_STYLE_DIMENSION_DEMO,
@@ -95,7 +95,7 @@ import {
 	buildStyleCountdownUrgencyDefault,
 } from "./WcbThemeDefaults";
 
-interface Props extends EditProps<WcbAttrs> {}
+interface Props extends EditProps<WcbAttrs> { }
 
 const Edit: FC<Props> = (props) => {
 	const { attributes, setAttributes, clientId } = props;
@@ -145,7 +145,7 @@ const Edit: FC<Props> = (props) => {
 			uniqueId: converUniqueIdToAnphaKey(UNIQUE_ID),
 		});
 	}, [UNIQUE_ID]);
-	
+
 	useEffect(() => {
 		// If already initialized, do nothing
 		if (attributes.style_layout) return;
@@ -178,7 +178,7 @@ const Edit: FC<Props> = (props) => {
 
 		setAttributes({ ...DEFAULT });
 	}, [style_layout]);
-	
+
 	// When isCustomizerGeneralLayout switches from true → false, reset affected attributes to customizer defaults
 	const prevIsCustomizerGeneralLayout = useRef(general_layout?.isCustomizerGeneralLayout);
 	useEffect(() => {
@@ -200,6 +200,9 @@ const Edit: FC<Props> = (props) => {
 				style_title: buildStyleTitleDefault(undefined),
 				style_price: buildStylePriceDefault(undefined),
 				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined),
+				style_wishlistBtn: buildStyleWishlistButtonDefault(undefined),
+				style_quickViewBtn: buildStyleQuickViewButtonDefault(undefined),
+				style_countdownUrgency: buildStyleCountdownUrgencyDefault(undefined),
 			});
 		}
 	}, [general_layout?.isCustomizerGeneralLayout]);
@@ -217,13 +220,17 @@ const Edit: FC<Props> = (props) => {
 	}, [style_category]);
 
 	useEffect(() => {
-		const hasWishlistConfig =
-			style_wishlistBtn && Object.keys(style_wishlistBtn).length > 0;
-		if (!hasWishlistConfig) {
+		const currentWishlist = buildStyleWishlistButtonDefault(
+			attributes.style_wishlistBtn as any
+		);
+		if (
+			!style_wishlistBtn ||
+			style_wishlistBtn.position !== currentWishlist.position ||
+			style_wishlistBtn.style !== currentWishlist.style ||
+			style_wishlistBtn.wishlist_plugin_active !== currentWishlist.wishlist_plugin_active
+		) {
 			setAttributes({
-				style_wishlistBtn: buildStyleWishlistButtonDefault(
-					attributes.style_wishlistBtn as any
-				),
+				style_wishlistBtn: currentWishlist,
 			});
 		}
 	}, [style_wishlistBtn]);
@@ -242,13 +249,17 @@ const Edit: FC<Props> = (props) => {
 	}, [style_countdownUrgency]);
 
 	useEffect(() => {
-		const hasQuickViewConfig =
-			style_quickViewBtn && Object.keys(style_quickViewBtn).length > 0;
-		if (!hasQuickViewConfig) {
+		const currentQuickView = buildStyleQuickViewButtonDefault(
+			attributes.style_quickViewBtn as any
+		);
+		if (
+			!style_quickViewBtn ||
+			style_quickViewBtn.position !== currentQuickView.position ||
+			style_quickViewBtn.enabled !== currentQuickView.enabled ||
+			style_quickViewBtn.show_icon !== currentQuickView.show_icon
+		) {
 			setAttributes({
-				style_quickViewBtn: buildStyleQuickViewButtonDefault(
-					attributes.style_quickViewBtn as any
-				),
+				style_quickViewBtn: currentQuickView,
 			});
 		}
 	}, [style_quickViewBtn]);
@@ -289,7 +300,7 @@ const Edit: FC<Props> = (props) => {
 				},
 			},
 		});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [!!style_layout]);
 
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
@@ -378,7 +389,7 @@ const Edit: FC<Props> = (props) => {
 								</>
 							)
 						}
-						
+
 						{general_pagination && (
 							<WcbProductsPanelPagination
 								onToggle={() => handleTogglePanel("General", "Pagination")}
@@ -398,7 +409,7 @@ const Edit: FC<Props> = (props) => {
 					<>
 						{
 							general_layout?.isCustomizerGeneralLayout == true && (
-								
+
 								<>
 									{style_layout && (
 										<WcbProductsPanel_StyleLayout
@@ -825,9 +836,8 @@ const Edit: FC<Props> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${
-					wrapBlockProps.className
-				} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX.toString()}`}
+				className={`${wrapBlockProps.className
+					} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX.toString()}`}
 				style={{
 					...wrapBlockProps.style,
 					"--wcb-editor-col-mobile": colMob,

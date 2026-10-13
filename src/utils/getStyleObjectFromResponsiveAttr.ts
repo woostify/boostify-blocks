@@ -6,7 +6,7 @@ import getValueFromAttrsResponsives from "./getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
 
 interface Params {
-	value: HasResponsive<string | number | null | undefined>;
+	value?: HasResponsive<string | number | null | undefined>;
 	prefix: keyof CSSProperties;
 	prefix_2?: keyof CSSProperties;
 	prefix_3?: keyof CSSProperties;
@@ -27,6 +27,10 @@ function getStyleObjectFromResponsiveAttr({
 	hasUnit = true,
 	unit,
 }: Params): CSSObject {
+	if (!value) {
+		return {};
+	}
+
 	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	let { value_Desktop, value_Tablet, value_Mobile } =

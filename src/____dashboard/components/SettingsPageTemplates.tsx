@@ -17,7 +17,6 @@ const debounce = (func: Function, delay: number) => {
 
 const SettingsPageTemplates: FC<Props> = ({ allSettings, onChange }) => {
 	const debounce_fun = debounce(function (data: Props["allSettings"]) {
-		console.log("Function debounced after 300ms!", { data });
 		onChange(data);
 	}, 300);
 

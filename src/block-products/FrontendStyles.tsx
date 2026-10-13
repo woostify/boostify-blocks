@@ -294,26 +294,35 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 		updateArrows();
 	};
 
-	// Observe DOM changes to ensure the block is fully loaded
-	const domObserver = new MutationObserver(() => {
-		if (
-			document.querySelector(
-				`[data-block-products-uniqueId=${div.getAttribute("data-uniqueid")}]`
-			)
-		) {
-			domObserver.disconnect();
-			setTimeout(() => {
-				handleWishlistClick();
-				handleCarouselForWcbProducts();
-				handleAddToCartStyleHidden();
-				handleAddToCartIsLoading();
-			}, 500);
-		}
-	});
+	const initAll = () => {
+		handleWishlistClick();
+		handleCarouselForWcbProducts();
+		handleAddToCartStyleHidden();
+		handleAddToCartIsLoading();
+	};
 
-	domObserver.observe(document.body || document, {
-		childList: true,
-		subtree: true,
-	});
-	//
+	const uniqueId = div.getAttribute("data-uniqueid") || "";
+
+	if (
+		div.querySelector(".wcb-products__list") ||
+		document.querySelector(`[data-block-products-uniqueid="${uniqueId}"]`)
+	) {
+		setTimeout(initAll, 200);
+	} else {
+		// Observe DOM changes to ensure the block is fully loaded
+		const domObserver = new MutationObserver(() => {
+			if (
+				div.querySelector(".wcb-products__list") ||
+				document.querySelector(`[data-block-products-uniqueid="${uniqueId}"]`)
+			) {
+				domObserver.disconnect();
+				setTimeout(initAll, 200);
+			}
+		});
+
+		domObserver.observe(document.body || document, {
+			childList: true,
+			subtree: true,
+		});
+	}
 }

@@ -103,38 +103,78 @@ const getPaddingMarginStyles = ({ className, padding, margin }: Params) => {
 		desktop_v: margin_Desktop?.bottom,
 	});
 
-	return css`
-		body ${className} {
-			padding-top: ${padding_Mobile_top} !important;
-			padding-right: ${padding_Mobile_right} !important;
-			padding-bottom: ${padding_Mobile_bottom} !important;
-			padding-left: ${padding_Mobile_left} !important;
-			margin-top: ${margin_Mobile_top} !important;
-			margin-right: ${margin_Mobile_right};
-			margin-bottom: ${margin_Mobile_bottom} !important;
-			margin-left: ${margin_Mobile_left};
-			@media (min-width: ${media_tablet}) {
-				padding-top: ${padding_Tablet_top} !important;
-				padding-right: ${padding_Tablet_right} !important;
-				padding-bottom: ${padding_Tablet_bottom} !important;
-				padding-left: ${padding_Tablet_left} !important;
-				margin-top: ${margin_Tablet_top} !important;
-				margin-right: ${margin_Tablet_right};
-				margin-bottom: ${margin_Tablet_bottom} !important;
-				margin-left: ${margin_Tablet_left};
-			}
-			@media (min-width: ${media_desktop}) {
-				padding-top: ${padding_Desktop_top} !important;
-				padding-right: ${padding_Desktop_right} !important;
-				padding-bottom: ${padding_Desktop_bottom} !important;
-				padding-left: ${padding_Desktop_left} !important;
-				margin-top: ${margin_Desktop_top} !important;
-				margin-right: ${margin_Desktop_right};
-				margin-bottom: ${margin_Desktop_bottom} !important;
-				margin-left: ${margin_Desktop_left};
-			}
-		}
-	`;
+	const buildSideRules = (
+		pTop?: string | number | null,
+		pRight?: string | number | null,
+		pBottom?: string | number | null,
+		pLeft?: string | number | null,
+		mTop?: string | number | null,
+		mRight?: string | number | null,
+		mBottom?: string | number | null,
+		mLeft?: string | number | null
+	): string[] => {
+		const rules: string[] = [];
+		if (pTop) rules.push(`padding-top: ${pTop} !important;`);
+		if (pRight) rules.push(`padding-right: ${pRight} !important;`);
+		if (pBottom) rules.push(`padding-bottom: ${pBottom} !important;`);
+		if (pLeft) rules.push(`padding-left: ${pLeft} !important;`);
+		if (mTop) rules.push(`margin-top: ${mTop} !important;`);
+		if (mRight) rules.push(`margin-right: ${mRight};`);
+		if (mBottom) rules.push(`margin-bottom: ${mBottom} !important;`);
+		if (mLeft) rules.push(`margin-left: ${mLeft};`);
+		return rules;
+	};
+
+	const mobileRules = buildSideRules(
+		padding_Mobile_top,
+		padding_Mobile_right,
+		padding_Mobile_bottom,
+		padding_Mobile_left,
+		margin_Mobile_top,
+		margin_Mobile_right,
+		margin_Mobile_bottom,
+		margin_Mobile_left
+	);
+
+	const tabletRules = buildSideRules(
+		padding_Tablet_top,
+		padding_Tablet_right,
+		padding_Tablet_bottom,
+		padding_Tablet_left,
+		margin_Tablet_top,
+		margin_Tablet_right,
+		margin_Tablet_bottom,
+		margin_Tablet_left
+	);
+
+	const desktopRules = buildSideRules(
+		padding_Desktop_top,
+		padding_Desktop_right,
+		padding_Desktop_bottom,
+		padding_Desktop_left,
+		margin_Desktop_top,
+		margin_Desktop_right,
+		margin_Desktop_bottom,
+		margin_Desktop_left
+	);
+
+	if (mobileRules.length === 0 && tabletRules.length === 0 && desktopRules.length === 0) {
+		return css``;
+	}
+
+	let cssString = `body ${className} {\n`;
+	if (mobileRules.length > 0) {
+		cssString += `\t${mobileRules.join("\n\t")}\n`;
+	}
+	if (tabletRules.length > 0) {
+		cssString += `\t@media (min-width: ${media_tablet}) {\n\t\t${tabletRules.join("\n\t\t")}\n\t}\n`;
+	}
+	if (desktopRules.length > 0) {
+		cssString += `\t@media (min-width: ${media_desktop}) {\n\t\t${desktopRules.join("\n\t\t")}\n\t}\n`;
+	}
+	cssString += `}`;
+
+	return css`${cssString}`;
 };
 
 export default getPaddingMarginStyles;

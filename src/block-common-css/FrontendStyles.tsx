@@ -158,13 +158,12 @@ declare global {
 }
 
 /**
- * When file generation is ON and a static CSS file was already enqueued,
- * skip emotion <Global> rendering — CSS is served from the static file.
- * Init functions (carousels, forms, counters) still need to run.
+ * When CSS is already loaded (either via static file or server-side inline CSS in <head>),
+ * skip emotion <Global> rendering to eliminate FOUC and prevent duplicate CSS rules.
+ * Interactive init functions (carousels, forms, animations) still execute normally.
  */
 const shouldSkipEmotionCss = (): boolean => {
 	return !!(
-		window.boostify_blocks_file_generation_enabled &&
 		window.boostify_blocks_file_css_loaded &&
 		!window.boostify_blocks_fallback_css
 	);
@@ -263,7 +262,7 @@ function renderToDom(
 			// This is separated from GlobalCss rendering so it works with file generation.
 			motionEffectInit(div, props);
 		} catch (err) {
-			console.error("Boostify Blocks render error:", err);
+			console.error("[Boostify Blocks] Failed to render block frontend styles:", err);
 		} finally {
 			div.classList.remove("wcb-update-div");
 			preEl.remove();

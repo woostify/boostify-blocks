@@ -66,8 +66,6 @@ $pag_active    = $pag_wrap . ' .page-numbers.current';
 $css['desktop'][ $wrap_sel ]['display'] = 'block';
 
 // 1. Grid List of Posts
-$css['desktop'][ $list_sel ]['display'] = 'grid';
-
 $num_col = $g_srt['numberOfColumn'] ?? ( $sl['numberOfColumn'] ?? 3 );
 $nc_d    = is_array( $num_col ) ? ( $num_col['Desktop'] ?? 3 ) : $num_col;
 $nc_t    = is_array( $num_col ) ? ( $num_col['Tablet'] ?? $nc_d ) : $nc_d;
@@ -85,8 +83,6 @@ if ( ! empty( $sl['colunmGap'] ) ) {
 }
 
 // 2. Post Card
-$css['desktop'][ $card_sel ]['position'] = 'relative';
-$css['desktop'][ $card_sel ]['overflow'] = 'hidden';
 if ( isset( $g_srt['isEqualHeight'] ) && ! $g_srt['isEqualHeight'] ) {
 	$css['desktop'][ $card_sel ]['height'] = 'max-content';
 }
@@ -117,11 +113,6 @@ if ( ! empty( $sf['marginBottom'] ) ) {
 if ( ! empty( $sf['backgroundOverlay'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $overlay_sel, 'background-color', $sf['backgroundOverlay'] );
 }
-$css['desktop'][ $overlay_sel ]['border-radius'] = 'inherit';
-
-$bg_img_sel = $wrap_sel . ' .wcbPostCard--image-background .wcbPostCard__featuredImage';
-$css['desktop'][ $bg_img_sel ]['border-radius']          = 'inherit';
-$css['desktop'][ $bg_img_sel . ' img' ]['border-radius'] = 'inherit';
 
 // Image ratio, custom height & object-fit for non-background featured images.
 $img_pos = $g_img['featuredImagePosition'] ?? 'top';

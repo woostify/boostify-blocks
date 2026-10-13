@@ -12,6 +12,7 @@
 }
 .wcb-icon-box__icon {
 	display: inline-block;
+	font-size: 20px;
 }
 
 .wcb-icon-box__content-title {
@@ -20,6 +21,12 @@
 
 .wcb-icon-box__heading {
 	margin: 0;
+}
+
+.wcb-icon-box__title {
+	font-size: 16px;
+	color: #666;
+	margin-top: 10px;
 }
 
 .wcb-icon-box__separator {
@@ -34,3 +41,71 @@
 	flex-shrink: 0;
 	display: inline-block;
 }
+
+/* Progress circle structure base styles */
+.wcb-icon-box__progress-circle-wrap {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.wcb-icon-box__progress-circle-svg {
+	transform: rotate(-90deg);
+}
+
+.wcb-icon-box__progress-circle-content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	max-width: 100%;
+	width: 100%;
+	padding: 10px;
+}
+
+.wcb-icon-box__progress-circle-content-inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.wcb-icon-box__progress-circle-content-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+/* Progress bar structure base styles */
+.wcb-icon-box__progress-bar-wrap {
+	position: relative;
+	width: 100%;
+}
+
+.wcb-icon-box__progress-bar-track {
+	width: 100%;
+	background-color: #e0e0e0;
+	height: 100%;
+	border-radius: 5px;
+	overflow: hidden;
+	position: relative;
+}
+
+.wcb-icon-box__progress-bar {
+	height: 100%;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-right: 4px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+

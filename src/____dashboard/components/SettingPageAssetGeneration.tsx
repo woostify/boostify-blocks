@@ -184,7 +184,6 @@ const SettingsPageAssetGeneration: FC<Props> = ({
 }) => {
 
     const debounce_fun = debounce(function (data: Props["allSettings"]) {
-        // console.log("Function debounced after 300ms!", { data });
         onChange(data);
     }, 300);
 
@@ -226,13 +225,7 @@ const SettingsPageAssetGeneration: FC<Props> = ({
 			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
 		};
 
-		jQuery.post((window as any).ajaxurl, data, function (response: any) {
-			if (response?.success) {
-				console.log('Boostify Blocks: Assets regenerated after enabling file generation.', response?.data);
-			}
-		}).fail(function () {
-			console.error('Boostify Blocks: Failed to regenerate assets.');
-		});
+		jQuery.post((window as any).ajaxurl, data, function () {}).fail(function () {});
 	}
 
     return (
