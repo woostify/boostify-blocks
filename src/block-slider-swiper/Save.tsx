@@ -15,6 +15,7 @@ import { WCB_SLIDERS_BOX_PANEL_STYLE_VERTICAL_ALIGNMENT_DEMO } from "./WcbSlider
 import { RESPONSIVE_CONDITON_DEMO } from "../components/controls/MyResponsiveConditionControl/MyResponsiveConditionControl";
 import { Z_INDEX_DEMO } from "../components/controls/MyZIndexControl/MyZIndexControl";
 import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectControl/MyMotionEffectControl";
+import normalizeBlockAttrs from "../utils/normalizeBlockAttrs";
 // @ts-ignore
 import "./style.scss";
 
@@ -96,7 +97,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			{/* Frontend CSS injection elements */}
 			<div data-wcb-global-styles={uniqueId}></div>
 			<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
-				{JSON.stringify(newAttrForSave, null, 2)}
+				{JSON.stringify(normalizeBlockAttrs(newAttrForSave), null, 2)}
 			</pre>
 
 			{/* Parent CSS styles for edit mode */}
