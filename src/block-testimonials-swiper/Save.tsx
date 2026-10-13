@@ -10,6 +10,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import getImageUrlBySize from "../utils/getImageUrlBySize";
 import VideoBackgroundByBgControl from "../components/VideoBackgroundByBgControl";
 import OverlayBackgroundByBgControl from "../components/OverlayBackgroundByBgControl";
+import normalizeBlockAttrs from "../utils/normalizeBlockAttrs";
 
 export interface WcbAttrsForSave extends Omit<WcbAttrs, "testimonials"> {}
 
@@ -128,12 +129,12 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
 	const renderTestimonialItemRating = (item: TestimonialItem, index: number) => {
 		const { ratings, isShowRating } = general_rating;
-		if (!isShowRating) {
+		if (!isShowRating || !ratings?.[index]) {
 			return null;
 		}
 		return (
 			<div className="wcb-testimonials-swiper__item-rating">
-				{ ratings[index] && Array.from({ length: 5 }, (_, i) => {
+				{Array.from({ length: 5 }, (_, i) => {
 					const clsActive = i < ratings[index] ? 'active' : '';
 					return (
 						<span key={i} className={`wcb-star ${clsActive}`}>
@@ -152,7 +153,6 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			<div className="swiper-slide" key={index}>
 				<div className="wcb-testimonials-swiper__item">
 					<div className="wcb-testimonials-swiper__item-background">
-						<div className=""></div>
 						<VideoBackgroundByBgControl
 							bgType={style_backgroundAndBorder.background.bgType}
 							videoData={style_backgroundAndBorder.background.videoData}
@@ -237,7 +237,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			{/* Frontend CSS injection elements */}
 			<div data-wcb-global-styles={uniqueId}></div>
 			<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
-				{JSON.stringify(newAttrForSave, null, 2)}
+				{JSON.stringify(normalizeBlockAttrs(newAttrForSave), null, 2)}
 			</pre>
 
 			{/* Slider structure - Swiper markup baked in at save time, initialised
