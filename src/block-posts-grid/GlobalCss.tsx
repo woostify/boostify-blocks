@@ -70,7 +70,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 		return {
 			[`${WRAP_CLASSNAME}`]: {
 				".wcb-posts-grid__list-posts": {
-					display: "grid",
 					gridTemplateColumns: `repeat(${numberOfColumn_mobile}, minmax(0, 1fr))`,
 					rowGap: rowGap_mobile,
 					columnGap: colunmGap_mobile,
@@ -174,18 +173,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 		return [
 			{
 				[POST_CARD_CLASS]: {
-					position: "relative",
-					overflow: "hidden",
 					height: !general_sortingAndFiltering.isEqualHeight
 						? "max-content"
 						: undefined,
 					"&--image-background": {
 						".wcbPostCard__featuredImage-overlay": {
 							backgroundColor: style_featuredImage.backgroundOverlay,
-							borderRadius: "inherit",
-						},
-						".wcbPostCard__featuredImage, .wcbPostCard__featuredImage img": {
-							borderRadius: "inherit",
 						},
 					},
 					"&--image-top": {

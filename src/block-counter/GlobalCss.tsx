@@ -127,81 +127,13 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 : "block",
                     },
 
-                    ".wcb-icon-box__progress-circle-wrap": {
-                        position: "relative",
-                        display: "inline-block",
-                        verticalAlign: "top",
-                    },
-
-                    ".wcb-icon-box__progress-circle-svg": {
-                        transform: "rotate(-90deg)",
-                    },
-
-                    ".wcb-icon-box__progress-circle-content": {
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        textAlign: "center",
-                        display: "flex",
-                        flexDirection: isIconBesideContent ? "row" : "column",
-                        alignItems: "center",
-                        gap: "10px",
-                        maxWidth: "100%",
-                        width: "100%",
-                        padding: "10px",
-                    },
-
-                    ".wcb-icon-box__progress-circle-content-inner": {
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "10px",
-                    },
-
-                    ".wcb-icon-box__progress-circle-content-row": {
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "10px",
-                    },
-
-                    ".wcb-icon-box__progress-bar-wrap": {
-                        position: "relative",
-                        width: "100%",
-                    },
-
-                    ".wcb-icon-box__progress-bar-track": {
-                        width: "100%",
-                        backgroundColor: "#e0e0e0",
-                        height: "100%",
-                        borderRadius: "5px",
-                        overflow: "hidden",
-                        position: "relative",
-                    },
-
-                    ".wcb-icon-box__progress-bar": {
-                        height: "100%",
-                        transition: "transparent",
-                        color: "white",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "end",
-                        paddingRight: "4px",
-                        paddingTop: "5px",
-                        paddingBottom: "5px",
-                    },
-
-                    ".wcb-icon-box__title": {
-                        fontSize: "16px",
-                        color: "#666",
-                        marginTop: "10px",
-                    },
-
-                    ".wcb-icon-box__icon": {
-                        fontSize: "20px",
-                    },
+                    ...(isIconBesideContent
+                        ? {
+                              ".wcb-icon-box__progress-circle-content": {
+                                  flexDirection: "row" as any,
+                              },
+                          }
+                        : {}),
 
                     [`@media (min-width: ${media_tablet})`]: {
                         flexDirection:

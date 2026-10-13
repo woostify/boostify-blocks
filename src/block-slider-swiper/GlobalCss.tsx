@@ -111,12 +111,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 					}),
 					{
 						[`${SWIPER_ARROW}`]: {
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
 							backgroundColor: style_arrowAndDots.backgroundColor,
 							color: style_arrowAndDots.color,
-							cursor: "pointer",
 							svg: {
 								width: style_arrowAndDots.arrowSize,
 								height: style_arrowAndDots.arrowSize,
@@ -135,17 +131,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 						[`${SWIPER_BULLET}`]: {
 							backgroundColor: style_arrowAndDots.color,
-							opacity: 0.4,
-						},
-						[`${SWIPER_BULLET_ACTIVE}`]: {
-							opacity: 1,
-						},
-					},
-					{
-						[`${SWIPER_DOTS}`]: {
-							position: "absolute",
-							// Container height = dot height, so the gap is exact
-							lineHeight: 0,
 						},
 					},
 					getStyleObjectFromResponsiveAttr({

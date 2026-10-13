@@ -784,7 +784,6 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 
 	/**
 	 * Processed reusable block and template part IDs to prevent infinite recursion.
-	 * Mirrors WP-Spectra pattern: self::$seen_refs.
 	 *
 	 * @var array<int>
 	 */
@@ -1060,14 +1059,189 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 	}
 
 	/**
-	 * Extract CSS from a post by parsing block attributes.
+	 * Recursively collect all unique Boostify block names used in the given blocks tree.
+	 *
+	 * Supports:
+	 * - boostify-blocks/*
+	 * - Known parent-child relationships (slider -> slider-child, tabs -> tab-child, etc.)
+	 * - Gutenberg Synced Patterns / Reusable Blocks (core/block) with circular ref protection
+	 * - Full Site Editing Template Parts (core/template-part)
+	 * - Nested innerBlocks
+	 *
+	 * @param array $blocks          Array of parsed blocks.
+	 * @param array $seen_block_refs Guard against circular refs in synced patterns.
+	 * @return array List of unique Boostify block names (e.g. ['boostify-blocks/products']).
+	 */
+	public static function get_used_boostify_block_names( $blocks, &$seen_block_refs = array() ) {
+		$used = array();
+
+		foreach ( $blocks as $block ) {
+			if ( empty( $block['blockName'] ) ) {
+				if ( ! empty( $block['innerBlocks'] ) ) {
+					$inner_used = self::get_used_boostify_block_names( $block['innerBlocks'], $seen_block_refs );
+					foreach ( $inner_used as $b_name ) {
+						$used[ $b_name ] = true;
+					}
+				}
+				continue;
+			}
+
+			// 1. Boostify block.
+			if ( 0 === strpos( $block['blockName'], 'boostify-blocks/' ) ) {
+				$used[ $block['blockName'] ] = true;
+
+				// Known parent-child relationships where child styles should always accompany parent.
+				$parent_child_map = array(
+					'boostify-blocks/slider'        => 'boostify-blocks/slider-child',
+					'boostify-blocks/slider-swiper' => 'boostify-blocks/slider-swiper-child',
+					'boostify-blocks/tabs'          => 'boostify-blocks/tab-child',
+					'boostify-blocks/faq'           => 'boostify-blocks/faq-child',
+					'boostify-blocks/icon-list'     => 'boostify-blocks/icon-child',
+					'boostify-blocks/buttons'       => 'boostify-blocks/button',
+				);
+
+				if ( isset( $parent_child_map[ $block['blockName'] ] ) ) {
+					$used[ $parent_child_map[ $block['blockName'] ] ] = true;
+				}
+			}
+
+			// 2. Synced Patterns / Reusable Blocks (core/block).
+			if ( 'core/block' === $block['blockName'] ) {
+				$ref_id = isset( $block['attrs']['ref'] ) ? absint( $block['attrs']['ref'] ) : 0;
+				if ( $ref_id && ! in_array( $ref_id, $seen_block_refs, true ) ) {
+					$seen_block_refs[] = $ref_id;
+					$ref_post          = get_post( $ref_id );
+					if ( $ref_post && ! empty( $ref_post->post_content ) ) {
+						$sub_blocks = parse_blocks( $ref_post->post_content );
+						$sub_used   = self::get_used_boostify_block_names( $sub_blocks, $seen_block_refs );
+						foreach ( $sub_used as $b_name ) {
+							$used[ $b_name ] = true;
+						}
+					}
+				}
+			}
+
+			// 3. Template Part (core/template-part).
+			if ( 'core/template-part' === $block['blockName'] ) {
+				$tp_id = 0;
+				if ( ! empty( $block['attrs']['postId'] ) ) {
+					$tp_id = absint( $block['attrs']['postId'] );
+				} elseif ( ! empty( $block['attrs']['slug'] ) ) {
+					$theme = $block['attrs']['theme'] ?? ( function_exists( 'wp_get_theme' ) ? wp_get_theme()->get_stylesheet() : '' );
+					$parts = get_posts( array(
+						'name'           => $block['attrs']['slug'],
+						'post_type'      => 'wp_template_part',
+						'post_status'    => 'publish',
+						'posts_per_page' => 1,
+						'tax_query'      => ! empty( $theme ) ? array(
+							array(
+								'taxonomy' => 'wp_theme',
+								'field'    => 'name',
+								'terms'    => $theme,
+							),
+						) : array(),
+					) );
+					if ( ! empty( $parts ) ) {
+						$tp_id = $parts[0]->ID;
+					}
+				}
+
+				if ( $tp_id && ! in_array( $tp_id, $seen_block_refs, true ) ) {
+					$seen_block_refs[] = $tp_id;
+					$tp_post           = get_post( $tp_id );
+					if ( $tp_post && ! empty( $tp_post->post_content ) ) {
+						$tp_blocks = parse_blocks( $tp_post->post_content );
+						$tp_used   = self::get_used_boostify_block_names( $tp_blocks, $seen_block_refs );
+						foreach ( $tp_used as $b_name ) {
+							$used[ $b_name ] = true;
+						}
+					}
+				}
+			}
+
+			// Inner blocks.
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$inner_used = self::get_used_boostify_block_names( $block['innerBlocks'], $seen_block_refs );
+				foreach ( $inner_used as $b_name ) {
+					$used[ $b_name ] = true;
+				}
+			}
+		}
+
+		return array_keys( $used );
+	}
+
+	/**
+	 * Get concatenated static CSS (style-index.css) for the specified Boostify blocks.
+	 *
+	 * Automatically includes the shared base/reset stylesheet (block-common-css)
+	 * whenever at least one Boostify block is present.
+	 *
+	 * @param array $block_names List of Boostify block names.
+	 * @return string Combined static CSS.
+	 */
+	public static function get_static_css_for_blocks( $block_names ) {
+		if ( empty( $block_names ) || ! is_array( $block_names ) ) {
+			return '';
+		}
+
+		$css        = '';
+		$dir        = BOOSTIFY_BLOCKS_PATH . 'build/';
+		$loaded_css = array();
+
+		// 1. Always load common base reset / CSS variables if any Boostify block is present.
+		$common_file = $dir . 'block-common-css/style-index.css';
+		if ( file_exists( $common_file ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			$content = file_get_contents( $common_file );
+			if ( ! empty( $content ) ) {
+				$content = preg_replace( '/\/\*![\s\S]*?\*\/\s*/', '', $content );
+				$content = preg_replace( '/\/\*# sourceMappingURL=.*?\*\/\s*/', '', $content );
+				$content = preg_replace( '/@charset\s+"[^"]*";\s*/', '', $content );
+				$css    .= trim( $content ) . "\n";
+			}
+			$loaded_css['block-common-css'] = true;
+		}
+
+		// 2. Load static style-index.css for each used block.
+		foreach ( $block_names as $block_name ) {
+			$slug = str_replace( 'boostify-blocks/', '', $block_name );
+			if ( isset( $loaded_css[ $slug ] ) ) {
+				continue;
+			}
+
+			$file = $dir . 'block-' . $slug . '/style-index.css';
+			if ( file_exists( $file ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+				$content = file_get_contents( $file );
+				if ( ! empty( $content ) ) {
+					$content = preg_replace( '/\/\*![\s\S]*?\*\/\s*/', '', $content );
+					$content = preg_replace( '/\/\*# sourceMappingURL=.*?\*\/\s*/', '', $content );
+					$content = preg_replace( '/@charset\s+"[^"]*";\s*/', '', $content );
+					$css    .= trim( $content ) . "\n";
+				}
+				$loaded_css[ $slug ] = true;
+			}
+		}
+
+		if ( ! empty( trim( $css ) ) ) {
+			$css = preg_replace( '/\/\*[\s\S]*?\*\//', '', $css );
+			$css = preg_replace( "/\n{3,}/", "\n\n", $css );
+		}
+
+		return $css;
+	}
+
+	/**
+	 * Extract CSS from a post by combining on-demand static block CSS and dynamic attribute styles.
 	 *
 	 * Resets the seen_refs guard for reusable blocks on every entry.
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int  $post_id        Post ID.
+	 * @param bool $include_static Whether to include static block styles (style-index.css). Default true.
 	 * @return string Combined CSS for all Boostify blocks in the post.
 	 */
-	public static function extract_css_from_post( $post_id ) {
+	public static function extract_css_from_post( $post_id, $include_static = true ) {
 		self::reset_seen_refs();
 
 		$post = get_post( $post_id );
@@ -1075,8 +1249,40 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			return '';
 		}
 
-		$blocks = parse_blocks( $post->post_content );
-		return self::extract_css_from_blocks( $blocks );
+		$blocks      = parse_blocks( $post->post_content );
+		$seen_refs   = array();
+		$used_blocks = self::get_used_boostify_block_names( $blocks, $seen_refs );
+
+		// 1. Static CSS for blocks used in this post (only when generating static CSS file to avoid duplicating stylesheets).
+		$static_css = '';
+		if ( $include_static && ! empty( $used_blocks ) ) {
+			$static_css = self::get_static_css_for_blocks( $used_blocks );
+		}
+
+		// 2. Dynamic CSS generated from block attributes.
+		$dynamic_css = self::extract_css_from_blocks( $blocks );
+		if ( ! empty( $dynamic_css ) ) {
+			$dynamic_css = self::merge_css_rules( $dynamic_css );
+		}
+
+		$css = '';
+		if ( ! empty( trim( $static_css ) ) ) {
+			$css .= "/* Boostify Static Block CSS */\n" . trim( $static_css ) . "\n\n";
+		}
+		if ( ! empty( trim( $dynamic_css ) ) ) {
+			$css .= "/* Boostify Dynamic Block CSS */\n" . trim( $dynamic_css ) . "\n";
+		}
+
+		// 3. Append Custom Page CSS if feature is enabled.
+		$settings = get_option( 'boostify_blocks_settings_options', array() );
+		if ( ! isset( $settings['enableCustomCss'] ) || 'false' !== $settings['enableCustomCss'] ) {
+			$custom_css = get_post_meta( $post_id, '_boostify_blocks_custom_css', true );
+			if ( ! empty( $custom_css ) && is_string( $custom_css ) ) {
+				$css .= "\n/* Boostify Page Custom CSS */\n" . wp_strip_all_tags( $custom_css );
+			}
+		}
+
+		return $css;
 	}
 
 	/**
@@ -1315,14 +1521,7 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 
 		$lines[] = sprintf( '===== End: %d block(s), %d chars CSS =====', $total_blocks, $total_css );
 
-		$report = implode( "\n", $lines ) . "\n";
-
-		if ( $log && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			error_log( $report );
-		}
-
-		return $report;
+		return implode( "\n", $lines ) . "\n";
 	}
 
 	/**

@@ -8,9 +8,10 @@ import {
 	Spinner,
 } from "@wordpress/components";
 import _ from "lodash";
-import { useState } from "@wordpress/element";
+import { useState, useEffect } from "@wordpress/element";
 // @ts-ignore
-import { withColorContext, useSetting } from "@wordpress/block-editor";
+import { useSetting } from "@wordpress/block-editor";
+import { useSelect } from "@wordpress/data";
 
 import {
 	// @ts-ignore
@@ -21,6 +22,12 @@ import {
 import { __ } from "@wordpress/i18n";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
 import HelpText from "../components/controls/HelpText";
+import WcbCustomCSS, {
+	applyScopedCSS,
+	PageSettingsCustomCSSApplier,
+} from "./WcbCustomCSS";
+
+export { applyScopedCSS, PageSettingsCustomCSSApplier, WcbCustomCSS };
 
 const WcbPluginSidebar = (props: any) => {
 	const [mycolors, setMyColor] = useState(
@@ -35,15 +42,6 @@ const WcbPluginSidebar = (props: any) => {
 	const defaultPalette = useSetting("color.palette.default");
 
 	const colorGradientSettings = useMultipleOriginColorsAndGradients();
-
-	console.log(11, "____WcbPluginSidebar____log", {
-		props,
-		themePalette,
-		defaultPalette,
-		colorGradientSettings,
-		mycolors,
-		nweww: window.boostify_blocks_global_variables?.customColorPallete,
-	});
 
 	// update save setting to database options via ajax
 	const handleUpdateSettings = (newColors: typeof mycolors) => {
@@ -64,9 +62,7 @@ const WcbPluginSidebar = (props: any) => {
 		setUpdateStatus("loading");
 		jQuery
 			// @ts-ignore
-			.post(ajaxurl, data, function (response) {
-				console.log("Got this from the server: ", response);
-			})
+			.post(ajaxurl, data, function () {})
 			.done(function () {
 				setUpdateStatus("ok");
 			})
@@ -76,7 +72,6 @@ const WcbPluginSidebar = (props: any) => {
 	};
 
 	const handleChangeCustomColor = (color: string, index: number) => {
-		console.log(111111);
 
 		if (!color) {
 			const newcolors = mycolors.filter((_, j) => j !== index);
@@ -106,6 +101,15 @@ const WcbPluginSidebar = (props: any) => {
 	const debounce_fun = _.debounce(function (e, j) {
 		handleChangeCustomColor(e, j);
 	}, 600);
+
+	const customCSS = useSelect((select) => {
+		// @ts-ignore
+		return select('core/editor').getEditedPostAttribute('meta')?._boostify_blocks_custom_css || '';
+	}, []);
+
+	useEffect(() => {
+		applyScopedCSS(customCSS);
+	}, [customCSS]);
 
 	return (
 		<>
@@ -211,6 +215,16 @@ const WcbPluginSidebar = (props: any) => {
 						</div>
 					</PanelRow>
 				</PanelBody>
+
+				{window.boostify_blocks_global_variables?.enableCustomCss !== "false" && (
+					<PanelBody
+						title={__("Custom CSS", "boostify-blocks")}
+						initialOpen={true}
+						className="boostify-custom-css-panel"
+					>
+						<WcbCustomCSS />
+					</PanelBody>
+				)}
 			</Panel>
 		</>
 	);

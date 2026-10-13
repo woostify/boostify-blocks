@@ -72,43 +72,86 @@ class WCB_Assets_Generator {
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
-		if ( empty( $post->post_content ) ) {
-			return;
-		}
 
-		$settings               = get_option( 'boostify_blocks_settings_options', array() );
+		$settings                = get_option( 'boostify_blocks_settings_options', array() );
 		$file_generation_enabled = ! empty( $settings['enableFileGeneration'] ) && ( 'true' === $settings['enableFileGeneration'] || true === $settings['enableFileGeneration'] || '1' === (string) $settings['enableFileGeneration'] );
 
 		if ( ! $file_generation_enabled ) {
+			// If file generation is disabled, clean up any existing asset files to avoid stale assets.
+			$this->delete_all_post_assets( $post_id );
 			return;
 		}
 
-		// Check if post contains any Boostify blocks.
-		if ( false === strpos( $post->post_content, '<!-- wp:boostify-blocks/' ) ) {
-			$this->storage->delete_css_file( $post_id );
-			$this->storage->delete_js_file( $post_id );
-			delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );
+		// Check if post content is empty and has no custom CSS.
+		$has_content    = ! empty( $post->post_content );
+		$custom_css     = get_post_meta( $post_id, '_boostify_blocks_custom_css', true );
+		$has_custom_css = ! empty( $custom_css ) && is_string( $custom_css ) && trim( $custom_css ) !== '';
+
+		if ( ! $has_content && ! $has_custom_css ) {
+			$this->delete_all_post_assets( $post_id );
 			return;
 		}
 
-		// Extract CSS from post content.
-		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
+		// Check if post contains any Boostify blocks or Custom CSS.
+		$has_boostify_blocks = $has_content && ( false !== strpos( $post->post_content, '<!-- wp:boostify-blocks/' ) );
 
-		if ( ! empty( $css ) ) {
-			$saved = $this->storage->save_css_file( $post_id, $css );
-			$this->update_page_assets_meta( $post_id, ! $saved );
-		} else {
-			$this->update_page_assets_meta( $post_id, true );
+		if ( ! $has_boostify_blocks && ! $has_custom_css ) {
+			$this->delete_all_post_assets( $post_id );
+			return;
 		}
+
+		// Process CSS generation and update metadata.
+		$this->process_post_css_generation( $post_id, false );
 
 		// Also generate JS if interactive blocks exist.
 		$this->generate_post_js( $post_id );
 	}
 
 	/**
+	 * Process CSS extraction and storage for a post, synchronizing post meta.
+	 *
+	 * @param int  $post_id Post ID.
+	 * @param bool $force   Whether to force overwriting existing file. Default false.
+	 * @return bool True if CSS file was saved successfully, false otherwise.
+	 */
+	public function process_post_css_generation( $post_id, $force = false ) {
+		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
+
+		if ( empty( trim( $css ) ) ) {
+			$this->storage->delete_css_file( $post_id );
+			$this->update_page_assets_meta( $post_id, true );
+			return false;
+		}
+
+		$saved = $this->storage->save_css_file( $post_id, $css, $force );
+		$this->update_page_assets_meta( $post_id, ! $saved );
+
+		return $saved;
+	}
+
+	/**
+	 * Clean up all generated assets (files and meta) for a post.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return void
+	 */
+	public function delete_all_post_assets( $post_id ) {
+		$post_id = absint( $post_id );
+		if ( ! $post_id ) {
+			return;
+		}
+
+		$this->storage->delete_css_file( $post_id );
+		$this->storage->delete_js_file( $post_id );
+		delete_post_meta( $post_id, self::PAGE_ASSETS_META_KEY );
+
+		do_action( 'boostify_blocks_post_assets_deleted', $post_id );
+	}
+
+	/**
 	 * Update page assets meta for version tracking.
 	 *
-	 * Pattern from UAGB: stores version and generation status so we know when to regenerate.
+	 * Stores asset version and generation status to determine when to regenerate.
 	 *
 	 * @param int  $post_id           Post ID.
 	 * @param bool $generation_failed Whether generation failed. Default false.
@@ -183,8 +226,6 @@ class WCB_Assets_Generator {
 	/**
 	 * Determine if a post's assets should be regenerated.
 	 *
-	 * Pattern from UAGB / WP-Spectra: allow_assets_generation().
-	 *
 	 * @param int $post_id Post ID.
 	 * @return bool True if regeneration is needed.
 	 */
@@ -252,14 +293,12 @@ class WCB_Assets_Generator {
 		// Time budget guard to prevent PHP execution timeout (504).
 		$time_limit = (int) apply_filters( 'boostify_blocks_bulk_regenerate_time_limit', 20 );
 		$start_time = microtime( true );
+		$is_partial = false;
 
 		// Step 3: Regenerate for each post and categorize by post type.
 		foreach ( $all_post_ids as $post_id ) {
 			if ( $time_limit > 0 && ( microtime( true ) - $start_time ) > $time_limit ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-					error_log( sprintf( '[Boostify Blocks] Time limit of %ds reached during bulk asset regeneration. Processed %d posts; remaining posts will lazily regenerate on request.', $time_limit, $regenerated ) );
-				}
+				$is_partial = true;
 				break;
 			}
 
@@ -313,14 +352,33 @@ class WCB_Assets_Generator {
 			$template_regenerated = $this->regenerate_template_assets();
 		}
 
-		// Step 5: Build common static CSS from all block style-index.css files.
-		$common_static_built = $this->build_common_static_css();
+		$total_posts = count( $all_post_ids );
+		$processed   = $regenerated + $skipped;
+		$remaining   = max( 0, $total_posts - $processed );
 
-		// Default mode (matching Spectra standard): return concise, lightweight success message.
+		if ( $is_partial ) {
+			$message = sprintf(
+				/* translators: 1: Processed count, 2: Total count */
+				__( 'Assets partially regenerated (%1$d of %2$d processed due to time limit). Remaining posts will regenerate on request.', 'boostify-blocks' ),
+				$processed,
+				$total_posts
+			);
+		} else {
+			$message = __( 'Assets regenerated successfully!', 'boostify-blocks' );
+		}
+
+		// Return concise, lightweight success message.
 		if ( ! $with_debug ) {
 			return array(
-				'message'       => __( 'Assets regenerated successfully!', 'boostify-blocks' ),
+				'success'       => true,
+				'message'       => $message,
 				'asset_version' => (string) $new_version,
+				'total'         => $total_posts,
+				'processed'     => $processed,
+				'regenerated'   => $regenerated,
+				'skipped'       => $skipped,
+				'is_partial'    => $is_partial,
+				'remaining'     => $remaining,
 			);
 		}
 
@@ -338,16 +396,20 @@ class WCB_Assets_Generator {
 		$response_data = array(
 			'success'                   => true,
 			'asset_version'             => (string) $new_version,
+			'total'                     => $total_posts,
+			'processed'                 => $processed,
 			'posts_regenerated'         => $regenerated,
 			'posts_regenerated_ids'     => $posts_regenerated_ids,
 			'posts_regenerated_details' => $posts_regenerated_details,
 			'posts_skipped'             => $skipped,
 			'posts_skipped_ids'         => $posts_skipped_ids,
 			'posts_skipped_details'     => $posts_skipped_details,
+			'is_partial'                => $is_partial,
+			'remaining'                 => $remaining,
 			'by_post_type'              => $by_post_type,
 			'templates_regenerated'     => $template_regenerated,
 			'common_static_built'       => ! empty( $common_static_built ),
-			'message'                   => sprintf(
+			'message'                   => ( $is_partial ? __( '[Partial] ', 'boostify-blocks' ) : '' ) . sprintf(
 				/* translators: 1: regenerated count, 2: breakdown by post type, 3: skipped count, 4: templates count, 5: common static status, 6: asset version */
 				__( 'Assets regenerated for %1$d item(s)%2$s. %3$d item(s) skipped. %4$d template(s) regenerated. Common static CSS: %5$s. Asset version: %6$s. Please purge any caching plugins.', 'boostify-blocks' ),
 				$regenerated,
@@ -398,7 +460,7 @@ class WCB_Assets_Generator {
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		$query = $wpdb->prepare(
-			"SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status NOT IN ('trash', 'auto-draft') AND post_type IN ($post_type_placeholders) AND ($like_placeholders) ORDER BY ID ASC",
+			"SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status NOT IN ('trash', 'auto-draft') AND post_type IN ($post_type_placeholders) AND ( ($like_placeholders) OR ID IN (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_boostify_blocks_custom_css' AND meta_value != '') ) ORDER BY ID ASC",
 			array_values( $query_args )
 		);
 
@@ -454,18 +516,12 @@ class WCB_Assets_Generator {
 	 * @return bool True on success.
 	 */
 	public function regenerate_post_assets( $post_id, $force = false ) {
-		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
-
-		if ( empty( $css ) ) {
-			$this->storage->delete_css_file( $post_id );
-			$this->update_page_assets_meta( $post_id, true );
-			return false;
-		}
+		$saved = $this->process_post_css_generation( $post_id, $force );
 
 		// Generate JS alongside CSS.
 		$this->generate_post_js( $post_id );
 
-		return $this->storage->save_css_file( $post_id, $css, $force );
+		return $saved;
 	}
 
 	/**
@@ -527,6 +583,11 @@ class WCB_Assets_Generator {
 	 * @return string JS content.
 	 */
 	public function build_js_for_blocks( $blocks ) {
+		// If no filter is hooked to provide block JS, bypass expensive tree traversal.
+		if ( ! has_filter( 'boostify_blocks_post_assets_inner_js' ) ) {
+			return '';
+		}
+
 		$needs_js = $this->collect_js_block_info( $blocks );
 		if ( empty( $needs_js ) ) {
 			return '';
@@ -664,7 +725,7 @@ class WCB_Assets_Generator {
 		}
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-		$query = "SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND (" . implode( ' OR ', $like_clauses ) . ') ORDER BY ID ASC';
+		$query = "SELECT DISTINCT ID FROM {$wpdb->posts} WHERE post_status = 'publish' AND ( (" . implode( ' OR ', $like_clauses ) . ") OR ID IN (SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_boostify_blocks_custom_css' AND meta_value != '') ) ORDER BY ID ASC";
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 		$results = $wpdb->get_col( $query );
@@ -673,81 +734,22 @@ class WCB_Assets_Generator {
 	}
 
 	/**
-	 * Get the merged static CSS content from all block style-index.css files.
+	 * Deprecated stub: common static CSS is no longer bundled globally (replaced by on-demand post CSS).
 	 *
-	 * @return string Merged static CSS.
+	 * @deprecated 1.1.13
+	 * @return string Empty string.
 	 */
 	public function get_common_static_css_content() {
-		$file = $this->storage->get_assets_dir() . '/custom-style-blocks.css';
-
-		if ( ! file_exists( $file ) ) {
-			$this->build_common_static_css();
-		}
-
-		if ( file_exists( $file ) && filesize( $file ) > 0 ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			return file_get_contents( $file );
-		}
-
 		return '';
 	}
 
 	/**
-	 * Build a single CSS file containing all block static styles (style-index.css).
+	 * Deprecated stub: common static CSS is no longer bundled globally (replaced by on-demand post CSS).
 	 *
-	 * @return string|false URL of the common CSS file, or false on failure.
+	 * @deprecated 1.1.13
+	 * @return false Always returns false.
 	 */
 	public function build_common_static_css() {
-		$this->storage->ensure_assets_dir_exists();
-
-		$dir      = BOOSTIFY_BLOCKS_PATH . 'build/';
-		$out_file = $this->storage->get_assets_dir() . '/custom-style-blocks.css';
-		$css      = '';
-
-		$style_files = glob( $dir . 'block-*/style-index.css' );
-		if ( empty( $style_files ) ) {
-			return false;
-		}
-
-		foreach ( $style_files as $file ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-			$content = file_get_contents( $file );
-			if ( empty( $content ) ) {
-				continue;
-			}
-
-			// Strip webpack banner comments.
-			$content = preg_replace( '/\/\*![\s\S]*?\*\/\s*/', '', $content );
-			$content = preg_replace( '/\/\*# sourceMappingURL=.*?\*\/\s*/', '', $content );
-			$content = preg_replace( '/@charset\s+"[^"]*";\s*/', '', $content );
-
-			$css .= trim( $content ) . "\n";
-		}
-
-		if ( empty( trim( $css ) ) ) {
-			return false;
-		}
-
-		$css = "@charset \"UTF-8\";\n" . $css;
-		$css = preg_replace( '/\/\*[\s\S]*?\*\//', '', $css );
-		$css = preg_replace( "/\n{3,}/", "\n\n", $css );
-
-		// Compare with existing — only write if changed.
-		if ( file_exists( $out_file ) ) {
-			// phpcs:ignore
-			$old = file_get_contents( $out_file );
-			if ( $old === $css ) {
-				return $this->storage->get_assets_url() . '/custom-style-blocks.css';
-			}
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		$result = file_put_contents( $out_file, $css, LOCK_EX );
-
-		if ( false !== $result ) {
-			return $this->storage->get_assets_url() . '/custom-style-blocks.css';
-		}
-
 		return false;
 	}
 

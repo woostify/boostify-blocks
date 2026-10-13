@@ -284,11 +284,44 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
     ];
 
     $uniqueId =  $attributes['uniqueId'] ?? "";
+    $json     = !empty($uniqueId) ? esc_html(wp_json_encode($attributes)) : '';
     $className =  $attributes['className'] ?? "";
     $align =  $attributes['align'] ?? "";
     if (!empty($align)) {
         $className .= " align" . $align;
     }
+
+    // Extract class and id saved from edit.tsx if available
+    $saved_classes = '';
+    $saved_id      = '';
+    if (!empty($content)) {
+        if (preg_match('/<div\b[^>]*\bclass=["\']([^"\']*)["\']/i', $content, $class_matches)) {
+            $saved_classes = $class_matches[1];
+        }
+        if (preg_match('/<div\b[^>]*\bid=["\']([^"\']*)["\']/i', $content, $id_matches)) {
+            $saved_id = $id_matches[1];
+        }
+    }
+
+    // Build responsive classes if configured
+    $rc = $attributes['advance_responsiveCondition'] ?? [];
+    $responsiveClasses = '';
+    if (!empty($rc['isHiddenOnDesktop'])) {
+        $responsiveClasses .= ' wcb-hide-desktop';
+    }
+    if (!empty($rc['isHiddenOnTablet'])) {
+        $responsiveClasses .= ' wcb-hide-tab';
+    }
+    if (!empty($rc['isHiddenOnMobile'])) {
+        $responsiveClasses .= ' wcb-hide-mob';
+    }
+
+    $anchor_id = !empty($saved_id) ? $saved_id : ($attributes['anchor'] ?? '');
+
+    // Merge all classes into a unique set
+    $raw_classes        = 'wcb-cm wcb-update-div wp-block-boostify-blocks-posts-grid wcb-posts-grid__wrap ' . $uniqueId . ' ' . $className . ' ' . $saved_classes . ' ' . $responsiveClasses;
+    $class_list         = array_unique(array_filter(explode(' ', $raw_classes)));
+    $wrapper_class_attr = implode(' ', $class_list);
 
 
     $sortingAndFiltering = isset($attributes["general_sortingAndFiltering"]) ? $attributes["general_sortingAndFiltering"] :  $DEFAULT_ATTRS["general_sortingAndFiltering"];
@@ -345,7 +378,7 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                     $all_terms = join(', ', $term_links);
                 };
 
-                echo '<div class="wcbPostCard__taxonomies wcbPostCard__taxonomies--' . esc_attr($modifiedClass) . esc_attr($attributes['general_postMeta']['taxonomyStyle'] === "Highlighted" ? " wcbPostCard__taxonomies--highlighted" : "") . '">' . wp_kses_post($all_terms) . '</div>';
+                echo '<div class="wcbPostCard__taxonomies wcbPostCard__taxonomies--' . esc_attr($modifiedClass) . esc_attr($attributes['general_postMeta']['taxonomyStyle'] === "Highlighted" ? " wcbPostCard__taxonomies--highlighted" : "") . '">' . (!empty($all_terms) && is_string($all_terms) ? wp_kses_post($all_terms) : '') . '</div>';
 
             endif;
         }
@@ -353,14 +386,12 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
 
     ob_start();
 ?>
-    <!-- CONTENT FOR RENDER CSSS @EMOTION -->
-    <?php echo wp_kses_post($content); ?>
+    <div class="<?php echo esc_attr($wrapper_class_attr); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>"<?php echo !empty($anchor_id) ? ' id="' . esc_attr($anchor_id) . '"' : ''; ?>>
+        <div data-wcb-global-styles="<?php echo esc_attr($uniqueId); ?>"></div>
+        <pre data-wcb-block-attrs="<?php echo esc_attr($uniqueId); ?>" style="display: none;"><?php echo $json; ?></pre>
 
-    <!-- RENDER FOLLOW BY EDIT.TSX -->
-    <div class="wcb-posts-grid__wrap <?php echo esc_attr($uniqueId); ?> <?php echo esc_attr($className); ?>" data-uniqueid="<?php echo esc_attr($uniqueId); ?>">
-        <div class="wcb-posts-grid__list-posts">
-            <?php if ($the_query->have_posts()) : ?>
-                <!-- the loop -->
+        <?php if ($the_query->have_posts()) : ?>
+            <div class="wcb-posts-grid__list-posts">
                 <?php while ($the_query->have_posts()) : $the_query->the_post(); ?>
 
                     <?php
@@ -371,15 +402,17 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
 
                     <div class="wcbPostCard wcbPostCard--image-<?php echo esc_attr($featuredImagePosition); ?>">
 
-                        <!-- card - FUll link  -->
                         <a class="wcbPostCard__completeLink" href="<?php echo esc_url(get_permalink()); ?>"></a>
 
-                        <!-- Post Thumbnail -->
                         <?php if ($hasFeaturedImage) : ?>
                             <div class="wcbPostCard__featuredImage">
-                                <?php echo wp_kses_post(get_the_post_thumbnail(null, $attributes['general_postFeaturedImage']['featuredImageSize'] ?? "post-thumbnail")); ?>
+                                <?php 
+                                $thumb_html = get_the_post_thumbnail(null, $attributes['general_postFeaturedImage']['featuredImageSize'] ?? "post-thumbnail");
+                                if (!empty($thumb_html) && is_string($thumb_html)) {
+                                    echo wp_kses_post($thumb_html);
+                                }
+                                ?>
 
-                                <!-- TAXONOMIES  -->
                                 <?php if (($attributes['general_postMeta']["isShowTaxonomy"] ?? true) &&
                                     ($attributes['general_postMeta']["taxonomyPosition"] ?? "Inside featured image") === "Inside featured image" &&
                                     $featuredImagePosition !== "background"
@@ -391,18 +424,13 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                         <?php endif; ?>
                         <div class="wcbPostCard__featuredImage-overlay"></div>
 
-
-                        <!-- Post content -->
                         <div class="wcbPostCard__content">
 
-                            <!-- TAXONOMIES ON TOP -->
                             <?php
-
                             if (($attributes['general_postMeta']['taxonomyPosition'] ?? "Below featured image") === "Below featured image" || !$hasFeaturedImage ||  $featuredImagePosition === 'background') {
-                                boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes,);
+                                boostify_blocks_block_posts_grid_render_taxonomy($queries, $attributes);
                             }; ?>
 
-                            <!-- TITLE -->
                             <?php if ($attributes['general_postMeta']['isShowTitle'] ?? true) : ?>
                             <?php 
                                 $titleHtmlTag = $attributes['general_postMeta']['titleHtmlTag'] ?? "h4";
@@ -414,17 +442,17 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                                 <?php echo sprintf('</%1$s>', tag_escape($titleHtmlTag)); ?>
                             <?php endif; ?>
 
-
                             <?php if ($attributes['general_postContent']['isShowPostContent'] ?? true) : ?>
-                                <!-- FULL POST CONTENT -->
                                 <?php if (($attributes['general_postContent']['contentType'] ?? "excerpt") === "Full post") {
                                     echo '<div class="wcbPostCard__fullContent">';
                                     // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WordPress hook.
-                                    echo wp_kses_post(apply_filters('the_content', (string) get_the_content()));
+                                    $rendered_content = apply_filters('the_content', (string) get_the_content());
+                                    if (!empty($rendered_content) && is_string($rendered_content)) {
+                                        echo wp_kses_post($rendered_content);
+                                    }
                                     echo '</div>';
                                 };  ?>
 
-                                <!-- EXCERPT -->
                                 <?php if (($attributes['general_postContent']['contentType'] ?? "excerpt") === "excerpt") {
                                     $excerpt = get_the_excerpt();
                                     $split = explode(" ", $excerpt); //convert string to array
@@ -439,17 +467,14 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                                     } else {
                                         $output = '<p class="wcbPostCard__excerpt">'  .   $excerpt . '</p>';
                                     }
-                                    echo wp_kses_post($output);
+                                    if (!empty($output) && is_string($output)) {
+                                        echo wp_kses_post($output);
+                                    }
                                 }; ?>
                             <?php endif; ?>
 
-
-
-
-                            <!-- META -->
                             <div class="wcbPostCard__meta">
 
-                                <!-- AUTHOR -->
                                 <?php if (boolval($attributes['general_postMeta']['isShowAuthor'] ?? true)) : ?>
                                     <div class="wcbPostCard__meta-author">
                                         <?php if (boolval($attributes['general_postMeta']['isShowMetaIcon'] ?? true)) : ?>
@@ -457,18 +482,14 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16px" height="16px">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
-
                                             </span>
                                         <?php endif; ?>
                                         <a class="wcbPostCard__meta-author" href="<?php echo esc_url(get_author_posts_url(get_the_author_meta('ID'))); ?>" title="<?php echo esc_attr(get_the_author()); ?>"><?php echo esc_html(get_the_author()); ?></a>
                                     </div>
                                 <?php endif; ?>
 
-
-                                <!-- DATE AND COMMENT -->
                                 <div class="wcbPostCard__meta-date-and-comments">
 
-                                    <!-- DATE -->
                                     <?php if (boolval($attributes['general_postMeta']['isShowDate'] ?? true)) : ?>
                                         <span class="wcbPostCard__meta-date">
                                             <?php if ($isShowMetaIcon) : ?>
@@ -487,15 +508,12 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                                         <span class="wcbPostCard__meta-dot"> / </span>
                                     <?php endif; ?>
 
-
-                                    <!-- COMMENTS -->
                                     <?php if (boolval($attributes['general_postMeta']['isShowComment'] ?? true)) : ?>
                                         <span class="wcbPostCard__meta-comment">
                                             <span class="wcbPostCard__meta-icon">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="14px" height="14px">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                                                 </svg>
-
                                             </span>
                                             <?php echo esc_html(get_comments_number()); ?>
                                         </span>
@@ -504,7 +522,6 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
 
                             </div>
 
-                            <!-- READMORE BUTTON -->
                             <?php if (boolval($attributes['general_readmoreLink']['isShowReadmore'] ?? true)) : ?>
                                 <a class="wcbPostCard__readmoreLink" href="<?php echo esc_url(get_permalink()); ?>" rel="noopener noreferrer" target="<?php echo esc_attr(($attributes['general_readmoreLink']['isOpenInNewTab'] ?? false) ? "_blank" : "_self") ?>">
                                     <?php echo esc_html($attributes['general_readmoreLink']['text'] ?? "Read more"); ?>
@@ -514,22 +531,19 @@ function boostify_blocks_block_posts_grid_render_callback($attributes, $content,
                         </div>
                     </div>
                 <?php endwhile; ?>
-                <!-- end of the loop -->
-        </div>
-
-        <!-- pagination here -->
-        <?php if (boostify_blocks_is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
-            <div class="wcb-posts-grid__pagination">
-                <?php boostify_blocks_pagination_bar($the_query, $attributes['general_pagination']); ?>
             </div>
+
+            <?php if (boostify_blocks_is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
+                <div class="wcb-posts-grid__pagination">
+                    <?php boostify_blocks_pagination_bar($the_query, $attributes['general_pagination']); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php wp_reset_postdata(); ?>
+
+        <?php else : ?>
+            <p class="wcb-posts-grid__emptyMessage"><?php echo esc_html($sortingAndFiltering['emptyMessage'] ?? "No post found!"); ?></p>
         <?php endif; ?>
-
-        <!-- reset post here -->
-        <?php wp_reset_postdata(); ?>
-
-    <?php else : ?>
-        <p class="wcb-posts-grid__emptyMessage"><?php echo esc_html($sortingAndFiltering['emptyMessage'] ?? "No post found!"); ?></p>
-    <?php endif; ?>
     </div>
 <?php
 

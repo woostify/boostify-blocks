@@ -69,11 +69,25 @@ const getBorderStyles = ({
 		b = radiusCSSObject[className] || {};
 	}
 
+	const merged = {
+		...a,
+		...b,
+	};
+
+	// Filter out undefined, null or empty object properties
+	const cleanStyles: Record<string, any> = {};
+	for (const [k, v] of Object.entries(merged)) {
+		if (v !== undefined && v !== null && v !== "" && (typeof v !== "object" || Object.keys(v).length > 0)) {
+			cleanStyles[k] = v;
+		}
+	}
+
+	if (Object.keys(cleanStyles).length === 0) {
+		return {};
+	}
+
 	return {
-		[`${className}`]: {
-			...a,
-			...b,
-		},
+		[`${className}`]: cleanStyles,
 	};
 };
 

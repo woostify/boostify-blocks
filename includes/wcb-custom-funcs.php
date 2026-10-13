@@ -75,6 +75,7 @@ function boostify_blocks_get_default_blocks_settings()
         'enableTemplatesButton'     => 'true',
         'enableCopyPasteStyles'     => 'true',
         'enableDisplayConditions'   => 'true',
+        'enableCustomCss'           => 'true',
         'enableFileGeneration'      => 'false',
         'loadGoogleFontsLocally'    => 'false',
         'preloadLocalFonts'         => 'false',
@@ -134,14 +135,17 @@ function boostify_blocks_pagination_bar($the_query, $attrPagination)
 
     $big = 999999999; // need an unlikely integer
     $current_page = max(1, get_query_var('paged'));
-    echo wp_kses_post(paginate_links(array(
+    $pagination_links = paginate_links(array(
         'base' => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
         'format' => '?paged=%#%',
         'current' => $current_page,
         'total' => $total,
         'next_text' => $nextHtml,
         'prev_text' => $prevHtml
-    )));
+    ));
+    if (!empty($pagination_links) && is_string($pagination_links)) {
+        echo wp_kses_post($pagination_links);
+    }
 }
 
 // 

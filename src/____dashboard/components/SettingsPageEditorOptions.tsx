@@ -24,7 +24,6 @@ const SettingsPageEditorOptions: FC<Props> = ({
 	themeLayoutGlobal,
 }) => {
 	const debounce_fun = debounce(function (data: Props["allSettings"]) {
-		console.log("Function debounced after 300ms!", { data });
 		onChange(data);
 	}, 300);
 
@@ -133,6 +132,20 @@ const SettingsPageEditorOptions: FC<Props> = ({
 					label="Copy Paste Styles"
 					desc='Enable the "Copy Paste Styles" option to have the ability to copy & paste Boostify Blocks & Core Gutenberg Blocks Styles.'
 					id="MyToggle_CopyPasteStyles"
+				/>
+			</div>
+			<div className="py-8">
+				<MyToggle
+					checked={allSettings.enableCustomCss !== "false"}
+					onChange={(checked) => {
+						debounce_fun({
+							...allSettings,
+							enableCustomCss: checked ? "true" : "false",
+						});
+					}}
+					label="Custom CSS"
+					desc='Enable the "Custom CSS" option if you want to add your own CSS code on post/page to customize the page as per your expectations.'
+					id="MyToggle_CustomCss"
 				/>
 			</div>
 		</div>
