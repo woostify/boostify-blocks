@@ -1,6 +1,11 @@
 .wcb-icon__content {
     display: inline-block;
-    i {
+    text-align: center;
+    line-height: 1;
+
+    i,
+    svg,
+    img {
         display: block;
     }
 }
