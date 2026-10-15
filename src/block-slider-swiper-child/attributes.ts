@@ -167,11 +167,6 @@ const blockAttrs: AttrsGenericType<WcbAttrs> = {
 		default: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO
 	},
 
-	// style_sparator: {
-	// 	type: "object",
-	// 	default: WCB_SLIDER_BOX_PANEL_STYLE_SPARATOR_DEMO,
-	// },
-
 	// ADVANCE
 	advance_responsiveCondition: {
 		type: "object",
