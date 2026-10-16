@@ -581,11 +581,13 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $btnWishListTopRight = false;
     $btnWishListBottomRight = false;
     $wishlistPluginActive = !empty($attributes['style_wishlistBtn']['wishlist_plugin_active']);
-    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "top-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+    $wishlistPosition = $attributes['style_wishlistBtn']['position'] ?? 'none';
+    $wishlistStyle = $attributes['style_wishlistBtn']['style'] ?? 'ti';
+    if ($wishlistPluginActive && $wishlistPosition === "top-right") {
         $btnWishListTopRight = true;
     }
 
-    if ($wishlistPluginActive && $attributes['style_wishlistBtn']['position'] === "bottom-right" && $attributes['style_wishlistBtn']['style'] === "ti") {
+    if ($wishlistPluginActive && $wishlistPosition === "bottom-right") {
         $btnWishListBottomRight = true;
     }   
 
@@ -672,27 +674,38 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         }
 
         if ($btnWishListTopRight) {
-            $topRightItems[] = 
+            if ($wishlistStyle === "yith" && shortcode_exists('yith_wcwl_add_to_wishlist')) {
+                $topRightItems[] = do_shortcode('[yith_wcwl_add_to_wishlist product_id="' . $product_id_attr . '"]');
+            } else {
+                $topRightItems[] = 
+                    '<button 
+                        class="wcb-products__product--wishlistTopRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
+                        data-tinv-wl-list="[]"
+                        data-tinv-wl-product="' . $product_id_attr . '"
+                        data-tinv-wl-action="add"
+                        type="button"
+                    ></button>';
+            }
+        }
+
+        $topRightIconsHtml = '<div class="wcb-products__product--topRight">' . implode('', $topRightItems) . '</div>';
+    }
+
+    $bottomRightIconHtml = '';
+    if ($btnWishListBottomRight) {
+        if ($wishlistStyle === "yith" && shortcode_exists('yith_wcwl_add_to_wishlist')) {
+            $bottomRightIconHtml = do_shortcode('[yith_wcwl_add_to_wishlist product_id="' . $product_id_attr . '"]');
+        } else {
+            $bottomRightIconHtml = 
                 '<button 
-                    class="wcb-products__product--wishlistTopRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
+                    class="wcb-products__product--wishlistBottomRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
                     data-tinv-wl-list="[]"
                     data-tinv-wl-product="' . $product_id_attr . '"
                     data-tinv-wl-action="add"
                     type="button"
                 ></button>';
         }
-
-        $topRightIconsHtml = '<div class="wcb-products__product--topRight">' . implode('', $topRightItems) . '</div>';
     }
-
-    $bottomRightIconHtml = $btnWishListBottomRight ? 
-        '<button 
-            class="wcb-products__product--wishlistBottomRight--item tinvwl_add_to_wishlist_button tinvwl-addtowishlist' . $wishlist_active_class . '"
-            data-tinv-wl-list="[]"
-            data-tinv-wl-product="' . $product_id_attr . '"
-            data-tinv-wl-action="add"
-            type="button"
-        ></button>' : '';
     
     // Quick view button at bottom of image
     $btnQuickViewBottomImageHtml = $btnQuickViewBottomImage ?
@@ -713,7 +726,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
 
     $item_html = "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\"{$quantity_interactivity_attrs}>
-                <div class=\"wcb-products__product-featured \">
+                <div class=\"wcb-products__product-featured\">
                     <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
                         {$isSwapHover}
@@ -959,7 +972,7 @@ function boostify_blocks_block_products_get_image_html($product, $attributes = [
     $image_html = preg_replace('/<img(.*?)>/', '<img$1 ' . $style . '>', $image_html);
 
     // Return the final HTML wrapped in a container
-    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscapedaped
+    return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 /**
