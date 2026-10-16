@@ -564,12 +564,12 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const renderTestimonialItemRating = (item: TestimonialItem, index: number) => {
 		const { ratings, isShowRating } = general_rating;
-		if (!isShowRating) {
+		if (!isShowRating || !ratings?.[index]) {
 			return null;
 		}
 		return (
 			<div className="wcb-testimonials-swiper__item-rating">
-				{ ratings[index] && Array.from({ length: 5 }, (_, i) => {
+				{Array.from({ length: 5 }, (_, i) => {
 					const clsActive = i < ratings[index] ? 'active' : '';
 					return (
 						<span key={i} className={`wcb-star ${clsActive}`}>
@@ -588,7 +588,6 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			<SwiperSlide key={index}>
 				<div className="wcb-testimonials-swiper__item">
 					<div className="wcb-testimonials-swiper__item-background">
-						<div className=""></div>
 						<VideoBackgroundByBgControl
 							bgType={style_backgroundAndBorder.background.bgType}
 							videoData={style_backgroundAndBorder.background.videoData}

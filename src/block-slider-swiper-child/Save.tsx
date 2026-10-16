@@ -1,5 +1,5 @@
 import React from "react";
-import { RichText, useBlockProps } from "@wordpress/block-editor";
+import { RichText } from "@wordpress/block-editor";
 import { WcbAttrs } from "./attributes";
 import MyIcon from "../components/controls/MyIcon";
 import GlobalCss from "./GlobalCss";
@@ -20,21 +20,7 @@ import { MY_MOTION_EFFECT_DEMO } from "../components/controls/MyMotionEffectCont
 import { INIT_IMAGE_DATA_UPLOAD_DEMO } from "../components/controls/MyBackgroundControl/MyBackgroundControl";
 import { WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO } from "./WcbSliderPanel_StyleCallToActionButton";
 import MyIconFull from "../components/controls/MyIconFull";
-
-// Normalize data to prevent array vs object inconsistency between PHP json_encode and Gutenberg
-const normalizeData = (obj: any): any => {
-	if (Array.isArray(obj)) {
-		return obj.length === 0 ? {} : obj;
-	}
-	if (obj && typeof obj === "object") {
-		const normalized: any = {};
-		for (const [key, value] of Object.entries(obj)) {
-			normalized[key] = normalizeData(value);
-		}
-		return normalized;
-	}
-	return obj;
-};
+import normalizeBlockAttrs from "../utils/normalizeBlockAttrs";
 
 export interface WcbAttrsForSave extends WcbAttrs {
 	clientID?: string;
@@ -176,10 +162,6 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 							enableIcon
 						) ? renderIconButton() : null
 					}
-					{/* {
-						preset === 'wcb-button-4' || preset === 'wcb-button-8' || enableIcon ?
-						renderIconButton() : null
-					} */}
 				</a>
 			</div>
 		)
@@ -217,135 +199,118 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 	// The root element must carry the "swiper-slide" class: Swiper requires
 	// every direct child of .swiper-wrapper to have it.
 	return (
-		<div
-			className="swiper-slide"
-		>
-			{/* <div className="wcb-slider__item-background"> */}
-				{/* <div className="wcb-slider__item-wrap-inner"> */}
-					{/* <div className="wcb-slider__item-inner"> */}
-						{/* Child content wrapper with frontend CSS system - timing is now fixed */}
-						<div 
-							className={`wcb-slider-child__wrap ${uniqueId} ${uniqueCssClass} wcb-update-div`}
-							data-uniqueid={uniqueId}
-							data-clientid={clientID || 'not-available'}
-						>
-							{/* Frontend CSS injection elements */}
-							<div data-wcb-global-styles={uniqueId}></div>
-							<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
-								{_.escape(JSON.stringify(normalizeData(newAttrForSave)))}
-							</pre>
-							
-							{/* Child CSS styles for both edit and save mode */}
-							<GlobalCss {...newAttrForSave} clientID={clientID} />
-							
-							<div className="wcb-slider-child__item">
-								<div className="wcb-slider-child__item-background">
-									<div className="wcb-slider-child__item-wrap-inner">
-										<div className={`${
-											style_image?.iconPosition === "left" || style_image?.iconPosition === "right"
-											? "flex gap-4"
-											: ""
-										}`}>
-										{/* Image */}	
-										{
-											(style_image && 
-											style_image.imagePosition === "left") &&
-											renderImage()
-										}
-										{ style_image?.iconPosition === "left" && renderIconTop() }
-										<div className="wcb-slider-child__item-inner">
-											{/* Image */}	
-											{
-												(style_image && 
-												style_image.imagePosition === "above-title") &&
-												renderImage()
-											}
+		<div className="swiper-slide">
+			{/* Child content wrapper with frontend CSS system - timing is now fixed */}
+			<div 
+				className={`wcb-slider-child__wrap ${uniqueId} ${uniqueCssClass} wcb-update-div`}
+				data-uniqueid={uniqueId}
+				data-clientid={clientID || 'not-available'}
+			>
+				{/* Frontend CSS injection elements */}
+				<div data-wcb-global-styles={uniqueId}></div>
+				<pre data-wcb-block-attrs={uniqueId} style={{ display: "none" }}>
+					{_.escape(JSON.stringify(normalizeBlockAttrs(newAttrForSave)))}
+				</pre>
+				
+				{/* Child CSS styles for both edit and save mode */}
+				<GlobalCss {...newAttrForSave} clientID={clientID} />
+				
+				<div className="wcb-slider-child__item">
+					<div className="wcb-slider-child__item-background">
+						<div className="wcb-slider-child__item-wrap-inner">
+							<div className={`${
+								style_image?.iconPosition === "left" || style_image?.iconPosition === "right"
+								? "flex gap-4"
+								: ""
+							}`}>
+							{/* Image */}	
+							{
+								(style_image && 
+								style_image.imagePosition === "left") &&
+								renderImage()
+							}
+							{ style_image?.iconPosition === "left" && renderIconTop() }
+							<div className="wcb-slider-child__item-inner">
+								{/* Image */}	
+								{
+									(style_image && 
+									style_image.imagePosition === "above-title") &&
+									renderImage()
+								}
 
-											{/* Icon Top */}
-											{shouldRenderIconTop() && renderIconTop()}
-											{/* Name */}
-											<div className={`wcb-slider-child__name`}>
-												<RichText.Content
-													tagName="div"
-													value={name}
-												/>
-											</div>
-											{/* Icon Below Title */}
-											{shouldRenderIconBelowTitle() && renderIconTop()}
-											
-											{/* Image */}	
-											{
-												(style_image && 
-												style_image.imagePosition === "blow-title") &&
-												renderImage()
-											}
-
-											{/* Content */}
-											<div className={`wcb-slider-child__content ${
-													(() => {
-														// Check for layout presets and icon positions first (these override text alignment)
-														if (style_layoutPreset?.preset === "wcb-layout-2" ||
-															style_layoutPreset?.preset === "wcb-layout-3" ||
-															style_layoutPreset?.preset === "wcb-layout-5" ||
-															style_image?.iconPosition === "left") {
-															return "wcb-slider-child__content_start";
-														}
-														
-														if (style_image?.iconPosition === "right") {
-															return "wcb-slider-child__content_end";
-														}
-
-														return "";
-													})()
-												}`.trim()}>
-												<RichText.Content
-													tagName="div"
-													value={content}
-												/>
-											</div>
-
-											{/* Call to Action */}
-											{
-												style_layoutPreset?.preset === "wcb-layout-3" ? null : (
-													style_buttonPreset?.link ? (
-														// <a
-														// 	style={{
-														// 		display: "inline-block",
-														// 	}}
-														// 	href={style_buttonPreset.link}
-														// 	target={style_buttonPreset.openInNewWindow ? "_blank" : "_self"}
-														// >
-														// 	{renderCallToAction(style_buttonPreset.preset, style_buttonPreset.enableIcon)}
-														// </a>
-														renderCallToActionLink(style_buttonPreset.preset, style_buttonPreset.enableIcon, style_buttonPreset.iconPosition, style_buttonPreset.link, style_buttonPreset.openInNewWindow)
-													) : (
-														renderCallToAction(style_buttonPreset?.preset, style_buttonPreset?.enableIcon, style_buttonPreset?.iconPosition)
-													)
-												)
-											}
-
-											{/* Image */}	
-											{
-												(style_image &&
-												style_image.imagePosition === "bottom") &&
-												renderImage()
-											}
-
-										</div>
-										{/* Image */}	
-										{
-											(style_image && 
-											style_image.imagePosition === "right") &&
-											renderImage()
-										}
-										</div>
-									</div>
+								{/* Icon Top */}
+								{shouldRenderIconTop() && renderIconTop()}
+								{/* Name */}
+								<div className={`wcb-slider-child__name`}>
+									<RichText.Content
+										tagName="div"
+										value={name}
+									/>
 								</div>
+								{/* Icon Below Title */}
+								{shouldRenderIconBelowTitle() && renderIconTop()}
+								
+								{/* Image */}	
+								{
+									(style_image && 
+									style_image.imagePosition === "blow-title") &&
+									renderImage()
+								}
+
+								{/* Content */}
+								<div className={`wcb-slider-child__content ${
+										(() => {
+											// Check for layout presets and icon positions first (these override text alignment)
+											if (style_layoutPreset?.preset === "wcb-layout-2" ||
+												style_layoutPreset?.preset === "wcb-layout-3" ||
+												style_layoutPreset?.preset === "wcb-layout-5" ||
+												style_image?.iconPosition === "left") {
+												return "wcb-slider-child__content_start";
+											}
+											
+											if (style_image?.iconPosition === "right") {
+												return "wcb-slider-child__content_end";
+											}
+
+											return "";
+										})()
+									}`.trim()}>
+									<RichText.Content
+										tagName="div"
+										value={content}
+									/>
+								</div>
+
+								{/* Call to Action */}
+								{
+									style_layoutPreset?.preset === "wcb-layout-3" ? null : (
+										style_buttonPreset?.link ? (
+											renderCallToActionLink(style_buttonPreset.preset, style_buttonPreset.enableIcon, style_buttonPreset.iconPosition, style_buttonPreset.link, style_buttonPreset.openInNewWindow)
+										) : (
+											renderCallToAction(style_buttonPreset?.preset, style_buttonPreset?.enableIcon, style_buttonPreset?.iconPosition)
+										)
+									)
+								}
+
+								{/* Image */}	
+								{
+									(style_image &&
+									style_image.imagePosition === "bottom") &&
+									renderImage()
+								}
+
+							</div>
+							{/* Image */}	
+							{
+								(style_image && 
+								style_image.imagePosition === "right") &&
+								renderImage()
+							}
 							</div>
 						</div>
-					{/* </div>
+					</div>
 				</div>
-			</div> */}
+			</div>
 		</div>
 	);
 } 

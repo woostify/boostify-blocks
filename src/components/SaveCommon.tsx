@@ -2,6 +2,7 @@ import React, { FC, ReactNode } from "react";
 import { __ } from "@wordpress/i18n";
 import _ from "lodash";
 import { WcbAttrsCommonFromWp } from "../block-container/attributes";
+import normalizeBlockAttrs from "../utils/normalizeBlockAttrs";
 // @ts-ignore
 interface Props<T = any> {
 	className?: string;
@@ -29,20 +30,7 @@ function SaveCommon<T>({
 }: Props<T>) {
 	let blockJson = "";
 	try {
-		// Normalize data to prevent array vs object inconsistency
-		const normalizeData = (obj: any): any => {
-			if (Array.isArray(obj)) {
-				return obj.length === 0 ? {} : obj;
-			}
-			if (obj && typeof obj === 'object') {
-				const normalized: any = {};
-				for (const [key, value] of Object.entries(obj)) {
-					normalized[key] = normalizeData(value);
-				}
-				return normalized;
-			}
-			return obj;
-		};
+		const normalizeData = normalizeBlockAttrs;
 
 		// Special handling for responsive values to ensure consistency
 		const normalizeResponsiveObject = (obj: any) => {

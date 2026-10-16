@@ -21,6 +21,7 @@ import Edit from "./Edit";
 import save from "./Save";
 import metadata from "./block.json";
 import attributes from "./attributes";
+import deprecated from "./deprecated";
 import convertObjectAttrToPreview from "../utils/convertAttsToPreview";
 
 //------------------ TAILWINDCSS AND COMMON CSS -----------------
@@ -29,6 +30,7 @@ registerBlockType(metadata.name, {
 	edit: Edit,
 	save,
 	attributes,
+	deprecated,
 	example: convertObjectAttrToPreview(attributes),
 	icon: (
 		<svg
