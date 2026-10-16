@@ -304,16 +304,6 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
         );
         // END FORM CHILD BLOCKS
 
-        // 
-        register_block_type(
-            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-testimonials',
-            [
-                "render_callback"     => "boostify_blocks_block_testimonials_render_callback",
-                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/testimonials'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
-                "view_script_handles" => []
-            ]
-        );
-
         // TESTIMONIALS (SWIPER) BLOCK
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-testimonials-swiper',
@@ -461,23 +451,6 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             [
                 "render_callback"     => "boostify_blocks_block_icon_render_callback",
                 "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/boostify-icon'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
-                "view_script_handles" => []
-            ]
-        );
-
-        // SLIDER BLOCK
-        register_block_type(
-            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider',
-            [
-                "render_callback"     => "boostify_blocks_block_slider_render_callback",
-                "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/slider'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
-                "view_script_handles" => []
-            ]
-        );
-        // SLIDER CHILD
-        register_block_type(
-            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-slider-child',
-            [
                 "view_script_handles" => []
             ]
         );

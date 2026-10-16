@@ -18,48 +18,48 @@ import { TESTIMONIAL_ITEM_DEMO } from "./Edit";
 import {
 	WCB_TESTIMONIALS_PANEL_CAROUSEL,
 	WCB_TESTIMONIALS_PANEL_CAROUSEL_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanelCarousel";
+} from "./WcbTestimonialsPanelCarousel";
 import {
 	WCB_TESTIMONIALS_PANEL_GENERAL,
 	WCB_TESTIMONIALS_PANEL_GENERAL_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanelGeneral";
+} from "./WcbTestimonialsPanelGeneral";
 import {
 	WCB_TESTIMONIALS_PANEL_IMAGES,
 	WCB_TESTIMONIALS_PANEL_IMAGES_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanelImages";
+} from "./WcbTestimonialsPanelImages";
 import {
 	WCB_TESTIMONIALS_PANEL_RATING,
 	WCB_TESTIMONIALS_PANEL_RATING_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanelRating";
+} from "./WcbTestimonialsPanelRating";
 import {
 	WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS,
 	WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanel_StyleArrowDots";
+} from "./WcbTestimonialsPanel_StyleArrowDots";
 import {
 	WCB_TESTIMONIALS_PANEL_STYLE_BACKGROUND_BORDER,
 	WCB_TESTIMONIALS_PANEL_STYLE_BACKGROUND_BORDER_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanel_StyleBackground";
+} from "./WcbTestimonialsPanel_StyleBackground";
 import {
 	WCB_TESTIMONIALS_PANEL_STYLE_COMPANY,
 	WCB_TESTIMONIALS_PANEL_STYLE_COMPANY_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanel_StyleCompany";
-import { WCB_TESTIMONIALS_PANEL_STYLE_CONTENT_DEMO } from "../block-testimonials/WcbTestimonialsPanel_StyleContent";
+} from "./WcbTestimonialsPanel_StyleCompany";
+import { WCB_TESTIMONIALS_PANEL_STYLE_CONTENT_DEMO } from "./WcbTestimonialsPanel_StyleContent";
 import {
 	WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION,
 	WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanel_StyleDimension";
+} from "./WcbTestimonialsPanel_StyleDimension";
 import {
 	WCB_TESTIMONIALS_PANEL_STYLE_IMAGE,
 	WCB_TESTIMONIALS_PANEL_STYLE_IMAGE_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanel_StyleImage";
+} from "./WcbTestimonialsPanel_StyleImage";
 import {
 	WCB_TESTIMONIALS_PANEL_STYLE_RATING,
 	WCB_TESTIMONIALS_PANEL_STYLE_RATING_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanel_StyleRating";
+} from "./WcbTestimonialsPanel_StyleRating";
 import {
 	WCB_TESTIMONIALS_PANEL_STYLE_NAME,
 	WCB_TESTIMONIALS_PANEL_STYLE_NAME_DEMO,
-} from "../block-testimonials/WcbTestimonialsPanel_StyleName";
+} from "./WcbTestimonialsPanel_StyleName";
 
 export interface TestimonialItem {
 	content: string;
