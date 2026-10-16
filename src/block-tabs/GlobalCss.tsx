@@ -60,7 +60,7 @@ const GlobalCss: FC<Props> = (attrs) => {
     const iconDesk = getValueFromAttrsResponsives(style_icon?.size)?.value_Desktop;
     const iconTab = getValueFromAttrsResponsives(style_icon?.size)?.value_Tablet;
     const iconMob = getValueFromAttrsResponsives(style_icon?.size)?.value_Mobile;
-    const IconSizeConverted: HasResponsive<string> = {
+    const IconSizeConverted: HasResponsive<string | undefined> = {
         Desktop: iconDesk !== null && iconDesk !== undefined ? `${iconDesk}px` : undefined,
         Tablet: iconTab !== null && iconTab !== undefined ? `${iconTab}px` : undefined,
         Mobile: iconMob !== null && iconMob !== undefined ? `${iconMob}px` : undefined,
