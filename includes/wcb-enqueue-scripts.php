@@ -273,13 +273,133 @@ add_action('enqueue_block_assets', 'boostify_blocks_enqueue_lineicons');
 
 function boostify_blocks_enqueue_lineicons_for_gutenbeg_editor()
 {
-    add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/lineicons-free-basic/icon-font/lineicons.css');
-    // for iframe
-    add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/lineicons2.css');
     // Inject frontend styles into the iframed editor canvas
     add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/frontend.css');
+
+    // Register active theme Google fonts into the iframed editor canvas
+    $opts         = function_exists( 'woostify_options' ) ? woostify_options( false ) : ( get_option( 'woostify_setting', array() ) );
+    $body_font    = ! empty( $opts['body_font_family'] ) ? $opts['body_font_family'] : 'Poppins';
+    $heading_font = ! empty( $opts['heading_font_family'] ) ? $opts['heading_font_family'] : 'Poppins';
+    $system_fonts = array(
+        'arial', 'helvetica', 'times new roman', 'times', 'courier new', 'courier',
+        'verdana', 'georgia', 'palatino', 'garamond', 'bookman', 'comic sans ms',
+        'trebuchet ms', 'arial black', 'impact', 'sans-serif', 'serif', 'monospace', 'inherit', 'initial'
+    );
+    $b_settings   = get_option( 'boostify_blocks_settings_options', array() );
+    $load_locally = ( $b_settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
+
+    foreach ( array_unique( array_filter( array( $body_font, $heading_font ) ) ) as $f_name ) {
+        $clean = trim( $f_name );
+        if ( ! empty( $clean ) && ! in_array( strtolower( $clean ), $system_fonts, true ) ) {
+            $font_url = false;
+            if ( $load_locally && function_exists( 'boostify_blocks_download_google_font' ) ) {
+                $font_url = boostify_blocks_download_google_font( $clean );
+            }
+            if ( ! $font_url ) {
+                $family   = str_replace( ' ', '+', $clean );
+                $font_url = 'https://fonts.googleapis.com/css?family=' . $family . ':100,200,300,400,500,600,700,800,900&display=swap';
+            }
+            add_editor_style( $font_url );
+        }
+    }
 }
 add_action('admin_init', 'boostify_blocks_enqueue_lineicons_for_gutenbeg_editor');
+
+/**
+ * Generate dynamic CSS reflecting active theme Customizer typography.
+ * Uses :where() for zero specificity so block custom settings always take precedence.
+ *
+ * @return string Dynamic CSS rules.
+ */
+function boostify_blocks_get_theme_editor_typography_css() {
+    $opts = function_exists( 'woostify_options' ) ? woostify_options( false ) : ( get_option( 'woostify_setting', array() ) );
+
+    $body_font      = ! empty( $opts['body_font_family'] ) ? $opts['body_font_family'] : 'Poppins';
+    $body_size      = ! empty( $opts['body_font_size'] ) ? intval( $opts['body_font_size'] ) : 14;
+    $body_weight    = ! empty( $opts['body_font_weight'] ) ? $opts['body_font_weight'] : '500';
+    $body_lh        = ! empty( $opts['body_line_height'] ) ? ( is_numeric( $opts['body_line_height'] ) ? $opts['body_line_height'] . 'px' : $opts['body_line_height'] ) : '28px';
+    $body_transform = ! empty( $opts['body_font_transform'] ) ? $opts['body_font_transform'] : 'none';
+    $text_color     = ! empty( $opts['text_color'] ) ? $opts['text_color'] : '#474747';
+
+    $heading_font      = ! empty( $opts['heading_font_family'] ) ? $opts['heading_font_family'] : 'Poppins';
+    $heading_weight    = ! empty( $opts['heading_font_weight'] ) ? $opts['heading_font_weight'] : '600';
+    $heading_lh        = ! empty( $opts['heading_line_height'] ) ? $opts['heading_line_height'] : '1.5';
+    $heading_transform = ! empty( $opts['heading_font_transform'] ) ? $opts['heading_font_transform'] : 'none';
+    $heading_color     = ! empty( $opts['heading_color'] ) ? $opts['heading_color'] : '#2b2b2b';
+
+    $h1_size = ! empty( $opts['heading_h1_font_size'] ) ? intval( $opts['heading_h1_font_size'] ) : 48;
+    $h2_size = ! empty( $opts['heading_h2_font_size'] ) ? intval( $opts['heading_h2_font_size'] ) : 36;
+    $h3_size = ! empty( $opts['heading_h3_font_size'] ) ? intval( $opts['heading_h3_font_size'] ) : 30;
+    $h4_size = ! empty( $opts['heading_h4_font_size'] ) ? intval( $opts['heading_h4_font_size'] ) : 28;
+    $h5_size = ! empty( $opts['heading_h5_font_size'] ) ? intval( $opts['heading_h5_font_size'] ) : 26;
+    $h6_size = ! empty( $opts['heading_h6_font_size'] ) ? intval( $opts['heading_h6_font_size'] ) : 18;
+
+    $google_font_imports = '';
+    $system_fonts = array(
+        'arial', 'helvetica', 'times new roman', 'times', 'courier new', 'courier',
+        'verdana', 'georgia', 'palatino', 'garamond', 'bookman', 'comic sans ms',
+        'trebuchet ms', 'arial black', 'impact', 'sans-serif', 'serif', 'monospace', 'inherit', 'initial'
+    );
+    $b_settings   = get_option( 'boostify_blocks_settings_options', array() );
+    $load_locally = ( $b_settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
+
+    $fonts_to_load = array();
+    foreach ( array_unique( array_filter( array( $body_font, $heading_font ) ) ) as $f_name ) {
+        $clean = trim( $f_name );
+        if ( ! empty( $clean ) && ! in_array( strtolower( $clean ), $system_fonts, true ) ) {
+            $font_url = false;
+            if ( $load_locally && function_exists( 'boostify_blocks_download_google_font' ) ) {
+                $font_url = boostify_blocks_download_google_font( $clean );
+            }
+            if ( ! $font_url ) {
+                $family_encoded = str_replace( ' ', '+', $clean );
+                $font_url       = "https://fonts.googleapis.com/css?family={$family_encoded}:100,200,300,400,500,600,700,800,900&display=swap";
+            }
+            $fonts_to_load[] = $font_url;
+        }
+    }
+    if ( ! empty( $fonts_to_load ) ) {
+        $import_rules = array();
+        foreach ( $fonts_to_load as $f_url ) {
+            $import_rules[] = "@import url('{$f_url}');";
+        }
+        $google_font_imports = implode( "\n", $import_rules ) . "\n";
+    }
+
+    return "{$google_font_imports}
+    :root, .editor-styles-wrapper {
+        --theme-body-font: '{$body_font}', sans-serif;
+        --theme-body-font-size: {$body_size}px;
+        --theme-body-font-weight: {$body_weight};
+        --theme-body-line-height: {$body_lh};
+        --theme-body-transform: {$body_transform};
+        --theme-body-color: {$text_color};
+        --theme-heading-font: '{$heading_font}', sans-serif;
+        --theme-heading-font-weight: {$heading_weight};
+        --theme-heading-line-height: {$heading_lh};
+        --theme-heading-transform: {$heading_transform};
+        --theme-heading-color: {$heading_color};
+        --theme-h1-font-size: {$h1_size}px;
+        --theme-h2-font-size: {$h2_size}px;
+        --theme-h3-font-size: {$h3_size}px;
+        --theme-h4-font-size: {$h4_size}px;
+        --theme-h5-font-size: {$h5_size}px;
+        --theme-h6-font-size: {$h6_size}px;
+    }
+    ";
+}
+
+// Inject into block editor iframe canvas via block_editor_settings_all filter
+add_filter( 'block_editor_settings_all', function( $editor_settings ) {
+    $theme_css = boostify_blocks_get_theme_editor_typography_css();
+    if ( ! empty( $theme_css ) ) {
+        $editor_settings['styles'][] = array(
+            'css'            => $theme_css,
+            '__unstableType' => 'theme',
+        );
+    }
+    return $editor_settings;
+} );
 
 
 // Enqueue scripts for settings page.

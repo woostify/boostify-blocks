@@ -262,12 +262,15 @@ class WCB_CSS_Utility {
 				$css['font-family'] = $typo['fontFamily'];
 			}
 			if ( ! empty( $typo['appearance']['style'] ) && is_array( $typo['appearance']['style'] ) ) {
-				$s = $typo['appearance']['style'];
-				if ( ! empty( $s['fontWeight'] ) ) {
-					$css['font-weight'] = $s['fontWeight'];
-				}
-				if ( ! empty( $s['fontStyle'] ) ) {
-					$css['font-style'] = $s['fontStyle'];
+				$app_name = $typo['appearance']['name'] ?? $typo['appearance']['value'] ?? $typo['appearance']['key'] ?? '';
+				if ( 'default' !== strtolower( $app_name ) ) {
+					$s = $typo['appearance']['style'];
+					if ( ! empty( $s['fontWeight'] ) && 'undefined' !== $s['fontWeight'] ) {
+						$css['font-weight'] = $s['fontWeight'];
+					}
+					if ( ! empty( $s['fontStyle'] ) && 'undefined' !== $s['fontStyle'] ) {
+						$css['font-style'] = $s['fontStyle'];
+					}
 				}
 			}
 			if ( ! empty( $typo['textDecoration'] ) && 'undefined' !== $typo['textDecoration'] ) {

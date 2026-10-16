@@ -57,25 +57,28 @@ const GlobalCss: FC<Props> = (attrs) => {
     const ICON_CLASSNAME_ACTIVE = `${TITLE_CHILD_CLASSNAME_ACTIVE} .wcb-tabs__icon`;
     const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__contents`;
 
-    const IconSizeConverted: HasResponsive<string> = {
-        Desktop: `${getValueFromAttrsResponsives(style_icon.size).value_Desktop}px`,
-        Tablet: `${getValueFromAttrsResponsives(style_icon.size).value_Tablet}px`,
-        Mobile: `${getValueFromAttrsResponsives(style_icon.size).value_Mobile}px`,
+    const iconDesk = getValueFromAttrsResponsives(style_icon?.size)?.value_Desktop;
+    const iconTab = getValueFromAttrsResponsives(style_icon?.size)?.value_Tablet;
+    const iconMob = getValueFromAttrsResponsives(style_icon?.size)?.value_Mobile;
+    const IconSizeConverted: HasResponsive<string | undefined> = {
+        Desktop: iconDesk !== null && iconDesk !== undefined ? `${iconDesk}px` : undefined,
+        Tablet: iconTab !== null && iconTab !== undefined ? `${iconTab}px` : undefined,
+        Mobile: iconMob !== null && iconMob !== undefined ? `${iconMob}px` : undefined,
     };
 
     return (
         <>
             <Global
                 styles={[
-                    getStyleObjectFromResponsiveAttr({ className: INNER_CLASSNAME, value: style_container.colunmGap, prefix: "columnGap" }),
-                    getStyleObjectFromResponsiveAttr({ className: INNER_CLASSNAME, value: style_container.rowGap, prefix: "rowGap" }),
-                    { [INNER_CLASSNAME]: { textAlign: general_general.textAlignment } },
+                    getStyleObjectFromResponsiveAttr({ className: INNER_CLASSNAME, value: style_container?.colunmGap, prefix: "columnGap" }),
+                    getStyleObjectFromResponsiveAttr({ className: INNER_CLASSNAME, value: style_container?.rowGap, prefix: "rowGap" }),
+                    { [INNER_CLASSNAME]: { textAlign: general_general?.textAlignment } },
                 ]}
             />
 
-            {(general_general.layout === "grid" ||
-                general_general.style === "verticalStyle1" ||
-                general_general.style === "verticalStyle2") && (
+            {(general_general?.layout === "grid" ||
+                general_general?.style === "verticalStyle1" ||
+                general_general?.style === "verticalStyle2") && (
                 <Global
                     styles={[
                         {
@@ -89,12 +92,12 @@ const GlobalCss: FC<Props> = (attrs) => {
                             [TITLE_WRAP_CLASSNAME]: {
                                 display: "flex",
                                 flexDirection: "column",
-                                justifyContent: getFlexAlignment(general_tabTitle.tabAlignment),
+                                justifyContent: getFlexAlignment(general_tabTitle?.tabAlignment || "left"),
                             },
                         },
                         getStyleObjectFromResponsiveAttr({
                             className: TITLE_WRAP_CLASSNAME,
-                            value: style_title.rowGap,
+                            value: style_title?.rowGap,
                             prefix: "gap",
                         }),
                         {
@@ -104,12 +107,12 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 width: "100%",
                                 padding: "0.5rem",
                                 boxSizing: "border-box",
-                                justifyContent: getFlexAlignment(general_tabTitle.textAlignment),
+                                justifyContent: getFlexAlignment(general_tabTitle?.textAlignment || "left"),
                             },
                         },
                         getStyleObjectFromResponsiveAttr({
                             className: TITLE_CHILD_CLASSNAME,
-                            value: style_icon.colGap,
+                            value: style_icon?.colGap,
                             prefix: "gap",
                         }),
                         {
@@ -128,8 +131,8 @@ const GlobalCss: FC<Props> = (attrs) => {
                 />
             )}
 
-            {(general_general.layout === "accordion" ||
-                general_general.style === "horizontalStyle1") && (
+            {(general_general?.layout === "accordion" ||
+                general_general?.style === "horizontalStyle1") && (
                 <Global
                     styles={[
                         {
@@ -137,24 +140,24 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 display: "flex",
                                 flexDirection: "row",
                                 gap: "0.5rem",
-                                justifyContent: getFlexAlignment(general_tabTitle.tabAlignment),
+                                justifyContent: getFlexAlignment(general_tabTitle?.tabAlignment || "left"),
                             },
                             [TITLE_CHILD_CLASSNAME]: {
                                 display: "flex",
                                 flexDirection: "row",
-                                justifyContent: getFlexAlignment(general_tabTitle.textAlignment),
+                                justifyContent: getFlexAlignment(general_tabTitle?.textAlignment || "left"),
                             },
                         },
                         getStyleObjectFromResponsiveAttr({
                             className: TITLE_CHILD_CLASSNAME,
-                            value: style_icon.colGap,
+                            value: style_icon?.colGap,
                             prefix: "gap",
                         }),
                     ]}
                 />
             )}
 
-            {general_general.style === "horizontalStyle2" && (
+            {general_general?.style === "horizontalStyle2" && (
                 <Global
                     styles={[
                         {
@@ -162,7 +165,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 display: "flex",
                                 flexDirection: "row",
                                 gap: "0.5rem",
-                                justifyContent: getFlexAlignment(general_tabTitle.tabAlignment),
+                                justifyContent: getFlexAlignment(general_tabTitle?.tabAlignment || "left"),
                                 borderBottom: "2px solid #d1d5db",
                                 marginBottom: "0",
                                 background: "#fff",
@@ -170,7 +173,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                             [TITLE_CHILD_CLASSNAME]: {
                                 display: "flex",
                                 flexDirection: "row",
-                                justifyContent: getFlexAlignment(general_tabTitle.textAlignment),
+                                justifyContent: getFlexAlignment(general_tabTitle?.textAlignment || "left"),
                                 background: "none",
                                 border: "none",
                                 borderRadius: "0",
@@ -178,7 +181,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                                 zIndex: 1,
                             },
                             [TITLE_CHILD_CLASSNAME_ACTIVE]: {
-                                background: style_title.backgroundColorActive || "#fff",
+                                background: style_title?.backgroundColorActive || "#fff",
                                 border: "none",
                                 borderTop: "2px solid #d1d5db",
                                 borderRight: "2px solid #d1d5db",
@@ -200,40 +203,40 @@ const GlobalCss: FC<Props> = (attrs) => {
 
             <Global
                 styles={[
-                    getBackgroundColorGradientStyles({ className: BODY_CLASSNAME, background: style_container.background }),
-                    getBorderStyles({ border: style_container.border, className: BODY_CLASSNAME, isWithRadius: true }),
-                    getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title.colunmGap, prefix: "columnGap" }),
-                    getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title.rowGap, prefix: "rowGap" }),
-                    getTypographyStyles({ className: TITLE_CLASSNAME, typography: style_title.typography }),
-                    getPaddingMarginStyles({ className: TITLE_CLASSNAME, padding: style_title.padding }),
+                    getBackgroundColorGradientStyles({ className: BODY_CLASSNAME, background: style_container?.background }),
+                    getBorderStyles({ border: style_container?.border, className: BODY_CLASSNAME, isWithRadius: true }),
+                    getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title?.colunmGap, prefix: "columnGap" }),
+                    getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title?.rowGap, prefix: "rowGap" }),
+                    getTypographyStyles({ className: TITLE_CLASSNAME, typography: style_title?.typography }),
+                    getPaddingMarginStyles({ className: TITLE_CLASSNAME, padding: style_title?.padding }),
                     {
                         [TITLE_CHILD_CLASSNAME]: {
-                            backgroundColor: style_title.backgroundColor,
+                            backgroundColor: style_title?.backgroundColor,
                         },
                         [TITLE_CLASSNAME]: {
-                            color: style_title.color,
+                            color: style_title?.color,
                         },
                         [TITLE_CHILD_CLASSNAME_ACTIVE]: {
-                            backgroundColor: style_title.backgroundColorActive,
+                            backgroundColor: style_title?.backgroundColorActive,
                         },
                         [TITLE_CLASSNAME_ACTIVE]: {
-                            color: style_title.colorActive,
+                            color: style_title?.colorActive,
                         },
                     },
-                    getTypographyStyles({ className: BODY_CLASSNAME, typography: style_body.typography }),
-                    getPaddingMarginStyles({ className: BODY_CLASSNAME, padding: style_body.padding, margin: style_body.margin }),
+                    getTypographyStyles({ className: BODY_CLASSNAME, typography: style_body?.typography }),
+                    getPaddingMarginStyles({ className: BODY_CLASSNAME, padding: style_body?.padding, margin: style_body?.margin }),
                     {
                         [BODY_CLASSNAME]: {
-                            color: style_body.color,
-                            backgroundColor: style_body.backgroundColor,
+                            color: style_body?.color,
+                            backgroundColor: style_body?.backgroundColor,
                             "&:hover": {
-                                backgroundColor: style_body.backgroundColorHover,
+                                backgroundColor: style_body?.backgroundColorHover,
                             },
                         },
                         [BODY_CHILD_CLASSNAME]: {
-                            color: style_body.color,
+                            color: style_body?.color,
                             "&:hover": {
-                                color: style_body.colorHover,
+                                color: style_body?.colorHover,
                             },
                         },
                     },
@@ -249,8 +252,8 @@ const GlobalCss: FC<Props> = (attrs) => {
                         prefix_3: "width",
                     }),
                     {
-                        [ICON_CLASSNAME]: { color: style_icon.color },
-                        [ICON_CLASSNAME_ACTIVE]: { color: style_icon.activeColor },
+                        [ICON_CLASSNAME]: { color: style_icon?.color },
+                        [ICON_CLASSNAME_ACTIVE]: { color: style_icon?.activeColor },
                     },
                 ]}
             />
@@ -270,8 +273,8 @@ const GlobalCss: FC<Props> = (attrs) => {
             <Global
                 styles={getPaddingMarginStyles({
                     className: WRAP_CLASSNAME,
-                    padding: style_dimension.padding,
-                    margin: style_dimension.margin,
+                    padding: style_dimension?.padding,
+                    margin: style_dimension?.margin,
                 })}
             />
             <Global
@@ -287,12 +290,12 @@ const GlobalCss: FC<Props> = (attrs) => {
                 styles={[
                     getBorderStyles({
                         className: TITLE_CHILD_CLASSNAME,
-                        border: style_title.border,
+                        border: style_title?.border,
                         isWithRadius: true,
                     }),
                     getBorderStyles({
                         className: TITLE_CHILD_CLASSNAME_ACTIVE,
-                        border: style_title.borderActive,
+                        border: style_title?.borderActive,
                         isWithRadius: true,
                     }),
                 ]}
@@ -302,7 +305,7 @@ const GlobalCss: FC<Props> = (attrs) => {
                 styles={[
                     getBorderStyles({
                         className: BODY_CLASSNAME,
-                        border: style_body.border,
+                        border: style_body?.border,
                         isWithRadius: true,
                     }),
                 ]}

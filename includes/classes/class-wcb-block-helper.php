@@ -167,8 +167,6 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			'hoverColor'   => '',
 			'radius'       => array(
 				'Desktop' => '0',
-				'Tablet'  => '0',
-				'Mobile'  => '0',
 			),
 		);
 
@@ -382,6 +380,10 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			$m = $value;
 		}
 
+		if ( empty( $unit ) && in_array( $property, array( 'font-size', 'width', 'height', 'min-width', 'max-width', 'min-height', 'max-height', 'border-radius' ), true ) ) {
+			$unit = 'px';
+		}
+
 		if ( '' !== $d && null !== $d ) {
 			self::set_css_property( $css['desktop'], $selector, $property, $d, $unit );
 		}
@@ -546,8 +548,16 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			};
 
 			$d_raw = is_array( $radius ) ? ( $radius['Desktop'] ?? $radius['desktop'] ?? ( isset( $radius['topLeft'] ) ? $radius : '' ) ) : $radius;
-			$t_raw = is_array( $radius ) ? ( $radius['Tablet'] ?? $radius['tablet'] ?? $d_raw ) : $radius;
-			$m_raw = is_array( $radius ) ? ( $radius['Mobile'] ?? $radius['mobile'] ?? $t_raw ) : $radius;
+			$t_raw = is_array( $radius ) ? ( $radius['Tablet'] ?? $radius['tablet'] ?? '' ) : '';
+			$m_raw = is_array( $radius ) ? ( $radius['Mobile'] ?? $radius['mobile'] ?? '' ) : '';
+
+			// If Tablet / Mobile is not explicitly specified, cascade from Desktop like TypeScript frontend
+			if ( '' === $t_raw || null === $t_raw ) {
+				$t_raw = $d_raw;
+			}
+			if ( '' === $m_raw || null === $m_raw ) {
+				$m_raw = $t_raw;
+			}
 
 			$d_c = $normalize_corners( $d_raw );
 			$t_c = $normalize_corners( $t_raw );
@@ -1205,7 +1215,7 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 
 		// 2. Load static style-index.css for each used block.
 		foreach ( $block_names as $block_name ) {
-			$slug = str_replace( 'boostify-blocks/', '', $block_name );
+			$slug = self::normalize_block_slug( $block_name );
 			if ( isset( $loaded_css[ $slug ] ) ) {
 				continue;
 			}
