@@ -7,16 +7,7 @@
 	display: inline-block;
 }
 
-// Synchronize div and p tags when used as headings across editor & frontend
-.wcb-heading__wrap {
-	div.wcb-heading__heading,
-	p.wcb-heading__heading {
-		font-size: 36px;
-		font-weight: 600;
-		line-height: 1.5;
-		color: rgb(43, 43, 43);
-	}
-}
+
 
 .wcb-heading__subHeading {
 	font-size: 14px;

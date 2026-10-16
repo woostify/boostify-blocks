@@ -380,6 +380,10 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			$m = $value;
 		}
 
+		if ( empty( $unit ) && in_array( $property, array( 'font-size', 'width', 'height', 'min-width', 'max-width', 'min-height', 'max-height', 'border-radius' ), true ) ) {
+			$unit = 'px';
+		}
+
 		if ( '' !== $d && null !== $d ) {
 			self::set_css_property( $css['desktop'], $selector, $property, $d, $unit );
 		}

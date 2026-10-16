@@ -22,13 +22,6 @@ export const WCB_COUNTDOWN_PANEL_STYLE_NUMBER_DEMO: WCB_COUNTDOWN_PANEL_STYLE_NU
 			Tablet: "38px",
 			Mobile: "20px"
 		},
-		appearance: {
-			...TYPOGRAPHY_CONTROL_DEMO.appearance,
-			style: {
-				...TYPOGRAPHY_CONTROL_DEMO.appearance.style,
-				fontWeight: "400",
-			},
-		},
 	},
 	textColor: "inherit",
 };

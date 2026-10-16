@@ -1,66 +1,74 @@
-// Set editor iframe root font-size to match Woostify theme (14px) so that rem units calculate identically
+// Default base editor typography (mirrors theme defaults; overridden dynamically by active theme Customizer)
 html {
-	font-size: 14px;
+	font-size: var(--theme-body-font-size, 14px);
 }
 
 // Synchronize editor canvas typography with frontend theme styles
 .editor-styles-wrapper {
-	font-family: var(--font-body, Poppins), sans-serif;
-	font-size: 14px;
-	font-weight: 500;
+	font-family: var(--theme-body-font, var(--font-body, Poppins), sans-serif);
+	font-size: var(--theme-body-font-size, 14px);
+	font-weight: var(--theme-body-font-weight, 500);
+	line-height: var(--theme-body-line-height, 28px);
+	color: var(--theme-body-color, #000);
+
 	// Reset link decoration to match frontend theme (Woostify: a { text-decoration: none; })
 	:where(a) {
 		text-decoration: none;
 	}
 
+	// Reset ins text-decoration for WooCommerce sale prices
+	:where(ins) {
+		text-decoration: none;
+	}
+
 	// Use :where to give base paragraph low specificity so block-specific styles take precedence
-	:where(p:not(.wcb-heading__heading)) {
+	:where(p) {
 		font-family: inherit;
-		font-size: 14px;
-		font-weight: 500;
-		line-height: normal;
+		font-size: var(--theme-body-font-size, 14px);
+		font-weight: var(--theme-body-font-weight, 500);
+		line-height: var(--theme-body-line-height, 28px);
+		text-transform: var(--theme-body-transform, none);
+	}
+
+	:where(div.wcb-heading__heading, p.wcb-heading__heading) {
+		font-family: inherit;
+		font-size: var(--theme-body-font-size, 14px);
+		font-weight: var(--theme-body-font-weight, 500);
+		line-height: var(--theme-body-line-height, 28px);
+		text-transform: var(--theme-body-transform, none);
+		color: var(--theme-body-color, #474747);
 	}
 
 	// Use :where for base headings so specific card titles (posts grid, products) easily override
+	:where(h1, h2, h3, h4, h5, h6) {
+		font-family: var(--theme-heading-font, var(--font-heading, Poppins), sans-serif);
+		font-weight: var(--theme-heading-font-weight, 600);
+		line-height: var(--theme-heading-line-height, 1.5);
+		color: var(--theme-heading-color, rgb(43, 43, 43));
+		text-transform: var(--theme-heading-transform, none);
+	}
+
 	:where(h1) {
-		font-size: 48px;
-		font-weight: 600;
-		line-height: 1.5;
-		color: rgb(43, 43, 43);
+		font-size: var(--theme-h1-font-size, 48px);
 	}
 
 	:where(h2) {
-		font-size: 36px;
-		font-weight: 600;
-		line-height: 1.5;
-		color: rgb(43, 43, 43);
+		font-size: var(--theme-h2-font-size, 36px);
 	}
 
 	:where(h3) {
-		font-size: 30px;
-		font-weight: 600;
-		line-height: 1.5;
-		color: rgb(43, 43, 43);
+		font-size: var(--theme-h3-font-size, 30px);
 	}
 
 	:where(h4) {
-		font-size: 28px;
-		font-weight: 600;
-		line-height: 1.5;
-		color: rgb(43, 43, 43);
+		font-size: var(--theme-h4-font-size, 28px);
 	}
 
 	:where(h5) {
-		font-size: 26px;
-		font-weight: 600;
-		line-height: 1.5;
-		color: rgb(43, 43, 43);
+		font-size: var(--theme-h5-font-size, 26px);
 	}
 
 	:where(h6) {
-		font-size: 18px;
-		font-weight: 600;
-		line-height: 1.5;
-		color: rgb(43, 43, 43);
+		font-size: var(--theme-h6-font-size, 18px);
 	}
 }

@@ -40,7 +40,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	// ------------------- WRAP DIV
 	const getDivWrapStyles = (): CSSObject => {
-		const { textAlignment } = general_content;
+		const textAlignment = general_content?.textAlignment;
 		const { value_Desktop, value_Mobile, value_Tablet } =
 			getValueFromAttrsResponsives<React.CSSProperties["textAlign"]>(
 				textAlignment
@@ -76,27 +76,31 @@ const GlobalCss: FC<Props> = (attrs) => {
 		};
 	};
 	const getDivWrapStyles__Link = (): CSSObject => {
-		const { linkColor } = styles_link;
+		const linkColor = styles_link?.linkColor;
+		if (!linkColor?.Normal?.color && !linkColor?.Hover?.color) {
+			return {};
+		}
 
 		return {
 			[`${WRAP_CLASSNAME} a`]: {
-				color: linkColor.Normal.color,
+				color: linkColor?.Normal?.color,
 				":hover": {
-					color: linkColor.Hover.color,
+					color: linkColor?.Hover?.color,
 				},
 			},
 		};
 	};
 	const getDivWrapStyles__background = () => {
-		const { background } = styles_background;
+		const background = styles_background?.background;
 		return getBackgroundColorGradientStyles({
 			background,
 			className: WRAP_CLASSNAME,
 		});
 	};
 	const getDivWrapStyles__PaddingMargin = () => {
-		const { dimension } = styles_dimensions;
-		const { margin, padding } = dimension;
+		const dimension = styles_dimensions?.dimension;
+		const margin = dimension?.margin;
+		const padding = dimension?.padding;
 		return getPaddingMarginStyles({
 			margin,
 			padding,
@@ -105,6 +109,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 	};
 	// HIGHLIGHT STYLES
 	const getDivWrapStyles__Highlight = (): CSSObject => {
+		if (!styles_highlight) return {};
 		const { bgColor, padding, textColor } = styles_highlight;
 		const {
 			value_Desktop: padding_Desktop,
@@ -142,7 +147,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		};
 	};
 	const getDivWrapStyles__Highlight_typography = () => {
-		const { typography } = styles_highlight;
+		const typography = styles_highlight?.typography;
 
 		return getTypographyStyles({
 			typography,
@@ -150,7 +155,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		});
 	};
 	const getDivWrapStyles__Highlight_border = () => {
-		const { border } = styles_highlight;
+		const border = styles_highlight?.border;
 
 		return getBorderStyles({
 			border,
@@ -161,7 +166,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	// SEPARATOR STYLES
 	const getDivWrapStyles__Separator_width = (): CSSObject => {
-		const { width } = styles_separator;
+		const width = styles_separator?.width;
 		const { value_Desktop, value_Mobile, value_Tablet } =
 			getValueFromAttrsResponsives<string>(width);
 		//
@@ -178,7 +183,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		};
 	};
 	const getDivWrapStyles__Separator = () => {
-		const { border } = styles_separator;
+		const border = styles_separator?.border;
 
 		return getBorderStyles({
 			border: {
@@ -190,7 +195,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	// ------------------- HEADING STYLE
 	const getInner__Heading_typography = () => {
-		const { typography } = styles_heading;
+		const typography = styles_heading?.typography;
 
 		return getTypographyStyles({
 			typography,
@@ -198,15 +203,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 		});
 	};
 	const getInner__Heading_color = () => {
-		const { textColor } = styles_heading;
+		const textColor = styles_heading?.textColor;
 		return getColorAndGradientStyles({
 			textColor,
 			className: HEADING_CLASSNAME,
 		});
 	};
 	const getInner__Heading__textShadow = (): CSSObject => {
-		const { textShadow } = styles_heading;
-		const { blur, color, horizontal, vertical } = textShadow;
+		const textShadow = styles_heading?.textShadow;
+		if (!textShadow?.color) return {};
+		const { blur = 0, color = "", horizontal = 0, vertical = 0 } = textShadow;
 		return {
 			[`${HEADING_CLASSNAME}`]: {
 				textShadow: `${horizontal}px ${vertical}px ${blur}px ${color}`,
@@ -215,14 +221,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 	};
 	// ------------------- SUB-HEADING STYLE
 	const getInner__subHeading_typography = () => {
-		const { typography } = styles_subHeading;
+		const typography = styles_subHeading?.typography;
 		return getTypographyStyles({
 			typography,
 			className: SUB_HEADING_CLASSNAME,
 		});
 	};
 	const getInner__subHeading_color = () => {
-		const { textColor } = styles_subHeading;
+		const textColor = styles_subHeading?.textColor;
 		return getColorAndGradientStyles({
 			textColor,
 			className: SUB_HEADING_CLASSNAME,
@@ -256,7 +262,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global
 				styles={getStyleObjectFromResponsiveAttr({
 					className: `${WRAP_CLASSNAME} .wcb-heading__separator-wrap`,
-					value: styles_separator.marginBottom,
+					value: styles_separator?.marginBottom,
 					prefix: "marginBottom",
 				})}
 			/>
@@ -267,7 +273,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global
 				styles={getStyleObjectFromResponsiveAttr({
 					className: HEADING_CLASSNAME,
-					value: styles_heading.marginBottom,
+					value: styles_heading?.marginBottom,
 					prefix: "marginBottom",
 				})}
 			/>
@@ -278,7 +284,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global
 				styles={getStyleObjectFromResponsiveAttr({
 					className: SUB_HEADING_CLASSNAME,
-					value: styles_subHeading.marginBottom,
+					value: styles_subHeading?.marginBottom,
 					prefix: "marginBottom",
 				})}
 			/>

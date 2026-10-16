@@ -467,19 +467,37 @@ function boostify_blocks_enqueue_local_fonts( array $fonts ): void {
  * wp_head outputs the <link> tags.
  */
 function boostify_blocks_enqueue_local_google_fonts(): void {
-    $settings = get_option( 'boostify_blocks_settings_options', [] );
-
-    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+    $fonts = boostify_blocks_collect_current_page_fonts();
+    if ( empty( $fonts ) ) {
         return;
     }
 
-    boostify_blocks_enqueue_local_fonts( boostify_blocks_collect_current_page_fonts() );
+    $settings     = get_option( 'boostify_blocks_settings_options', [] );
+    $load_locally = ( $settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
+
+    if ( $load_locally ) {
+        boostify_blocks_enqueue_local_fonts( $fonts );
+    } else {
+        foreach ( $fonts as $font_family ) {
+            if ( boostify_blocks_is_system_font( $font_family ) ) {
+                continue;
+            }
+            $slug   = sanitize_title( $font_family );
+            $family = str_replace( ' ', '+', $font_family );
+            wp_enqueue_style(
+                'boostify-google-font-' . $slug,
+                'https://fonts.googleapis.com/css?family=' . $family . ':100,200,300,400,500,600,700,800,900&display=swap',
+                [],
+                null
+            );
+        }
+    }
 }
 add_action( 'wp_enqueue_scripts', 'boostify_blocks_enqueue_local_google_fonts' );
 
 /**
  * Mirrors boostify_blocks_enqueue_local_google_fonts() for the block editor,
- * so headings show the same local font while editing as they do on the
+ * so headings show the same font while editing as they do on the
  * frontend (the editor iframe copies stylesheets enqueued here).
  */
 function boostify_blocks_enqueue_local_google_fonts_editor(): void {
@@ -488,12 +506,31 @@ function boostify_blocks_enqueue_local_google_fonts_editor(): void {
         return;
     }
 
-    $settings = get_option( 'boostify_blocks_settings_options', [] );
-    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+    $fonts = boostify_blocks_collect_post_fonts( $post->post_content );
+    if ( empty( $fonts ) ) {
         return;
     }
 
-    boostify_blocks_enqueue_local_fonts( boostify_blocks_collect_post_fonts( $post->post_content ) );
+    $settings     = get_option( 'boostify_blocks_settings_options', [] );
+    $load_locally = ( $settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
+
+    if ( $load_locally ) {
+        boostify_blocks_enqueue_local_fonts( $fonts );
+    } else {
+        foreach ( $fonts as $font_family ) {
+            if ( boostify_blocks_is_system_font( $font_family ) ) {
+                continue;
+            }
+            $slug   = sanitize_title( $font_family );
+            $family = str_replace( ' ', '+', $font_family );
+            wp_enqueue_style(
+                'boostify-google-font-' . $slug,
+                'https://fonts.googleapis.com/css?family=' . $family . ':100,200,300,400,500,600,700,800,900&display=swap',
+                [],
+                null
+            );
+        }
+    }
 }
 add_action( 'enqueue_block_editor_assets', 'boostify_blocks_enqueue_local_google_fonts_editor' );
 

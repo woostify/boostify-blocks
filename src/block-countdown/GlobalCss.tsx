@@ -54,7 +54,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	// ------------------- LABEL
 	const getInner__Label_typography = () => {
-		const { typography } = style_label;
+		const typography = style_label?.typography;
 
 		return getTypographyStyles({
 			typography,
@@ -64,7 +64,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	// ------------------- NUMBER
 	const getInner__Number_typography = () => {
-		const { typography } = style_number;
+		const typography = style_number?.typography;
 
 		return getTypographyStyles({
 			typography,
@@ -76,13 +76,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 		value_Desktop: textAlignment_Desktop,
 		value_Tablet: textAlignment_tablet,
 		value_Mobile: textAlignment_mobile,
-	} = getValueFromAttrsResponsives(general_layout.textAlignment);
+	} = getValueFromAttrsResponsives(general_layout?.textAlignment);
 
 	const {
 		value_Desktop: flexDirection_Desktop,
 		value_Tablet: flexDirection_tablet,
 		value_Mobile: flexDirection_mobile,
-	} = getValueFromAttrsResponsives(general_layout.flexDirection);
+	} = getValueFromAttrsResponsives(general_layout?.flexDirection);
 
 	// FLEX COL
 	let ALIGN_ITEMS: HasResponsive<CSSProperties["justifyContent"]> = {
@@ -149,7 +149,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					getStyleObjectFromResponsiveAttr({
 						className: CONTENT_CLASSNAME,
-						value: general_layout.textAlignment,
+						value: general_layout?.textAlignment,
 						prefix: "textAlign",
 					}),
 
@@ -166,37 +166,37 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 					getStyleObjectFromResponsiveAttr({
 						className: CONTENT_CLASSNAME,
-						value: general_layout.flexDirection,
+						value: general_layout?.flexDirection,
 						prefix: "flexDirection",
 					}),
 
 					getStyleObjectFromResponsiveAttr({
 						className: CONTENT_CLASSNAME,
-						value: style_dimension.gap_boxes,
+						value: style_dimension?.gap_boxes,
 						prefix: "gap",
 					}),
 
 					getStyleObjectFromResponsiveAttr({
 						className: BOX_CLASSNAME,
-						value: style_dimension.width_box,
+						value: style_dimension?.width_box,
 						prefix: "width",
 					}),
 
 					getBackgroundColorGradientStyles({
 						className: BOX_CLASSNAME,
-						background: style_background.normal,
-						backgroundHover: style_background.hover,
+						background: style_background?.normal,
+						backgroundHover: style_background?.hover,
 					})
 
 				]}
 			/>
 
-			{ general_preset.preset != 'wcb-countdown-5' && (
+			{ general_preset?.preset != 'wcb-countdown-5' && (
 				<Global
 					styles={
 						getStyleObjectFromResponsiveAttr({
 							className: BOX_CLASSNAME,
-							value: style_dimension.width_box,
+							value: style_dimension?.width_box,
 							prefix: "height",
 						})
 					}
@@ -206,7 +206,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global
 				styles={getStyleObjectFromResponsiveAttr({
 					className: WRAP_CLASSNAME,
-					value: general_layout.contentWidth,
+					value: general_layout?.contentWidth,
 					prefix: "width",
 				})}
 			/>
@@ -216,7 +216,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				getInner__Label_typography(),
 				{
 					[LABEL_CLASSNAME]: {
-						color: style_label.textColor,
+						color: style_label?.textColor,
 					},
 				},
 			]} />
@@ -226,14 +226,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 				getInner__Number_typography(),
 				{
 					[NUMBER_CLASSNAME]: {
-						color: style_number.textColor,
+						color: style_number?.textColor,
 					},
 				},
 			]} />
 			<Global
 				styles={getStyleObjectFromResponsiveAttr({
 					className: NUMBER_CLASSNAME,
-					value: style_dimension.gap_number,
+					value: style_dimension?.gap_number,
 					prefix: "marginBottom",
 				})}
 			/>
@@ -241,8 +241,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global
 				styles={getPaddingMarginStyles({
 					className: WRAP_CLASSNAME,
-					margin: style_dimensions.dimension.margin,
-					padding: style_dimensions.dimension.padding,
+					margin: style_dimensions?.dimension?.margin,
+					padding: style_dimensions?.dimension?.padding,
 				})}
 			/>
 

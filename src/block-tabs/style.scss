@@ -28,11 +28,17 @@
 
 .wcb-tabs__title {
 	margin: 0;
+	display: inline-flex;
 	font-family: inherit;
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 1.5;
 	color: #374151;
+}
+
+p.wcb-tabs__title {
+	font-weight: 500;
+	line-height: 1.5;
 }
 
 .wcb-tab-child__wrap {
@@ -49,22 +55,6 @@
 }
 
 .wcb-tab-child__inner {
-	font-family: inherit;
-	font-size: 14px;
-	font-weight: 500;
-	line-height: 1.6;
+	padding: 12px;
 	color: #4b5563;
-
-	p {
-		margin: 0 0 10px;
-		font-family: inherit;
-		font-size: inherit;
-		font-weight: inherit;
-		line-height: inherit;
-		color: inherit;
-
-		&:last-child {
-			margin-bottom: 0;
-		}
-	}
 }
