@@ -6,6 +6,10 @@
 	"category": "boostify-blocks",
 	"icon": "- wcb-block-editor-block-icon lni lni-support",
 	"description": "Add accordions/FAQ schema to your page.",
+	"providesContext": {
+		"boostify-blocks/faq_general": "general_general",
+		"boostify-blocks/faq_icon": "general_icon"
+	},
 	"supports": {
 		"html": false,
 		"anchor": true,

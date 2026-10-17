@@ -13,14 +13,41 @@ interface Params {
 	isWithIframe?: boolean;
 }
 
+const formatSideBorder = (side?: Partial<BorderMainSingleSide>): string | undefined => {
+	if (!side) return undefined;
+	const { width, style, color } = side;
+
+	if (style === "none") {
+		return "none";
+	}
+
+	// Width must be specified and non-zero
+	if (
+		width === undefined ||
+		width === null ||
+		width === "" ||
+		width === "0" ||
+		width === "0px" ||
+		width === "0rem" ||
+		width === "0em" ||
+		parseFloat(String(width)) <= 0
+	) {
+		return undefined;
+	}
+
+	const borderStyle = style || "solid";
+	const borderColor = color ? ` ${color}` : "";
+	return `${width} ${borderStyle}${borderColor}`.trim();
+};
+
 const getBorderStyles = ({
 	border,
 	className,
 	isWithRadius = false,
 	isWithIframe = false,
 }: Params): CSSObject => {
+	if (!border) return {};
 	const { hoverColor, mainSettings, radius } = border;
-	//
 
 	// MAIN BORDER
 	let CSSObject: CSSObject = { [`${className}`]: {} };
@@ -28,26 +55,42 @@ const getBorderStyles = ({
 		const as4Side = mainSettings as BorderMain4Side;
 		if ("top" in as4Side || "right" in as4Side || "bottom" in as4Side || "left" in as4Side) {
 			const { bottom, left, right, top } = as4Side;
-			CSSObject = {
-				[`${className}`]: {
-					...(top ? { borderTop: `${top.width} ${top.style || "none"} ${top.color || ""}` } : {}),
-					...(left ? { borderLeft: `${left.width} ${left.style || "none"} ${left.color || ""}` } : {}),
-					...(right ? { borderRight: `${right.width} ${right.style || "none"} ${right.color || ""}` } : {}),
-					...(bottom ? { borderBottom: `${bottom.width} ${bottom.style || "none"} ${bottom.color || ""}` } : {}),
-					"&:hover": {
-						borderColor: `${hoverColor}`,
-					},
-				},
-			};
-		} else {
-			const { color, style, width } = mainSettings as BorderMainSingleSide;
+			const borderTop = formatSideBorder(top);
+			const borderRight = formatSideBorder(right);
+			const borderBottom = formatSideBorder(bottom);
+			const borderLeft = formatSideBorder(left);
+
+			const sideStyles: Record<string, string> = {};
+			if (borderTop) sideStyles.borderTop = borderTop;
+			if (borderRight) sideStyles.borderRight = borderRight;
+			if (borderBottom) sideStyles.borderBottom = borderBottom;
+			if (borderLeft) sideStyles.borderLeft = borderLeft;
 
 			CSSObject = {
 				[`${className}`]: {
-					border: `${width} ${style || "none"} ${color || ""}`,
-					"&:hover": {
-						borderColor: `${hoverColor || ""}`,
-					},
+					...sideStyles,
+					...(hoverColor
+						? {
+								"&:hover": {
+									borderColor: `${hoverColor}`,
+								},
+						  }
+						: {}),
+				},
+			};
+		} else {
+			const singleBorder = formatSideBorder(mainSettings as BorderMainSingleSide);
+
+			CSSObject = {
+				[`${className}`]: {
+					...(singleBorder ? { border: singleBorder } : {}),
+					...(hoverColor
+						? {
+								"&:hover": {
+									borderColor: `${hoverColor || ""}`,
+								},
+						  }
+						: {}),
 				},
 			};
 		}

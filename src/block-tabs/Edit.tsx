@@ -326,7 +326,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
     return (
         <MyCacheProvider uniqueKey={clientId}>
-            <div {...wrapBlockProps} className={`${wrapBlockProps?.className} wcb-tabs__wrap p-2 ${uniqueId}`} data-uniqueid={uniqueId}>
+            <div {...wrapBlockProps} className={`${wrapBlockProps?.className} wcb-tabs__wrap ${uniqueId}`} data-uniqueid={uniqueId}>
                 <HOCInspectorControls renderTabPanels={renderTabBodyPanels} uniqueId={uniqueId} />
                 {uniqueId && <GlobalCss {...WcbAttrsForSave()} />}
                 <div className="wcb-tabs__contents">

@@ -10,6 +10,7 @@ import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
+import { getThemeDefaults } from "../utils/themeDefaults";
 import { SHOPPING_CART_SVG, svgToDataUrl } from "./base-utils";
 
 const getBadgeShapeStyles = (shape?: string): CSSObject => {
@@ -69,6 +70,8 @@ const getBadgeShapeStyles = (shape?: string): CSSObject => {
 
 interface Props extends Required<WcbAttrsForSave> {}
 
+const hasValue = (val: unknown): boolean => val !== undefined && val !== null && val !== "";
+
 const GlobalCss: FC<Props> = (attrs) => {
 	const {
 		uniqueId,
@@ -77,6 +80,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		general_content,
 		general_pagination,
 		general_featuredImage,
+		general_layout,
 		style_addToCardBtn,
 		style_featuredImage,
 		style_layout,
@@ -97,12 +101,35 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const isQvEnabled = style_quickViewBtn?.enabled !== false && style_quickViewBtn?.enabled !== undefined;
+	const isBlockOverride = Boolean(
+		general_layout?.isCustomizerGeneralLayout ||
+		(attrs as any)?.general_layout?.isCustomizerGeneralLayout
+	);
+	const theme = getThemeDefaults();
+	const qvTheme = theme?.shop_quick_view_btn;
+
+	const pickQv = <T,>(themeVal: T | undefined, blockVal: T | undefined): T | undefined => {
+		const primary = isBlockOverride ? blockVal : themeVal;
+		const fallback = isBlockOverride ? themeVal : blockVal;
+		return hasValue(primary) ? primary : fallback;
+	};
+
+	const effectiveQvPosition = pickQv(qvTheme?.position, style_quickViewBtn?.position);
+	const effectiveQvBgColor = pickQv(qvTheme?.bg_color, style_quickViewBtn?.bg_color);
+	const effectiveQvTextColor = pickQv(qvTheme?.text_color, style_quickViewBtn?.text_color);
+	const effectiveQvHoverBgColor = pickQv(qvTheme?.hover_bg_color, style_quickViewBtn?.hover_bg_color);
+	const effectiveQvHoverTextColor = pickQv(qvTheme?.hover_text_color, style_quickViewBtn?.hover_text_color);
+	const effectiveQvBorderRadius = pickQv(qvTheme?.border_radius, style_quickViewBtn?.border_radius);
+
+	const effectiveQvEnabled = isBlockOverride
+		? (style_quickViewBtn?.enabled !== undefined ? style_quickViewBtn?.enabled : qvTheme?.enabled)
+		: (qvTheme?.enabled !== undefined ? qvTheme?.enabled : style_quickViewBtn?.enabled);
+	const isQvEnabled = Boolean(effectiveQvEnabled) && String(effectiveQvEnabled) !== "0";
 
 	const getQuickViewBorderRadius = (): string => {
-		const val = style_quickViewBtn?.border_radius;
-		if (val === undefined || val === null || (val as any) === "") {
-			return (style_quickViewBtn?.position === "top-right" || style_quickViewBtn?.position === "center-image") ? "4px" : "0px";
+		const val = effectiveQvBorderRadius;
+		if (!hasValue(val)) {
+			return (effectiveQvPosition === "top-right" || effectiveQvPosition === "center-image") ? "4px" : "0px";
 		}
 		const valStr = String(val).trim();
 		if (valStr.endsWith("px") || valStr.endsWith("%") || valStr.endsWith("rem") || valStr.endsWith("em")) {
@@ -110,6 +137,8 @@ const GlobalCss: FC<Props> = (attrs) => {
 		}
 		return `${valStr}px`;
 	};
+
+	const hasQvBorderRadius = hasValue(effectiveQvBorderRadius);
 
 	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
@@ -501,24 +530,24 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{
 				[POST_CARD_CLASS]: {
 					".wcb-products__product--quickViewBottomImage--item": {
-						...(style_quickViewBtn?.bg_color && style_quickViewBtn.bg_color !== "#ffffff"
-							? { backgroundColor: style_quickViewBtn.bg_color }
+						...(effectiveQvBgColor && effectiveQvBgColor !== "#ffffff"
+							? { backgroundColor: effectiveQvBgColor }
 							: {}),
-						...(style_quickViewBtn?.text_color && style_quickViewBtn.text_color !== "#000000"
-							? { color: style_quickViewBtn.text_color }
+						...(effectiveQvTextColor && effectiveQvTextColor !== "#000000"
+							? { color: effectiveQvTextColor }
 							: {}),
-						...(style_quickViewBtn?.border_radius ? { borderRadius: getQuickViewBorderRadius() } : {}),
+						...(hasQvBorderRadius ? { borderRadius: getQuickViewBorderRadius() } : {}),
 						...(!isQvEnabled ? { display: "none !important" } : {}),
 					},
 					":hover": {
 						".wcb-products__product--quickViewBottomImage--item": {
-							...(style_quickViewBtn?.border_radius ? { borderRadius: getQuickViewBorderRadius() } : {}),
+							...(hasQvBorderRadius ? { borderRadius: getQuickViewBorderRadius() } : {}),
 							":hover": {
-								...(style_quickViewBtn?.hover_text_color && style_quickViewBtn.hover_text_color !== "#fff" && style_quickViewBtn.hover_text_color !== "#ffffff"
-									? { color: style_quickViewBtn.hover_text_color }
+								...(effectiveQvHoverTextColor && effectiveQvHoverTextColor !== "#fff" && effectiveQvHoverTextColor !== "#ffffff"
+									? { color: effectiveQvHoverTextColor }
 									: {}),
-								...(style_quickViewBtn?.hover_bg_color && style_quickViewBtn.hover_bg_color !== "#474747"
-									? { backgroundColor: style_quickViewBtn.hover_bg_color }
+								...(effectiveQvHoverBgColor && effectiveQvHoverBgColor !== "#474747"
+									? { backgroundColor: effectiveQvHoverBgColor }
 									: {}),
 							},
 						},
@@ -613,7 +642,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						".wcb-products__product-add-to-cart": {
 							backgroundColor: general_addToCartBtn?.position === "bottom" ? "#fff" : "inherit",
 							"span": {
-								color: (style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color as any),
+								color: (style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color as any) || (general_addToCartBtn?.position === "inside image" ? "#2b2b2b" : undefined),
 							},
 							".wcb-products__add-to-cart-icon, .wcb-products__add-to-cart-label": {
 								transform: general_addToCartBtn?.position === "bottom" ? "translateY(-60px)" : "unset",
@@ -630,7 +659,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 						".wcb-products__product-add-to-cart:hover": {
 							".add_to_cart_button span": {
-								color: (style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any),
+								color: (style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any) || (general_addToCartBtn?.position === "inside image" ? "#1346AF" : undefined),
 							},
 							".wcb-products__add-to-cart-icon svg path": {
 								fill: `${style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color} !important` as any,
@@ -665,6 +694,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 					".wcb-products__product-title": {
 						marginBottom: titleMarginBottom_mobile_new ?? undefined,
 						color: style_title?.textColor,
+						a: {
+							color: style_title?.textColor,
+						},
 					},
 					".wcb-products__product-categories": {
 						marginBottom: categoryMarginBottom_mobile_new ?? undefined,
@@ -844,11 +876,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 			},
 			[ADD_TO_CART_BTN]: {
 				display: (position === "icon" || position === "bottom") ? "none" : "block",
-				color,
+				color: color ? color : (position === "inside image" ? "#2b2b2b" : undefined),
 				backgroundColor: (position === "bottom visible" || position === "inside image")  ? backgroundColor : "#fff",
 				marginBottom: marginBottom_mobile_new ?? undefined,
 				":hover": {
-					color: color_h ? `${color_h} !important` : undefined,
+					color: color_h ? `${color_h} !important` : (position === "inside image" ? "#1346AF !important" : undefined),
 					backgroundColor: (position === "bottom visible" || position === "inside image" || position === "icon") ? backgroundColor_h : "#fff !important",
 				},
 				[`@media (min-width: ${media_tablet})`]: marginBottom_tablet_new
@@ -916,7 +948,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content?.isShowTitle && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-title",
+						className: `${POST_CARD_CLASS} .wcb-products__product-title, ${POST_CARD_CLASS} .wcb-products__product-title a`,
 						typography: style_title?.typography,
 					})}
 				/>

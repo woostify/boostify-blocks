@@ -207,9 +207,9 @@ if ( ! empty( $sb['border'] ) ) {
 
 // 6. Icon styles.
 if ( ! empty( $si['size'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $icon_svg_sel, 'font-size', $si['size'] );
-	WCB_Block_Helper::add_responsive_css( $css, $icon_svg_sel, 'width', $si['size'] );
-	WCB_Block_Helper::add_responsive_css( $css, $icon_svg_sel, 'height', $si['size'] );
+	WCB_Block_Helper::add_responsive_css( $css, $icon_svg_sel, 'font-size', $si['size'], 'px' );
+	WCB_Block_Helper::add_responsive_css( $css, $icon_svg_sel, 'width', $si['size'], 'px' );
+	WCB_Block_Helper::add_responsive_css( $css, $icon_svg_sel, 'height', $si['size'], 'px' );
 }
 if ( ! empty( $si['color'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $icon_sel, 'color', $si['color'] );

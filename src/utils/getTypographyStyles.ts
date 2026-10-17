@@ -72,11 +72,22 @@ const getTypographyStyles = ({ typography, className }: Params): CSSObject => {
 	});
 	//
 
+	const isDefaultAppearance =
+		!appearance?.key ||
+		appearance?.key === "default" ||
+		appearance?.name?.toLowerCase() === "default";
+	const fontWeight = isDefaultAppearance
+		? undefined
+		: appearance?.style?.fontWeight;
+	const fontStyle = isDefaultAppearance
+		? undefined
+		: appearance?.style?.fontStyle;
+
 	return {
 		[`${className}`]: {
 			fontFamily: fontFamily,
-			fontWeight: appearance?.style?.fontWeight,
-			fontStyle: appearance?.style?.fontStyle,
+			fontWeight: fontWeight,
+			fontStyle: fontStyle,
 			textDecoration,
 			textTransform,
 			//
