@@ -3,7 +3,12 @@
 		.wcb-icon-box__socials-icons > a:first-child {
 			margin-left: 0 !important;
 		}
+
+		.wcb-icon-box__heading {
+			margin: 0;
+		}
 	}
+
 
 	&__content {
 		flex-grow: 1;

@@ -19,7 +19,18 @@
 		line-height: 1.5;
 		margin-bottom: 14px;
 	}
+
+	.wcb-icon-box__heading {
+		margin: 0;
+	}
+
+	.wcb-icon-box__title {
+		font-size: 16px;
+		color: #666;
+		margin-top: 10px;
+	}
 }
+
 
 .wcb-icon-box__content {
 	flex-grow: 1;

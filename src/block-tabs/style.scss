@@ -25,6 +25,16 @@
 		&:hover {
 			background-color: #f9fafb;
 		}
+
+		.wcb-tabs__title {
+			margin: 0;
+			display: inline-flex;
+			font-family: inherit;
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 1.5;
+			color: inherit;
+		}
 	}
 
 	&__title {
@@ -37,6 +47,7 @@
 		color: inherit;
 	}
 }
+
 
 .wcb-tab-child {
 	&__wrap {

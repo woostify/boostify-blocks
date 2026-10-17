@@ -1,4 +1,15 @@
 .wcb-cta {
+	&__wrap {
+		.wcb-cta__title,
+		.wcb-cta__description {
+			margin: 0;
+		}
+
+		.wcb-cta__description {
+			line-height: 1.5;
+		}
+	}
+
 	&__inner {
 		display: flex;
 		justify-content: space-between;
@@ -18,3 +29,4 @@
 		line-height: 1.5;
 	}
 }
+

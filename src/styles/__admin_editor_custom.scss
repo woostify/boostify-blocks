@@ -3,8 +3,8 @@ html {
 	font-size: var(--theme-body-font-size, 14px);
 }
 
-// Synchronize editor canvas typography with frontend theme styles
-.editor-styles-wrapper {
+// Synchronize editor canvas typography with frontend theme styles (low specificity so block styles always win)
+:where(.editor-styles-wrapper) {
 	font-family: var(--theme-body-font, var(--font-body, Poppins), sans-serif);
 	font-size: var(--theme-body-font-size, 14px);
 	font-weight: var(--theme-body-font-weight, 500);

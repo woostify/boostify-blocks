@@ -1,6 +1,10 @@
 .wcb-icon-list {
 	&__wrap {
 		width: 100%;
+
+		.wcb-icon-list__heading {
+			margin: 0;
+		}
 	}
 
 	&__container {
