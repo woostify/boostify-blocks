@@ -1,20 +1,3 @@
-@import "./common";
+// Editor-specific styles for slider block
+// Note: common.scss is imported in style.scss (style-index.css) which is loaded in both editor and frontend.
 
-/* Ensure editor styles match frontend styles */
-.wcb-slider__wrap {
-	position: relative;
-}
-
-.wcb-slider__wrap-items {
-	position: relative;
-}
-
-/* Override any Gutenberg editor styles that might interfere */
-.wp-block[data-type="wcb/slider"] {
-	.wcb-slider__wrap {
-		/* Ensure consistent styling between editor and frontend */
-		> .wcb-slider__wrap-items {
-			/* Match frontend slider structure */
-		}
-	}
-}

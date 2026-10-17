@@ -109,9 +109,10 @@ if ( $enable_icon ) {
 	}
 
 
-	// Icon Size (width & font-size).
+	// Icon Size (width, height & font-size).
 	if ( ! empty( $si['iconSize'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $icon_full_sel, 'width', $si['iconSize'], 'px' );
+		WCB_Block_Helper::add_responsive_css( $css, $icon_full_sel, 'height', $si['iconSize'], 'px' );
 		WCB_Block_Helper::add_responsive_css( $css, $icon_full_sel, 'font-size', $si['iconSize'], 'px' );
 	}
 

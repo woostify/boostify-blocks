@@ -1,10 +1,3 @@
-@import "./common";
-// .wcb-posts-grid__wrap {
-// 	display: block !important;
-// }
+// Editor-specific styles for posts-grid block
+// Note: common.scss is already imported in style.scss (style-index.css) which is loaded in both editor and frontend.
 
-// .wcb-posts-grid__list-posts {
-// 	display: grid;
-// 	gap: 1rem;
-// 	grid-template-columns: repeat(2, minmax(0, 1fr));
-// }

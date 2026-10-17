@@ -3,13 +3,13 @@ html {
 	font-size: var(--theme-body-font-size, 14px);
 }
 
-// Synchronize editor canvas typography with frontend theme styles (low specificity so block styles always win)
-:where(.editor-styles-wrapper) {
+// Synchronize editor canvas typography with frontend theme styles
+.editor-styles-wrapper {
 	font-family: var(--theme-body-font, var(--font-body, Poppins), sans-serif);
 	font-size: var(--theme-body-font-size, 14px);
 	font-weight: var(--theme-body-font-weight, 500);
 	line-height: var(--theme-body-line-height, 28px);
-	color: var(--theme-body-color, #000);
+	color: var(--theme-body-color, #474747);
 
 	// Reset link decoration to match frontend theme (Woostify: a { text-decoration: none; })
 	:where(a) {
@@ -21,13 +21,10 @@ html {
 		text-decoration: none;
 	}
 
-	// Use :where to give base paragraph low specificity so block-specific styles take precedence
-	:where(p) {
+	:where(p, div, .rich-text, .block-editor-rich-text__editable) {
 		font-family: inherit;
-		font-size: var(--theme-body-font-size, 14px);
-		font-weight: var(--theme-body-font-weight, 500);
-		line-height: var(--theme-body-line-height, 28px);
-		text-transform: var(--theme-body-transform, none);
+		font-size: inherit;
+		line-height: inherit;
 	}
 
 	// Use :where for base headings so specific card titles (posts grid, products) easily override
