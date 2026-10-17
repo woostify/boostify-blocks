@@ -2,7 +2,7 @@
   "apiVersion": 3,
   "name": "boostify-blocks/testimonials-swiper",
   "version": "0.1.0",
-  "title": "Testimonials (Swiper)",
+  "title": "Testimonials",
   "category": "boostify-blocks",
   "icon": "- wcb-block-editor-block-icon lni lni-quotation",
   "description": "Create confidence in your brand or product by showing off beautiful unique testimonials, powered by Swiper.",

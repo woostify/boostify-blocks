@@ -2,7 +2,7 @@
 	"apiVersion": 3,
 	"name": "boostify-blocks/slider-swiper-child",
 	"version": "0.1.0",
-	"title": "Slider (Swiper) child",
+	"title": "Slider child",
 	"category": "wcb-blocks",
 	"usesContext": ["wcb/slider_general", "wcb/slider_images"],
 	"parent": ["boostify-blocks/slider-swiper"],
