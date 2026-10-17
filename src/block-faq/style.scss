@@ -10,6 +10,11 @@
 		overflow: hidden;
 		border: 1px solid #d1d5db;
 
+		.wcb-faq-child__question-text,
+		.wcb-faq-child__answer-text {
+			margin: 0;
+		}
+
 		&.is-open,
 		&.active {
 			.wcb-faq-child__icon--active {

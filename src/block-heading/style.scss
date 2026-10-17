@@ -1,4 +1,20 @@
 .wcb-heading {
+	&__wrap {
+		.wcb-heading__heading,
+		.wcb-heading__subHeading {
+			margin: 0;
+		}
+
+		.wcb-heading__separator {
+			display: inline-block;
+		}
+
+		.wcb-heading__subHeading {
+			font-size: 14px;
+			line-height: 1.5;
+		}
+	}
+
 	&__heading,
 	&__subHeading {
 		margin: 0;
@@ -13,4 +29,5 @@
 		line-height: 1.5;
 	}
 }
+
 
