@@ -1,15 +1,16 @@
-.wcb-heading__heading,
-.wcb-heading__subHeading {
-	margin: 0;
+.wcb-heading {
+	&__heading,
+	&__subHeading {
+		margin: 0;
+	}
+
+	&__separator {
+		display: inline-block;
+	}
+
+	&__subHeading {
+		font-size: 14px;
+		line-height: 1.5;
+	}
 }
 
-.wcb-heading__separator {
-	display: inline-block;
-}
-
-
-
-.wcb-heading__subHeading {
-	font-size: 14px;
-	line-height: 1.5;
-}

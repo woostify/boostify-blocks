@@ -118,16 +118,23 @@ const GlobalCss: FC<Props> = (attrs) => {
 		} = getValueFromAttrsResponsives<DimensionSettings>(padding);
 
 		//
+		const formatPadding = (p?: DimensionSettings) => {
+			if (!p) return undefined;
+			const { top, right, bottom, left } = p;
+			if (!top && !right && !bottom && !left) return undefined;
+			return `${top || 0} ${right || 0} ${bottom || 0} ${left || 0}`;
+		};
+
 		const {
 			mobile_v: padding_Mobile_new,
 			tablet_v: padding_Tablet_new,
 			desktop_v: padding_Desktop_new,
 		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: `${padding_Mobile?.top} ${padding_Mobile?.right} ${padding_Mobile?.bottom} ${padding_Mobile?.left}`,
-			tablet_v: `${padding_Tablet?.top} ${padding_Tablet?.right} ${padding_Tablet?.bottom} ${padding_Tablet?.left}`,
-			desktop_v: `${padding_Desktop?.top} ${padding_Desktop?.right} ${padding_Desktop?.bottom} ${padding_Desktop?.left}`,
+			mobile_v: formatPadding(padding_Mobile),
+			tablet_v: formatPadding(padding_Tablet),
+			desktop_v: formatPadding(padding_Desktop),
 		});
-		//
+
 		return {
 			[`${WRAP_CLASSNAME} mark`]: {
 				color: textColor,

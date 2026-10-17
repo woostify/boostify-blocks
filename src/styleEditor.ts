@@ -65,7 +65,7 @@ const generateEditorSpacingCSS = (spacing: string = '0px'): string => `
 const styleEditor = (globals: WcbGlobalVariables): void => {
   // Fallback to 0px if not provided
   const blocksEditorSpacing = globals?.blocksEditorSpacing;
-  const spacingValue = (blocksEditorSpacing == '')? 0 : blocksEditorSpacing;
+  const spacingValue = (blocksEditorSpacing == '') ? 0 : blocksEditorSpacing;
   const spacing = typeof spacingValue === 'number' ? `${spacingValue}px` : spacingValue;
 
   const cssString = generateEditorSpacingCSS(spacing);

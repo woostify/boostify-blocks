@@ -380,7 +380,44 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			$m = $value;
 		}
 
-		if ( empty( $unit ) && in_array( $property, array( 'font-size', 'width', 'height', 'min-width', 'max-width', 'min-height', 'max-height', 'border-radius' ), true ) ) {
+		$length_properties = array(
+			'font-size',
+			'letter-spacing',
+			'width',
+			'height',
+			'min-width',
+			'max-width',
+			'min-height',
+			'max-height',
+			'border-radius',
+			'border-top-left-radius',
+			'border-top-right-radius',
+			'border-bottom-right-radius',
+			'border-bottom-left-radius',
+			'border-width',
+			'border-top-width',
+			'border-right-width',
+			'border-bottom-width',
+			'border-left-width',
+			'gap',
+			'row-gap',
+			'column-gap',
+			'margin',
+			'margin-top',
+			'margin-right',
+			'margin-bottom',
+			'margin-left',
+			'padding',
+			'padding-top',
+			'padding-right',
+			'padding-bottom',
+			'padding-left',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		);
+		if ( empty( $unit ) && in_array( $property, $length_properties, true ) ) {
 			$unit = 'px';
 		}
 
@@ -438,27 +475,27 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 	 * @param string $type     'padding' or 'margin'.
 	 * @param array  $dim_data Dimension data array.
 	 */
-	public static function add_dimension_css( &$css, $selector, $type, $dim_data ) {
+	public static function add_dimension_css( &$css, $selector, $type, $dim_data, $important = false ) {
 		if ( empty( $dim_data ) || ! is_array( $dim_data ) ) {
 			return;
 		}
 		self::init_css_accumulator( $css );
 
-		$d_rules = self::get_dimension_css( $dim_data, $type, $selector, 'desktop' );
+		$d_rules = self::get_dimension_css( $dim_data, $type, $selector, 'desktop', $important );
 		if ( ! empty( $d_rules[ $selector ] ) ) {
 			foreach ( $d_rules[ $selector ] as $p => $v ) {
 				$css['desktop'][ $selector ][ $p ] = $v;
 			}
 		}
 
-		$t_rules = self::get_dimension_css( $dim_data, $type, $selector, 'tablet' );
+		$t_rules = self::get_dimension_css( $dim_data, $type, $selector, 'tablet', $important );
 		if ( ! empty( $t_rules[ $selector ] ) ) {
 			foreach ( $t_rules[ $selector ] as $p => $v ) {
 				$css['tablet'][ $selector ][ $p ] = $v;
 			}
 		}
 
-		$m_rules = self::get_dimension_css( $dim_data, $type, $selector, 'mobile' );
+		$m_rules = self::get_dimension_css( $dim_data, $type, $selector, 'mobile', $important );
 		if ( ! empty( $m_rules[ $selector ] ) ) {
 			foreach ( $m_rules[ $selector ] as $p => $v ) {
 				$css['mobile'][ $selector ][ $p ] = $v;
@@ -493,30 +530,29 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			if ( $is_4side ) {
 				foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 					if ( ! empty( $main[ $side ] ) && is_array( $main[ $side ] ) ) {
-						$s  = $main[ $side ];
-						$w  = self::get_css_value( $s['width'] ?? '1px' );
-						$st = $s['style'] ?? 'none';
-						$c  = $s['color'] ?? '';
+						$s     = $main[ $side ];
+						$st    = $s['style'] ?? '';
+						$w_raw = $s['width'] ?? '';
+						$c     = $s['color'] ?? '';
+
 						if ( 'none' === $st ) {
 							$css['desktop'][ $selector ][ 'border-' . $side ] = 'none';
-						} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) || ! empty( $s['width'] ) ) {
-							if ( empty( $st ) ) {
-								$st = 'solid';
-							}
+						} elseif ( '' !== $w_raw && null !== $w_raw && '0' !== (string) $w_raw && '0px' !== (string) $w_raw && '0em' !== (string) $w_raw && '0rem' !== (string) $w_raw && floatval( $w_raw ) > 0 ) {
+							$w  = self::get_css_value( $w_raw );
+							$st = ! empty( $st ) ? $st : 'solid';
 							$css['desktop'][ $selector ][ 'border-' . $side ] = trim( $w . ' ' . $st . ' ' . $c );
 						}
 					}
 				}
 			} else {
-				$w  = self::get_css_value( $main['width'] ?? '1px' );
-				$st = $main['style'] ?? 'none';
-				$c  = $main['color'] ?? '';
+				$st    = $main['style'] ?? '';
+				$w_raw = $main['width'] ?? '';
+				$c     = $main['color'] ?? '';
 				if ( 'none' === $st ) {
 					$css['desktop'][ $selector ]['border'] = 'none';
-				} elseif ( '' !== $c || ( '' !== $st && 'none' !== $st ) || ! empty( $main['width'] ) ) {
-					if ( empty( $st ) ) {
-						$st = 'solid';
-					}
+				} elseif ( '' !== $w_raw && null !== $w_raw && '0' !== (string) $w_raw && '0px' !== (string) $w_raw && '0em' !== (string) $w_raw && '0rem' !== (string) $w_raw && floatval( $w_raw ) > 0 ) {
+					$w  = self::get_css_value( $w_raw );
+					$st = ! empty( $st ) ? $st : 'solid';
 					$css['desktop'][ $selector ]['border'] = trim( $w . ' ' . $st . ' ' . $c );
 				}
 			}
@@ -1208,6 +1244,7 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 				$content = preg_replace( '/\/\*![\s\S]*?\*\/\s*/', '', $content );
 				$content = preg_replace( '/\/\*# sourceMappingURL=.*?\*\/\s*/', '', $content );
 				$content = preg_replace( '/@charset\s+"[^"]*";\s*/', '', $content );
+				$content = self::rewrite_relative_urls_to_build( $content );
 				$css    .= trim( $content ) . "\n";
 			}
 			$loaded_css['block-common-css'] = true;
@@ -1228,6 +1265,7 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 					$content = preg_replace( '/\/\*![\s\S]*?\*\/\s*/', '', $content );
 					$content = preg_replace( '/\/\*# sourceMappingURL=.*?\*\/\s*/', '', $content );
 					$content = preg_replace( '/@charset\s+"[^"]*";\s*/', '', $content );
+					$content = self::rewrite_relative_urls_to_build( $content );
 					$css    .= trim( $content ) . "\n";
 				}
 				$loaded_css[ $slug ] = true;
@@ -1240,6 +1278,26 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 		}
 
 		return $css;
+	}
+
+	/**
+	 * Rewrite relative asset URLs (e.g. url(../fonts/...)) in block static CSS to point to the plugin's build directory.
+	 *
+	 * When Asset Generation bundles static block CSS into wp-content/uploads/boostify-blocks/post-*.css,
+	 * relative URLs like url(../fonts/...) resolve against the uploads directory, resulting in 404 errors.
+	 * Rewriting them to absolute plugin build URLs ensures fonts and images load reliably.
+	 *
+	 * @param string $content Raw CSS content.
+	 * @return string CSS with rewritten asset URLs.
+	 */
+	public static function rewrite_relative_urls_to_build( $content ) {
+		if ( empty( $content ) || false === strpos( $content, 'url(' ) ) {
+			return $content;
+		}
+
+		$build_url = defined( 'BOOSTIFY_BLOCKS_URI' ) ? BOOSTIFY_BLOCKS_URI . 'build/' : plugins_url( 'build/', BOOSTIFY_BLOCKS_FILE );
+
+		return preg_replace( '/url\(\s*[\'"]?\.\.\/([^\'")]+?)[\'"]?\s*\)/', 'url("' . $build_url . '$1")', $content );
 	}
 
 	/**

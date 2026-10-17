@@ -30,15 +30,6 @@ html {
 		text-transform: var(--theme-body-transform, none);
 	}
 
-	:where(div.wcb-heading__heading, p.wcb-heading__heading) {
-		font-family: inherit;
-		font-size: var(--theme-body-font-size, 14px);
-		font-weight: var(--theme-body-font-weight, 500);
-		line-height: var(--theme-body-line-height, 28px);
-		text-transform: var(--theme-body-transform, none);
-		color: var(--theme-body-color, #474747);
-	}
-
 	// Use :where for base headings so specific card titles (posts grid, products) easily override
 	:where(h1, h2, h3, h4, h5, h6) {
 		font-family: var(--theme-heading-font, var(--font-heading, Poppins), sans-serif);
