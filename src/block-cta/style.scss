@@ -8,25 +8,15 @@
 		.wcb-cta__description {
 			line-height: 1.5;
 		}
-	}
+		.wcb-cta__inner {
+			display: flex;
+			justify-content: space-between;
+			gap: 0.75rem;
+		}
 
-	&__inner {
-		display: flex;
-		justify-content: space-between;
-		gap: 0.75rem;
-	}
-
-	&__buttons {
-		flex-shrink: 0;
-	}
-
-	&__title,
-	&__description {
-		margin: 0;
-	}
-
-	&__description {
-		line-height: 1.5;
+		.wcb-cta__buttons {
+			flex-shrink: 0;
+		}
 	}
 }
 

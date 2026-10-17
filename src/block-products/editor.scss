@@ -30,26 +30,12 @@
 	margin-top: 10px;
 }
 
-.wcb-products__product {	
+.wcb-products__product {
 	.wcb-products__product-onsale {
 		// Target specific span classes that might override
 		span.onsale,
 		.onsale {
 			padding-right: 0rem !important;
 		}
-	}
-
-	.wcb-products__product-title a {
-		color: inherit;
-		text-decoration: none;
-	}
-
-	.wcb-products__product-categories a {
-		color: inherit;
-		text-decoration: none;
-	}
-
-	.wcb-products__product-price ins {
-		text-decoration: none;
 	}
 }

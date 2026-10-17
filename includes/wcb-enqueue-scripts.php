@@ -150,6 +150,14 @@ add_action('wp_enqueue_scripts', 'boostify_blocks_my_scripts_method');
 // Load this script in the editor
 add_action( 'enqueue_block_editor_assets', function() {
 
+    // Add common styles for editor
+    wp_enqueue_style(
+        'boostify-blocks-common-css',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css',
+        array(),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
     // Add style for editor
     wp_enqueue_style(
         'boostify-blocks-frontend',
@@ -247,6 +255,7 @@ add_action('enqueue_block_assets', 'boostify_blocks_enqueue_lineicons');
 function boostify_blocks_enqueue_lineicons_for_gutenbeg_editor()
 {
     // Inject frontend styles into the iframed editor canvas
+    add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/style-index.css');
     add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/frontend.css');
 
     // Register active theme Google fonts into the iframed editor canvas

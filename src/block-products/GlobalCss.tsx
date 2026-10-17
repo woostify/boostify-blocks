@@ -948,7 +948,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content?.isShowTitle && (
 				<Global
 					styles={getTypographyStyles({
-						className: `${WRAP_CLASSNAME} .wcb-products__product-title, ${WRAP_CLASSNAME} .wcb-products__product-title a`,
+						className: `${POST_CARD_CLASS} .wcb-products__product-title, ${POST_CARD_CLASS} .wcb-products__product-title a`,
 						typography: style_title?.typography,
 					})}
 				/>

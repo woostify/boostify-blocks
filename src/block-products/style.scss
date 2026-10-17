@@ -756,9 +756,7 @@
 	}
 }
 
-.wcb-products__wrap .wcb-products__product-title,
-ul.products .wcb-products__product-title,
-.wcb-products__product-title {
+.wcb-products__wrap .product .wcb-products__product-title {
 	margin-top: 0;
 	line-height: 1.5;
 
@@ -769,6 +767,7 @@ ul.products .wcb-products__product-title,
 		line-height: inherit;
 	}
 }
+
 
 
 .wcb-products__product-categories {
