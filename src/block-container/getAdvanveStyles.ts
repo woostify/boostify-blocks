@@ -73,11 +73,11 @@ export const initAdvanceMotionEffect = ({
 
 							// add new animation classes
 							setTimeout(() => {
+								element.style.animationDelay = `${advance_motionEffect?.animationDelay || 0}ms`;
 								element?.classList.add(
 									"animate__animated",
 									`animate__${advance_motionEffect?.entranceAnimation}`,
 									`animate__${advance_motionEffect?.animationDuration}`,
-									`animate__delay-${advance_motionEffect?.animationDelay}ms`,
 									`animate__repeat-${advance_motionEffect?.repeat}`
 								);
 							}, 50);
