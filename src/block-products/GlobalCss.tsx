@@ -124,7 +124,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const effectiveQvEnabled = isBlockOverride
 		? (style_quickViewBtn?.enabled !== undefined ? style_quickViewBtn?.enabled : qvTheme?.enabled)
 		: (qvTheme?.enabled !== undefined ? qvTheme?.enabled : style_quickViewBtn?.enabled);
-	const isQvEnabled = effectiveQvEnabled !== false && effectiveQvEnabled !== undefined && effectiveQvEnabled !== 0 && (effectiveQvEnabled as any) !== "0";
+	const isQvEnabled = Boolean(effectiveQvEnabled) && String(effectiveQvEnabled) !== "0";
 
 	const getQuickViewBorderRadius = (): string => {
 		const val = effectiveQvBorderRadius;
@@ -948,7 +948,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content?.isShowTitle && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-title",
+						className: `${WRAP_CLASSNAME} .wcb-products__product-title, ${WRAP_CLASSNAME} .wcb-products__product-title a`,
 						typography: style_title?.typography,
 					})}
 				/>

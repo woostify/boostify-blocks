@@ -411,7 +411,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_postMeta.isShowTitle ? (
 				<Global
 					styles={getTypographyStyles({
-						className: `${POST_CARD_CLASS} .wcbPostCard__title a`,
+						className: `${POST_CARD_CLASS} .wcbPostCard__title, ${POST_CARD_CLASS} .wcbPostCard__title a`,
 						typography: style_title.typography,
 					})}
 				/>

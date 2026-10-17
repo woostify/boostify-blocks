@@ -520,6 +520,47 @@ class WCB_CSS_Utility {
 			$unit = '';
 		}
 
+		$length_properties = array(
+			'font-size',
+			'letter-spacing',
+			'width',
+			'height',
+			'min-width',
+			'max-width',
+			'min-height',
+			'max-height',
+			'border-radius',
+			'border-top-left-radius',
+			'border-top-right-radius',
+			'border-bottom-right-radius',
+			'border-bottom-left-radius',
+			'border-width',
+			'border-top-width',
+			'border-right-width',
+			'border-bottom-width',
+			'border-left-width',
+			'gap',
+			'row-gap',
+			'column-gap',
+			'margin',
+			'margin-top',
+			'margin-right',
+			'margin-bottom',
+			'margin-left',
+			'padding',
+			'padding-top',
+			'padding-right',
+			'padding-bottom',
+			'padding-left',
+			'top',
+			'right',
+			'bottom',
+			'left',
+		);
+		if ( empty( $unit ) && in_array( $property, $length_properties, true ) ) {
+			$unit = 'px';
+		}
+
 		$d = is_array( $value ) ? ( $value['Desktop'] ?? '' ) : $value;
 		$t = is_array( $value ) ? ( $value['Tablet'] ?? $d ) : $value;
 		$m = is_array( $value ) ? ( $value['Mobile'] ?? $t ) : $value;
@@ -566,7 +607,7 @@ class WCB_CSS_Utility {
 	 * @param string $device   Breakpoint: desktop, tablet, or mobile.
 	 * @return array Scoped selector array.
 	 */
-	public static function get_dimension_css( $dim_data, $type, $selector, $device = 'desktop' ) {
+	public static function get_dimension_css( $dim_data, $type, $selector, $device = 'desktop', $important = false ) {
 		if ( empty( $dim_data ) || ! is_array( $dim_data ) ) {
 			return array();
 		}
@@ -602,7 +643,11 @@ class WCB_CSS_Utility {
 			$val = $target_data[ $side ] ?? '';
 			if ( '' !== $val && null !== $val ) {
 				if ( null === $ref_data || ( $ref_data[ $side ] ?? '' ) !== $val ) {
-					$css[ $type . '-' . $side ] = self::get_css_value( $val );
+					$css_val = self::get_css_value( $val );
+					if ( $important ) {
+						$css_val .= ' !important';
+					}
+					$css[ $type . '-' . $side ] = $css_val;
 				}
 			}
 		}
@@ -747,9 +792,24 @@ class WCB_CSS_Utility {
 		}
 
 		$zi = $attrs['advance_zIndex'] ?? array();
-		$z  = is_array( $zi ) ? ( $zi['Desktop'] ?? '' ) : $zi;
-		if ( '' !== $z && null !== $z ) {
-			$css[ $selector ]['z-index'] = $z;
+		if ( is_array( $zi ) ) {
+			$zd = $zi['Desktop'] ?? ( $zi['desktop'] ?? '' );
+			$zt = $zi['Tablet'] ?? ( $zi['tablet'] ?? $zd );
+			$zm = $zi['Mobile'] ?? ( $zi['mobile'] ?? $zt );
+		} else {
+			$zd = $zi;
+			$zt = $zi;
+			$zm = $zi;
+		}
+
+		if ( '' !== $zd && null !== $zd ) {
+			$css[ $selector ]['z-index'] = $zd;
+		}
+		if ( '' !== $zt && null !== $zt && $zt !== $zd ) {
+			$css[ $tablet_mq ][ $selector ]['z-index'] = $zt;
+		}
+		if ( '' !== $zm && null !== $zm && $zm !== $zt ) {
+			$css[ $mobile_mq ][ $selector ]['z-index'] = $zm;
 		}
 
 		return $css;

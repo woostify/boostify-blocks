@@ -133,8 +133,14 @@ function boostify_blocks_download_google_font( string $font_family ) {
     $css_path = $paths['dir'] . $slug . '.css';
     $css_url  = $paths['url'] . $slug . '.css';
 
-    // Already cached – nothing to do.
+    // Already cached – ensure it doesn't contain relative font URLs from previous versions.
     if ( file_exists( $css_path ) ) {
+        $cached_css = file_get_contents( $css_path );
+        if ( false !== strpos( $cached_css, '.woff2)' ) && ! preg_match( '/url\([\'"]?https?:\/\//i', $cached_css ) ) {
+            // Upgrade legacy relative font URLs to current absolute base URL.
+            $cached_css = preg_replace( '/url\(\s*[\'"]?([^\'")\/\s]+\.woff2)[\'"]?\s*\)/i', 'url("' . $paths['url'] . '$1")', $cached_css );
+            boostify_blocks_write_file( $css_path, $cached_css );
+        }
         return $css_url;
     }
 
@@ -179,8 +185,12 @@ function boostify_blocks_download_google_font( string $font_family ) {
             }
         }
 
-        // Use relative filename so the CSS is portable across domains/servers.
-        $css = str_replace( $woff2_url, $filename, $css );
+        // Use absolute URL so fonts resolve reliably in all contexts:
+        // - frontend stylesheets (<link>)
+        // - block editor inlined stylesheets (add_editor_style() in Gutenberg)
+        // - asset generation bundled post CSS.
+        $local_font_url = $paths['url'] . $filename;
+        $css            = str_replace( $woff2_url, $local_font_url, $css );
     }
 
     // Persist the rewritten CSS.
