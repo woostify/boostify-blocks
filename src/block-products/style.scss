@@ -420,6 +420,7 @@
 	}
 
 	&.wcb-products__product--onsaleInsideImage {
+
 		.wcb-products__product-salebadge,
 		.wcb-products__product-outofstock-badge {
 			position: absolute;
@@ -756,7 +757,7 @@
 	}
 }
 
-.wcb-products__wrap .product .wcb-products__product-title {
+.wcb-products__wrap .wcb-products__product-title {
 	margin-top: 0;
 	line-height: 1.5;
 

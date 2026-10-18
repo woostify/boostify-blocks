@@ -1,7 +1,12 @@
 .wcb-icon-box {
 	&__wrap {
-		.wcb-icon-box__socials-icons > a:first-child {
+		.wcb-icon-box__socials-icons>a:first-child {
 			margin-left: 0 !important;
+		}
+
+		.wcb-icon-box__icon-wrap {
+			line-height: normal;
+			flex-shrink: 0;
 		}
 	}
 
@@ -16,10 +21,6 @@
 
 	&__content-title {
 		flex-grow: 1;
-	}
-
-	&__icon-wrap {
-		flex-shrink: 0;
 	}
 
 	&__icon {
