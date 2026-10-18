@@ -5,11 +5,13 @@
 
 	.wcb-icon-box__icon-wrap {
 		margin: 14px;
+		line-height: normal;
+		flex-shrink: 0;
 	}
 
 	.wcb-icon-box__number {
 		font-size: 36px;
-		font-weight: 600;
+		font-weight: 400;
 		line-height: 1.2;
 		margin-bottom: 14px;
 	}
@@ -34,10 +36,6 @@
 
 .wcb-icon-box__content {
 	flex-grow: 1;
-}
-
-.wcb-icon-box__icon-wrap {
-	flex-shrink: 0;
 }
 
 .wcb-icon-box__icon {
