@@ -1095,6 +1095,7 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 					'boostify-blocks/slider-swiper' => 'boostify-blocks/slider-swiper-child',
 					'boostify-blocks/tabs'          => 'boostify-blocks/tab-child',
 					'boostify-blocks/faq'           => 'boostify-blocks/faq-child',
+					'boostify-blocks/accordion'     => 'boostify-blocks/accordion-item',
 					'boostify-blocks/icon-list'     => 'boostify-blocks/icon-child',
 					'boostify-blocks/buttons'       => 'boostify-blocks/button',
 				);

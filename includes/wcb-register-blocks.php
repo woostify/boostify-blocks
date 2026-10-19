@@ -356,6 +356,23 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
             ]
         );
 
+        // ACCORDION
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-accordion',
+            [
+                "render_callback"     => "boostify_blocks_block_accordion_render_callback",
+                "ancestor"            => (($boostify_blocks_enable_disable['boostify-blocks/accordion'] ?? "") !== 'disabled')  ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
+                "view_script_handles" => []
+            ]
+        );
+        // ACCORDION ITEM
+        register_block_type(
+            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-accordion-item',
+            [
+                "view_script_handles" => []
+            ]
+        );
+
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-team',
             [

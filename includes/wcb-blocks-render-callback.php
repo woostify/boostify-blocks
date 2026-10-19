@@ -51,6 +51,13 @@ function boostify_blocks_block_faq_render_callback($attributes, $content)
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     return $content;
 }
+
+//============================================= block accordion ===============================================================
+function boostify_blocks_block_accordion_render_callback($attributes, $content)
+{
+    boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
+    return $content;
+}
 //============================================= block 1 ===============================================================
 function boostify_blocks_block_cta_render_callback($attributes, $content)
 {

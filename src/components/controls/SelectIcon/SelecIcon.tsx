@@ -37,12 +37,14 @@ interface Props {
 	iconData: MyIcon;
 	onChange: (value: MyIcon) => void;
 	label?: string;
+	isCompact?: boolean;
 }
 
 const SelecIcon: FC<Props> = ({
 	onChange,
 	iconData,
 	label = __("Icon:", "boostify-blocks"),
+	isCompact = false,
 }) => {
 	const [query, setQuery] = useState("");
 	const [isCorrectSvgCode, setIsCorrectSvgCode] = useState(
@@ -301,31 +303,118 @@ const SelecIcon: FC<Props> = ({
 			position="middle left"
 			className="w-full"
 			contentClassName="Wcb-SelectIcon z-[100]"
-			renderToggle={({ isOpen, onToggle }) => (
-				<div className="flex items-center space-x-4">
-					<button
-						className="py-3 px-6 flex items-center justify-center ring-2 ring-slate-200 hover:ring-slate-300 rounded-lg "
-						onClick={() => {
-							onToggle();
-							if (iconData.type === "icon") {
-								scrollToIcon();
-							}
-						}}
-					>
-						<span className="mr-3">{label}</span>
-						<MyIconFull
-							icon={iconData}
-							className="w-6 h-6 text-[24px] flex items-center "
-							renderIfNone={<strong>{__("None", "boostify-blocks")}</strong>}
+			renderToggle={({ isOpen, onToggle }) => {
+				if (isCompact) {
+					const hasIcon = !!(
+						(iconData?.type === "icon" && iconData?.iconName) ||
+						(iconData?.type === "svg" && iconData?.svgCode) ||
+						(iconData?.type === "image" && iconData?.imageData?.mediaUrl)
+					);
+
+					return (
+						<div className="wcb-select-icon--compact flex items-center justify-between border border-gray-300 rounded p-1.5 bg-white w-full transition-colors hover:border-gray-400">
+							<button
+								type="button"
+								className="flex-1 flex items-center gap-2 text-left cursor-pointer border-none bg-transparent p-1 min-h-[32px]"
+								onClick={() => {
+									onToggle();
+									if (iconData?.type === "icon") {
+										scrollToIcon();
+									}
+								}}
+							>
+								{hasIcon ? (
+									<MyIconFull
+										icon={iconData}
+										className="w-5 h-5 text-lg text-gray-800 flex items-center justify-center"
+									/>
+								) : (
+									<span className="text-xs text-gray-400">
+										{__("Select an Icon", "boostify-blocks")}
+									</span>
+								)}
+							</button>
+							<div className="flex items-center gap-1">
+								{hasIcon && (
+									<button
+										type="button"
+										className="p-1 text-gray-400 hover:text-red-500 border-none bg-transparent cursor-pointer rounded flex items-center justify-center"
+										onClick={(e) => {
+											e.stopPropagation();
+											onChange({
+												type: "icon",
+												iconName: undefined,
+												imageData: DEFAULT_MEDIA_UPLOAD,
+												svgCode: "",
+											});
+										}}
+										title={__("Clear Icon", "boostify-blocks")}
+									>
+										<svg
+											width="14"
+											height="14"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+										>
+											<line x1="18" y1="6" x2="6" y2="18" />
+											<line x1="6" y1="6" x2="18" y2="18" />
+										</svg>
+									</button>
+								)}
+								<button
+									type="button"
+									className="p-1 text-gray-400 hover:text-gray-700 border-none bg-transparent cursor-pointer rounded flex items-center justify-center"
+									onClick={() => {
+										onToggle();
+										if (iconData?.type === "icon") {
+											scrollToIcon();
+										}
+									}}
+								>
+									<svg
+										width="14"
+										height="14"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+									>
+										<polyline points="6 9 12 15 18 9" />
+									</svg>
+								</button>
+							</div>
+						</div>
+					);
+				}
+
+				return (
+					<div className="flex items-center space-x-4">
+						<button
+							className="py-3 px-6 flex items-center justify-center ring-2 ring-slate-200 hover:ring-slate-300 rounded-lg "
+							onClick={() => {
+								onToggle();
+								if (iconData.type === "icon") {
+									scrollToIcon();
+								}
+							}}
+						>
+							<span className="mr-3">{label}</span>
+							<MyIconFull
+								icon={iconData}
+								className="w-6 h-6 text-[24px] flex items-center "
+								renderIfNone={<strong>{__("None", "boostify-blocks")}</strong>}
+							/>
+						</button>
+						<ResetButton
+							onClick={() => {
+								onChange(DEFAULT_MY_ICON);
+							}}
 						/>
-					</button>
-					<ResetButton
-						onClick={() => {
-							onChange(DEFAULT_MY_ICON);
-						}}
-					/>
-				</div>
-			)}
+					</div>
+				);
+			}}
 			renderContent={renderContent}
 		/>
 	);
