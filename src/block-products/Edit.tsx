@@ -214,6 +214,11 @@ const Edit: FC<Props> = (props) => {
 		}
 	}, [advance_motionEffect]);
 	useEffect(() => {
+		if (!general_layout) {
+			setAttributes({ general_layout: WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO });
+		}
+	}, [general_layout]);
+	useEffect(() => {
 		if (!style_category) {
 			setAttributes({ style_category: WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO });
 		}
@@ -743,6 +748,7 @@ const Edit: FC<Props> = (props) => {
 			advance_zIndex,
 			general_sortingAndFiltering,
 			general_content,
+			general_layout,
 			general_featuredImage,
 			general_addToCartBtn,
 			general_pagination,
@@ -837,7 +843,7 @@ const Edit: FC<Props> = (props) => {
 			<div
 				{...wrapBlockProps}
 				className={`${wrapBlockProps.className
-					} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX.toString()}`}
+					} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX ? style_layout.swithToScrollSnapX.toString() : "None"}`}
 				style={{
 					...wrapBlockProps.style,
 					"--wcb-editor-col-mobile": colMob,

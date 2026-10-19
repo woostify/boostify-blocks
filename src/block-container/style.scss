@@ -34,16 +34,14 @@ body .wcb-container__wrap {
 	&:not(.is_wcb_container_child) {
 		flex: 0 1 auto;
 	}
+}
 
-	/* TODO: Review this — it currently blocks part of the container child margin */
-	.wcb-container__inner {
-		.wcb-container__wrap.is_wcb_container_child {
-			margin-block-start: 0;
-			margin-block-end: 0;
-			margin-left: 0;
-			margin-right: 0;
-		}
-	}
+/* Reset default child container margin with 0 specificity so user margins always apply */
+:where(.wcb-container__wrap .wcb-container__inner .wcb-container__wrap.is_wcb_container_child) {
+	margin-block-start: 0;
+	margin-block-end: 0;
+	margin-left: 0;
+	margin-right: 0;
 }
 
 .wcb-container__inner {

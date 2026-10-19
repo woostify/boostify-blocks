@@ -23,6 +23,7 @@ $wrap_sel    = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
 $content_sel = $wrap_sel . ' .wcb-icon__content';
 $icon_sel    = $content_sel . ' .wcb-icon-full';
 
+
 // =====================================================================
 // 1. ALIGNMENT (Wrap)
 // =====================================================================
@@ -84,6 +85,7 @@ if ( ! empty( $attr['style_dimension'] ) && is_array( $attr['style_dimension'] )
 // =====================================================================
 if ( ! empty( $attr['general_icon']['size'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $wrap_sel . ' .wcb-icon-full', 'width', $attr['general_icon']['size'], 'px' );
+	WCB_Block_Helper::add_responsive_css( $css, $wrap_sel . ' .wcb-icon-full', 'height', $attr['general_icon']['size'], 'px' );
 	WCB_Block_Helper::add_responsive_css( $css, $wrap_sel . ' .wcb-icon-full', 'font-size', $attr['general_icon']['size'], 'px' );
 }
 

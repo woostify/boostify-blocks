@@ -90,7 +90,15 @@ export type ThemeDefaults = {
 };
   
 export function getThemeDefaults(): ThemeDefaults {
-    // @ts-ignore
-    const win = window as any;
-    return win?.BOOSTIFY_BLOCKS_THEME_DEFAULTS || {};
+    try {
+        // @ts-ignore
+        const win = typeof window !== "undefined" ? (window as any) : null;
+        if (!win) return {};
+        if (win.BOOSTIFY_BLOCKS_THEME_DEFAULTS) return win.BOOSTIFY_BLOCKS_THEME_DEFAULTS;
+        if (win.parent && win.parent.BOOSTIFY_BLOCKS_THEME_DEFAULTS) return win.parent.BOOSTIFY_BLOCKS_THEME_DEFAULTS;
+        if (win.top && win.top.BOOSTIFY_BLOCKS_THEME_DEFAULTS) return win.top.BOOSTIFY_BLOCKS_THEME_DEFAULTS;
+    } catch (e) {
+        // Cross-origin iframe fallback
+    }
+    return {};
 }

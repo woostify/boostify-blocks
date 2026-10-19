@@ -165,7 +165,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			<Global
 				styles={[
 					getTypographyStyles({
-						className: FAQ_CHILD_QUESTION,
+						className: `${FAQ_CHILD_QUESTION}, ${FAQ_CHILD_QUESTION_TEXT}`,
 						typography: style_question.typography,
 					}),
 					getPaddingMarginStyles({

@@ -49,14 +49,14 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_mobile: rowGap_mobile,
 			value_tablet: rowGap_tablet,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_layout.rowGap,
+			cssProperty: style_layout?.rowGap,
 		});
 		const {
 			value_desktop: colunmGap_desktop,
 			value_mobile: colunmGap_mobile,
 			value_tablet: colunmGap_tablet,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_layout.colunmGap,
+			cssProperty: style_layout?.colunmGap,
 		});
 
 		const {
@@ -64,24 +64,24 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_tablet: numberOfColumn_tablet,
 			value_mobile: numberOfColumn_mobile,
 		} = getCssProperyHasResponsive({
-			cssProperty: general_sortingAndFiltering.numberOfColumn,
+			cssProperty: general_sortingAndFiltering?.numberOfColumn,
 		});
 
 		return {
 			[`${WRAP_CLASSNAME}`]: {
 				".wcb-posts-grid__list-posts": {
-					gridTemplateColumns: `repeat(${numberOfColumn_mobile}, minmax(0, 1fr))`,
+					gridTemplateColumns: `repeat(${numberOfColumn_mobile || 1}, minmax(0, 1fr))`,
 					rowGap: rowGap_mobile,
 					columnGap: colunmGap_mobile,
 					[`@media (min-width: ${media_tablet})`]: {
 						rowGap: rowGap_tablet,
 						columnGap: colunmGap_tablet,
-						gridTemplateColumns: `repeat(${numberOfColumn_tablet}, minmax(0, 1fr))`,
+						gridTemplateColumns: `repeat(${numberOfColumn_tablet || 1}, minmax(0, 1fr))`,
 					},
 					[`@media (min-width: ${media_desktop})`]: {
 						rowGap: rowGap_desktop,
 						columnGap: colunmGap_desktop,
-						gridTemplateColumns: `repeat(${numberOfColumn_desktop}, minmax(0, 1fr))`,
+						gridTemplateColumns: `repeat(${numberOfColumn_desktop || 1}, minmax(0, 1fr))`,
 					},
 				},
 			},
@@ -94,19 +94,19 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_tablet: marginTop_tablet,
 			value_desktop: marginTop_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_pagination.marginTop,
+			cssProperty: style_pagination?.marginTop,
 		});
 		return {
 			[`${WRAP_CLASSNAME} .wcb-posts-grid__pagination`]: {
 				marginTop: marginTop_mobile,
-				justifyContent: style_pagination.justifyContent,
+				justifyContent: style_pagination?.justifyContent,
 				[`.page-numbers`]: {
-					color: style_pagination.mainStyle.Normal.color,
-					backgroundColor: style_pagination.mainStyle.Normal.backgroundColor,
+					color: style_pagination?.mainStyle?.Normal?.color,
+					backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
 				},
 				[`.page-numbers.current`]: {
-					color: style_pagination.mainStyle.Active.color,
-					backgroundColor: style_pagination.mainStyle.Active.backgroundColor,
+					color: style_pagination?.mainStyle?.Active?.color,
+					backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
 				},
 				[`@media (min-width: ${media_tablet})`]: {
 					marginTop: marginTop_tablet,
@@ -322,16 +322,18 @@ const GlobalCss: FC<Props> = (attrs) => {
 	};
 
 	const getPostCardStyles_ReadmoreLink = (): CSSObject => {
-		const { backgroundColor, color } =
-			style_readmoreLink.colorAndBackgroundColor.Normal;
-		const { backgroundColor: backgroundColor_h, color: color_h } =
-			style_readmoreLink.colorAndBackgroundColor.Hover;
+		const normalColor = style_readmoreLink?.colorAndBackgroundColor?.Normal;
+		const hoverColor = style_readmoreLink?.colorAndBackgroundColor?.Hover;
+		const backgroundColor = normalColor?.backgroundColor;
+		const color = normalColor?.color;
+		const backgroundColor_h = hoverColor?.backgroundColor;
+		const color_h = hoverColor?.color;
 		const {
 			value_mobile: marginBottom_mobile,
 			value_tablet: marginBottom_tablet,
 			value_desktop: marginBottom_desktop,
 		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_readmoreLink.marginBottom || { Desktop: "1rem" },
+			cssProperty: style_readmoreLink?.marginBottom || { Desktop: "1rem" },
 		});
 		return {
 			[`${POST_CARD_CLASS} .wcbPostCard__readmoreLink`]: {
@@ -409,7 +411,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_postMeta.isShowTitle ? (
 				<Global
 					styles={getTypographyStyles({
-						className: `${POST_CARD_CLASS} .wcbPostCard__title a`,
+						className: `${POST_CARD_CLASS} .wcbPostCard__title, ${POST_CARD_CLASS} .wcbPostCard__title a`,
 						typography: style_title.typography,
 					})}
 				/>
