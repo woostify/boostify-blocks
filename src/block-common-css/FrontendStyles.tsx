@@ -1,7 +1,5 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
-import { initCarouselForWcbTestimonials } from "../block-testimonials/FrontendStyles";
-import { initCarouselForWcbSliders } from "../block-slider/FrontendStyles";
 import { initCarouselForWcbProducts } from "../block-products/FrontendStyles";
 import { initAdvanceMotionEffect } from "../block-container/getAdvanveStyles";
 
@@ -57,6 +55,10 @@ const classes: {
 		C: React.lazy(() => import("../block-faq/GlobalCss")),
 	},
 	{
+		D: ".wcb-accordion__wrap.wcb-update-div",
+		C: React.lazy(() => import("../block-accordion/GlobalCss")),
+	},
+	{
 		D: ".wcb-form__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-form/GlobalCss")),
 	},
@@ -79,11 +81,6 @@ const classes: {
 	{
 		D: ".wcb-team__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-team/GlobalCss")),
-	},
-	{
-		D: ".wcb-testimonials__wrap.wcb-update-div",
-		C: React.lazy(() => import("../block-testimonials/GlobalCss")),
-		F: initCarouselForWcbTestimonials,
 	},
 	{
 		// Testimonials (Swiper) block - only needs GlobalCss (dynamic
@@ -110,19 +107,6 @@ const classes: {
 		C: React.lazy(() => import("../block-counter/GlobalCss")),
 	},
 	{
-		// :not(.wcb-slider-swiper__wrap) excludes the newer Swiper-based Slider
-		// block, which reuses this same "wcb-slider__wrap ... wcb-update-div"
-		// class string. Without the exclusion this entry's Slick-targeting
-		// GlobalCss and jQuery Slick init (initCarouselForWcbSliders) would
-		// also match and run against the Swiper block's markup, silently
-		// producing no arrow/dot CSS (wrong selectors: .slick-prev/.slick-dots)
-		// and corrupting its DOM via Slick's carousel init - see the dedicated
-		// entry below for the correct component.
-		D: ".wcb-slider__wrap.wcb-update-div:not(.wcb-slider-swiper__wrap)",
-		C: React.lazy(() => import("../block-slider/GlobalCss")),
-		F: initCarouselForWcbSliders,
-	},
-	{
 		// Swiper-based Slider block - only needs GlobalCss (dynamic
 		// color/size/spacing CSS) rendered here. Swiper itself is
 		// initialised separately via the Interactivity API store (public/js/
@@ -134,7 +118,7 @@ const classes: {
 	},
 	{
 		D: ".wcb-slider-child__wrap.wcb-update-div",
-		C: React.lazy(() => import("../block-slider-child/GlobalCss")),
+		C: React.lazy(() => import("../block-slider-swiper-child/GlobalCss")),
 	},
 	{
 		D: ".wcb-icon-list__wrap.wcb-update-div",

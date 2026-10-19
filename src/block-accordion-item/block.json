@@ -1,0 +1,25 @@
+{
+	"apiVersion": 3,
+	"name": "boostify-blocks/accordion-item",
+	"version": "0.1.0",
+	"title": "Accordion Item",
+	"category": "boostify-blocks",
+	"usesContext": [
+		"boostify-blocks/accordion_general",
+		"boostify-blocks/accordion_icon"
+	],
+	"parent": [
+		"boostify-blocks/accordion"
+	],
+	"icon": "- wcb-block-editor-block-icon lni lni-support text-xl",
+	"description": "An individual accordion item pane.",
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"__experimentalLabel": "title"
+	},
+	"textdomain": "boostify-blocks",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}
