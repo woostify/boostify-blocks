@@ -25,7 +25,7 @@ Power-up Gutenberg with advanced blocks for faster website creation. Build your 
 <strong>INCLUDES ESSENTIAL BLOCKS</strong>
 
 <ol>
-	<li><strong>Core Blocks</strong> - Boostify Blocks offers essential blocks that every website and landing page needs. You'll find blocks like Container, Heading, Image, Icon, Buttons, Info Box, Call To Action, and Countdown, which are crucial for crafting your pages.</li>
+	<li><strong>Core Blocks</strong> - Boostify Blocks offers essential blocks that every website and landing page needs. You'll find blocks like Container, Heading, Image, Icon, Buttons, Info Box, and Countdown, which are crucial for crafting your pages.</li>
 	<li><strong>Creative Blocks</strong> - Unleash your creativity with Boostify Blocks creative blocks. These include Countdown, Marketing Button, and Icon List. Let your imagination run wild and make your designs truly stand out.</li>
 	<li><strong>Content Blocks</strong> - Showcase your content beautifully with Boostify Blocks content blocks. From Sliders, Image blocks, Google Maps, Tabs, and more.</li>
 	<li><strong>Post Blocks</strong> - Enhance your blog posts with Boostify Blocks Post Blocks. Add a Post Carousel and Post Grid to make your blog visually appealing and user-friendly.</li>

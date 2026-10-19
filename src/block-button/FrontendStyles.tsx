@@ -3,8 +3,6 @@ import ReactDOM from "react-dom";
 import { WcbAttrs } from "./attributes";
 import GlobalCssButton from "./GlobalCss";
 
-const GlobalCssCTALazy = React.lazy(() => import("../block-cta/GlobalCss"));
-
 interface Props extends WcbAttrs {}
 
 // const FrontendStyles: FC<Props> = (attrs) => {
@@ -15,12 +13,8 @@ interface Props extends WcbAttrs {}
 const divsToUpdateButton = document.querySelectorAll(
 	".wcb-button__wrap.wcb-update-div"
 );
-const divsToUpdateCTA = document.querySelectorAll(
-	".wcb-cta__wrap.wcb-update-div"
-);
 
 renderBlockGlobalStyles(divsToUpdateButton, GlobalCssButton);
-renderBlockGlobalStyles(divsToUpdateCTA, GlobalCssCTALazy);
 
 function renderBlockGlobalStyles(divsToUpdate: NodeListOf<Element>, GlobalCss: React.ComponentType<any>) {
 	divsToUpdate.forEach((div: any) => {
