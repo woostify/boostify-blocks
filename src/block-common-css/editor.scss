@@ -21,14 +21,19 @@
 }
 
 .block-editor-block-icon {
-	svg.wcb-editor-block-icons path {
+	svg.wcb-editor-block-icons path,
+	svg.wcb-editor-block-icons rect {
 		@apply stroke-emerald-600;
 	}
 }
 .block-editor-list-view-leaf.is-selected
 	.block-editor-list-view-block-contents
 	svg.wcb-editor-block-icons
-	path {
+	path,
+.block-editor-list-view-leaf.is-selected
+	.block-editor-list-view-block-contents
+	svg.wcb-editor-block-icons
+	rect {
 	@apply stroke-white;
 }
 
