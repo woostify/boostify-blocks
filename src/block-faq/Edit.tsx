@@ -279,7 +279,9 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	// INNER BLOCK
 	const blockProps = useBlockProps({
-		className: `wcb-faq__inner`,
+		className: `wcb-faq__inner ${
+			general_general.layout === "accordion" ? "accordion-container" : ""
+		}`,
 	});
 
 	const innerBlocksProps = useInnerBlocksProps(blockProps, {
@@ -325,7 +327,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps?.className} wcb-faq__wrap p-2 ${uniqueId}`}
+				className={`${wrapBlockProps?.className} wcb-faq__wrap ${uniqueId}`}
 				data-uniqueid={uniqueId}
 			>
 				{/* CONTROL SETTINGS */}

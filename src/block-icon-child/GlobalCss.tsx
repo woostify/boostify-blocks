@@ -100,6 +100,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							value: style_Icon.iconSize,
 							prefix: "width",
 							prefix_2: "fontSize",
+							prefix_3: "height",
 						}),
 						{
 							[`${WRAP_CLASSNAME} .wcb-icon-full`]: {

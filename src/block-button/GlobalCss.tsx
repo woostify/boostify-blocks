@@ -128,6 +128,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 					getPaddingMarginStyles({
 						className: BUTTON_CLASSNAME,
 						padding: style_dimension.padding,
+					}),
+					getPaddingMarginStyles({
+						className: WRAP_CLASSNAME,
 						margin: style_dimension.margin,
 					}),
 					getStyleObjectFromResponsiveAttr({

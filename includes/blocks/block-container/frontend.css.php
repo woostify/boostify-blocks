@@ -24,29 +24,29 @@ $css = array(
 	'mobile'  => array(),
 );
 
-$wrap_class    = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
+$wrap_class    = '.wcb-container__wrap.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
 $inner_class   = $wrap_class . ' > .wcb-container__inner';
 $overlay_class = $wrap_class . ' > .wcb-OverlayBackgroundByBgControl';
 
 // =====================================================================
 // 1. PARENT .wp-block MARGIN RESET & ALIGNMENT
 // =====================================================================
-$css['desktop'][ '.wp-block:has(> .wcb-container__wrap' . $wrap_class . ')' ] = array(
+$css['desktop'][ '.wp-block:has(> ' . $wrap_class . ')' ] = array(
 	'margin-top'    => '0 !important',
 	'margin-bottom' => '0 !important',
 );
 
-$css['desktop'][ '.wp-block[data-align="full"]:has(> .wcb-container__wrap' . $wrap_class . ') ' . $wrap_class ] = array(
+$css['desktop'][ '.wp-block[data-align="full"]:has(> ' . $wrap_class . ') ' . $wrap_class ] = array(
 	'margin-left'  => 'auto',
 	'margin-right' => 'auto',
 );
 
-$css['desktop'][ '.wp-block[data-align="wide"]:has(> .wcb-container__wrap' . $wrap_class . ')' ] = array(
+$css['desktop'][ '.wp-block[data-align="wide"]:has(> ' . $wrap_class . ')' ] = array(
 	'margin-left'  => '-8px',
 	'margin-right' => '-8px',
 );
 
-$css['desktop'][ '.wp-block[data-align="wide"]:has(> .wcb-container__wrap' . $wrap_class . ') ' . $wrap_class ] = array(
+$css['desktop'][ '.wp-block[data-align="wide"]:has(> ' . $wrap_class . ') ' . $wrap_class ] = array(
 	'margin-left'  => 'auto',
 	'margin-right' => 'auto',
 );
@@ -245,10 +245,10 @@ if ( ! empty( $attr['styles_boxShadow'] ) && is_array( $attr['styles_boxShadow']
 if ( ! empty( $attr['styles_dimensions'] ) && is_array( $attr['styles_dimensions'] ) ) {
 	$dim = $attr['styles_dimensions'];
 	if ( ! empty( $dim['padding'] ) ) {
-		WCB_Block_Helper::add_dimension_css( $css, $wrap_class, 'padding', $dim['padding'] );
+		WCB_Block_Helper::add_dimension_css( $css, $wrap_class, 'padding', $dim['padding'], true );
 	}
 	if ( ! empty( $dim['margin'] ) ) {
-		WCB_Block_Helper::add_dimension_css( $css, $wrap_class, 'margin', $dim['margin'] );
+		WCB_Block_Helper::add_dimension_css( $css, $wrap_class, 'margin', $dim['margin'], true );
 	}
 }
 

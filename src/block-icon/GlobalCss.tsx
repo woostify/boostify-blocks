@@ -119,16 +119,12 @@ const GlobalCss: FC<Props> = (attrs) => {
 						className: `${WRAP_CLASSNAME} .wcb-icon__content`,
 						padding: style_dimension.padding,
 					}),
-					getBorderStyles({
-						border: style_icon,
-						className: `${WRAP_CLASSNAME} .wcb-icon__content`,
-						isWithRadius: true,
-					}),
 					getStyleObjectFromResponsiveAttr({
 						className: `${WRAP_CLASSNAME} .wcb-icon-full`,
 						value: general_icon.size,
 						prefix: "width",
 						prefix_2: "fontSize",
+						prefix_3: "height",
 					}),
 					{
 						[`${CONTENT_CLASSNAME} .wcb-icon-full`]: {
@@ -151,7 +147,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					advance_responsiveCondition,
 					advance_zIndex,
 					className: CONTENT_CLASSNAME,
-					defaultDisplay: "inline-block",
+					defaultDisplay: "inline-flex",
 				})}
 			/>
 		</>

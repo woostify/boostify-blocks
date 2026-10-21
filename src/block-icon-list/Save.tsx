@@ -14,7 +14,37 @@ export interface WcbAttrsForSave
 export default function save({ attributes }: { attributes: WcbAttrs }) {
 	const {
 		uniqueId,
+		general_layout,
+		general_icon,
+		general_separator,
+		general_preset,
+		style_title,
+		style_desination,
+		style_separator,
+		style_description,
+		style_Icon,
+		style_dimension,
+		advance_responsiveCondition,
+		advance_zIndex,
+		advance_motionEffect,
 	} = attributes;
+
+	const newAttrs: WcbAttrsForSave = {
+		uniqueId,
+		general_layout,
+		general_icon,
+		general_separator,
+		general_preset,
+		style_title,
+		style_desination,
+		style_separator,
+		style_description,
+		style_Icon,
+		style_dimension,
+		advance_responsiveCondition,
+		advance_zIndex,
+		advance_motionEffect,
+	};
 
 	// Wrapper block props with className same as Edit component
 	const wrapBlockProps = useBlockProps.save({
@@ -29,7 +59,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 	return (
 		<SaveCommon
 			{...wrapBlockProps}
-			attributes={attributes}
+			attributes={newAttrs}
 			uniqueId={uniqueId}
 		>
 			<div {...innerBlocksProps} />
