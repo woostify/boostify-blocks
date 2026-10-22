@@ -238,15 +238,37 @@ const GlobalCss: FC<Props> = (attrs) => {
 						className: ITEM_CONTENT,
 						typography: style_answer?.typography,
 					}),
+					// Same typography for h1-h6 inside the content (theme/editor set their
+					// own heading font + size). Specificity (0,2,0) beats those rules but
+					// stays below the Heading block's own selectors (0,3,0).
+					getTypographyStyles({
+						className: `.${uniqueId} .wcb-accordion-item__content :where(h1, h2, h3, h4, h5, h6)`,
+						typography: style_answer?.typography,
+					}),
 					getPaddingMarginStyles({
 						className: ITEM_CONTENT,
 						padding: style_answer?.padding,
 					}),
 					{
 						[ITEM_PANEL]: {
+							backgroundColor: style_answer?.backgroundColor,
+						},
+						[ITEM_CONTENT]: {
 							color: style_answer?.color,
 							backgroundColor: style_answer?.backgroundColor,
 						},
+						// Headings get their own colour from the editor/theme (h1-h6 rule),
+						// so inheriting from the content wrapper is not enough.
+						// Specificity (0,2,0) beats that global rule (0,1,0) but stays below
+						// the Heading block's own colour (0,3,0), so a colour set on the
+						// Heading block still wins.
+						...(style_answer?.color
+							? {
+									[`.${uniqueId} .wcb-accordion-item__content :where(h1, h2, h3, h4, h5, h6)`]: {
+										color: style_answer.color,
+									},
+							  }
+							: {}),
 					},
 				]}
 			/>

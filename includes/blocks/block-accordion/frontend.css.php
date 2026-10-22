@@ -187,15 +187,33 @@ WCB_Block_Helper::add_responsive_css( $css, $item_wrap . '.is-open .wcb-accordio
 $sa = $attr['style_answer'] ?? array();
 if ( ! empty( $sa['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $item_content, $sa['typography'] );
+
+	// Headings carry their own typography (editor/theme h1-h6 rules), so inheriting is not
+	// enough. Specificity (0,2,0) beats the global h1-h6 rules but stays below the Heading
+	// block's own selectors (0,3,0).
+	$item_content_headings = '.' . $unique_id . ' .wcb-accordion-item__content :where(h1, h2, h3, h4, h5, h6)';
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
+		$rules = WCB_Block_Helper::get_typography_css( $sa['typography'], null, $device );
+		foreach ( $rules as $prop => $value ) {
+			$css[ $device ][ $item_content_headings ][ $prop ] = $value;
+		}
+	}
 }
 if ( ! empty( $sa['padding'] ) ) {
 	WCB_Block_Helper::add_dimension_css( $css, $item_content, 'padding', $sa['padding'] );
 }
 if ( ! empty( $sa['color'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $item_panel, 'color', $sa['color'] );
+	WCB_Block_Helper::add_responsive_css( $css, $item_content, 'color', $sa['color'] );
+	// Headings carry their own colour (editor/theme h1-h6 rule), so inheriting is not enough.
+	// Specificity (0,2,0) beats the global h1-h6 rule but stays below the Heading block's
+	// own colour selector (0,3,0), so a colour set on the Heading block still wins.
+	WCB_Block_Helper::add_responsive_css( $css, '.' . $unique_id . ' .wcb-accordion-item__content :where(h1, h2, h3, h4, h5, h6)', 'color', $sa['color'] );
 }
 if ( ! empty( $sa['backgroundColor'] ) ) {
+	// Panel keeps the colour for the open/close animation; content sits on top of it
+	// and has its own default background, so it must be set there too.
 	WCB_Block_Helper::add_responsive_css( $css, $item_panel, 'background-color', $sa['backgroundColor'] );
+	WCB_Block_Helper::add_responsive_css( $css, $item_content, 'background-color', $sa['backgroundColor'] );
 }
 
 // =====================================================================
