@@ -40,6 +40,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		uniqueId,
 		advance_responsiveCondition,
 		advance_zIndex,
+		advance_motionEffect,
 		alt,
 		caption,
 		href,
@@ -63,6 +64,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		uniqueId,
 		advance_responsiveCondition,
 		advance_zIndex,
+		advance_motionEffect,
 		general_settings: {
 			...general_settings,
 			// Make sure Height and Width are always object, not array

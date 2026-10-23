@@ -63,6 +63,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const {
 		advance_responsiveCondition,
 		advance_zIndex,
+		advance_motionEffect,
 		uniqueId,
 		general_preset,
 		general_content,
@@ -324,6 +325,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				return (
 					<>
 						<AdvancePanelCommon
+							advance_motionEffect={advance_motionEffect}
 							advance_responsiveCondition={
 								attributes.advance_responsiveCondition
 							}
@@ -345,6 +347,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			uniqueId,
 			advance_responsiveCondition,
 			advance_zIndex,
+			advance_motionEffect,
 			general_content,
 			general_preset,
 			style_background,
@@ -358,6 +361,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		uniqueId,
 		advance_responsiveCondition,
 		advance_zIndex,
+		advance_motionEffect,
 		general_content,
 		general_preset,
 		style_background,

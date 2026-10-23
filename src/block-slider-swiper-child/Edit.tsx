@@ -97,29 +97,10 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 			case "General":
 				return (
 					<>
-						<WcbSlidersPanel_StyleImage
-							onToggle={() => childPanelInfo.handleTogglePanel("General", "PanelImages")}
-							initialOpen={
-								childPanelInfo.tabGeneralIsPanelOpen === "PanelImages" ||
-								childPanelInfo.tabGeneralIsPanelOpen === "first"
-							}
-							opened={childPanelInfo.tabGeneralIsPanelOpen === "PanelImages" || undefined}
-							setAttr__={(data) => {
-								// Always update image/icon data
-								setAttributes({ style_image: data });
-
-								// If icon is disabled, reset layout preset to demo
-								if (data && (data.enableIcon === false || data.enableIcon === true)) {
-									setAttributes({ style_layoutPreset: WCB_SLIDER_LAYOUT_PANEL_PRESET_DEMO });
-								}
-							}}
-							panelData={style_image || WCB_SLIDER_PANEL_IMAGE_OR_ICON_DEMO}
-						/>
-
 						<WcbSlidersPanel_StyleContent
 							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleContent")}
 							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent"}
-							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent" || undefined}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent" || true}
 							setAttr__={(data) => {
 								setAttributes({ style_content: data });
 
@@ -238,8 +219,17 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 			case "Styles":
 				return (
 					<>
+						<WcbSlidersPanel_StyleBackground
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleBackground")}
+							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground"}
+							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground" || undefined}
+							setAttr__={(data) => {
+								setAttributes({ style_backgroundAndBorder: data });
+							}}
+							panelData={style_backgroundAndBorder || WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO}
+						/>
 						<WcbSlidersPanel_StyleName
-							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleName", true)}
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleName", undefined)}
 							initialOpen={
 								childPanelInfo.tabStylesIsPanelOpen === "_StyleName" ||
 								childPanelInfo.tabStylesIsPanelOpen === "first"
@@ -269,16 +259,6 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 								setAttributes({ style_callToActionButton: data });
 							}}
 							panelData={style_callToActionButton || WCB_SLIDER_PANEL_STYLE_CALL_TO_ACTION_BUTTON_DEMO}
-						/>
-
-						<WcbSlidersPanel_StyleBackground
-							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleBackground")}
-							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground"}
-							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleBackground" || undefined}
-							setAttr__={(data) => {
-								setAttributes({ style_backgroundAndBorder: data });
-							}}
-							panelData={style_backgroundAndBorder || WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO}
 						/>
 
 						<WcbSlidersPanel_StyleDimension

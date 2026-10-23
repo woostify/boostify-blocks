@@ -4,8 +4,6 @@ import {
 	ArrowDownOnSquareIcon,
 	ArrowTopRightOnSquareIcon,
 	ArrowUpRightIcon,
-	CheckIcon,
-	ClipboardIcon,
 	HeartIcon,
 	MagnifyingGlassIcon,
 	XMarkIcon,
@@ -14,8 +12,6 @@ import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import { gql, useLazyQuery } from "@apollo/client";
 import { GET_WCB_BLOCKS } from "./constant";
 import { Edge, Edge2, Node, WcbBlocksRoot } from "./type";
-import copy from "copy-to-clipboard";
-import { useTimeoutFn } from "react-use";
 import { useSelect, useDispatch } from "@wordpress/data";
 import { store as blockEditorStore } from "@wordpress/block-editor";
 import { rawHandler } from "@wordpress/blocks";
@@ -23,9 +19,6 @@ import Logo from "../components/Logo";
 
 const HeaderToolBarPatterns = () => {
 	// STATE
-	let [indexCopying, setIndexCopying] = useState("");
-	let [, , resetIsCopying] = useTimeoutFn(() => setIndexCopying(""), 1500);
-
 	const [isOpen, setOpen] = useState(false);
 
 	const [currentCategorySelected, setCurrentCategorySelected] =
@@ -148,55 +141,10 @@ const HeaderToolBarPatterns = () => {
 		return (
 			<div
 				key={value.node.id}
-				className={`relative text-white text-[10px] rounded-full px-2 py-0.5 leading-none capitalize font-medium flex items-center justify-center ${
-					name === "pro" ? "bg-red-500" : "bg-green-500"
-				}`}
+				className={`relative text-white text-[10px] rounded-full px-2 py-0.5 leading-none capitalize font-medium flex items-center justify-center ${name === "pro" ? "bg-red-500" : "bg-green-500"
+					}`}
 			>
 				<span>{name}</span>
-			</div>
-		);
-	};
-
-	const renderImportBtns = (post: Node) => {
-		return (
-			<div className="space-x-2 absolute inset-0 flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-				<button
-					type="button"
-					className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-					onClick={(e) => {
-						e.preventDefault();
-						insertWcbBlocks(post.contentOrigin);
-					}}
-				>
-					<ArrowDownOnSquareIcon
-						className="-ml-1 mr-2 h-5 w-5"
-						aria-hidden="true"
-					/>
-					Import
-				</button>
-
-				<button
-					type="button"
-					className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-					onClick={(e) => {
-						e.preventDefault();
-						copy(post.contentOrigin, {
-							format: "text/plain",
-						});
-						setIndexCopying(post.id);
-						resetIsCopying();
-					}}
-				>
-					{indexCopying !== post.id ? (
-						<ClipboardIcon
-							className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-							aria-hidden="true"
-						/>
-					) : (
-						<CheckIcon className="-ml-1 mr-2 h-5 w-5 text-gray-500" />
-					)}
-					{indexCopying !== post.id ? "Copy" : "Copied!"}
-				</button>
 			</div>
 		);
 	};
@@ -206,8 +154,8 @@ const HeaderToolBarPatterns = () => {
 		const isIncludeCategorySelected = !currentCategorySelected
 			? true
 			: post.wcbBlocksCategories.edges.some(
-					(item) => item.node.id === currentCategorySelected
-			  );
+				(item) => item.node.id === currentCategorySelected
+			);
 
 		const isIncludeTab =
 			currentTab === "favorites" ? favoriteIds.includes(post.databaseId) : true;
@@ -216,12 +164,12 @@ const HeaderToolBarPatterns = () => {
 		const isMatchSearch = !normalizedSearchTerm
 			? true
 			: post.title.toLowerCase().includes(normalizedSearchTerm) ||
-			  post.wcbBlocksCategories.edges.some((item) =>
-					item.node.name.toLowerCase().includes(normalizedSearchTerm)
-			  ) ||
-			  post.wcbBlocksTags.edges.some((item) =>
-					item.node.name.toLowerCase().includes(normalizedSearchTerm)
-			  );
+			post.wcbBlocksCategories.edges.some((item) =>
+				item.node.name.toLowerCase().includes(normalizedSearchTerm)
+			) ||
+			post.wcbBlocksTags.edges.some((item) =>
+				item.node.name.toLowerCase().includes(normalizedSearchTerm)
+			);
 
 		// CHECK FILTER
 		if (!isIncludeCategorySelected || !isIncludeTab || !isMatchSearch) {
@@ -234,8 +182,6 @@ const HeaderToolBarPatterns = () => {
 			<li key={post.id}>
 				<div className="group relative before:absolute before:-inset-2.5 before:rounded-[20px] before:bg-gray-100/60 before:opacity-0 hover:before:opacity-100">
 					<div className="relative aspect-[2/1] overflow-hidden rounded-lg bg-gray-100 ring-1 ring-gray-900/10">
-						{renderImportBtns(post)}
-
 						<button
 							type="button"
 							onClick={(e) => {
@@ -259,25 +205,44 @@ const HeaderToolBarPatterns = () => {
 								srcSet={post.featuredImage?.node.srcSet}
 								sizes="550px"
 								alt="heroes"
-								className="absolute inset-0 h-full w-full object-contain group-hover:opacity-60 transition-opacity"
+								className="absolute inset-0 h-full w-full object-contain"
 							/>
 						)}
 					</div>
-					<div className="flex space-x-2 mt-3.5 ">
-						<h4 className="text-sm font-medium text-slate-900 group-hover:text-blue-600">
-							<span className="relative">{post.title}</span>
-						</h4>
-						{post.wcbBlocksPricingPackages?.edges?.map(renderBadge)}
+					<div className="relative mt-3.5 flex items-center justify-between gap-3">
+						<div className="min-w-0 flex-1">
+							<div className="flex items-center space-x-2">
+								<h4 className="truncate text-sm font-medium text-slate-900 group-hover:text-blue-600 my-0">
+									<span className="relative">{post.title}</span>
+								</h4>
+								{post.wcbBlocksPricingPackages?.edges?.map(renderBadge)}
+							</div>
+							<a
+								href={post.link}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="relative mt-1 inline-flex items-center space-x-1.5 text-xs font-medium text-slate-500 hover:text-slate-700"
+							>
+								<span>View demo</span>
+								<ArrowUpRightIcon className="w-3 h-3" />
+							</a>
+						</div>
+
+						<button
+							type="button"
+							className="relative z-10 inline-flex flex-shrink-0 items-center rounded-md border border-transparent bg-blue-600 px-3.5 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+							onClick={(e) => {
+								e.preventDefault();
+								insertWcbBlocks(post.contentOrigin);
+							}}
+						>
+							<ArrowDownOnSquareIcon
+								className="-ml-0.5 mr-1.5 h-4 w-4"
+								aria-hidden="true"
+							/>
+							Import
+						</button>
 					</div>
-					<a
-						href={post.link}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="relative mt-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 flex items-center space-x-2"
-					>
-						<span>View demo</span>
-						<ArrowUpRightIcon className="w-3 h-3" />
-					</a>
 				</div>
 			</li>
 		);
@@ -306,11 +271,10 @@ const HeaderToolBarPatterns = () => {
 							role="tab"
 							aria-selected={isActive}
 							onClick={() => setCurrentTab(tab.key)}
-							className={`relative flex h-full items-center gap-1.5 text-sm font-medium transition-colors ${
-								isActive
-									? "text-slate-900 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-slate-900"
-									: "text-slate-500 hover:text-slate-800"
-							}`}
+							className={`relative flex h-full items-center gap-1.5 text-sm font-medium transition-colors ${isActive
+								? "text-slate-900 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-slate-900"
+								: "text-slate-500 hover:text-slate-800"
+								}`}
 						>
 							{tab.key === "favorites" &&
 								(isActive ? (
@@ -334,11 +298,10 @@ const HeaderToolBarPatterns = () => {
 				<button
 					type="button"
 					onClick={() => setCurrentCategorySelected("")}
-					className={`rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${
-						!currentCategorySelected
-							? "bg-sky-50 text-sky-700"
-							: "text-slate-600 hover:bg-slate-100"
-					}`}
+					className={`rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${!currentCategorySelected
+						? "bg-sky-50 text-sky-700"
+						: "text-slate-600 hover:bg-slate-100"
+						}`}
 				>
 					All
 				</button>
@@ -347,11 +310,10 @@ const HeaderToolBarPatterns = () => {
 						key={item.id}
 						type="button"
 						onClick={() => setCurrentCategorySelected(item.id)}
-						className={`rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${
-							currentCategorySelected === item.id
-								? "bg-sky-50 text-sky-700"
-								: "text-slate-600 hover:bg-slate-100"
-						}`}
+						className={`rounded-md px-3 py-2 text-left text-sm font-medium transition-colors ${currentCategorySelected === item.id
+							? "bg-sky-50 text-sky-700"
+							: "text-slate-600 hover:bg-slate-100"
+							}`}
 					>
 						{item.name}
 					</button>
