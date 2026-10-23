@@ -70,6 +70,34 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	// Parent context detection
 	const { isChildOfIconList, parentAttributes } = useParentContext(clientId);
 
+	const isCustomIconValue = Boolean(
+		isCustomGeneralIcon ||
+		isCustomIcon ||
+		(
+			general_icon?.icon?.iconName &&
+			parentAttributes?.general_icon?.icon?.iconName &&
+			general_icon.icon.iconName !== parentAttributes.general_icon.icon.iconName
+		) ||
+		(
+			general_icon?.icon?.iconName &&
+			!parentAttributes?.general_icon?.icon?.iconName &&
+			general_icon.icon.iconName !== "lni-checkmark-circle"
+		) ||
+		(
+			general_icon?.icon?.type &&
+			general_icon.icon.type !== "icon"
+		)
+	);
+
+	useEffect(() => {
+		if (isCustomIconValue && (!isCustomGeneralIcon || !isCustomIcon)) {
+			setAttributes({
+				isCustomGeneralIcon: true,
+				isCustomIcon: true,
+			});
+		}
+	}, [isCustomIconValue, isCustomGeneralIcon, isCustomIcon]);
+
 	// make uniqueid
 	const UNIQUE_ID = wrapBlockProps.id;
 	useEffect(() => {
@@ -108,7 +136,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 									},
 								});
 							}}
-							panelData={(isCustomGeneralIcon || isCustomIcon) ? general_icon : (parentAttributes?.general_icon || general_icon)}
+							panelData={isCustomIconValue ? general_icon : (parentAttributes?.general_icon || general_icon)}
 						/>
 
 						<PanelBody
@@ -303,7 +331,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		isCustomGeneralIcon,
 	]);
 
-	const activeGeneralIcon = (isCustomGeneralIcon || isCustomIcon)
+	const activeGeneralIcon = isCustomIconValue
 		? general_icon
 		: (parentAttributes?.general_icon || general_icon);
 

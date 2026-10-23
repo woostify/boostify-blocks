@@ -1,6 +1,42 @@
-.wcb-faq-child__wrap {
-	width: 100%;
-	max-width: 100%;
+.wcb-faq-child {
+	&__wrap {
+		width: 100%;
+		max-width: 100%;
+
+		&.is-open,
+		&.active {
+			.wcb-faq-child__icon--active {
+				display: inline-flex;
+
+				&[hidden] {
+					display: none !important;
+				}
+			}
+
+			.wcb-faq-child__icon--inactive {
+				display: none;
+			}
+		}
+	}
+
+	&__icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+
+		&[hidden] {
+			display: none !important;
+		}
+
+		&--active {
+			display: none;
+		}
+
+		&--inactive {
+			display: inline-flex;
+		}
+	}
 }
 
 // Accordion layout only

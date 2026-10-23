@@ -1,21 +1,22 @@
 .wcb-icon-list__icon-wrap {
 	display: flex;
+
 	.wp-block {
 		margin-left: 0;
 		margin-right: 0;
-		margin-top: 4px;
-		margin-bottom: 4px;
+		margin-top: 0;
+		margin-bottom: 0;
 	}
 }
 
 .wcb-icon-list__wrap {
-		position: relative;
-		text-decoration: none;
-		color: inherit;
-		
-		&:hover {
+	position: relative;
+	text-decoration: none;
+	color: inherit;
+
+	&:hover {
 		.wcb-icon-list__icon {
-				color: var(--iconHoverColor);
+			color: var(--iconHoverColor);
 		}
 	}
 

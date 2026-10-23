@@ -19,6 +19,16 @@ interface Props<T = any> {
 	};
 }
 
+const EXTENSION_ATTR_KEYS = [
+	"wcbDisplayConditions",
+	"wcbLoggedIn",
+	"wcbLoggedOut",
+	"wcbUserRole",
+	"wcbSystem",
+	"wcbBrowser",
+	"wcbDay",
+];
+
 function SaveCommon<T>({
 	className = "",
 	uniqueId = "",
@@ -32,25 +42,13 @@ function SaveCommon<T>({
 	try {
 		const normalizeData = normalizeBlockAttrs;
 
-		// Special handling for responsive values to ensure consistency
-		const normalizeResponsiveObject = (obj: any) => {
-			if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
-				return {};
-			}
-			
-			// For responsive objects, ensure they have proper structure
-			const normalized: any = {};
-			['Desktop', 'Tablet', 'Mobile'].forEach(device => {
-				if (obj[device] !== undefined && obj[device] !== null && obj[device] !== '') {
-					normalized[device] = obj[device];
-				}
-			});
-			
-			// Only return object if it has at least one valid responsive value
-			return Object.keys(normalized).length > 0 ? normalized : {};
-		};
+		// Clean out extension attributes that do not belong to block styling
+		const cleanAttributes: any = { ...attributes };
+		for (const key of EXTENSION_ATTR_KEYS) {
+			delete cleanAttributes[key];
+		}
 
-		const normalizedAttributes = normalizeData(attributes);
+		const normalizedAttributes = normalizeData(cleanAttributes);
 		blockJson = _.escape(JSON.stringify(normalizedAttributes));
 	} catch (error) {
 		console.error("[Boostify Blocks] Failed to serialize block attributes for save:", error);

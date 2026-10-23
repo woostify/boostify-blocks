@@ -84,7 +84,14 @@ const getBorderRadiusStyles = ({ className, radius, isWithIframe = false }: Para
 
     // Check if className is for iframe
     const applyImportant = isWithIframe ? " !important" : "";
-    const formatRadius = (val?: string | number | null) => (val && val !== "0" && val !== "0px" && val !== 0 ? `${val}${applyImportant}` : undefined);
+    const formatRadius = (val?: string | number | null) => {
+        if (val === undefined || val === null || val === "") {
+            return undefined;
+        }
+        const str = typeof val === "number" ? `${val}px` : `${val}`;
+        const withUnit = /^-?\d+(\.\d+)?$/.test(str) ? `${str}px` : str;
+        return `${withUnit}${applyImportant}`;
+    };
 
     const mobileStyles: CSSObject = {};
     const tl_m = formatRadius(mobile_v_topLeft);
