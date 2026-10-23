@@ -51,6 +51,10 @@ const classes: {
 		C: React.lazy(() => import("../block-faq/GlobalCss")),
 	},
 	{
+		D: ".wcb-accordion__wrap.wcb-update-div",
+		C: React.lazy(() => import("../block-accordion/GlobalCss")),
+	},
+	{
 		D: ".wcb-form__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-form/GlobalCss")),
 	},
