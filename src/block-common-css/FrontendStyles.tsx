@@ -34,10 +34,6 @@ const classes: {
 		C: React.lazy(() => import("../block-buttons/GlobalCss")),
 	},
 	{
-		D: ".wcb-cta__wrap.wcb-update-div",
-		C: React.lazy(() => import("../block-cta/GlobalCss")),
-	},
-	{
 		D: ".wcb-products__wrap.wcb-update-div",
 		C: React.lazy(() => import("../block-products/GlobalCss")),
 		F: initCarouselForWcbProducts,

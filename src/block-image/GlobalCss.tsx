@@ -17,6 +17,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		uniqueId,
 		advance_responsiveCondition,
 		advance_zIndex,
+		advance_motionEffect,
 		general_settings,
 		style_caption,
 		style_image,
@@ -210,6 +211,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{/* ADVANCE  */}
 			<Global
 				styles={getAdvanveDivWrapStyles({
+					advance_motionEffect,
 					advance_responsiveCondition,
 					advance_zIndex,
 					className: WRAP_CLASSNAME,

@@ -316,15 +316,6 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
         );
 
         register_block_type(
-            BOOSTIFY_BLOCKS_BUILD_PATH . '/block-cta',
-            [
-                "render_callback"     => "boostify_blocks_block_cta_render_callback",
-                "ancestor"              => (($boostify_blocks_enable_disable['boostify-blocks/cta'] ?? "") !== 'disabled') ? null : BOOSTIFY_BLOCKS_UNIQUE_NAME,
-                "view_script_handles" => []
-            ]
-        );
-
-        register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-faq',
             [
                 "render_callback"     => "boostify_blocks_block_faq_render_callback",

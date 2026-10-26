@@ -63,3 +63,4 @@ export const normalizeBlockAttrs = (obj: any, keyName?: string): any => {
 };
 
 export default normalizeBlockAttrs;
+
