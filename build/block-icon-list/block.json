@@ -4,7 +4,7 @@
   "version": "0.1.2",
   "title": "Icon List",
   "category": "boostify-blocks",
-  "icon": "- wcb-block-editor-block-icon lni lni-clipboard",
+  "icon": "- wcb-block-editor-block-icon lni lni-agenda",
   "description": "Create a list highlighted with icons/images.",
   "supports": {
     "html": false,
