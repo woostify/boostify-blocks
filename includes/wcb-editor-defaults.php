@@ -86,10 +86,10 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 				'min_height'  => (int)($woostify['shop_page_product_content_min_height'] ?? 0),
 			],
 			'shop_archive_product_image' => [
-				'style' => $woostify['shop_page_product_image_border_style'] ?? 'none',
-				'width' => (int)($woostify['shop_page_product_image_border_width'] ?? 0),
-				'color' => $woostify['shop_page_product_image_border_color'] ?? '#000',
-				'hover' => $woostify['shop_page_product_image_hover'] ?? 'none',
+				'style'        => $woostify['shop_page_product_image_border_style'] ?? 'none',
+				'width'        => (int)($woostify['shop_page_product_image_border_width'] ?? 0),
+				'color'        => $woostify['shop_page_product_image_border_color'] ?? '#000',
+				'hover'        => $woostify['shop_page_product_image_hover'] ?? 'none',
 			],
 			'shop_archive_sale_tag' => [
 				'bg_color'   => $sale_bg_default,
