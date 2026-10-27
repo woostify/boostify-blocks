@@ -11,7 +11,7 @@
 	"parent": [
 		"boostify-blocks/accordion"
 	],
-	"icon": "- wcb-block-editor-block-icon lni lni-support text-xl",
+	"icon": "- wcb-block-editor-block-icon lni lni-chevron-down text-xl",
 	"description": "An individual accordion item pane.",
 	"supports": {
 		"html": false,

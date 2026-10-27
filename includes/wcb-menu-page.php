@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function boostify_blocks_register_custom_menu_page() {
 
 	$icon = 'data:image/svg+xml;base64,' . base64_encode(
-		file_get_contents( BOOSTIFY_BLOCKS_PATH . 'public/images/bb-logo-icon.svg' )
+		file_get_contents( BOOSTIFY_BLOCKS_PATH . 'public/images/bb-logo-icon-grayscale.svg' )
 	);
 
 	add_menu_page(
