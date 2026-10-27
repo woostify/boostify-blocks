@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "title": "List Item",
   "category": "boostify-blocks",
-  "icon": "- wcb-icon-full",
+  "icon": "- wcb-block-editor-block-icon lni lni-star text-xl",
   "description": "A single icon block that can be used inside an icon list.",
   "supports": {
     "html": false,

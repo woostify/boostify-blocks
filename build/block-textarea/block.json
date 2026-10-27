@@ -7,7 +7,7 @@
   ],
   "title": "Textarea",
   "category": "boostify-blocks",
-  "icon": "- wcb-block-editor-block-icon lni lni-pencil-alt text-xl",
+  "icon": "- wcb-block-editor-block-icon lni lni-text-align-left text-xl",
   "description": "Example static block scaffolded with Create Block tool.",
   "supports": {
     "__experimentalSelector": "span,label"

@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"title": "Icon",
 	"category": "boostify-blocks",
-	"icon": "icon - wcb-block-editor-block-icon lni lni-target",
+	"icon": "icon - wcb-block-editor-block-icon lni lni-star",
 	"description": "Add stunning customizable icons to your website.",
 	"supports": {
 		"html": false,
