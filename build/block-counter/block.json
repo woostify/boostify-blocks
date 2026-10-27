@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "title": "Counter",
   "category": "boostify-blocks",
-  "icon": "- wcb-block-editor-block-icon lni lni-image",
+  "icon": "- wcb-block-editor-block-icon lni lni-dashboard",
   "description": "This block allows you to add number counter.",
   "supports": {
     "html": false,

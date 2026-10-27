@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "title": "Tabs",
   "category": "boostify-blocks",
-  "icon": "- wcb-block-editor-block-icon lni lni-support",
+  "icon": "- wcb-block-editor-block-icon lni lni-tab",
   "description": "Add Tabs to your page.",
   "supports": {
     "html": false,
