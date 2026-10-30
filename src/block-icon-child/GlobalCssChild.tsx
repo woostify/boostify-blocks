@@ -69,7 +69,7 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 						alignSelf: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
 						marginTop: general_icon.verticalAlignment === "middle" ? 0 : "0.2em",
 						flexShrink: 0,
-						order: general_icon.iconPosition === "leftOfTitle" ? "0" : "2",
+						order: general_icon.iconPosition === "leftOfTitle" ? 0 : 2,
 					},
 				},
 			},

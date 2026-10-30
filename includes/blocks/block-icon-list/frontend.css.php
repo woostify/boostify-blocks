@@ -50,8 +50,21 @@ $flex_align_d = WCB_Block_Helper::get_flex_align( $ta_d );
 $flex_align_t = WCB_Block_Helper::get_flex_align( $ta_t );
 $flex_align_m = WCB_Block_Helper::get_flex_align( $ta_m );
 
+// Heading & Designation Text Alignment.
+$css['desktop'][ $heading_sel ]['text-align'] = $ta_d;
+$css['desktop'][ $designation_sel ]['text-align'] = $ta_d;
+if ( $ta_t !== $ta_d ) {
+	$css['tablet'][ $heading_sel ]['text-align'] = $ta_t;
+	$css['tablet'][ $designation_sel ]['text-align'] = $ta_t;
+}
+if ( $ta_m !== $ta_t ) {
+	$css['mobile'][ $heading_sel ]['text-align'] = $ta_m;
+	$css['mobile'][ $designation_sel ]['text-align'] = $ta_m;
+}
+
+$v_align_current = ( 'middle' === ( $gi['verticalAlignment'] ?? 'top' ) ) ? 'center' : 'flex-start';
+
 if ( 'horizontal' === $layout ) {
-	$v_align_current = ( 'middle' === ( $gi['verticalAlignment'] ?? 'top' ) ) ? 'center' : 'flex-start';
 	$css['desktop'][ $inner_sel ]['align-items']     = $v_align_current;
 	$css['desktop'][ $inner_sel ]['justify-content'] = $flex_align_d;
 	if ( $flex_align_t !== $flex_align_d ) {
