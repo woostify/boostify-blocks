@@ -132,7 +132,11 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 				<a
 					href={link}
 					target={openInNewWindow ? "_blank" : undefined}
-					rel={addNofollowToLink ? "nofollow" : undefined}
+					rel={
+						openInNewWindow
+							? (addNofollowToLink ? "noopener noreferrer nofollow" : "noopener noreferrer")
+							: (addNofollowToLink ? "nofollow" : undefined)
+					}
 				>
 					{renderContent()}
 				</a>

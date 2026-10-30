@@ -22,7 +22,8 @@
 		color: inherit;
 		text-decoration: none;
 		display: inline-flex;
-		align-items: center;
+		width: 100%;
+		min-width: 0;
 	}
 
 	&:hover {
@@ -39,7 +40,7 @@
 
 	.wcb-icon-list__content-title-wrap {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 10px;
 	}
 
@@ -47,6 +48,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-shrink: 0;
 	}
 
 	.wcb-icon-list__icon {
@@ -70,5 +72,7 @@
 	.wcb-icon-list__heading {
 		margin: 0;
 		padding: 0;
+		word-break: break-word;
+		overflow-wrap: break-word;
 	}
 }

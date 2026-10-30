@@ -28,7 +28,7 @@
 
 	&__content-title-wrap {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 	}
 
 	&__icon-wrap {
@@ -40,7 +40,7 @@
 		> .wcb-icon-list__wrap[data-block-type="icon-item"] {
 			width: auto;
 			display: inline-flex;
-			align-items: center;
+			align-items: flex-start;
 
 			.wcb-icon-list__content {
 				width: auto;
@@ -51,7 +51,7 @@
 			.wcb-icon-list__content-title-wrap {
 				width: auto;
 				display: inline-flex;
-				align-items: center;
+				align-items: flex-start;
 			}
 
 			.wcb-icon-list__content-title {

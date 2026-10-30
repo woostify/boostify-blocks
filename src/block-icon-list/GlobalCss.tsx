@@ -30,7 +30,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 	// Get current device type
 	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
-	const INNER_CLASSNAME = `${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`;
+	const INNER_CLASSNAME = `${WRAP_CLASSNAME} > .wcb-icon-list__icon-wrap`;
 	const CONTENT_CLASSNAME = `${WRAP_CLASSNAME} .wcb-icon-list__content`;
 
 	if (!uniqueId) {
@@ -76,8 +76,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						flexDirection: general_layout.layout === "vertical" ? "column" : "row",
 						...(general_layout.layout === "horizontal"
 							? {
-								flexWrap: "wrap",
-								alignItems: "center",
+								alignItems: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
 								justifyContent: getFlexAlignment(value_Mobile_new || "left"),
 								[`@media (min-width: ${media_tablet})`]: value_Tablet_new
 									? {
@@ -114,31 +113,44 @@ const GlobalCss: FC<Props> = (attrs) => {
 								marginLeft: "0 !important",
 								marginRight: "0 !important",
 								display: "inline-flex !important",
+								flexShrink: 1,
 							},
 							[`${INNER_CLASSNAME} > .block-list-appender`]: {
 								width: "auto !important",
 								margin: "0 !important",
 								display: "inline-flex !important",
 								alignSelf: "center",
+								flexShrink: 0,
 							},
 							[`${INNER_CLASSNAME} .wcb-icon-list__wrap[data-block-type="icon-item"]`]: {
 								width: "auto",
 								display: "inline-flex",
-								alignItems: "center",
+								alignItems: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
+								flexShrink: 1,
 							},
 							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__content`]: {
 								width: "auto",
 								display: "inline-flex",
 								flex: "0 1 auto",
+								minWidth: 0,
 							},
 							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__content-title-wrap`]: {
 								width: "auto",
 								display: "inline-flex",
-								alignItems: "center",
+								alignItems: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
+								minWidth: 0,
 							},
 							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__content-title`]: {
 								flex: "0 1 auto",
 								width: "auto",
+								minWidth: 0,
+							},
+							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__heading`]: {
+								wordBreak: "break-word",
+								overflowWrap: "break-word",
+							},
+							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__icon-wrap`]: {
+								flexShrink: 0,
 							},
 						}
 						: {
@@ -148,24 +160,20 @@ const GlobalCss: FC<Props> = (attrs) => {
 							},
 						}),
 
-					[`${WRAP_CLASSNAME} .wcb-icon-list__content-title-wrap .wcb-icon-list__icon-wrap, ${WRAP_CLASSNAME} .wcb-icon-list__content`]: {
-						alignSelf:
-							general_icon.verticalAlignment === "middle"
-								? "center"
-								: undefined,
-					},
-
-					[`${WRAP_CLASSNAME} .wcb-icon-list__content-title-wrap .wcb-icon-list__icon-wrap`]: {
-						order: general_icon.iconPosition === "leftOfTitle" ? 0 : 2,
-					},
-
 					[`${WRAP_CLASSNAME} .wcb-icon-list__content-title-wrap`]: {
 						display:
 							general_icon.iconPosition === "leftOfTitle" ||
 							general_icon.iconPosition === "rightOfTitle"
 								? "inline-flex"
 								: "block",
-						alignItems: "center",
+						alignItems: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
+					},
+
+					[`${WRAP_CLASSNAME} .wcb-icon-list__content-title-wrap .wcb-icon-list__icon-wrap`]: {
+						alignSelf: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
+						marginTop: general_icon.verticalAlignment === "middle" ? 0 : "0.2em",
+						flexShrink: 0,
+						order: general_icon.iconPosition === "leftOfTitle" ? 0 : 2,
 					},
 				},
 			]}/>
@@ -181,7 +189,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{style_dimension.gapBetweenItems?.Desktop ? (
 				<Global
 					styles={getStyleObjectFromResponsiveAttr({
-						className: `${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`,
+						className: `${WRAP_CLASSNAME} > .wcb-icon-list__icon-wrap`,
 						value: style_dimension.gapBetweenItems,
 						prefix: "gap",
 					})}
@@ -190,7 +198,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				<Global
 					styles={[
 						{
-							[`${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`]: {
+							[`${WRAP_CLASSNAME} > .wcb-icon-list__icon-wrap`]: {
 								gap: "10px",
 							},
 						},
