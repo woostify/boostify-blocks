@@ -53,8 +53,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						display:
 							general_icon.iconPosition === "leftOfTitle" ||
 							general_icon.iconPosition === "rightOfTitle"
-								? "flex"
+								? "inline-flex"
 								: "block",
+						alignItems: "center",
 					},
 				},
 			},

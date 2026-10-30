@@ -71,8 +71,9 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 						display:
 							general_icon.iconPosition === "leftOfTitle" ||
 							general_icon.iconPosition === "rightOfTitle"
-								? "flex"
+								? "inline-flex"
 								: "block",
+						alignItems: "center",
 					},
 				},
 			},
@@ -114,6 +115,7 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 							value: style_Icon.iconSize,
 							prefix: "width",
 							prefix_2: "fontSize",
+							prefix_3: "height",
 						}),
 						{
 							[`${WRAP_CLASSNAME} .wcb-icon-full`]: {

@@ -68,7 +68,8 @@ if ( $is_custom_gen_icon ) {
 		$css['desktop'][ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__icon-wrap' ]['order'] = ( 'leftOfTitle' === $c_pos ) ? '0' : '2';
 
 		if ( 'leftOfTitle' === $c_pos || 'rightOfTitle' === $c_pos ) {
-			$css['desktop'][ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content-title-wrap' ]['display'] = 'flex';
+			$css['desktop'][ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content-title-wrap' ]['display']     = 'inline-flex';
+			$css['desktop'][ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content-title-wrap' ]['align-items'] = 'center';
 		}
 	}
 }

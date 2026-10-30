@@ -38,7 +38,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 	}
 
 	// Convert text alignment to flex alignment
-	const getFlexAlignment = (alignment: string) => {
+	const getFlexAlignment = (alignment?: string | number | null) => {
 		switch (alignment) {
 			case "center":
 				return "center";
@@ -68,71 +68,104 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	return (
 		<>
-			{/* INNER_CLASSNAME  */}
+			{/* INNER_CLASSNAME: List Container & Alignment */}
 			<Global styles={[
 				{
 					[`${INNER_CLASSNAME}`]: {
-							display: "flex",
-							flexDirection: general_layout.layout === "vertical" ? "column" : "row",
-						},
-
-						".wcb-icon-list__icon-wrap, .wcb-icon-list__content": {
-							alignSelf:
-								general_icon.verticalAlignment === "middle"
-									? "center"
-									: undefined,
-						},
-
-						".wcb-icon-list__icon-wrap": {
-							order: general_icon.iconPosition === "leftOfTitle" ? "0" : "2",
-						},
-
-						".wcb-icon-list__content-title-wrap": {
-							display:
-								general_icon.iconPosition === "leftOfTitle" ||
-								general_icon.iconPosition === "rightOfTitle"
-									? "flex"
-									: "block",
-						},
-				},
-			]}/>
-
-			{/* CONTENT ALIGNMENT - Device specific */}
-			<Global styles={[
-				{
-					[`${CONTENT_CLASSNAME}`]: {
 						display: "flex",
 						flexDirection: general_layout.layout === "vertical" ? "column" : "row",
-
-						...(value_Mobile_new || value_Tablet_new || value_Desktop_new
-						? general_layout.layout === "vertical"
+						...(general_layout.layout === "horizontal"
 							? {
-								alignItems: getFlexAlignment(value_Mobile_new),
+								flexWrap: "wrap",
+								alignItems: "center",
+								justifyContent: getFlexAlignment(value_Mobile_new || "left"),
 								[`@media (min-width: ${media_tablet})`]: value_Tablet_new
-								? {
-									alignItems: getFlexAlignment(value_Tablet_new),
-								}
-								: undefined,
+									? {
+										justifyContent: getFlexAlignment(value_Tablet_new),
+									}
+									: undefined,
 								[`@media (min-width: ${media_desktop})`]: value_Desktop_new
-								? {
-									alignItems: getFlexAlignment(value_Desktop_new),
-								}
-								: undefined,
+									? {
+										justifyContent: getFlexAlignment(value_Desktop_new),
+									}
+									: undefined,
 							}
 							: {
-								justifyContent: getFlexAlignment(value_Mobile_new),
+								alignItems: getFlexAlignment(value_Mobile_new || "left"),
 								[`@media (min-width: ${media_tablet})`]: value_Tablet_new
-								? {
-									justifyContent: getFlexAlignment(value_Tablet_new),
-								}
-								: undefined,
+									? {
+										alignItems: getFlexAlignment(value_Tablet_new),
+									}
+									: undefined,
 								[`@media (min-width: ${media_desktop})`]: value_Desktop_new
-								? {
-									justifyContent: getFlexAlignment(value_Desktop_new),
-								}
+									? {
+										alignItems: getFlexAlignment(value_Desktop_new),
+									}
+									: undefined,
+							}),
+					},
+
+					// Child block & items styling when horizontal
+					...(general_layout.layout === "horizontal"
+						? {
+							[`${INNER_CLASSNAME} > .wp-block`]: {
+								width: "auto !important",
+								maxWidth: "100%",
+								marginLeft: "0 !important",
+								marginRight: "0 !important",
+								display: "inline-flex !important",
+							},
+							[`${INNER_CLASSNAME} > .block-list-appender`]: {
+								width: "auto !important",
+								margin: "0 !important",
+								display: "inline-flex !important",
+								alignSelf: "center",
+							},
+							[`${INNER_CLASSNAME} .wcb-icon-list__wrap[data-block-type="icon-item"]`]: {
+								width: "auto",
+								display: "inline-flex",
+								alignItems: "center",
+							},
+							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__content`]: {
+								width: "auto",
+								display: "inline-flex",
+								flex: "0 1 auto",
+							},
+							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__content-title-wrap`]: {
+								width: "auto",
+								display: "inline-flex",
+								alignItems: "center",
+							},
+							[`${INNER_CLASSNAME} [data-block-type="icon-item"] .wcb-icon-list__content-title`]: {
+								flex: "0 1 auto",
+								width: "auto",
+							},
+						}
+						: {
+							[`${INNER_CLASSNAME} > .wp-block`]: {
+								marginLeft: "0 !important",
+								marginRight: "0 !important",
+							},
+						}),
+
+					[`${WRAP_CLASSNAME} .wcb-icon-list__content-title-wrap .wcb-icon-list__icon-wrap, ${WRAP_CLASSNAME} .wcb-icon-list__content`]: {
+						alignSelf:
+							general_icon.verticalAlignment === "middle"
+								? "center"
 								: undefined,
-							}
-						: {}),
+					},
+
+					[`${WRAP_CLASSNAME} .wcb-icon-list__content-title-wrap .wcb-icon-list__icon-wrap`]: {
+						order: general_icon.iconPosition === "leftOfTitle" ? 0 : 2,
+					},
+
+					[`${WRAP_CLASSNAME} .wcb-icon-list__content-title-wrap`]: {
+						display:
+							general_icon.iconPosition === "leftOfTitle" ||
+							general_icon.iconPosition === "rightOfTitle"
+								? "inline-flex"
+								: "block",
+						alignItems: "center",
 					},
 				},
 			]}/>
@@ -145,13 +178,23 @@ const GlobalCss: FC<Props> = (attrs) => {
 				})}
 			/>
 
-			{style_dimension.gapBetweenItems && (
+			{style_dimension.gapBetweenItems?.Desktop ? (
 				<Global
 					styles={getStyleObjectFromResponsiveAttr({
 						className: `${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`,
 						value: style_dimension.gapBetweenItems,
 						prefix: "gap",
 					})}
+				/>
+			) : (
+				<Global
+					styles={[
+						{
+							[`${WRAP_CLASSNAME} .wcb-icon-list__icon-wrap`]: {
+								gap: "10px",
+							},
+						},
+					]}
 				/>
 			)}
 
@@ -177,6 +220,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							value: style_Icon.iconSize,
 							prefix: "width",
 							prefix_2: "fontSize",
+							prefix_3: "height",
 						}),
 						{
 							[`${WRAP_CLASSNAME} .wcb-icon-full`]: {

@@ -93,7 +93,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		);
 	};
 
-	const HeadingTag = general_layout.headingTag;
+	const HeadingTag = general_layout?.headingTag || "p";
 
 	//
 	const wrapBlockProps = useBlockProps.save({

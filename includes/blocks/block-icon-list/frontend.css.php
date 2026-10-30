@@ -41,10 +41,6 @@ $flex_dir = ( 'vertical' === $layout ) ? 'column' : 'row';
 $css['desktop'][ $inner_sel ]['display']        = 'flex';
 $css['desktop'][ $inner_sel ]['flex-direction'] = $flex_dir;
 
-$css['desktop'][ $content_sel ]['display']        = 'flex';
-$css['desktop'][ $content_sel ]['flex-direction'] = $flex_dir;
-
-$align_prop = ( 'vertical' === $layout ) ? 'align-items' : 'justify-content';
 $ta_raw     = $gl['textAlignment'] ?? array();
 $ta_d       = is_array( $ta_raw ) ? ( $ta_raw['Desktop'] ?? 'left' ) : ( $ta_raw ?: 'left' );
 $ta_t       = is_array( $ta_raw ) ? ( $ta_raw['Tablet'] ?? $ta_d ) : $ta_d;
@@ -54,29 +50,66 @@ $flex_align_d = WCB_Block_Helper::get_flex_align( $ta_d );
 $flex_align_t = WCB_Block_Helper::get_flex_align( $ta_t );
 $flex_align_m = WCB_Block_Helper::get_flex_align( $ta_m );
 
-$css['desktop'][ $content_sel ][ $align_prop ] = $flex_align_d;
-if ( $flex_align_t !== $flex_align_d ) {
-	$css['tablet'][ $content_sel ][ $align_prop ] = $flex_align_t;
-}
-if ( $flex_align_m !== $flex_align_t ) {
-	$css['mobile'][ $content_sel ][ $align_prop ] = $flex_align_m;
+if ( 'horizontal' === $layout ) {
+	$css['desktop'][ $inner_sel ]['flex-wrap']       = 'wrap';
+	$css['desktop'][ $inner_sel ]['align-items']     = 'center';
+	$css['desktop'][ $inner_sel ]['justify-content'] = $flex_align_d;
+	if ( $flex_align_t !== $flex_align_d ) {
+		$css['tablet'][ $inner_sel ]['justify-content'] = $flex_align_t;
+	}
+	if ( $flex_align_m !== $flex_align_t ) {
+		$css['mobile'][ $inner_sel ]['justify-content'] = $flex_align_m;
+	}
+
+	// Child items styling when horizontal
+	$child_wrap_sel = $wrap_sel . ' > .wcb-icon-list__icon-wrap > .wcb-icon-list__wrap';
+	$css['desktop'][ $child_wrap_sel ]['width']       = 'auto';
+	$css['desktop'][ $child_wrap_sel ]['display']     = 'inline-flex';
+	$css['desktop'][ $child_wrap_sel ]['align-items'] = 'center';
+
+	$child_content_sel = $child_wrap_sel . ' .wcb-icon-list__content';
+	$css['desktop'][ $child_content_sel ]['width']   = 'auto';
+	$css['desktop'][ $child_content_sel ]['display'] = 'inline-flex';
+	$css['desktop'][ $child_content_sel ]['flex']    = '0 1 auto';
+
+	$child_title_wrap_sel = $child_wrap_sel . ' .wcb-icon-list__content-title-wrap';
+	$css['desktop'][ $child_title_wrap_sel ]['width']       = 'auto';
+	$css['desktop'][ $child_title_wrap_sel ]['display']     = 'inline-flex';
+	$css['desktop'][ $child_title_wrap_sel ]['align-items'] = 'center';
+
+	$child_title_sel = $child_wrap_sel . ' .wcb-icon-list__content-title';
+	$css['desktop'][ $child_title_sel ]['flex']  = '0 1 auto';
+	$css['desktop'][ $child_title_sel ]['width'] = 'auto';
+} else {
+	$css['desktop'][ $inner_sel ]['align-items'] = $flex_align_d;
+	if ( $flex_align_t !== $flex_align_d ) {
+		$css['tablet'][ $inner_sel ]['align-items'] = $flex_align_t;
+	}
+	if ( $flex_align_m !== $flex_align_t ) {
+		$css['mobile'][ $inner_sel ]['align-items'] = $flex_align_m;
+	}
 }
 
-// Vertical Alignment.
+// Vertical Alignment inside child.
 if ( 'middle' === ( $gi['verticalAlignment'] ?? 'top' ) ) {
-	$css['desktop'][ $inner_sel . ', ' . $content_sel ]['align-self'] = 'center';
+	$css['desktop'][ $title_wrap_sel . ' .wcb-icon-list__icon-wrap, ' . $content_sel ]['align-self'] = 'center';
 }
 
 // Icon position & title wrap.
 $icon_pos = $gi['iconPosition'] ?? 'leftOfTitle';
-$css['desktop'][ $inner_sel ]['order'] = ( 'leftOfTitle' === $icon_pos ) ? '0' : '2';
+$css['desktop'][ $title_wrap_sel . ' .wcb-icon-list__icon-wrap' ]['order'] = ( 'leftOfTitle' === $icon_pos ) ? '0' : '2';
 
 if ( 'leftOfTitle' === $icon_pos || 'rightOfTitle' === $icon_pos ) {
-	$css['desktop'][ $title_wrap_sel ]['display'] = 'flex';
+	$css['desktop'][ $title_wrap_sel ]['display']     = 'inline-flex';
+	$css['desktop'][ $title_wrap_sel ]['align-items'] = 'center';
 }
 
 // Gap between items.
-if ( ! empty( $sdm['gapBetweenItems'] ) ) {
+$gap_between_items = $sdm['gapBetweenItems'] ?? array();
+$gap_d             = is_array( $gap_between_items ) ? ( $gap_between_items['Desktop'] ?? '' ) : ( $gap_between_items ?: '' );
+if ( empty( $gap_d ) ) {
+	$css['desktop'][ $inner_sel ]['gap'] = '10px';
+} else {
 	WCB_Block_Helper::add_responsive_css( $css, $inner_sel, 'gap', $sdm['gapBetweenItems'], 'px' );
 }
 
