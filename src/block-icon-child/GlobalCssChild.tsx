@@ -56,23 +56,20 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 		return [
 			{
 				[`${WRAP_CLASSNAME}.wcb-icon-list__wrap`]: {
-					".wcb-icon-list__icon-wrap, .wcb-icon-list__content": {
-						alignSelf:
-							general_icon.verticalAlignment === "middle"
-								? "center"
-								: undefined,
-					},
-
-					".wcb-icon-list__icon-wrap": {
-						order: general_icon.iconPosition === "leftOfTitle" ? "0" : "2",
-					},
-
 					".wcb-icon-list__content-title-wrap": {
 						display:
 							general_icon.iconPosition === "leftOfTitle" ||
 							general_icon.iconPosition === "rightOfTitle"
-								? "flex"
+								? "inline-flex"
 								: "block",
+						alignItems: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
+					},
+
+					".wcb-icon-list__content-title-wrap .wcb-icon-list__icon-wrap": {
+						alignSelf: general_icon.verticalAlignment === "middle" ? "center" : "flex-start",
+						marginTop: general_icon.verticalAlignment === "middle" ? 0 : "0.2em",
+						flexShrink: 0,
+						order: general_icon.iconPosition === "leftOfTitle" ? 0 : 2,
 					},
 				},
 			},
@@ -114,6 +111,7 @@ const GlobalCssChild: FC<Props> = (attrs) => {
 							value: style_Icon.iconSize,
 							prefix: "width",
 							prefix_2: "fontSize",
+							prefix_3: "height",
 						}),
 						{
 							[`${WRAP_CLASSNAME} .wcb-icon-full`]: {
