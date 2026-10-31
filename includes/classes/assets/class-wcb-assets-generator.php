@@ -622,10 +622,9 @@ class WCB_Assets_Generator {
 		$result = array();
 
 		$js_blocks = array(
-			'boostify-blocks/slider'        => 'slider',
-			'boostify-blocks/testimonials'  => 'testimonials',
 			'boostify-blocks/products'      => 'products',
 			'boostify-blocks/faq'           => 'faq',
+			'boostify-blocks/accordion'     => 'accordion',
 			'boostify-blocks/tabs'          => 'tabs',
 			'boostify-blocks/counter'       => 'counter',
 			'boostify-blocks/countdown'     => 'countdown',

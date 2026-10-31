@@ -1,0 +1,24 @@
+.wp-block[data-type="boostify-blocks/icon-list"] {
+	.wcb-icon-list__icon-wrap.block-editor-block-list__layout {
+		width: 100%;
+
+		> .wp-block {
+			width: auto;
+			padding-left: 0;
+			padding-right: 0;
+			margin-left: 0;
+			margin-right: 0;
+			min-width: 0;
+			flex-shrink: 1;
+		}
+
+		> .block-list-appender {
+			width: auto;
+			margin: 0;
+			display: inline-flex;
+			align-self: center;
+			flex-shrink: 0;
+		}
+	}
+}
+

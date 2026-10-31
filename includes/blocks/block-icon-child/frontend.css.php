@@ -58,18 +58,25 @@ $raw_gi  = $raw['general_icon'] ?? array();
 $raw_sdm = $raw['style_dimension'] ?? array();
 
 if ( $is_custom_gen_icon ) {
-	$c_vert = $raw_gi['verticalAlignment'] ?? '';
-	if ( 'middle' === $c_vert ) {
-		$css['desktop'][ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__icon-wrap, ' . $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content' ]['align-self'] = 'center';
+	$c_vert  = $raw_gi['verticalAlignment'] ?? 'top';
+	$c_align = ( 'middle' === $c_vert ) ? 'center' : 'flex-start';
+	$c_pos   = $raw_gi['iconPosition'] ?? 'leftOfTitle';
+
+	$child_title_wrap = $wrap_sel . ' .wcb-icon-list__content-title-wrap';
+	$child_icon_wrap  = $child_title_wrap . ' .wcb-icon-list__icon-wrap';
+
+	$css['desktop'][ $child_title_wrap ]['align-items'] = $c_align;
+	if ( 'leftOfTitle' === $c_pos || 'rightOfTitle' === $c_pos ) {
+		$css['desktop'][ $child_title_wrap ]['display'] = 'inline-flex';
 	}
 
-	$c_pos = $raw_gi['iconPosition'] ?? '';
-	if ( ! empty( $c_pos ) ) {
-		$css['desktop'][ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__icon-wrap' ]['order'] = ( 'leftOfTitle' === $c_pos ) ? '0' : '2';
-
-		if ( 'leftOfTitle' === $c_pos || 'rightOfTitle' === $c_pos ) {
-			$css['desktop'][ $wrap_sel . '.wcb-icon-list__wrap .wcb-icon-list__content-title-wrap' ]['display'] = 'flex';
-		}
+	$css['desktop'][ $child_icon_wrap ]['align-self']  = $c_align;
+	$css['desktop'][ $child_icon_wrap ]['flex-shrink'] = '0';
+	$css['desktop'][ $child_icon_wrap ]['order']        = ( 'leftOfTitle' === $c_pos ) ? '0' : '2';
+	if ( 'top' === $c_vert ) {
+		$css['desktop'][ $child_icon_wrap ]['margin-top'] = '0.2em';
+	} else {
+		$css['desktop'][ $child_icon_wrap ]['margin-top'] = '0';
 	}
 }
 

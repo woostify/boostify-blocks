@@ -1,0 +1,146 @@
+.editor-styles-wrapper .wcb-accordion-item__wrap,
+.wp-block.wcb-accordion-item__wrap,
+.wcb-accordion-item__wrap {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.editor-styles-wrapper .wcb-accordion-item__heading,
+.wcb-accordion-item__heading {
+	margin: 0;
+	padding: 0;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+	font-family: inherit;
+	width: 100%;
+	min-width: 0;
+}
+
+
+.wcb-accordion-item__content {
+	min-height: auto;
+
+	.block-editor-block-list__layout {
+		margin: 0;
+	}
+
+	.wp-block {
+		margin-top: 0;
+		margin-bottom: 8px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	p {
+		margin-top: 0;
+		margin-bottom: 0;
+		font-size: 15px;
+		line-height: 1.6;
+	}
+
+	.block-editor-button-block-appender {
+		width: 100%;
+		border: 1px dashed #cbd5e1;
+		border-radius: 4px;
+		height: 38px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 4px 0 0 0;
+
+		&:hover {
+			background-color: #f8fafc;
+			border-color: #94a3b8;
+		}
+
+		svg {
+			fill: currentColor;
+		}
+	}
+}
+
+.wcb-block-parent-selector {
+	border-bottom: 1px solid #e2e8f0;
+
+	.wcb-block-parent-selector__button.components-button {
+		width: 100%;
+		padding: 0 16px;
+		height: 48px;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 8px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #1f2937;
+		background: transparent;
+		border: none;
+		border-radius: 0;
+		text-align: left;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+
+		&:hover {
+			background-color: #f8fafc;
+			color: #0f172a;
+		}
+
+		.block-editor-block-icon {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 4px;
+		}
+	}
+}
+
+.wcb-pane-tabs {
+	.components-tab-panel__tabs {
+		display: flex;
+		background: #f1f5f9;
+		padding: 4px;
+		gap: 4px;
+		border-bottom: 1px solid #e2e8f0;
+
+		button.components-button {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: 56px;
+			padding: 4px;
+			font-size: 12px;
+			font-weight: 500;
+			color: #64748b;
+			background: transparent;
+			border: none;
+			border-radius: 4px;
+			box-shadow: none;
+			transition: all 0.15s ease;
+
+			svg {
+				width: 18px;
+				height: 18px;
+				margin-bottom: 2px;
+			}
+
+			&:hover {
+				color: #0f172a;
+				background: rgba(255, 255, 255, 0.5);
+			}
+
+			&.active-tab {
+				background: #ffffff;
+				color: #0f172a;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+			}
+		}
+	}
+}
+

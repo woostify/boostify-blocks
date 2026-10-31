@@ -2,9 +2,9 @@
   "apiVersion": 3,
   "name": "boostify-blocks/slider-swiper",
   "version": "0.1.0",
-  "title": "Slider (Swiper)",
+  "title": "Slider",
   "category": "boostify-blocks",
-  "icon": "- wcb-block-editor-block-icon lni lni-quotation",
+  "icon": "- wcb-block-editor-block-icon lni lni-layers",
   "description": "Create beautiful sliders with slider block, powered by Swiper.",
   "supports": {
     "html": false,

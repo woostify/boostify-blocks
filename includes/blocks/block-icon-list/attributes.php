@@ -269,7 +269,7 @@ return array(
 				),
 			),
 			'gapBetweenItems' => array(
-				'Desktop' => '',
+				'Desktop' => '10px',
 				'Tablet'  => '',
 				'Mobile'  => '',
 			),

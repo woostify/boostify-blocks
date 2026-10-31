@@ -1138,10 +1138,10 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 
 				// Known parent-child relationships where child styles should always accompany parent.
 				$parent_child_map = array(
-					'boostify-blocks/slider'        => 'boostify-blocks/slider-child',
 					'boostify-blocks/slider-swiper' => 'boostify-blocks/slider-swiper-child',
 					'boostify-blocks/tabs'          => 'boostify-blocks/tab-child',
 					'boostify-blocks/faq'           => 'boostify-blocks/faq-child',
+					'boostify-blocks/accordion'     => 'boostify-blocks/accordion-item',
 					'boostify-blocks/icon-list'     => 'boostify-blocks/icon-child',
 					'boostify-blocks/buttons'       => 'boostify-blocks/button',
 				);

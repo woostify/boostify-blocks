@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"title": "Countdown",
 	"category": "boostify-blocks",
-	"icon": "- wcb-block-editor-block-icon lni lni-target",
+	"icon": "- wcb-block-editor-block-icon lni lni-timer",
 	"description": "Add a countdown block with days, hours, minutes, and seconds.",
 	"supports": {
 		"html": false,
