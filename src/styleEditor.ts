@@ -18,7 +18,8 @@ const generateEditorSpacingCSS = (spacing: string = '0px'): string => `
   body.block-editor-iframe__body.editor-styles-wrapper
     .is-root-container.wp-site-blocks
     > * + *,
-  body.block-editor-iframe__body.editor-styles-wrapper .is-layout-flow > * + *,
+  /* .wcb-container__inner is a flex row/column using gap, so stacking margins would misalign its items */
+  body.block-editor-iframe__body.editor-styles-wrapper .is-layout-flow:not(.wcb-container__inner) > * + *,
   body.block-editor-iframe__body.editor-styles-wrapper
     .is-layout-constrained
     > * + * {

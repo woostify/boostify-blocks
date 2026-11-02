@@ -31,8 +31,8 @@ $sdm = $attr['style_dimension'] ?? array();
 $sa  = $attr['style_arrowAndDots'] ?? array();
 
 $wrap_sel             = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
+$wrap_main_sel        = $wrap_sel . '.wcb-testimonials-swiper__wrap';
 $item_sel             = $wrap_sel . ' .wcb-testimonials-swiper__item';
-$item_inner_sel       = $wrap_sel . ' .wcb-testimonials-swiper__item-inner';
 $item_bg_sel          = $item_sel . ' .wcb-testimonials-swiper__item-background';
 $name_sel             = $wrap_sel . ' .wcb-testimonials-swiper__item-name';
 $content_sel          = $wrap_sel . ' .wcb-testimonials-swiper__item-content';
@@ -149,12 +149,12 @@ if ( ! empty( $sa['arrowDistance'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_next, 'right', $sa['arrowDistance'] );
 }
 
-// 11. Dimensions.
+// 11. Dimensions - on the outer wrap, same target as the editor's GlobalCss.
 if ( ! empty( $sdm['padding'] ) ) {
-	WCB_Block_Helper::add_dimension_css( $css, $item_inner_sel, 'padding', $sdm['padding'] );
+	WCB_Block_Helper::add_dimension_css( $css, $wrap_main_sel, 'padding', $sdm['padding'] );
 }
 if ( ! empty( $sdm['margin'] ) ) {
-	WCB_Block_Helper::add_dimension_css( $css, $item_inner_sel, 'margin', $sdm['margin'] );
+	WCB_Block_Helper::add_dimension_css( $css, $wrap_main_sel, 'margin', $sdm['margin'] );
 }
 
 // 12. Advance.
