@@ -37,7 +37,7 @@ export const WCB_ICON_LIST_PANEL_STYLE_DIMENSION_DEMO: WCB_ICON_LIST_PANEL_STYLE
 			},
 		},
 		gapBetweenItems: {
-			Desktop: "",
+			Desktop: "10px",
 			Tablet: "",
 			Mobile: "",
 		},

@@ -31,6 +31,7 @@ import {
 import WcbIconBoxPanel_StyleIcons from "./WcbIconListPanel_StyleIcons";
 import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 import WcbIconListPanelPreset from "./WcbIconListPanelPreset";
+import useGetDeviceType from "../hooks/useGetDeviceType";
 
 const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const { attributes, setAttributes, clientId } = props;
@@ -313,6 +314,8 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		advance_motionEffect,
 	]);
 
+	const deviceType = useGetDeviceType() || "Desktop";
+
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
@@ -327,7 +330,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 				/>
 
 				{/* CSS IN JS */}
-				<GlobalCss {...WcbAttrsForSave()} />
+				<GlobalCss {...WcbAttrsForSave()} deviceType={deviceType} />
 
 				{/* CHILD CONTENT  */}
 				<div {...innerBlocksProps} />
