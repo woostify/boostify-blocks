@@ -749,6 +749,43 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		return () => window.removeEventListener("resize", handleResize);
 	}, [forceSliderRecalc]);
 
+	// Dimension/colGap changes only inject new GlobalCss, which Swiper's own
+	// observers don't see inside the canvas iframe - slides keep their stale
+	// pixel width. Recalc once Emotion has applied the new styles, and keep a
+	// ResizeObserver (same as src/block-slider-swiper/Edit.tsx) as a safety net.
+	useEffect(() => {
+		const t = setTimeout(() => {
+			forceSliderRecalc();
+		}, 60);
+		return () => clearTimeout(t);
+	}, [style_dimension, general_general.colGap, deviceType, forceSliderRecalc]);
+
+	useEffect(() => {
+		const container = ref.current;
+		if (!container) return;
+		const RO =
+			(container.ownerDocument?.defaultView as any)?.ResizeObserver ||
+			(typeof ResizeObserver !== "undefined" ? ResizeObserver : null);
+		if (!RO) return;
+
+		let rafId: number | null = null;
+		const ro = new RO(() => {
+			if (rafId) cancelAnimationFrame(rafId);
+			rafId = requestAnimationFrame(() => {
+				forceSliderRecalc();
+			});
+		});
+
+		ro.observe(container);
+		const swiperEl = container.querySelector(".swiper");
+		if (swiperEl) ro.observe(swiperEl);
+
+		return () => {
+			if (rafId) cancelAnimationFrame(rafId);
+			ro.disconnect();
+		};
+	}, [CURRENT_DATA.length, forceSliderRecalc]);
+
 	// reinitNavigationPagination: the key function for arrows/dots to show in
 	// the editor. After Swiper inits, overwrite prevEl/nextEl/pagination.el
 	// with the real refs (selector strings fail in the iframe). Returns true
