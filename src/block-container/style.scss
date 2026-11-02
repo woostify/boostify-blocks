@@ -36,8 +36,10 @@ body .wcb-container__wrap {
 	}
 }
 
-/* Reset default child container margin with 0 specificity so user margins always apply */
-:where(.wcb-container__wrap .wcb-container__inner .wcb-container__wrap.is_wcb_container_child) {
+/* Reset editor block margins on child containers (e.g. classic editor's `html :where(.wp-block)`
+   28px top/bottom). Specificity (0,2,0) wins over those but stays below the user margin
+   selector from GlobalCss (0,3,0). */
+.wcb-container__wrap .wcb-container__inner > :where(.wcb-container__wrap.is_wcb_container_child) {
 	margin-block-start: 0;
 	margin-block-end: 0;
 	margin-left: 0;
@@ -65,6 +67,10 @@ body .wcb-container__wrap {
 		&.is_wcb_container_child {
 			max-width: unset;
 			flex: 0 1 auto;
+			// Let columns shrink evenly past their content's min width,
+			// otherwise long words/images keep one column wider than the other
+			min-width: 0;
+			box-sizing: border-box;
 		}
 	}
 }
