@@ -61,7 +61,15 @@ function boostify_blocks_get_block_name_enable_init()
 //
 function boostify_blocks_get_default_blocks_settings()
 {
-    $options = woostify_options( false );
+    $options = function_exists( 'woostify_options' ) ? woostify_options( false ) : get_option( 'woostify_setting', array() );
+    $options = wp_parse_args( (array) $options, array(
+        'container_width'               => 1200,
+        'button_background_color'       => '',
+        'button_hover_background_color' => '',
+        'button_text_color'             => '',
+        'button_hover_text_color'       => '',
+        'buttons_border_radius'         => 0,
+    ) );
 
     return [
         'media_tablet'              => '768px',
