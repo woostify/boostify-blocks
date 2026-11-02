@@ -40,12 +40,16 @@ const WcbIconListPanelIcon: FC<Props> = ({
 	onToggle,
 	opened,
 }) => {
-	const { enableIcon, icon, iconPosition } =
+	const { enableIcon, icon, iconPosition, verticalAlignment = "top" } =
 		panelData;
 	//
 	const PLANS_DEMO: Option<WCB_ICON_LIST_PANEL_ICON["iconPosition"]>[] = [
 		{ value: "leftOfTitle", label: "Left Of Title" },
 		{ value: "rightOfTitle", label: "Right Of Title" },
+	];
+	const VERTICAL_DEMO: Option<WCB_ICON_LIST_PANEL_ICON["verticalAlignment"]>[] = [
+		{ value: "top", label: "Top" },
+		{ value: "middle", label: "Middle" },
 	];
 
 	return (
@@ -87,6 +91,19 @@ const WcbIconListPanelIcon: FC<Props> = ({
 										value as WCB_ICON_LIST_PANEL_ICON["iconPosition"],
 								};
 								setAttr__(newData);
+							}}
+						/>
+
+						<MySelect
+							label={__("Vertical Alignment", "boostify-blocks")}
+							options={VERTICAL_DEMO}
+							value={verticalAlignment}
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									verticalAlignment:
+										value as WCB_ICON_LIST_PANEL_ICON["verticalAlignment"],
+								});
 							}}
 						/>
 					</>

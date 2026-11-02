@@ -20,7 +20,7 @@ $css = array(
 );
 
 $wrap_sel        = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
-$inner_sel       = $wrap_sel . ' .wcb-icon-list__icon-wrap';
+$inner_sel       = $wrap_sel . ' > .wcb-icon-list__icon-wrap';
 $content_sel     = $wrap_sel . ' .wcb-icon-list__content';
 $icon_sel        = $wrap_sel . ' .wcb-icon-list__icon';
 $icon_full_sel   = $wrap_sel . ' .wcb-icon-full';
@@ -41,10 +41,6 @@ $flex_dir = ( 'vertical' === $layout ) ? 'column' : 'row';
 $css['desktop'][ $inner_sel ]['display']        = 'flex';
 $css['desktop'][ $inner_sel ]['flex-direction'] = $flex_dir;
 
-$css['desktop'][ $content_sel ]['display']        = 'flex';
-$css['desktop'][ $content_sel ]['flex-direction'] = $flex_dir;
-
-$align_prop = ( 'vertical' === $layout ) ? 'align-items' : 'justify-content';
 $ta_raw     = $gl['textAlignment'] ?? array();
 $ta_d       = is_array( $ta_raw ) ? ( $ta_raw['Desktop'] ?? 'left' ) : ( $ta_raw ?: 'left' );
 $ta_t       = is_array( $ta_raw ) ? ( $ta_raw['Tablet'] ?? $ta_d ) : $ta_d;
@@ -54,29 +50,92 @@ $flex_align_d = WCB_Block_Helper::get_flex_align( $ta_d );
 $flex_align_t = WCB_Block_Helper::get_flex_align( $ta_t );
 $flex_align_m = WCB_Block_Helper::get_flex_align( $ta_m );
 
-$css['desktop'][ $content_sel ][ $align_prop ] = $flex_align_d;
-if ( $flex_align_t !== $flex_align_d ) {
-	$css['tablet'][ $content_sel ][ $align_prop ] = $flex_align_t;
+// Heading & Designation Text Alignment.
+$css['desktop'][ $heading_sel ]['text-align'] = $ta_d;
+$css['desktop'][ $designation_sel ]['text-align'] = $ta_d;
+if ( $ta_t !== $ta_d ) {
+	$css['tablet'][ $heading_sel ]['text-align'] = $ta_t;
+	$css['tablet'][ $designation_sel ]['text-align'] = $ta_t;
 }
-if ( $flex_align_m !== $flex_align_t ) {
-	$css['mobile'][ $content_sel ][ $align_prop ] = $flex_align_m;
+if ( $ta_m !== $ta_t ) {
+	$css['mobile'][ $heading_sel ]['text-align'] = $ta_m;
+	$css['mobile'][ $designation_sel ]['text-align'] = $ta_m;
 }
 
-// Vertical Alignment.
-if ( 'middle' === ( $gi['verticalAlignment'] ?? 'top' ) ) {
-	$css['desktop'][ $inner_sel . ', ' . $content_sel ]['align-self'] = 'center';
+$v_align_current = ( 'middle' === ( $gi['verticalAlignment'] ?? 'top' ) ) ? 'center' : 'flex-start';
+
+if ( 'horizontal' === $layout ) {
+	$css['desktop'][ $inner_sel ]['align-items']     = $v_align_current;
+	$css['desktop'][ $inner_sel ]['justify-content'] = $flex_align_d;
+	if ( $flex_align_t !== $flex_align_d ) {
+		$css['tablet'][ $inner_sel ]['justify-content'] = $flex_align_t;
+	}
+	if ( $flex_align_m !== $flex_align_t ) {
+		$css['mobile'][ $inner_sel ]['justify-content'] = $flex_align_m;
+	}
+
+	// Child items styling when horizontal
+	$child_wrap_sel  = $wrap_sel . ' > .wcb-icon-list__icon-wrap > .wcb-icon-list__wrap';
+	$css['desktop'][ $child_wrap_sel ]['width']       = 'auto';
+	$css['desktop'][ $child_wrap_sel ]['display']     = 'inline-flex';
+	$css['desktop'][ $child_wrap_sel ]['align-items'] = $v_align_current;
+	$css['desktop'][ $child_wrap_sel ]['flex-shrink'] = '1';
+
+	$child_content_sel = $child_wrap_sel . ' .wcb-icon-list__content';
+	$css['desktop'][ $child_content_sel ]['width']     = 'auto';
+	$css['desktop'][ $child_content_sel ]['display']   = 'inline-flex';
+	$css['desktop'][ $child_content_sel ]['flex']      = '0 1 auto';
+	$css['desktop'][ $child_content_sel ]['min-width'] = '0';
+
+	$child_title_wrap_sel = $child_wrap_sel . ' .wcb-icon-list__content-title-wrap';
+	$css['desktop'][ $child_title_wrap_sel ]['width']       = 'auto';
+	$css['desktop'][ $child_title_wrap_sel ]['display']     = 'inline-flex';
+	$css['desktop'][ $child_title_wrap_sel ]['align-items'] = $v_align_current;
+	$css['desktop'][ $child_title_wrap_sel ]['min-width']   = '0';
+
+	$child_title_sel = $child_wrap_sel . ' .wcb-icon-list__content-title';
+	$css['desktop'][ $child_title_sel ]['flex']      = '0 1 auto';
+	$css['desktop'][ $child_title_sel ]['width']     = 'auto';
+	$css['desktop'][ $child_title_sel ]['min-width'] = '0';
+
+	$css['desktop'][ $child_wrap_sel . ' .wcb-icon-list__heading' ]['word-break']    = 'break-word';
+	$css['desktop'][ $child_wrap_sel . ' .wcb-icon-list__heading' ]['overflow-wrap'] = 'break-word';
+} else {
+	$css['desktop'][ $inner_sel ]['align-items'] = $flex_align_d;
+	if ( $flex_align_t !== $flex_align_d ) {
+		$css['tablet'][ $inner_sel ]['align-items'] = $flex_align_t;
+	}
+	if ( $flex_align_m !== $flex_align_t ) {
+		$css['mobile'][ $inner_sel ]['align-items'] = $flex_align_m;
+	}
 }
 
-// Icon position & title wrap.
-$icon_pos = $gi['iconPosition'] ?? 'leftOfTitle';
-$css['desktop'][ $inner_sel ]['order'] = ( 'leftOfTitle' === $icon_pos ) ? '0' : '2';
+// Vertical Alignment & Icon position inside child items.
+$v_align            = $gi['verticalAlignment'] ?? 'top';
+$align_val          = ( 'middle' === $v_align ) ? 'center' : 'flex-start';
+$icon_pos           = $gi['iconPosition'] ?? 'leftOfTitle';
+$item_icon_wrap_sel = $title_wrap_sel . ' .wcb-icon-list__icon-wrap';
 
+$css['desktop'][ $title_wrap_sel ]['align-items'] = $align_val;
 if ( 'leftOfTitle' === $icon_pos || 'rightOfTitle' === $icon_pos ) {
-	$css['desktop'][ $title_wrap_sel ]['display'] = 'flex';
+	$css['desktop'][ $title_wrap_sel ]['display'] = 'inline-flex';
+}
+
+$css['desktop'][ $item_icon_wrap_sel ]['align-self']  = $align_val;
+$css['desktop'][ $item_icon_wrap_sel ]['flex-shrink'] = '0';
+$css['desktop'][ $item_icon_wrap_sel ]['order']        = ( 'leftOfTitle' === $icon_pos ) ? '0' : '2';
+if ( 'top' === $v_align ) {
+	$css['desktop'][ $item_icon_wrap_sel ]['margin-top'] = '0.2em';
+} else {
+	$css['desktop'][ $item_icon_wrap_sel ]['margin-top'] = '0';
 }
 
 // Gap between items.
-if ( ! empty( $sdm['gapBetweenItems'] ) ) {
+$gap_between_items = $sdm['gapBetweenItems'] ?? array();
+$gap_d             = is_array( $gap_between_items ) ? ( $gap_between_items['Desktop'] ?? '' ) : ( $gap_between_items ?: '' );
+if ( empty( $gap_d ) ) {
+	$css['desktop'][ $inner_sel ]['gap'] = '10px';
+} else {
 	WCB_Block_Helper::add_responsive_css( $css, $inner_sel, 'gap', $sdm['gapBetweenItems'], 'px' );
 }
 
