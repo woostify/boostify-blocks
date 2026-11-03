@@ -6,10 +6,7 @@ import { DimensionSettings } from "../components/controls/MyDimensionsControl/ty
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import {
-	// @ts-ignore
-	__experimentalBoxControl as BoxControl,
-} from "@wordpress/components";
+import MyDimensionsBoxControl from "../components/controls/MyDimensionsControl/MyDimensionsUnitControl";
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
@@ -90,14 +87,15 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 			title={__("Dimension", "boostify-blocks")}
 		>
 			<div className={"space-y-4"}>
-				<BoxControl
+				<MyDimensionsBoxControl
 					label={
 						<MyLabelControl className="" hasResponsive>
 							{__("Padding", "boostify-blocks")}
 						</MyLabelControl>
 					}
-					values={currentPadding}
-					onChange={(value: any) => {
+					values={currentPadding || {}}
+					min={0}
+					onChange={(value) => {
 						setAttr__({
 							...panelData,
 							padding: {
@@ -108,14 +106,15 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 					}}
 				/>
 
-				<BoxControl
+				<MyDimensionsBoxControl
 					label={
 						<MyLabelControl className="" hasResponsive>
 							{__("Margin", "boostify-blocks")}
 						</MyLabelControl>
 					}
-					values={currentMargin}
-					onChange={(value: any) => {
+					values={currentMargin || {}}
+					min={0}
+					onChange={(value) => {
 						setAttr__({
 							...panelData,
 							margin: {

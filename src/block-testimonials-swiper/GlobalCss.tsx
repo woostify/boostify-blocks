@@ -168,9 +168,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						prefix_2: "paddingRight",
 					}),
 					getPaddingMarginStyles({
-						className: `${WRAP_CLASSNAME} .wcb-testimonials-swiper__item-inner`,
-						margin: style_dimension.margin,
+						className: `${WRAP_CLASSNAME}.wcb-testimonials-swiper__wrap`,
 						padding: style_dimension.padding,
+						margin: style_dimension.margin,
 					}),
 					getStyleBackground({
 						className: `${ITEM_CLASSNAME} .wcb-testimonials-swiper__item-background`,
