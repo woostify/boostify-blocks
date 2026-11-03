@@ -134,6 +134,7 @@ declare global {
 		boostify_blocks_file_generation_enabled?: boolean;
 		boostify_blocks_file_css_loaded?: boolean;
 		boostify_blocks_fallback_css?: boolean;
+		boostify_blocks_skip_inline_styles?: boolean;
 	}
 }
 
@@ -144,8 +145,9 @@ declare global {
  */
 const shouldSkipEmotionCss = (): boolean => {
 	return !!(
-		window.boostify_blocks_file_css_loaded &&
-		!window.boostify_blocks_fallback_css
+		window.boostify_blocks_file_generation_enabled ||
+		window.boostify_blocks_skip_inline_styles ||
+		(window.boostify_blocks_file_css_loaded && !window.boostify_blocks_fallback_css)
 	);
 };
 

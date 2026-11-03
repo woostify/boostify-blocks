@@ -40,7 +40,27 @@ registerFormatType(WCB_FORMAT_HIGHLIGHT, {
 	edit: MyCustomButton,
 });
 
+const headingIcon = (
+	<svg
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="none"
+		xmlns="http://www.w3.org/2000/svg"
+		className="wcb-block-editor-block-icon"
+	>
+		<path
+			d="M6 4.5V19.5M18 4.5V19.5M6 12H18"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+	</svg>
+);
+
 registerBlockType(metadata.name, {
+	icon: headingIcon,
 	edit: Edit,
 	save,
 	attributes,

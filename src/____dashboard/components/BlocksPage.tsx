@@ -116,6 +116,43 @@ const BlocksPage: FC<Props> = ({
 		);
 	};
 
+	const renderBlockIcon = (
+		icon: any,
+		blockName: string,
+		iconClass: string
+	) => {
+		if (
+			blockName === "boostify-blocks/heading" ||
+			(typeof icon === "string" && icon.includes("heading"))
+		) {
+			return (
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					className={iconClass}
+				>
+					<path
+						d="M6 4.5V19.5M18 4.5V19.5M6 12H18"
+						stroke="currentColor"
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					/>
+				</svg>
+			);
+		}
+		if (typeof icon === "string") {
+			return (
+				<i
+					className={`${iconClass} dashicon dashicons dashicons-${icon} ${icon}`}
+				/>
+			);
+		}
+		const IconComponent = icon;
+		return <IconComponent className={iconClass} />;
+	};
+
 	const renderCard = (item: Wcb_grid_item_Type) => {
 		if (item.parent) {
 			return null;
@@ -147,13 +184,7 @@ const BlocksPage: FC<Props> = ({
 			>
 				<div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6 ">
 					<div className="h-11 w-11 flex-shrink-0 flex items-center justify-center rounded-lg bg-white ring-1 ring-gray-900/10">
-						{typeof item.icon === "string" ? (
-							<i
-								className={`text-lg w-6 h-6 text-black dashicon dashicons dashicons-${item.icon} ${item.icon}`}
-							/>
-						) : (
-							<item.icon className="w-6 h-6 text-black" />
-						)}
+						{renderBlockIcon(item.icon, item.name, "text-lg w-6 h-6 text-black")}
 					</div>
 					<div className="flex items-center gap-x-2">
 						<span className="text-sm font-medium leading-6 text-gray-900">

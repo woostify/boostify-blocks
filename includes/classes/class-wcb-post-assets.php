@@ -415,6 +415,10 @@ class WCB_Post_Assets {
 		return $this->frontend->is_file_css_enqueued();
 	}
 
+	public function set_file_css_enqueued( $enqueued = true ) {
+		$this->frontend->set_file_css_enqueued( $enqueued );
+	}
+
 	public function is_inline_css_enqueued() {
 		return $this->frontend->is_inline_css_enqueued();
 	}

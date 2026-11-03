@@ -5,8 +5,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Enqueue for Frontend
 function boostify_blocks_my_scripts_method()
 {
-    wp_enqueue_style( 'boostify-blocks-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), BOOSTIFY_BLOCKS_VERSION );
-    wp_enqueue_style( 'boostify-blocks-frontend', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css', array(), BOOSTIFY_BLOCKS_VERSION );
+    $common_css_path = BOOSTIFY_BLOCKS_PATH . 'build/block-common-css/style-index.css';
+    $common_ver      = file_exists( $common_css_path ) ? filemtime( $common_css_path ) : BOOSTIFY_BLOCKS_VERSION;
+    wp_enqueue_style( 'boostify-blocks-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), $common_ver );
+
+    $frontend_css_path = BOOSTIFY_BLOCKS_PATH . 'public/css/frontend.css';
+    $frontend_ver      = file_exists( $frontend_css_path ) ? filemtime( $frontend_css_path ) : BOOSTIFY_BLOCKS_VERSION;
+    wp_enqueue_style( 'boostify-blocks-frontend', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css', array(), $frontend_ver );
     wp_localize_script(
         'jquery',
         'boostify_blocks_frontend_ajax_object',
