@@ -1,1 +1,1 @@
-<?php return array('dependencies' => array('react', 'wp-blocks'), 'version' => 'b873b514a02e790c665e');
+<?php return array('dependencies' => array('react', 'wp-blocks'), 'version' => '4bc71e1974886c7bf504');
