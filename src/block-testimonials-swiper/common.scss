@@ -81,6 +81,8 @@
 
 	.wcb-testimonials-swiper__item-background {
 		position: relative;
+		// Clip background image / video / overlay to the rounded corners.
+		overflow: hidden;
 	}
 
 	.wcb-testimonials-swiper__item-wrap-inner {
