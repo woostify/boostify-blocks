@@ -101,6 +101,39 @@ const BlocksPage: FC<Props> = ({
 		);
 	};
 
+	const renderBlockIcon = (
+		iconName: string,
+		blockName: string,
+		iconClass: string
+	) => {
+		if (
+			blockName === "boostify-blocks/heading" ||
+			iconName.includes("heading")
+		) {
+			return (
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					className={iconClass}
+				>
+					<path
+						d="M6 4.5V19.5M18 4.5V19.5M6 12H18"
+						stroke="currentColor"
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					/>
+				</svg>
+			);
+		}
+		return (
+			<i
+				className={`${iconClass} dashicon dashicons dashicons-${iconName} ${iconName}`}
+			></i>
+		);
+	};
+
 	const renderCard3 = (block: Wcb_block_Type, index: number) => {
 		if (block.parent) {
 			return null;
@@ -129,9 +162,7 @@ const BlocksPage: FC<Props> = ({
 			>
 				<div className="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6 ">
 					<div className="h-11 w-11 flex-shrink-0 flex items-center justify-center rounded-lg bg-white ring-1 ring-gray-900/10">
-						<i
-							className={`text-lg w-6 h-6 text-black dashicon dashicons dashicons-${icon} ${icon}`}
-						></i>
+						{renderBlockIcon(icon, name, "text-lg w-6 h-6 text-black")}
 					</div>
 					<div className="text-sm font-medium leading-6 text-gray-900">
 						{title}
@@ -193,9 +224,11 @@ const BlocksPage: FC<Props> = ({
 			>
 				<div className="relative z-10 h-20 p-4 flex items-center gap-x-5">
 					<div className="flex-shrink-0">
-						<i
-							className={`text-[1.875rem] w-[1.875rem] h-[1.875rem] text-inherit dashicon dashicons dashicons-${icon} ${icon}`}
-						></i>
+						{renderBlockIcon(
+							icon,
+							name,
+							"text-[1.875rem] w-[1.875rem] h-[1.875rem] text-inherit"
+						)}
 					</div>
 					<div className="flex-1 min-w-0">
 						<label
@@ -258,9 +291,7 @@ const BlocksPage: FC<Props> = ({
 				<div className="relative z-10 p-6 flex items-start gap-x-5">
 					<div className="flex-1 min-w-0 flex flex-col items-start">
 						<div className="inline-block flex-shrink-0 rounded-md bg-indigo-500 p-3">
-							<i
-								className={`text-lg w-6 h-6 text-white dashicon dashicons dashicons-${icon} ${icon}`}
-							></i>
+							{renderBlockIcon(icon, name, "text-lg w-6 h-6 text-white")}
 						</div>
 						<label htmlFor={key} className="text-2xl font-bold my-2 block">
 							{title}
