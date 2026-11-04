@@ -188,11 +188,13 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
             // When CSS is loaded, JS skips emotion <Global> rendering to completely eliminate FOUC,
             // while still executing interactive init functions (carousels, animations, counters).
             if (class_exists('WCB_Post_Assets')) {
-                $assets   = WCB_Post_Assets::instance();
-                $is_ready = $assets->is_file_css_enqueued();
+                $assets      = WCB_Post_Assets::instance();
+                $is_ready    = $assets->is_file_css_enqueued();
+                $skip_inline = apply_filters('boostify_blocks_skip_inline_styles', false);
                 wp_add_inline_script(
                     'boostify-blocks-commoncss-frontend',
                     'window.boostify_blocks_file_generation_enabled = ' . ($assets->is_file_generation_enabled() ? 'true' : 'false') . ';' .
+                    'window.boostify_blocks_skip_inline_styles = ' . (($skip_inline || $assets->is_file_generation_enabled()) ? 'true' : 'false') . ';' .
                     'window.boostify_blocks_file_css_loaded = ' . ($is_ready ? 'true' : 'false') . ';' .
                     'window.boostify_blocks_fallback_css = ' . ($assets->is_fallback_css() ? 'true' : 'false') . ';' .
                     'window.boostify_blocks_post_id = ' . intval(get_queried_object_id()) . ';' .

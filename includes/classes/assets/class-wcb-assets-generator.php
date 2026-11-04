@@ -115,7 +115,7 @@ class WCB_Assets_Generator {
 	 * @return bool True if CSS file was saved successfully, false otherwise.
 	 */
 	public function process_post_css_generation( $post_id, $force = false ) {
-		$css = WCB_Block_Helper::extract_css_from_post( $post_id );
+		$css = WCB_Block_Helper::extract_css_from_post( $post_id, false );
 
 		if ( empty( trim( $css ) ) ) {
 			$this->storage->delete_css_file( $post_id );
@@ -531,7 +531,7 @@ class WCB_Assets_Generator {
 	 * @return string Combined CSS.
 	 */
 	public function extract_css_from_post( $post_id ) {
-		return WCB_Block_Helper::extract_css_from_post( $post_id );
+		return WCB_Block_Helper::extract_css_from_post( $post_id, false );
 	}
 
 	/**

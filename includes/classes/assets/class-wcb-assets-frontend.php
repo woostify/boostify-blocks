@@ -101,15 +101,8 @@ class WCB_Assets_Frontend {
 		// Frontend: enqueue generated JS if present.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_post_js' ), 21 );
 
-		// When file generation is enabled, individual block style-index.css files are
-		// bundled on-demand into post/template CSS files, so individual files can be dequeued.
-		if ( $this->file_generation_enabled ) {
-			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_individual_block_styles' ), 999 );
-			add_action( 'wp_head', array( $this, 'dequeue_individual_block_styles' ), 0 );
-			add_action( 'wp_footer', array( $this, 'dequeue_individual_block_styles' ), 0 );
-			add_action( 'wp_print_styles', array( $this, 'dequeue_individual_block_styles' ), 0 );
-			add_action( 'wp_print_footer_scripts', array( $this, 'dequeue_individual_block_styles' ), 0 );
-		}
+		// Automatically version static block stylesheets with filemtime so SCSS updates reflect instantly.
+		add_action( 'wp_enqueue_scripts', array( $this, 'auto_version_block_styles' ), 99 );
 
 		// Render Custom CSS added via the editor side panel.
 		add_action( 'wp_head', array( $this, 'render_custom_css' ), 999 );
@@ -235,34 +228,38 @@ class WCB_Assets_Frontend {
 
 	/**
 	/**
-	 * Dequeue individual block style-index.css files when post CSS file is enqueued.
+	 * Automatically version Boostify static block styles using filemtime.
+	 *
+	 * Ensures browser cache is automatically busted whenever SCSS/CSS files change.
 	 */
-	public function dequeue_individual_block_styles() {
-		if ( ! $this->file_generation_enabled ) {
-			return;
-		}
-
-		$is_post_enqueued = $this->is_file_css_enqueued();
-
-		// Only dequeue individual styles if post CSS file is enqueued.
-		if ( ! $is_post_enqueued ) {
-			return;
-		}
-
+	public function auto_version_block_styles() {
 		global $wp_styles;
 		if ( empty( $wp_styles->registered ) ) {
 			return;
 		}
 
 		foreach ( $wp_styles->registered as $handle => $style ) {
-			$is_boostify_style = ( 0 === strpos( $handle, 'boostify-blocks-' ) || 0 === strpos( $handle, 'create-block-' ) ) && '-style' === substr( $handle, -6 );
+			$is_boostify_style = ( 0 === strpos( $handle, 'boostify-blocks-' ) || 0 === strpos( $handle, 'create-block-' ) );
 			$is_block_file     = isset( $style->src ) && is_string( $style->src ) && false !== strpos( $style->src, 'boostify-blocks/build/' ) && false !== strpos( $style->src, 'style-index.css' );
 
-			if ( $is_boostify_style || $is_block_file ) {
-				wp_dequeue_style( $handle );
-				$style->src = false;
+			if ( ( $is_boostify_style || $is_block_file ) && isset( $style->src ) && is_string( $style->src ) ) {
+				$pos = strpos( $style->src, 'build/' );
+				if ( false !== $pos ) {
+					$rel = substr( $style->src, $pos );
+					$file_path = BOOSTIFY_BLOCKS_PATH . $rel;
+					if ( file_exists( $file_path ) ) {
+						$style->ver = (string) filemtime( $file_path );
+					}
+				}
 			}
 		}
+	}
+
+	/**
+	 * Dequeue individual block style-index.css files (kept for backward compatibility).
+	 */
+	public function dequeue_individual_block_styles() {
+		// Individual static styles are now deduplicated natively by WordPress handles and versioned with filemtime.
 	}
 
 	/**
@@ -406,6 +403,18 @@ class WCB_Assets_Frontend {
 	 */
 	public function is_file_css_enqueued() {
 		return $this->file_css_enqueued || $this->inline_css_enqueued;
+	}
+
+	/**
+	 * Mark that CSS has been enqueued for this request (e.g. by Theme Builder, Header/Footer, Hook).
+	 *
+	 * @param bool $enqueued
+	 */
+	public function set_file_css_enqueued( $enqueued = true ) {
+		$this->file_css_enqueued = (bool) $enqueued;
+		if ( $enqueued ) {
+			$this->fallback_css = false;
+		}
 	}
 
 	/**

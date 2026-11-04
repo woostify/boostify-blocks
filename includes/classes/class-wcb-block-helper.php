@@ -1306,10 +1306,10 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 	 * Resets the seen_refs guard for reusable blocks on every entry.
 	 *
 	 * @param int  $post_id        Post ID.
-	 * @param bool $include_static Whether to include static block styles (style-index.css). Default true.
+	 * @param bool $include_static Whether to include static block styles (style-index.css). Default false (static styles loaded globally once).
 	 * @return string Combined CSS for all Boostify blocks in the post.
 	 */
-	public static function extract_css_from_post( $post_id, $include_static = true ) {
+	public static function extract_css_from_post( $post_id, $include_static = false ) {
 		self::reset_seen_refs();
 
 		$post = get_post( $post_id );
