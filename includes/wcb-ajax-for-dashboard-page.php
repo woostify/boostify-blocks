@@ -40,10 +40,10 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
     }
 
     $array_result = array(
-        'data' => $newBlocksStatus,
-        'message' => 'your message'
+        'success' => true,
+        'data'    => $newBlocksStatus,
+        'message' => esc_html__( 'Blocks settings saved successfully.', 'boostify-blocks' ),
     );
-    //
     wp_send_json($array_result);
     wp_die();
 }
@@ -81,7 +81,10 @@ function boostify_blocks_ajax_dashboard_update_settings()
     }
 
     $old_settings = get_option( 'boostify_blocks_settings_options', [] );
-    $settings = array_merge($defaultSettings, $validSettings);
+    if ( ! is_array( $old_settings ) ) {
+        $old_settings = [];
+    }
+    $settings = array_merge( $defaultSettings, $old_settings, $validSettings );
 
     if ( ! empty( $settings['site_visibility_page'] ) ) {
         $v_page_id = absint( $settings['site_visibility_page'] );
@@ -104,10 +107,10 @@ function boostify_blocks_ajax_dashboard_update_settings()
     }
 
     $array_result = array(
-        'data' => $settings,
-        'message' => 'your message'
+        'success' => true,
+        'data'    => $settings,
+        'message' => esc_html__( 'Settings saved successfully.', 'boostify-blocks' ),
     );
-    //
     wp_send_json($array_result);
     wp_die();
 }
@@ -182,4 +185,77 @@ function boostify_blocks_ajax_search_pages()
     }
 
     wp_send_json_success($results);
+}
+
+/**
+ * AJAX handler for subscribing to Boostify Pro waitlist.
+ */
+add_action('wp_ajax_boostify_blocks_waitlist_subscribe', 'boostify_blocks_ajax_waitlist_subscribe');
+function boostify_blocks_ajax_waitlist_subscribe()
+{
+    // Verify nonce for security
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'boostifyblocks_dashboard_settings_nonce')) {
+        wp_send_json_error(array('message' => esc_html__('Invalid nonce.', 'boostify-blocks')), 403);
+    }
+
+    // Check user capability
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('message' => esc_html__('Permission denied.', 'boostify-blocks')), 403);
+    }
+
+    // Honeypot check
+    if (!empty($_POST['website'])) {
+        wp_send_json_success(array('message' => esc_html__('Subscription received.', 'boostify-blocks')));
+    }
+
+    $email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+    if (empty($email) || !is_email($email)) {
+        wp_send_json_error(array('message' => esc_html__('Please enter a valid email address.', 'boostify-blocks')), 400);
+    }
+
+    $block_context = isset($_POST['block']) ? sanitize_text_field(wp_unslash($_POST['block'])) : '';
+
+    $user_id = get_current_user_id();
+    $rate_key = 'boostify_blocks_waitlist_limit_' . $user_id;
+    if (get_transient($rate_key)) {
+        wp_send_json_error(array('message' => esc_html__('Too many requests. Please wait a minute before trying again.', 'boostify-blocks')), 429);
+    }
+
+    $webhook_url = defined('BOOSTIFY_BLOCKS_WAITLIST_WEBHOOK')
+        ? BOOSTIFY_BLOCKS_WAITLIST_WEBHOOK
+        : 'https://woostify.com/?fluentcrm=1&route=contact&hash=dbdb3c05-0599-4095-8980-e1e830f4b169';
+    $webhook_url = apply_filters('boostify_blocks_waitlist_webhook_url', $webhook_url);
+
+    $source = !empty($block_context)
+        ? 'boostify-blocks-pro-waitlist:' . sanitize_key($block_context)
+        : 'boostify-blocks-pro-waitlist';
+
+    $response = wp_remote_post(
+        $webhook_url,
+        array(
+            'timeout' => 15,
+            'body'    => array(
+                'email'  => $email,
+                'source' => $source,
+            ),
+        )
+    );
+
+    if (is_wp_error($response)) {
+        wp_send_json_error(array('message' => esc_html__('Unable to connect to the waitlist service. Please try again later.', 'boostify-blocks')), 500);
+    }
+
+    $code = wp_remote_retrieve_response_code($response);
+    if ($code < 200 || $code >= 300) {
+        wp_send_json_error(array('message' => esc_html__('Failed to subscribe. Please try again later.', 'boostify-blocks')), 502);
+    }
+
+    // Set rate limit transient and mark user as subscribed after successful submission
+    set_transient($rate_key, 1, MINUTE_IN_SECONDS);
+    update_user_meta($user_id, 'boostify_blocks_waitlist_subscribed', 1);
+    update_user_meta($user_id, 'boostify_blocks_waitlist_email', $email);
+
+    wp_send_json_success(array(
+        'message' => esc_html__('Thank you! You have been added to the waitlist.', 'boostify-blocks'),
+    ));
 }

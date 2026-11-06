@@ -28,6 +28,10 @@ define('BOOSTIFY_BLOCKS_PATH', plugin_dir_path(BOOSTIFY_BLOCKS_FILE));
 define('BOOSTIFY_BLOCKS_URI', plugins_url('/', BOOSTIFY_BLOCKS_FILE));
 define('BOOSTIFY_BLOCKS_BUILD_PATH', __DIR__ . '/build');
 
+if ( ! defined( 'BOOSTIFY_BLOCKS_WAITLIST_WEBHOOK' ) ) {
+	define( 'BOOSTIFY_BLOCKS_WAITLIST_WEBHOOK', 'https://woostify.com/?fluentcrm=1&route=contact&hash=dbdb3c05-0599-4095-8980-e1e830f4b169' );
+}
+
 
 
 require plugin_dir_path(__FILE__) . 'includes/wcb-custom-funcs.php';
