@@ -19,10 +19,10 @@ export function isValuesDefined(values?: Partial<DimensionSettings>): boolean {
 	return Object.values(values).some((v) => !!v && /\d/.test(v as string));
 }
 
-/** Splits a CSS value string (e.g. "16px", "1.5rem") into its numeric part and unit. */
+/** Splits a CSS value string (e.g. "16px", "-1.5rem") into its signed numeric part and unit. */
 export function parseValue(v: string): { num: number; unit: string } {
 	if (!v) return { num: 0, unit: "px" };
-	const match = v.match(/^([\d.]+)([a-z%]*)$/i);
+	const match = v.match(/^(-?[\d.]+)([a-z%]*)$/i);
 	if (!match) return { num: 0, unit: "px" };
 	return { num: parseFloat(match[1]) || 0, unit: match[2] || "px" };
 }
