@@ -53,7 +53,6 @@ const MyDimensionsPaddingControl: FC<Props> = ({
 				}
 				values={padding || {}}
 				onChange={handleChangePadding}
-				min={0}
 			/>
 		</div>
 	);
