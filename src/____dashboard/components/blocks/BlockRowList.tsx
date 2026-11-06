@@ -56,24 +56,23 @@ const BlockRowList: FC<BlockRowListProps> = ({ block, onToggle, onNotifyMe, isSu
 			</div>
 
 			{/* Switch or Lock / Notify me */}
-			<div style={{ display: "flex", justifyContent: "center" }}>
+			<div className="bb-list-action">
 				{isPro ? (
 					isSubscribed ? (
 						<span
 							title={__( "Waitlist joined", "boostify-blocks" )}
-							style={{ color: "#059669", display: "flex", alignItems: "center" }}
+							className="bb-waitlist-status"
 						>
-							<DynamicIcon name="check_circle" size={18} style={{ color: "#059669" }} />
+							<DynamicIcon name="check_circle" size={18} className="bb-icon-success" />
 						</span>
 					) : (
 						<button
 							type="button"
 							title={__( "Notify me", "boostify-blocks" )}
 							onClick={() => onNotifyMe && onNotifyMe(block.title)}
-							className="bb-link-btn"
-							style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "4px" }}
+							className="bb-link-btn bb-notify-btn"
 						>
-							<DynamicIcon name="lock" size={15} style={{ color: "#a3a3ae" }} />
+							<DynamicIcon name="lock" size={15} className="bb-icon-muted" />
 							<span>{__( "Notify me", "boostify-blocks" )}</span>
 						</button>
 					)

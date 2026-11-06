@@ -9,6 +9,7 @@ import {
 import { BLOCK_META, FALLBACK_CATEGORY } from "../data/blocksMeta";
 import { SAMPLE_PRO_BLOCKS } from "../data/sampleData";
 import { EXTENSIONS_LIST } from "../extensions";
+import { DEFAULT_URLS } from "../data/constants";
 import { postAjax } from "../utils/ajax";
 
 interface UseBlocksManagerProps {
@@ -26,7 +27,7 @@ export function useBlocksManager({
 	isDisplayConditionsEnabled = true,
 	onToggleDisplayConditions,
 	showSample = true,
-	demoBase = "https://woostify.com/boostify-blocks",
+	demoBase = DEFAULT_URLS.demoBase,
 }: UseBlocksManagerProps) {
 	// Filter real parent blocks (hide children)
 	const realParentBlocks = useMemo(() => {
@@ -211,32 +212,49 @@ export function useBlocksManager({
 	}, [blocksStatus, realParentBlocks, onToggleDisplayConditions]);
 
 	// Discard unsaved changes
-	const discardChanges = useCallback(() => {
-		setBlocksStatus(savedBlocksStatus);
-		toast(__( "Changes discarded.", "boostify-blocks" ), { icon: "↩️" });
-	}, [savedBlocksStatus]);
+	const discardChanges = useCallback(
+		(options?: { silent?: boolean }) => {
+			setBlocksStatus(savedBlocksStatus);
+			if (!options?.silent) {
+				toast(__( "Changes discarded.", "boostify-blocks" ), { icon: "↩️" });
+			}
+		},
+		[savedBlocksStatus]
+	);
 
 	// Save changes via AJAX
-	const saveChanges = useCallback(() => {
-		setIsSaving(true);
+	const saveChanges = useCallback(
+		async (options?: { silent?: boolean }): Promise<{ ok: boolean; error?: string }> => {
+			setIsSaving(true);
 
-		postAjax({
-			action: "boostify_blocks_dashboard_blocks_disable_enable",
-			data: { blocksStatus },
-			timeout: 15000,
-		})
-			.then(() => {
-				setSavedBlocksStatus(blocksStatus);
+			try {
+				const response = await postAjax({
+					action: "boostify_blocks_dashboard_blocks_disable_enable",
+					data: { blocksStatus },
+					timeout: 15000,
+				});
+				if (response?.data && typeof response.data === "object") {
+					setSavedBlocksStatus({ ...blocksStatus, ...response.data });
+				} else {
+					setSavedBlocksStatus({ ...blocksStatus });
+				}
 				setIsSaving(false);
-				toast.success(__( "Blocks settings saved successfully!", "boostify-blocks" ));
-			})
-			.catch((err: any) => {
+				if (!options?.silent) {
+					toast.success(__( "Blocks settings saved successfully!", "boostify-blocks" ));
+				}
+				return { ok: true };
+			} catch (err: any) {
 				setIsSaving(false);
 				const errorMsg =
 					err?.message || __( "Failed to save settings. Please try again.", "boostify-blocks" );
-				toast.error(errorMsg);
-			});
-	}, [blocksStatus]);
+				if (!options?.silent) {
+					toast.error(errorMsg);
+				}
+				return { ok: false, error: errorMsg };
+			}
+		},
+		[blocksStatus]
+	);
 
 	return {
 		allUnifiedBlocks,

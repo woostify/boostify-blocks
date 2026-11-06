@@ -1,6 +1,6 @@
-// SAMPLE – chưa nối backend.
-// Các mục dưới đây có trong design nhưng chưa có trong plugin.
-// Vẫn hiển thị đúng như design ở trạng thái khoá/Coming soon.
+// SAMPLE – mock data not connected to backend.
+// Items below exist in the design mockups but are not yet implemented in the plugin.
+// Rendered in disabled/Coming soon state matching design requirements.
 
 import { UnifiedBlockItem } from "../types";
 

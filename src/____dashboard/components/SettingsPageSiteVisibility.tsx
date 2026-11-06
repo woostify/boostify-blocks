@@ -19,14 +19,6 @@ interface PageOption {
 	view_url?: string;
 }
 
-const debounce = (func: Function, delay: number) => {
-	let timeoutId: any;
-	return (...args: any[]) => {
-		clearTimeout(timeoutId);
-		timeoutId = setTimeout(() => func(...args), delay);
-	};
-};
-
 const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 	const [pages, setPages] = useState<PageOption[]>([]);
 	const [isLoadingPages, setIsLoadingPages] = useState(false);
@@ -48,6 +40,9 @@ const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 
 	const dropdownRef = useRef<HTMLDivElement>(null);
 	const searchInputRef = useRef<HTMLInputElement>(null);
+	const currentPageIdRef = useRef<string>(currentPageId);
+	currentPageIdRef.current = currentPageId;
+	const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const enableComingSoonModeStatus = currentMode === "comingsoon";
 	const enableMaintenanceModeStatus = currentMode === "maintenance";
@@ -65,6 +60,9 @@ const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
+			if (searchTimerRef.current) {
+				clearTimeout(searchTimerRef.current);
+			}
 		};
 	}, []);
 
@@ -87,9 +85,10 @@ const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 				setIsLoadingPages(false);
 				if (response && response.success && Array.isArray(response.data)) {
 					setPages(response.data);
-					if (currentPageId) {
+					const activePageId = currentPageIdRef.current;
+					if (activePageId) {
 						const found = response.data.find(
-							(p: PageOption) => String(p.value) === String(currentPageId)
+							(p: PageOption) => String(p.value) === String(activePageId)
 						);
 						if (found) {
 							setSelectedPageInfo(found);
@@ -100,23 +99,21 @@ const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 			.catch(() => {
 				setIsLoadingPages(false);
 			});
-	}, [currentPageId]);
+	}, []);
 
 	useEffect(() => {
 		fetchPages();
 	}, [fetchPages]);
 
-	const debouncedFetchPages = useCallback(
-		debounce((kw: string) => {
-			fetchPages(kw);
-		}, 300),
-		[fetchPages]
-	);
-
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const val = e.target.value;
 		setSearchTerm(val);
-		debouncedFetchPages(val);
+		if (searchTimerRef.current) {
+			clearTimeout(searchTimerRef.current);
+		}
+		searchTimerRef.current = setTimeout(() => {
+			fetchPages(val);
+		}, 300);
 	};
 
 	const updateVisibilityMode = (mode: "comingsoon" | "maintenance") => {

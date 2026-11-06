@@ -6,8 +6,17 @@ if (!function_exists('boostify_blocks_get_block_type_list') || !function_exists(
     return;
 }
 // 
-$boostify_blocks_enable_disable_options = get_option('boostify_blocks_enable_disable_options');
-$boostify_blocks_settings_options = get_option('boostify_blocks_settings_options');
+$boostify_blocks_enable_disable_options = get_option( 'boostify_blocks_enable_disable_options' );
+if ( ! is_array( $boostify_blocks_enable_disable_options ) ) {
+    $boostify_blocks_enable_disable_options = function_exists( 'boostify_blocks_get_block_name_enable_init' ) ? boostify_blocks_get_block_name_enable_init() : array();
+}
+
+$default_settings_options         = function_exists( 'boostify_blocks_get_default_blocks_settings' ) ? boostify_blocks_get_default_blocks_settings() : array();
+$boostify_blocks_settings_options = get_option( 'boostify_blocks_settings_options' );
+$boostify_blocks_settings_options = is_array( $boostify_blocks_settings_options )
+    ? array_merge( $default_settings_options, $boostify_blocks_settings_options )
+    : $default_settings_options;
+
 if ( is_array( $boostify_blocks_settings_options ) && ! empty( $boostify_blocks_settings_options['site_visibility_page'] ) ) {
     $v_page_id = absint( $boostify_blocks_settings_options['site_visibility_page'] );
     $v_page_title = get_the_title( $v_page_id );

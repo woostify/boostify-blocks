@@ -135,3 +135,28 @@ export const postAjax = async <T = any>(
 		throw err instanceof Error ? err : new Error(String(err));
 	}
 };
+
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const isValidEmail = (email: string): boolean => {
+	return EMAIL_REGEX.test(email.trim());
+};
+
+/**
+ * Shared helper to subscribe an email address to the Boostify Pro waitlist.
+ */
+export const subscribeToProWaitlist = async (params: {
+	email: string;
+	website?: string;
+	blockTitle?: string | null;
+}): Promise<AjaxResponse> => {
+	return postAjax({
+		action: "boostify_blocks_waitlist_subscribe",
+		data: {
+			email: params.email.trim(),
+			website: params.website || "",
+			block: params.blockTitle || "",
+		},
+		timeout: 15000,
+	});
+};

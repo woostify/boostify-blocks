@@ -58,7 +58,7 @@ const BlockCardGrid: FC<BlockCardGridProps> = ({ block, onToggle, onNotifyMe, is
 
 				{/* Switch or Lock */}
 				{isPro ? (
-					<DynamicIcon name="lock" size={18} style={{ color: "#a3a3ae" }} />
+					<DynamicIcon name="lock" size={18} className="bb-icon-muted" />
 				) : (
 					<button
 						type="button"
@@ -80,7 +80,7 @@ const BlockCardGrid: FC<BlockCardGridProps> = ({ block, onToggle, onNotifyMe, is
 			{/* Footer */}
 			<div className="bb-card-footer">
 				{!isPro ? (
-					<div style={{ display: "flex", gap: "16px" }}>
+					<div className="bb-card-footer-group">
 						{block.demoUrl && block.demoUrl !== "#" ? (
 							<a
 								href={block.demoUrl}
@@ -92,36 +92,26 @@ const BlockCardGrid: FC<BlockCardGridProps> = ({ block, onToggle, onNotifyMe, is
 								<DynamicIcon name="arrow_outward" size={15} />
 							</a>
 						) : (
-							<span style={{ color: "#a3a3ae" }}>
+							<span className="bb-card-footer-muted">
 								{__( "Documentation", "boostify-blocks" )}
 							</span>
 						)}
 					</div>
 				) : (
-					<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-						<span style={{ fontSize: "12.5px", color: "#8b8b97" }}>
+					<div className="bb-card-footer-pro-row">
+						<span className="bb-card-pro-label">
 							{__( "Coming with Pro", "boostify-blocks" )}
 						</span>
 						{isSubscribed ? (
-							<span
-								style={{
-									fontSize: "12px",
-									fontWeight: 500,
-									color: "#059669",
-									display: "inline-flex",
-									alignItems: "center",
-									gap: "4px",
-								}}
-							>
-								<DynamicIcon name="check_circle" size={14} style={{ color: "#059669" }} />
+							<span className="bb-card-waitlist-joined">
+								<DynamicIcon name="check_circle" size={14} className="bb-icon-success" />
 								{__( "Waitlist joined", "boostify-blocks" )}
 							</span>
 						) : (
 							<button
 								type="button"
 								onClick={() => onNotifyMe && onNotifyMe(block.title)}
-								className="bb-link-btn"
-								style={{ fontSize: "12.5px", fontWeight: 600 }}
+								className="bb-link-btn bb-card-notify-btn"
 							>
 								{__( "Notify me", "boostify-blocks" )}
 							</button>

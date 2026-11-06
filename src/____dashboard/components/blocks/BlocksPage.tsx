@@ -4,16 +4,7 @@ import DynamicIcon from "../common/DynamicIcon";
 import BlockCardGrid from "./BlockCardGrid";
 import BlockRowList from "./BlockRowList";
 import { UnifiedBlockItem } from "../../types";
-
-const CATEGORIES = [
-	"All",
-	"Layout",
-	"Content",
-	"Marketing",
-	"Media",
-	"Interactive",
-	"Extensions",
-];
+import { ALL_CATEGORIES, BLOCK_CATEGORIES } from "../../data/constants";
 
 interface BlocksPageProps {
 	allUnifiedBlocks: UnifiedBlockItem[];
@@ -52,7 +43,6 @@ const BlocksPage: FC<BlocksPageProps> = ({
 	onNotifyMe,
 	isSubscribed,
 }) => {
-	const ACCENT_COLOR = "#635bff";
 	const isSearching = searchQuery.trim().length > 0;
 	const shouldGroup = selectedCategory === "All" && !isSearching;
 
@@ -66,16 +56,6 @@ const BlocksPage: FC<BlocksPageProps> = ({
 		totalRealCount,
 		proCount
 	);
-
-	// Ordered categories for group view
-	const orderedCategories = [
-		"Layout",
-		"Content",
-		"Marketing",
-		"Media",
-		"Interactive",
-		"Extensions",
-	];
 
 	return (
 		<main className="bb-page-container">
@@ -129,7 +109,7 @@ const BlocksPage: FC<BlocksPageProps> = ({
 
 				{/* Category Pills */}
 				<div className="bb-category-pills">
-					{CATEGORIES.map((cat) => {
+					{ALL_CATEGORIES.map((cat) => {
 						const isSelected = selectedCategory.toLowerCase() === cat.toLowerCase();
 						const count =
 							cat === "All"
@@ -152,7 +132,7 @@ const BlocksPage: FC<BlocksPageProps> = ({
 					})}
 				</div>
 
-				<div style={{ flex: 1 }} />
+				<div className="bb-spacer" />
 
 				{/* Segmented View Switcher */}
 				<div className="bb-view-switcher">
@@ -196,8 +176,8 @@ const BlocksPage: FC<BlocksPageProps> = ({
 				</div>
 			) : shouldGroup ? (
 				/* Grouped by Category */
-				<div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-					{orderedCategories.map((catName) => {
+				<div className="bb-block-sections-flow">
+					{BLOCK_CATEGORIES.map((catName) => {
 						const items = groupedFilteredBlocks[catName] || [];
 						if (items.length === 0) return null;
 

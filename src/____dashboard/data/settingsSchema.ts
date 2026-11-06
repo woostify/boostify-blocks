@@ -46,7 +46,7 @@ export const SETTINGS_SCHEMA: SettingSectionSchema[] = [
 				desc: __( "Default max-width for container and content wrappers. Leave blank to inherit from theme.", "boostify-blocks" ),
 				type: "number",
 				unit: "px",
-				defaultValue: 1140,
+				defaultValue: 1200,
 			},
 			{
 				key: "buttonInheritFromTheme",
@@ -61,7 +61,7 @@ export const SETTINGS_SCHEMA: SettingSectionSchema[] = [
 				desc: __( "Default inner padding applied to Container blocks.", "boostify-blocks" ),
 				type: "number",
 				unit: "px",
-				defaultValue: 16,
+				defaultValue: 10,
 			},
 			{
 				key: "containerElementsGap",
@@ -69,7 +69,7 @@ export const SETTINGS_SCHEMA: SettingSectionSchema[] = [
 				desc: __( "Default gap spacing between child elements inside Container blocks.", "boostify-blocks" ),
 				type: "number",
 				unit: "px",
-				defaultValue: 20,
+				defaultValue: 10,
 			},
 			{
 				key: "blocksEditorSpacing",
@@ -148,7 +148,7 @@ export const SETTINGS_SCHEMA: SettingSectionSchema[] = [
 			{
 				key: "preloadLocalFonts",
 				label: __( "Preload Local Fonts", "boostify-blocks" ),
-				desc: __( "Preload font files in the document head to eliminate flash of unstyled text (FOUT).", "boostify-blocks" ),
+				desc: __( "This option will load the font files right away on page load. Preloading Local Fonts can speeds up your website even further.", "boostify-blocks" ),
 				type: "toggle",
 				defaultValue: "false",
 				dependsOn: {

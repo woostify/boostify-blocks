@@ -3,8 +3,9 @@ import { __ } from "@wordpress/i18n";
 import { Dialog, Transition } from "@headlessui/react";
 import DynamicIcon from "../common/DynamicIcon";
 import toast from "react-hot-toast";
-import { postAjax } from "../../utils/ajax";
+import { isValidEmail, subscribeToProWaitlist } from "../../utils/ajax";
 import { DashboardMeta, ChangelogItem } from "../../types";
+import { DEFAULT_URLS } from "../../data/constants";
 
 interface OverviewPageProps {
 	meta?: DashboardMeta;
@@ -36,40 +37,29 @@ const OverviewPage: FC<OverviewPageProps> = ({
 	const changelog = meta?.changelog || [];
 	const recentChangelogs = changelog.slice(0, 2);
 
-	const urls = meta?.urls || {
-		support: "https://woostify.com/contact/",
-		newPage: "post-new.php?post_type=page",
-		docs: "https://woostify.com/docs/",
-		community: "https://www.facebook.com/groups/woostify",
-		rate: "https://wordpress.org/support/plugin/boostify-blocks/reviews/#new-post",
-		demoBase: "https://woostify.com/boostify-blocks",
-	};
+	const urls = meta?.urls || DEFAULT_URLS;
 
 	const activePct = totalBlocksCount > 0 ? Math.round((activeBlocksCount / totalBlocksCount) * 100) : 0;
 
 	const handleWaitlistSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!email || !email.includes("@")) {
+		if (!isValidEmail(email)) {
 			toast.error(__( "Please enter a valid email address.", "boostify-blocks" ));
 			return;
 		}
 
 		setIsSubmitting(true);
 
-		postAjax({
-			action: "boostify_blocks_waitlist_subscribe",
-			data: {
-				email,
-				website: websiteHoneypot,
-			},
-			timeout: 15000,
+		subscribeToProWaitlist({
+			email,
+			website: websiteHoneypot,
 		})
 			.then((response: any) => {
 				setIsSubmitting(false);
 				if (response?.success) {
 					setInternalSubscribed(true);
 					onSubscribed && onSubscribed();
-					toast.success(__( "You're on the Pro waitlist!", "boostify-blocks" ));
+					toast.success(__( "You're on the Pro waitlist! We'll be in touch soon.", "boostify-blocks" ));
 				} else {
 					toast.error(response?.data?.message || __( "Subscription failed. Please try again.", "boostify-blocks" ));
 				}
@@ -85,13 +75,15 @@ const OverviewPage: FC<OverviewPageProps> = ({
 
 	return (
 		<main className="bb-page-container">
-			{/* Page Title */}
-			<div className="bb-page-title-group">
-				<h1 className="bb-page-title">
-					{__( "Welcome to Boostify Blocks", "boostify-blocks" )}
-				</h1>
-				<div className="bb-page-subtitle">
-					{__( "Extra blocks for the WordPress block editor. Turn on what you need, leave off what you don’t.", "boostify-blocks" )}
+			{/* Page Header */}
+			<div className="bb-page-header">
+				<div className="bb-page-title-group">
+					<h1 className="bb-page-title">
+						{__( "Welcome to Boostify Blocks", "boostify-blocks" )}
+					</h1>
+					<div className="bb-page-subtitle">
+						{__( "Extra blocks for the WordPress block editor. Turn on what you need, leave off what you don’t.", "boostify-blocks" )}
+					</div>
 				</div>
 			</div>
 
@@ -176,8 +168,8 @@ const OverviewPage: FC<OverviewPageProps> = ({
 					</section>
 
 					{/* Section 2: What's new */}
-					<section className="bb-overview-card" style={{ gap: "4px" }}>
-						<div className="bb-overview-card-header" style={{ paddingBottom: "12px" }}>
+					<section className="bb-overview-card bb-card-compact">
+						<div className="bb-overview-card-header bb-header-tight">
 							<h2 className="bb-overview-card-title">
 								{__( "What’s new", "boostify-blocks" )}
 							</h2>
@@ -194,32 +186,38 @@ const OverviewPage: FC<OverviewPageProps> = ({
 						</div>
 
 						{/* Changelog Entries */}
-						{recentChangelogs.map((item, idx) => (
-							<div key={item.version} className="bb-changelog-row">
-								<div className="bb-changelog-ver">
-									{item.version}
-								</div>
-								<div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-									<div className="bb-changelog-title">
-										{idx === 0 ? __( "Latest Release Update", "boostify-blocks" ) : __( "Previous Release", "boostify-blocks" )}
-									</div>
-									<div className="bb-changelog-desc">
-										{item.items.join(" · ")}
-									</div>
-								</div>
+						{recentChangelogs.length === 0 ? (
+							<div className="bb-changelog-empty">
+								{__( "No changelog entries found.", "boostify-blocks" )}
 							</div>
-						))}
+						) : (
+							recentChangelogs.map((item, idx) => (
+								<div key={item.version} className="bb-changelog-row">
+									<div className="bb-changelog-ver">
+										{item.version}
+									</div>
+									<div className="bb-changelog-col">
+										<div className="bb-changelog-title">
+											{idx === 0 ? __( "Latest Release Update", "boostify-blocks" ) : __( "Previous Release", "boostify-blocks" )}
+										</div>
+										<div className="bb-changelog-desc">
+											{item.items.join(" · ")}
+										</div>
+									</div>
+								</div>
+							))
+						)}
 					</section>
 				</div>
 
 				{/* Right Column (span 1) */}
 				<div className="bb-overview-col-side">
 					{/* Card 1: Active blocks */}
-					<section className="bb-overview-card" style={{ gap: "14px" }}>
-						<div style={{ fontSize: "13px", fontWeight: 500, color: "#6b6b78" }}>
+					<section className="bb-overview-card bb-card-stat">
+						<div className="bb-stat-title">
 							{__( "Active blocks", "boostify-blocks" )}
 						</div>
-						<div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
+						<div className="bb-stat-row">
 							<div className="bb-stat-number">
 								{activeBlocksCount}
 							</div>
@@ -245,35 +243,35 @@ const OverviewPage: FC<OverviewPageProps> = ({
 
 					{/* Card 2: PRO - Coming soon */}
 					<section className="bb-pro-banner">
-						<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-							<span className="bb-badge-pro" style={{ display: "inline-flex", alignItems: "center", gap: "3px" }}>
+						<div className="bb-pro-badge-row">
+							<span className="bb-badge-pro bb-badge-pro-icon">
 								<DynamicIcon name="bolt" size={12} />
 								PRO
 							</span>
-							<span style={{ fontSize: "12px", color: "#a9a9b6" }}>
+							<span className="bb-pro-coming-soon">
 								{__( "Coming soon", "boostify-blocks" )}
 							</span>
 						</div>
-						<div style={{ fontSize: "18px", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.3 }}>
+						<div className="bb-pro-title">
 							{__( "More blocks, dynamic content and premium templates.", "boostify-blocks" )}
 						</div>
-						<div style={{ fontSize: "13px", lineHeight: 1.5, color: "#b9b9c4" }}>
+						<div className="bb-pro-desc">
 							{__( "Join the waitlist to get early access and product updates.", "boostify-blocks" )}
 						</div>
 
 						{isSubscribed ? (
-							<div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderRadius: "9px", background: "rgba(255,255,255,0.08)", fontSize: "13px", color: "#a7f3d0" }}>
-								<DynamicIcon name="check_circle" size={18} style={{ color: "#34d399", flexShrink: 0 }} />
+							<div className="bb-pro-success">
+								<DynamicIcon name="check_circle" size={18} className="bb-icon-success" />
 								<span>{__( "You're on the waitlist! We'll be in touch soon.", "boostify-blocks" )}</span>
 							</div>
 						) : (
-							<form onSubmit={handleWaitlistSubmit} style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+							<form onSubmit={handleWaitlistSubmit} className="bb-pro-form">
 								<input
 									type="text"
 									name="website"
 									value={websiteHoneypot}
 									onChange={(e) => setWebsiteHoneypot(e.target.value)}
-									style={{ display: "none" }}
+									className="bb-honeypot"
 									tabIndex={-1}
 									autoComplete="off"
 								/>
@@ -298,7 +296,7 @@ const OverviewPage: FC<OverviewPageProps> = ({
 					</section>
 
 					{/* Card 3: Resources */}
-					<section className="bb-overview-card" style={{ padding: "8px", gap: "4px" }}>
+					<section className="bb-overview-card bb-card-resources">
 						<a
 							href={urls.docs}
 							target="_blank"
@@ -306,10 +304,10 @@ const OverviewPage: FC<OverviewPageProps> = ({
 							className="bb-resource-link"
 						>
 							<DynamicIcon name="menu_book" size={20} />
-							<span style={{ flex: 1, fontSize: "14px", fontWeight: 500 }}>
+							<span className="bb-resource-label">
 								{__( "Documentation", "boostify-blocks" )}
 							</span>
-							<DynamicIcon name="arrow_outward" size={16} style={{ color: "#a3a3ae" }} />
+							<DynamicIcon name="arrow_outward" size={16} className="bb-icon-muted" />
 						</a>
 
 						<a
@@ -319,10 +317,10 @@ const OverviewPage: FC<OverviewPageProps> = ({
 							className="bb-resource-link"
 						>
 							<DynamicIcon name="forum" size={20} />
-							<span style={{ flex: 1, fontSize: "14px", fontWeight: 500 }}>
+							<span className="bb-resource-label">
 								{__( "Community support", "boostify-blocks" )}
 							</span>
-							<DynamicIcon name="arrow_outward" size={16} style={{ color: "#a3a3ae" }} />
+							<DynamicIcon name="arrow_outward" size={16} className="bb-icon-muted" />
 						</a>
 
 						<a
@@ -332,10 +330,10 @@ const OverviewPage: FC<OverviewPageProps> = ({
 							className="bb-resource-link"
 						>
 							<DynamicIcon name="star" size={20} />
-							<span style={{ flex: 1, fontSize: "14px", fontWeight: 500 }}>
+							<span className="bb-resource-label">
 								{__( "Rate on WordPress.org", "boostify-blocks" )}
 							</span>
-							<DynamicIcon name="arrow_outward" size={16} style={{ color: "#a3a3ae" }} />
+							<DynamicIcon name="arrow_outward" size={16} className="bb-icon-muted" />
 						</a>
 					</section>
 				</div>
@@ -345,10 +343,11 @@ const OverviewPage: FC<OverviewPageProps> = ({
 			<Transition.Root show={isChangelogOpen} as={Fragment}>
 				<Dialog
 					as="div"
-					className="fixed inset-0 z-50 overflow-y-auto"
-					onClose={setIsChangelogOpen}
+					className="bb-modal-root"
+					onClose={() => setIsChangelogOpen(false)}
 				>
-					<div className="min-h-screen px-4 text-center">
+					<div className="bb-modal-container">
+						{/* Backdrop */}
 						<Transition.Child
 							as={Fragment}
 							enter="ease-out duration-200"
@@ -358,13 +357,15 @@ const OverviewPage: FC<OverviewPageProps> = ({
 							leaveFrom="opacity-100"
 							leaveTo="opacity-0"
 						>
-							<Dialog.Overlay className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" />
+							<div className="bb-modal-overlay" />
 						</Transition.Child>
 
-						<span className="inline-block h-screen align-middle" aria-hidden="true">
+						{/* Element to center modal */}
+						<span className="bb-modal-center-trick" aria-hidden="true">
 							&#8203;
 						</span>
 
+						{/* Modal Dialog */}
 						<Transition.Child
 							as={Fragment}
 							enter="ease-out duration-200"
@@ -374,34 +375,40 @@ const OverviewPage: FC<OverviewPageProps> = ({
 							leaveFrom="opacity-100 scale-100"
 							leaveTo="opacity-0 scale-95"
 						>
-							<div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl border border-slate-200">
-								<div className="flex items-center justify-between pb-4 border-b border-slate-100">
-									<Dialog.Title as="h3" className="text-lg font-bold text-slate-900">
+							<div className="bb-modal-dialog bb-modal-changelog">
+								<div className="bb-cl-header">
+									<Dialog.Title as="h3" className="bb-cl-title">
 										{__( "Changelog", "boostify-blocks" )}
 									</Dialog.Title>
 									<button
 										type="button"
 										onClick={() => setIsChangelogOpen(false)}
-										className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+										className="bb-cl-close"
+										title={__( "Close", "boostify-blocks" )}
 									>
-										<DynamicIcon name="close" size={20} style={{ color: "#6b6b78" }} />
+										<DynamicIcon name="close" size={20} />
 									</button>
 								</div>
 
-								<div className="mt-4 max-h-[60vh] overflow-y-auto space-y-6 pr-2">
-									{changelog.map((entry) => (
+								<div className="bb-cl-body">
+									{changelog.map((entry, entryIdx) => (
 										<div
 											key={entry.version}
-											className="border-b border-slate-100 pb-4 last:border-b-0"
+											className="bb-cl-entry"
 										>
-											<div className="flex items-center gap-2 mb-2">
-												<span className="px-2.5 py-0.5 text-xs font-bold rounded-md bg-blue-50 text-blue-700">
+											<div className="bb-cl-version-row">
+												<span className="bb-cl-badge">
 													v{entry.version}
 												</span>
+												{entryIdx === 0 && (
+													<span className="bb-cl-badge-latest">
+														{__( "Latest", "boostify-blocks" )}
+													</span>
+												)}
 											</div>
-											<ul className="space-y-1.5 pl-5 text-sm text-slate-600 list-disc marker:text-slate-400">
+											<ul className="bb-cl-list">
 												{entry.items.map((bullet, idx) => (
-													<li key={idx} className="leading-relaxed">
+													<li key={idx} className="bb-cl-item">
 														{bullet}
 													</li>
 												))}
@@ -410,11 +417,11 @@ const OverviewPage: FC<OverviewPageProps> = ({
 									))}
 								</div>
 
-								<div className="mt-6 pt-4 border-t border-slate-100 flex justify-end">
+								<div className="bb-cl-footer">
 									<button
 										type="button"
 										onClick={() => setIsChangelogOpen(false)}
-										className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl cursor-pointer"
+										className="bb-cl-btn-close"
 									>
 										{__( "Close", "boostify-blocks" )}
 									</button>

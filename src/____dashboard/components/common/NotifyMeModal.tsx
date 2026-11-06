@@ -1,9 +1,9 @@
-import React, { FC, Fragment, useState } from "react";
+import React, { FC, Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { __, sprintf } from "@wordpress/i18n";
 import DynamicIcon from "./DynamicIcon";
 import toast from "react-hot-toast";
-import { postAjax } from "../../utils/ajax";
+import { isValidEmail, subscribeToProWaitlist } from "../../utils/ajax";
 
 interface NotifyMeModalProps {
 	isOpen: boolean;
@@ -25,24 +25,27 @@ const NotifyMeModal: FC<NotifyMeModalProps> = ({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
+	useEffect(() => {
+		if (isOpen) {
+			setErrorMessage("");
+		}
+	}, [isOpen, blockTitle]);
+
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		setErrorMessage("");
 
-		if (!email || !email.includes("@")) {
+		if (!isValidEmail(email)) {
 			setErrorMessage(__( "Please enter a valid email address.", "boostify-blocks" ));
 			return;
 		}
 
 		setIsSubmitting(true);
 
-		postAjax({
-			action: "boostify_blocks_waitlist_subscribe",
-			data: {
-				email,
-				website: websiteHoneypot,
-			},
-			timeout: 15000,
+		subscribeToProWaitlist({
+			email,
+			website: websiteHoneypot,
+			blockTitle,
 		})
 			.then((response: any) => {
 				setIsSubmitting(false);
@@ -99,7 +102,7 @@ const NotifyMeModal: FC<NotifyMeModalProps> = ({
 						<Dialog.Overlay className="bb-modal-overlay" />
 					</Transition.Child>
 
-					<span className="inline-block h-screen align-middle" aria-hidden="true">
+					<span className="bb-modal-center-trick" aria-hidden="true">
 						&#8203;
 					</span>
 
@@ -112,7 +115,7 @@ const NotifyMeModal: FC<NotifyMeModalProps> = ({
 						leaveFrom="opacity-100 scale-100"
 						leaveTo="opacity-0 scale-95"
 					>
-						<div className="bb-modal-dialog">
+						<div className="bb-modal-dialog bb-modal-notify">
 							{/* Close Button */}
 							<button
 								type="button"
@@ -120,14 +123,19 @@ const NotifyMeModal: FC<NotifyMeModalProps> = ({
 								className="bb-modal-close"
 								aria-label={__( "Close modal", "boostify-blocks" )}
 							>
-								<DynamicIcon name="close" size={20} />
+								<DynamicIcon name="close" size={18} />
 							</button>
 
 							{/* Header */}
 							<div className="bb-modal-header">
-								<div className="bb-modal-tag-pro">
-									<DynamicIcon name="bolt" size={13} style={{ color: "#b45309" }} />
-									{__( "PRO COMING SOON", "boostify-blocks" )}
+								<div className="bb-pro-badge-row">
+									<span className="bb-badge-pro bb-badge-pro-icon">
+										<DynamicIcon name="bolt" size={12} className="bb-icon-pro" />
+										PRO
+									</span>
+									<span className="bb-modal-coming-soon">
+										{__( "Coming soon", "boostify-blocks" )}
+									</span>
 								</div>
 
 								<Dialog.Title as="h3" className="bb-modal-title">
@@ -146,7 +154,7 @@ const NotifyMeModal: FC<NotifyMeModalProps> = ({
 							<div>
 								{isSubscribed ? (
 									<div className="bb-modal-success">
-										<DynamicIcon name="check_circle" size={24} style={{ color: "#059669", flexShrink: 0 }} />
+										<DynamicIcon name="check_circle" size={22} className="bb-icon-success" />
 										<div className="bb-modal-success-col">
 											<div className="bb-modal-success-title">
 												{__( "You're already on the waitlist!", "boostify-blocks" )}
@@ -161,22 +169,6 @@ const NotifyMeModal: FC<NotifyMeModalProps> = ({
 									</div>
 								) : (
 									<form onSubmit={handleSubmit} className="bb-modal-form">
-										<div className="bb-modal-field">
-											<label htmlFor="bb-notify-email" className="bb-modal-label">
-												{__( "Email address", "boostify-blocks" )}
-											</label>
-											<input
-												id="bb-notify-email"
-												type="email"
-												required
-												placeholder="you@example.com"
-												value={email}
-												onChange={(e) => setEmail(e.target.value)}
-												disabled={isSubmitting}
-												className="bb-modal-input"
-											/>
-										</div>
-
 										{/* Honeypot field for spam prevention */}
 										<input
 											type="text"
@@ -188,43 +180,60 @@ const NotifyMeModal: FC<NotifyMeModalProps> = ({
 											autoComplete="off"
 										/>
 
+										<div className="bb-modal-form-row">
+											<input
+												id="bb-notify-email"
+												type="email"
+												required
+												aria-label={__( "Email address", "boostify-blocks" )}
+												placeholder="you@example.com"
+												value={email}
+												onChange={(e) => {
+													setEmail(e.target.value);
+													if (errorMessage) setErrorMessage("");
+												}}
+												disabled={isSubmitting}
+												className="bb-modal-input"
+											/>
+
+											<button
+												type="submit"
+												disabled={isSubmitting}
+												className="bb-modal-btn-submit"
+											>
+												{isSubmitting && (
+													<svg
+														className="animate-spin h-4 w-4 text-white"
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 24 24"
+													>
+														<circle
+															className="opacity-25"
+															cx="12"
+															cy="12"
+															r="10"
+															stroke="currentColor"
+															strokeWidth="4"
+														/>
+														<path
+															className="opacity-75"
+															fill="currentColor"
+															d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+														/>
+													</svg>
+												)}
+												{isSubmitting
+													? __( "Subscribing...", "boostify-blocks" )
+													: __( "Notify me", "boostify-blocks" )}
+											</button>
+										</div>
+
 										{errorMessage && (
 											<div className="bb-modal-error">
 												{errorMessage}
 											</div>
 										)}
-
-										<button
-											type="submit"
-											disabled={isSubmitting}
-											className="bb-modal-btn-submit"
-										>
-											{isSubmitting && (
-												<svg
-													className="animate-spin h-4 w-4 text-white"
-													xmlns="http://www.w3.org/2000/svg"
-													fill="none"
-													viewBox="0 0 24 24"
-												>
-													<circle
-														className="opacity-25"
-														cx="12"
-														cy="12"
-														r="10"
-														stroke="currentColor"
-														strokeWidth="4"
-													/>
-													<path
-														className="opacity-75"
-														fill="currentColor"
-														d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-													/>
-												</svg>
-											)}
-											{isSubmitting
-												? __( "Subscribing...", "boostify-blocks" )
-												: __( "Notify me", "boostify-blocks" )}
-										</button>
 
 										<p className="bb-modal-note">
 											{__(

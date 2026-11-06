@@ -46,14 +46,29 @@ export function useDashboardSettings({
 		const allKeys = new Set([...Object.keys(settings), ...Object.keys(savedSettings)]);
 
 		allKeys.forEach((key) => {
-			if (key.startsWith("sample_") || key.startsWith("_action_") || key.startsWith("_custom_")) {
+			if (
+				key.startsWith("sample_") ||
+				key.startsWith("_action_") ||
+				key.startsWith("_custom_") ||
+				key === "site_visibility_page_title"
+			) {
 				return;
 			}
 			const currentVal = settings[key];
 			const savedVal = savedSettings[key];
 
-			// Handle array comparison (e.g. selectedFonts)
-			if (Array.isArray(currentVal) || Array.isArray(savedVal)) {
+			// Handle array or comma-separated comparison (e.g. selectedFonts)
+			if (key === "selectedFonts") {
+				const normalizeFonts = (v: any) =>
+					(Array.isArray(v) ? v : typeof v === "string" ? v.split(",") : [])
+						.map((s: string) => String(s).trim())
+						.filter(Boolean)
+						.sort()
+						.join(",");
+				if (normalizeFonts(currentVal) !== normalizeFonts(savedVal)) {
+					changed.push(key);
+				}
+			} else if (Array.isArray(currentVal) || Array.isArray(savedVal)) {
 				const currArr = Array.isArray(currentVal) ? [...currentVal].sort() : [];
 				const savedArr = Array.isArray(savedVal) ? [...savedVal].sort() : [];
 				if (JSON.stringify(currArr) !== JSON.stringify(savedArr)) {
@@ -70,37 +85,66 @@ export function useDashboardSettings({
 	const dirtyCount = dirtyKeys.length;
 
 	// Discard changes
-	const discardChanges = useCallback(() => {
-		setSettings({ ...savedSettings });
-		toast(__( "Settings changes discarded.", "boostify-blocks" ), { icon: "↩️" });
-	}, [savedSettings]);
+	const discardChanges = useCallback(
+		(options?: { silent?: boolean }) => {
+			setSettings({ ...savedSettings });
+			if (!options?.silent) {
+				toast(__( "Settings changes discarded.", "boostify-blocks" ), { icon: "↩️" });
+			}
+		},
+		[savedSettings]
+	);
 
 	// Save changes
-	const saveChanges = useCallback(() => {
-		setIsSaving(true);
+	const saveChanges = useCallback(
+		async (options?: { silent?: boolean }): Promise<{ ok: boolean; error?: string }> => {
+			setIsSaving(true);
+			const shouldRegenerateAssets =
+				savedSettings.enableFileGeneration !== "true" &&
+				settings.enableFileGeneration === "true";
 
-		postAjax({
-			action: "boostify_blocks_dashboard_update_settings",
-			data: { settings },
-			timeout: 15000,
-		})
-			.then((response: any) => {
+			try {
+				const response = await postAjax({
+					action: "boostify_blocks_dashboard_update_settings",
+					data: { settings },
+					timeout: 15000,
+				});
 				setIsSaving(false);
-				if (response?.data) {
-					setSavedSettings({ ...response.data });
-					setSettings({ ...response.data });
-					onSettingsSaved && onSettingsSaved(response.data);
-				} else {
-					setSavedSettings({ ...settings });
+				const nextSaved =
+					response?.data && typeof response.data === "object"
+						? { ...response.data }
+						: { ...settings };
+
+				setSavedSettings(nextSaved);
+				setSettings(nextSaved);
+				if (typeof window !== "undefined") {
+					window.boostify_blocks_global_variables = nextSaved;
 				}
-				toast.success(__( "Settings saved successfully!", "boostify-blocks" ));
-			})
-			.catch((err: any) => {
+				onSettingsSaved && onSettingsSaved(nextSaved);
+
+				if (shouldRegenerateAssets) {
+					postAjax({
+						action: "boostify_blocks_regenerate_assets",
+						timeout: 25000,
+					}).catch(() => {});
+				}
+
+				if (!options?.silent) {
+					toast.success(__( "Settings saved successfully!", "boostify-blocks" ));
+				}
+				return { ok: true };
+			} catch (err: any) {
 				setIsSaving(false);
-				const msg = err?.message || __( "Failed to save settings. Please try again.", "boostify-blocks" );
-				toast.error(msg);
-			});
-	}, [settings, onSettingsSaved]);
+				const msg =
+					err?.message || __( "Failed to save settings. Please try again.", "boostify-blocks" );
+				if (!options?.silent) {
+					toast.error(msg);
+				}
+				return { ok: false, error: msg };
+			}
+		},
+		[settings, savedSettings, onSettingsSaved]
+	);
 
 	return {
 		settings,

@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect } from "react";
 import * as ReactDOM from "react-dom";
 import { __ } from "@wordpress/i18n";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import Nav from "./components/Nav";
 import OverviewPage from "./components/overview/OverviewPage";
 import BlocksPage from "./components/blocks/BlocksPage";
@@ -88,8 +88,9 @@ const App: FC<DashboardProps> = ({
 	});
 
 	// Unified dirty state across all tabs
+	const [isBatchSaving, setIsBatchSaving] = useState(false);
 	const totalDirtyCount = blocksManager.dirtyCount + settingsManager.dirtyCount;
-	const isSaving = blocksManager.isSaving || settingsManager.isSaving;
+	const isSaving = isBatchSaving || blocksManager.isSaving || settingsManager.isSaving;
 
 	// Warn user before leaving page or closing tab if unsaved changes exist
 	useEffect(() => {
@@ -105,22 +106,54 @@ const App: FC<DashboardProps> = ({
 		};
 	}, [totalDirtyCount]);
 
-	const handleSaveAll = () => {
-		if (blocksManager.dirtyCount > 0) {
-			blocksManager.saveChanges();
+	const handleSaveAll = async () => {
+		if (isSaving || totalDirtyCount <= 0) {
+			return;
 		}
-		if (settingsManager.dirtyCount > 0) {
-			settingsManager.saveChanges();
+
+		setIsBatchSaving(true);
+		const hasBlockChanges = blocksManager.dirtyCount > 0;
+		const hasSettingChanges = settingsManager.dirtyCount > 0;
+		let errorMsg: string | undefined;
+
+		try {
+			if (hasBlockChanges) {
+				const blockRes = await blocksManager.saveChanges({ silent: true });
+				if (!blockRes.ok) {
+					errorMsg = blockRes.error;
+				}
+			}
+
+			if (!errorMsg && hasSettingChanges) {
+				const settingRes = await settingsManager.saveChanges({ silent: true });
+				if (!settingRes.ok) {
+					errorMsg = settingRes.error;
+				}
+			}
+		} finally {
+			setIsBatchSaving(false);
+		}
+
+		if (errorMsg) {
+			toast.error(errorMsg);
+		} else if (currentPath === "blocks") {
+			toast.success(__( "Blocks settings saved successfully!", "boostify-blocks" ));
+		} else {
+			toast.success(__( "Settings saved successfully!", "boostify-blocks" ));
 		}
 	};
 
 	const handleDiscardAll = () => {
+		if (isSaving || totalDirtyCount <= 0) {
+			return;
+		}
 		if (blocksManager.dirtyCount > 0) {
-			blocksManager.discardChanges();
+			blocksManager.discardChanges({ silent: true });
 		}
 		if (settingsManager.dirtyCount > 0) {
-			settingsManager.discardChanges();
+			settingsManager.discardChanges({ silent: true });
 		}
+		toast(__( "Changes discarded.", "boostify-blocks" ), { icon: "↩️" });
 	};
 
 	return (
@@ -170,6 +203,7 @@ const App: FC<DashboardProps> = ({
 				<SettingsPage
 					settings={settingsManager.settings}
 					onUpdateSetting={settingsManager.updateSetting}
+					themeLayoutGlobal={boostify_blocks_layout_global_settings}
 					showSample={boostify_blocks_meta?.showSample ?? true}
 				/>
 			)}
@@ -194,16 +228,9 @@ const App: FC<DashboardProps> = ({
 			{/* Toast Notifications */}
 			<Toaster
 				position="bottom-center"
-				containerStyle={{ marginBottom: "20px" }}
+				containerClassName="bb-toast-container"
 				toastOptions={{
-					style: {
-						background: "#1b1b22",
-						color: "#fff",
-						fontSize: "13.5px",
-						padding: "10px 16px",
-						borderRadius: "10px",
-						boxShadow: "0 10px 30px rgba(20,20,40,0.25)",
-					},
+					className: "bb-toast",
 					duration: 3000,
 				}}
 			/>

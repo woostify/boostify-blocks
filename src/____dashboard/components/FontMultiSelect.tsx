@@ -128,7 +128,7 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 							className="bb-font-pill-remove"
 							title={__( "Remove font", "boostify-blocks" )}
 						>
-							<XMarkIcon style={{ width: "13px", height: "13px" }} />
+							<XMarkIcon className="bb-icon-sm" />
 						</button>
 					</span>
 				))}
@@ -157,7 +157,7 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 							className="bb-font-action-btn"
 							title={__( "Clear all", "boostify-blocks" )}
 						>
-							<XMarkIcon style={{ width: "15px", height: "15px" }} />
+							<XMarkIcon className="bb-icon-md" />
 						</button>
 					)}
 					<button
@@ -171,12 +171,7 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 						title={__( "Toggle font list", "boostify-blocks" )}
 					>
 						<ChevronDownIcon
-							style={{
-								width: "15px",
-								height: "15px",
-								transition: "transform 0.15s ease",
-								transform: isOpen ? "rotate(180deg)" : "none",
-							}}
+							className={`bb-font-chevron ${isOpen ? "is-open" : ""}`}
 						/>
 					</button>
 				</div>

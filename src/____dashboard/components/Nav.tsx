@@ -3,6 +3,7 @@ import { __ } from "@wordpress/i18n";
 import DynamicIcon from "./common/DynamicIcon";
 import Logo from "../../components/Logo";
 import { Path } from "../types";
+import { DEFAULT_URLS } from "../data/constants";
 
 export interface NavPage {
 	name: string;
@@ -35,7 +36,7 @@ const Nav: FC<NavProps> = ({
 	currentPath,
 	onChangePath,
 	version,
-	supportUrl,
+	supportUrl = DEFAULT_URLS.support,
 }) => {
 	return (
 		<header className="bb-header">

@@ -70,8 +70,7 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 			<Transition.Root show={isModalOpen} as={Fragment}>
 				<Dialog
 					as="div"
-					className="fixed inset-0 overflow-y-auto"
-					style={{ zIndex: 999999 }}
+					className="bb-modal-root"
 					initialFocus={cancelButtonRef}
 					onClose={() => {
 						if (!isLoading) {
@@ -79,16 +78,7 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 						}
 					}}
 				>
-					<div
-						style={{
-							minHeight: "100vh",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							padding: "16px",
-							textAlign: "center",
-						}}
-					>
+					<div className="bb-modal-container">
 						{/* Backdrop */}
 						<Transition.Child
 							as={Fragment}
@@ -99,20 +89,11 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 							leaveFrom="opacity-100"
 							leaveTo="opacity-0"
 						>
-							<div
-								style={{
-									position: "fixed",
-									inset: 0,
-									background: "rgba(15, 15, 25, 0.45)",
-									backdropFilter: "blur(4px)",
-									WebkitBackdropFilter: "blur(4px)",
-									transition: "opacity .2s",
-								}}
-							/>
+							<div className="bb-modal-overlay" />
 						</Transition.Child>
 
 						{/* Element to center modal */}
-						<span style={{ display: "inline-block", height: "100vh", verticalAlign: "middle" }} aria-hidden="true">
+						<span className="bb-modal-center-trick" aria-hidden="true">
 							&#8203;
 						</span>
 
@@ -126,36 +107,10 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 							leaveFrom="opacity-100 scale-100"
 							leaveTo="opacity-0 scale-95"
 						>
-							<div
-								style={{
-									display: "inline-block",
-									width: "100%",
-									maxWidth: "480px",
-									padding: "24px",
-									margin: "24px 0",
-									textAlign: "left",
-									verticalAlign: "middle",
-									background: "#ffffff",
-									borderRadius: "16px",
-									border: "1px solid #e8e8ee",
-									boxShadow: "0 20px 40px -12px rgba(15, 15, 30, 0.2)",
-									position: "relative",
-									zIndex: 10,
-									fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-								}}
-							>
+							<div className="bb-modal-dialog">
 								{/* Header */}
-								<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-									<Dialog.Title
-										as="h3"
-										style={{
-											margin: 0,
-											fontSize: "17px",
-											fontWeight: 600,
-											color: "#1b1b22",
-											letterSpacing: "-0.01em",
-										}}
-									>
+								<div className="bb-modal-header-row">
+									<Dialog.Title as="h3" className="bb-modal-title">
 										{__( "Regenerate Assets", "boostify-blocks" )}
 									</Dialog.Title>
 
@@ -166,32 +121,14 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 												setIsModalOpen(false);
 											}
 										}}
-										style={{
-											all: "unset",
-											cursor: "pointer",
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-											width: "28px",
-											height: "28px",
-											borderRadius: "8px",
-											color: "#8b8b97",
-											transition: "background .15s",
-										}}
+										className="bb-modal-close"
 									>
 										<DynamicIcon name="close" size={18} />
 									</button>
 								</div>
 
 								{/* Description */}
-								<Dialog.Description
-									as="div"
-									style={{
-										fontSize: "14px",
-										lineHeight: 1.55,
-										color: "#55555f",
-									}}
-								>
+								<Dialog.Description as="div" className="bb-modal-desc">
 									{__(
 										"Please note that after regeneration, it is recommended to purge all your cache to ensure that old assets are not served, preventing potential frontend breaking issues.",
 										"boostify-blocks"
@@ -199,34 +136,13 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 								</Dialog.Description>
 
 								{/* Action Buttons */}
-								<div
-									style={{
-										marginTop: "24px",
-										display: "flex",
-										justifyContent: "flex-end",
-										alignItems: "center",
-										gap: "10px",
-									}}
-								>
+								<div className="bb-modal-footer">
 									<button
 										ref={cancelButtonRef}
 										type="button"
 										disabled={isLoading}
 										onClick={() => setIsModalOpen(false)}
-										className="hover:bg-[#f6f6f8]"
-										style={{
-											all: "unset",
-											cursor: isLoading ? "not-allowed" : "pointer",
-											padding: "8px 16px",
-											borderRadius: "9px",
-											border: "1px solid #e1e1e8",
-											background: "#fff",
-											fontSize: "13px",
-											fontWeight: 500,
-											color: "#1b1b22",
-											opacity: isLoading ? 0.6 : 1,
-											transition: "background .15s, border-color .15s",
-										}}
+										className="bb-modal-btn-cancel"
 									>
 										{__( "Cancel", "boostify-blocks" )}
 									</button>
@@ -235,22 +151,7 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 										type="button"
 										disabled={isLoading}
 										onClick={handleRegenerate}
-										className="hover:bg-[#5348e8]"
-										style={{
-											all: "unset",
-											cursor: isLoading ? "not-allowed" : "pointer",
-											display: "inline-flex",
-											alignItems: "center",
-											gap: "6px",
-											padding: "8px 18px",
-											borderRadius: "9px",
-											background: "#635bff",
-											color: "#ffffff",
-											fontSize: "13px",
-											fontWeight: 600,
-											opacity: isLoading ? 0.75 : 1,
-											transition: "background .15s",
-										}}
+										className="bb-modal-btn-action"
 									>
 										{isLoading && (
 											<svg

@@ -1,64 +1,49 @@
 import React, { FC, CSSProperties } from "react";
 import { MATERIAL_SYMBOLS, IconDef } from "./MaterialSymbolsData";
+import { BLOCK_META } from "../../data/blocksMeta";
+import { SAMPLE_PRO_BLOCKS } from "../../data/sampleData";
+import { EXTENSIONS_LIST } from "../../extensions";
 
-// Map block names and slugs to exact LineIcons font classes used in Gutenberg editor
-const BLOCK_TO_LNI: Record<string, string> = {
-	// Block names (from block.json)
-	"boostify-blocks/container": "lni-layout",
-	"boostify-blocks/products": "lni-restaurant",
-	"boostify-blocks/posts-grid": "lni-grid-alt",
-	"boostify-blocks/buttons": "lni-page-break",
-	"boostify-blocks/faq": "lni-support",
-	"boostify-blocks/accordion": "lni-list",
-	"boostify-blocks/team": "lni-users",
-	"boostify-blocks/icon-box": "lni-clipboard",
-	"boostify-blocks/icon-list": "lni-agenda",
-	"boostify-blocks/form": "lni-postcard",
-	"boostify-blocks/testimonials-swiper": "lni-quotation",
-	"boostify-blocks/countdown": "lni-timer",
-	"boostify-blocks/counter": "lni-dashboard",
-	"boostify-blocks/image": "lni-image",
-	"boostify-blocks/map": "lni-map",
-	"boostify-blocks/boostify-icon": "lni-star",
-	"boostify-blocks/slider-swiper": "lni-layers",
-	"boostify-blocks/tabs": "lni-tab",
-	"boostify-blocks/display-conditions": "lni-eye",
+// Build block-to-LineIcons mapping dynamically from the single sources of truth
+const BLOCK_TO_LNI: Record<string, string> = {};
 
-	// Short names / slugs
-	container: "lni-layout",
-	products: "lni-restaurant",
-	"posts-grid": "lni-grid-alt",
-	buttons: "lni-page-break",
-	faq: "lni-support",
-	accordion: "lni-list",
-	team: "lni-users",
-	"icon-box": "lni-clipboard",
-	"icon-list": "lni-agenda",
-	form: "lni-postcard",
-	testimonials: "lni-quotation",
-	"testimonials-swiper": "lni-quotation",
-	countdown: "lni-timer",
-	counter: "lni-dashboard",
-	image: "lni-image",
-	map: "lni-map",
-	"google-maps": "lni-map",
-	"boostify-icon": "lni-star",
-	icon: "lni-star",
-	slider: "lni-layers",
-	"slider-swiper": "lni-layers",
-	tabs: "lni-tab",
-	"display-conditions": "lni-eye",
+// 1. Register real blocks from BLOCK_META
+Object.entries(BLOCK_META).forEach(([fullName, meta]) => {
+	const icon = meta.icon;
+	if (icon && icon.startsWith("lni-")) {
+		BLOCK_TO_LNI[fullName] = icon;
+		const shortName = fullName.replace("boostify-blocks/", "").replace("wcb-", "");
+		BLOCK_TO_LNI[shortName] = icon;
+		if (meta.demoSlug) {
+			BLOCK_TO_LNI[meta.demoSlug] = icon;
+		}
+	}
+});
 
-	// Sample / Pro blocks
-	"sample-popup": "lni-popup",
-	popup: "lni-popup",
-	"sample-pricing": "lni-tag",
-	pricing: "lni-tag",
-	"sample-mega-menu": "lni-menu",
-	"mega-menu": "lni-menu",
-	"sample-dynamic": "lni-database",
-	dynamic: "lni-database",
-};
+// 2. Register sample pro blocks from SAMPLE_PRO_BLOCKS
+SAMPLE_PRO_BLOCKS.forEach((block) => {
+	const icon = block.icon;
+	if (icon && icon.startsWith("lni-")) {
+		BLOCK_TO_LNI[block.name] = icon;
+		BLOCK_TO_LNI[block.id] = icon;
+		const shortName = block.name.replace("boostify-blocks/", "");
+		BLOCK_TO_LNI[shortName] = icon;
+		const proSlug = block.id.replace("sample-", "");
+		BLOCK_TO_LNI[proSlug] = icon;
+	}
+});
+
+// 3. Register extensions from EXTENSIONS_LIST
+EXTENSIONS_LIST.forEach((ext) => {
+	const icon = ext.icon;
+	if (icon && icon.startsWith("lni-")) {
+		BLOCK_TO_LNI[ext.name] = icon;
+		BLOCK_TO_LNI[ext.id] = icon;
+		if (ext.demoSlug) {
+			BLOCK_TO_LNI[ext.demoSlug] = icon;
+		}
+	}
+});
 
 interface DynamicIconProps {
 	name?: string;
@@ -94,14 +79,8 @@ const DynamicIcon: FC<DynamicIconProps> = ({
 				xmlns="http://www.w3.org/2000/svg"
 				width={sizePx}
 				height={sizePx}
-				className={className}
-				style={{
-					display: "inline-block",
-					verticalAlign: "middle",
-					flexShrink: 0,
-					color: "currentColor",
-					...style,
-				}}
+				className={`bb-dynamic-icon ${className}`.trim()}
+				style={style}
 				aria-hidden="true"
 				focusable="false"
 			>
@@ -127,13 +106,8 @@ const DynamicIcon: FC<DynamicIconProps> = ({
 				viewBox="0 0 22 13"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
-				className={className}
-				style={{
-					display: "inline-block",
-					verticalAlign: "middle",
-					flexShrink: 0,
-					...style,
-				}}
+				className={`bb-dynamic-icon ${className}`.trim()}
+				style={style}
 				aria-hidden="true"
 				focusable="false"
 			>
@@ -153,13 +127,8 @@ const DynamicIcon: FC<DynamicIconProps> = ({
 				viewBox="0 0 22 13"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
-				className={className}
-				style={{
-					display: "inline-block",
-					verticalAlign: "middle",
-					flexShrink: 0,
-					...style,
-				}}
+				className={`bb-dynamic-icon ${className}`.trim()}
+				style={style}
 				aria-hidden="true"
 				focusable="false"
 			>
@@ -185,19 +154,14 @@ const DynamicIcon: FC<DynamicIconProps> = ({
 
 	if (lniClass) {
 		const sizePx = size ? (typeof size === "number" ? `${size}px` : size) : "22px";
+		const lniStyle = sizePx || style ? {
+			...(sizePx ? { fontSize: sizePx } : {}),
+			...style,
+		} : undefined;
 		return (
 			<i
-				className={`lni ${lniClass} ${className}`}
-				style={{
-					fontSize: sizePx,
-					lineHeight: 1,
-					display: "inline-flex",
-					alignItems: "center",
-					justifyContent: "center",
-					color: "currentColor",
-					flexShrink: 0,
-					...style,
-				}}
+				className={`lni ${lniClass} bb-dynamic-icon bb-dynamic-icon--lni ${className}`.trim()}
+				style={lniStyle}
 				aria-hidden="true"
 			/>
 		);
@@ -208,19 +172,19 @@ const DynamicIcon: FC<DynamicIconProps> = ({
 		MATERIAL_SYMBOLS[rawName] || MATERIAL_SYMBOLS["featured_play_list"];
 
 	const sizePx = size ? (typeof size === "number" ? `${size}px` : size) : undefined;
-	const inlineStyle: CSSProperties = {
-		display: "inline-block",
-		verticalAlign: "middle",
-		flexShrink: 0,
-		...(sizePx ? { width: sizePx, height: sizePx } : {}),
-		...style,
-	};
+	const inlineStyle: CSSProperties | undefined =
+		sizePx || style
+			? {
+					...(sizePx ? { width: sizePx, height: sizePx } : {}),
+					...style,
+			  }
+			: undefined;
 
 	return (
 		<svg
 			viewBox={iconDef.viewBox}
 			fill="currentColor"
-			className={className}
+			className={`bb-dynamic-icon ${className}`.trim()}
 			style={inlineStyle}
 			aria-hidden="true"
 			focusable="false"
