@@ -63,7 +63,8 @@ const BlockRowList: FC<BlockRowListProps> = ({ block, onToggle, onNotifyMe, isSu
 							title={__( "Waitlist joined", "boostify-blocks" )}
 							className="bb-waitlist-status"
 						>
-							<DynamicIcon name="check_circle" size={18} className="bb-icon-success" />
+							<DynamicIcon name="check_circle" size={15} className="bb-icon-success" />
+							<span>{__( "Waitlist joined", "boostify-blocks" )}</span>
 						</span>
 					) : (
 						<button
