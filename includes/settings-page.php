@@ -16,11 +16,27 @@ if ( is_array( $boostify_blocks_settings_options ) && ! empty( $boostify_blocks_
 $boostify_blocks_all_block_list = boostify_blocks_get_block_type_list();
 
 // 
+$boostify_blocks_meta = [
+    'version'              => defined('BOOSTIFY_BLOCKS_VERSION') ? BOOSTIFY_BLOCKS_VERSION : '',
+    'changelog'            => function_exists('boostify_blocks_get_changelog') ? boostify_blocks_get_changelog() : [],
+    'showSample'           => apply_filters('boostify_blocks_dashboard_show_sample_data', true),
+    'isWaitlistSubscribed' => (bool) get_user_meta( get_current_user_id(), 'boostify_blocks_waitlist_subscribed', true ),
+    'urls'                 => [
+        'support'   => 'https://woostify.com/contact/',
+        'newPage'   => admin_url('post-new.php?post_type=page'),
+        'docs'      => 'https://woostify.com/docs/',
+        'community' => 'https://www.facebook.com/groups/woostify',
+        'rate'      => 'https://wordpress.org/support/plugin/boostify-blocks/reviews/#new-post',
+        'demoBase'  => 'https://woostify.com/boostify-blocks',
+    ],
+];
+
 $boostify_blocks_props = [
     'boostify_blocks_list'                   => $boostify_blocks_all_block_list,
     'boostify_blocks_enable_disable_options' => $boostify_blocks_enable_disable_options,
     'boostify_blocks_settings_options'       => $boostify_blocks_settings_options,
     'boostify_blocks_layout_global_settings' => boostify_blocks_get_layout_global_settings(),
+    'boostify_blocks_meta'                   => $boostify_blocks_meta,
 ];
 
 ?>

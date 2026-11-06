@@ -1,145 +1,222 @@
 import React, { FC, useState, useEffect } from "react";
 import * as ReactDOM from "react-dom";
-import BlocksPage from "./components/BlocksPage";
-import Heading from "./components/Heading";
+import { __ } from "@wordpress/i18n";
+import { Toaster } from "react-hot-toast";
 import Nav from "./components/Nav";
-import WelcomePage from "./components/WelcomePage";
-import "./types";
+import OverviewPage from "./components/overview/OverviewPage";
+import BlocksPage from "./components/blocks/BlocksPage";
+import SettingsPage from "./components/settings/SettingsPage";
+import SaveBar from "./components/common/SaveBar";
+import NotifyMeModal from "./components/common/NotifyMeModal";
+import { useBlocksManager } from "./hooks/useBlocksManager";
+import { useDashboardSettings } from "./hooks/useDashboardSettings";
+import { DashboardProps, Path } from "./types";
 import "../________";
-import toast, { Toaster } from "react-hot-toast";
-import SettingsPage from "./components/SettingsPage";
-import { Wcb_theme_layout_global_settings } from "../types";
 
-export interface Wcb_block_Type {
-	name: string;
-	title: string;
-	category: string;
-	icon: string;
-	description: string;
-	parent: unknown;
-}
-export interface Wcb_blocks_enable_disable_options_Type
-	extends Record<string, "enabled" | "disabled"> { }
-
-interface Props {
-	boostify_blocks_enable_disable_options: Wcb_blocks_enable_disable_options_Type;
-	boostify_blocks_settings_options: typeof window.boostify_blocks_global_variables;
-	boostify_blocks_list: Wcb_block_Type[];
-	boostify_blocks_layout_global_settings?: Wcb_theme_layout_global_settings;
-}
-
-export type Path = "welcome" | "blocks" | "settings";
-interface Page {
-	name: string;
-	path: Path;
-}
-
-export const PAGES: Page[] = [
-	// { name: "Welcome", path: "welcome" },
-	{ name: "Blocks/Extensions", path: "blocks" },
-	{ name: "Settings", path: "settings" },
-];
-
-const App: FC<Props> = ({
-	boostify_blocks_enable_disable_options,
-	boostify_blocks_settings_options,
-	boostify_blocks_list,
+const App: FC<DashboardProps> = ({
+	boostify_blocks_list = [],
+	boostify_blocks_enable_disable_options = {},
+	boostify_blocks_settings_options = {},
 	boostify_blocks_layout_global_settings,
+	boostify_blocks_meta,
 }) => {
-	//
-	const [currentPath, setcurrentPath] = useState<Path>(PAGES[0].path);
-	const [blocksStatus, setBlocksStatus] = useState<Wcb_blocks_enable_disable_options_Type>(boostify_blocks_enable_disable_options);
+	// Active Path Router
+	const [currentPath, setCurrentPath] = useState<Path>(() => {
+		const params = new URLSearchParams(window.location.search);
+		const p = params.get("path");
+		if (p === "blocks" || p === "settings" || p === "overview") {
+			return p as Path;
+		}
+		if (p === "welcome") {
+			return "overview";
+		}
+		return "overview";
+	});
+
+	// Waitlist Pro subscription state
+	const [isWaitlistSubscribed, setIsWaitlistSubscribed] = useState<boolean>(() => {
+		return Boolean(boostify_blocks_meta?.isWaitlistSubscribed);
+	});
+	const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
+	const [notifyTargetTitle, setNotifyTargetTitle] = useState<string | null>(null);
+
+	const handleOpenNotifyModal = (title?: string) => {
+		setNotifyTargetTitle(title || null);
+		setIsNotifyModalOpen(true);
+	};
+
+	// Sync path with URL history
+	const handleChangePath = (nextPath: Path) => {
+		setCurrentPath(nextPath);
+		const params = new URLSearchParams(window.location.search);
+		params.set("path", nextPath);
+		if (nextPath !== "settings") {
+			params.delete("tab");
+		}
+		window.history.replaceState(null, "", `?${params.toString()}`);
+	};
 
 	useEffect(() => {
-		const queryString = window.location.search;
-		const urlParams = new URLSearchParams(queryString);
-		const path = urlParams.get("path");
-		const pathCorrect: Path[] = ["blocks", "settings", "welcome"];
-
-		if (path && pathCorrect.includes(path as Path)) {
-			setcurrentPath(path as Path);
-		}
+		const handlePopState = () => {
+			const params = new URLSearchParams(window.location.search);
+			const p = params.get("path");
+			if (p === "blocks" || p === "settings" || p === "overview") {
+				setCurrentPath(p as Path);
+			} else {
+				setCurrentPath("overview");
+			}
+		};
+		window.addEventListener("popstate", handlePopState);
+		return () => window.removeEventListener("popstate", handlePopState);
 	}, []);
 
-	const setHistoryStateParams = (path: Path) => {
-		let queryParams = new URLSearchParams(window.location.search);
-		queryParams.set("path", path);
+	// Settings hook
+	const settingsManager = useDashboardSettings({
+		initSettings: boostify_blocks_settings_options,
+	});
 
-		if (path !== "settings") {
-			queryParams.delete("tab");
+	// Blocks hook
+	const blocksManager = useBlocksManager({
+		initBlocks: boostify_blocks_list,
+		initStatus: boostify_blocks_enable_disable_options,
+		isDisplayConditionsEnabled: settingsManager.settings.enableDisplayConditions !== "false",
+		onToggleDisplayConditions: (enabled: boolean) => {
+			settingsManager.updateSetting("enableDisplayConditions", enabled ? "true" : "false");
+		},
+		showSample: boostify_blocks_meta?.showSample ?? true,
+		demoBase: boostify_blocks_meta?.urls?.demoBase,
+	});
+
+	// Unified dirty state across all tabs
+	const totalDirtyCount = blocksManager.dirtyCount + settingsManager.dirtyCount;
+	const isSaving = blocksManager.isSaving || settingsManager.isSaving;
+
+	// Warn user before leaving page or closing tab if unsaved changes exist
+	useEffect(() => {
+		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+			if (totalDirtyCount > 0) {
+				e.preventDefault();
+				e.returnValue = "";
+			}
+		};
+		window.addEventListener("beforeunload", handleBeforeUnload);
+		return () => {
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+		};
+	}, [totalDirtyCount]);
+
+	const handleSaveAll = () => {
+		if (blocksManager.dirtyCount > 0) {
+			blocksManager.saveChanges();
 		}
-
-		history.replaceState(null, "", `?${queryParams.toString()}`);
+		if (settingsManager.dirtyCount > 0) {
+			settingsManager.saveChanges();
+		}
 	};
 
-	const renderPage = () => {
-		switch (currentPath) {
-			case "blocks":
-				return (
-					<BlocksPage
-						initWcbBlocksList={boostify_blocks_list}
-						initWcbBlocksEnableDisable={boostify_blocks_enable_disable_options}
-						blocksStatus={blocksStatus}
-						setBlocksStatus={setBlocksStatus}
-					/>
-				);
-			case "settings":
-				return (
-					<SettingsPage
-						initData={boostify_blocks_settings_options}
-						themeLayoutGlobal={boostify_blocks_layout_global_settings}
-					/>
-				);
-			case "welcome":
-				return <WelcomePage />;
-			default:
-				return null;
+	const handleDiscardAll = () => {
+		if (blocksManager.dirtyCount > 0) {
+			blocksManager.discardChanges();
+		}
+		if (settingsManager.dirtyCount > 0) {
+			settingsManager.discardChanges();
 		}
 	};
-
 
 	return (
-		<div className="">
+		<div className="bb-dashboard">
+			{/* Header Navigation */}
 			<Nav
 				currentPath={currentPath}
-				onChangePath={(path) => {
-					setcurrentPath(path);
-					setHistoryStateParams(path);
-				}}
+				onChangePath={handleChangePath}
+				version={boostify_blocks_meta?.version}
+				supportUrl={boostify_blocks_meta?.urls?.support}
 			/>
 
-			<div className="container pb-14 px-2">
-				{currentPath !== "welcome" && (
-					<Heading
-						children={
-							PAGES.filter((item) => item.path === currentPath)[0]?.name || ""
-						}
-					/>
-				)}
-				{renderPage()}
-			</div>
+			{/* Main Content Area */}
+			{currentPath === "overview" && (
+				<OverviewPage
+					meta={boostify_blocks_meta}
+					activeBlocksCount={blocksManager.activeCount}
+					totalBlocksCount={blocksManager.totalRealCount}
+					onGoToBlocks={() => handleChangePath("blocks")}
+					isSubscribed={isWaitlistSubscribed}
+					onSubscribed={() => setIsWaitlistSubscribed(true)}
+				/>
+			)}
+
+			{currentPath === "blocks" && (
+				<BlocksPage
+					allUnifiedBlocks={blocksManager.allUnifiedBlocks}
+					filteredBlocks={blocksManager.filteredBlocks}
+					groupedFilteredBlocks={blocksManager.groupedFilteredBlocks}
+					activeCount={blocksManager.activeCount}
+					totalRealCount={blocksManager.totalRealCount}
+					searchQuery={blocksManager.searchQuery}
+					setSearchQuery={blocksManager.setSearchQuery}
+					selectedCategory={blocksManager.selectedCategory}
+					setSelectedCategory={blocksManager.setSelectedCategory}
+					viewMode={blocksManager.viewMode}
+					setViewMode={blocksManager.setViewMode}
+					onToggle={blocksManager.toggleBlock}
+					onEnableAll={blocksManager.enableAll}
+					onDisableAll={blocksManager.disableAll}
+					onNotifyMe={handleOpenNotifyModal}
+					isSubscribed={isWaitlistSubscribed}
+				/>
+			)}
+
+			{currentPath === "settings" && (
+				<SettingsPage
+					settings={settingsManager.settings}
+					onUpdateSetting={settingsManager.updateSetting}
+					showSample={boostify_blocks_meta?.showSample ?? true}
+				/>
+			)}
+
+			{/* Notify Me / Pro Waitlist Modal */}
+			<NotifyMeModal
+				isOpen={isNotifyModalOpen}
+				onClose={() => setIsNotifyModalOpen(false)}
+				blockTitle={notifyTargetTitle}
+				isSubscribed={isWaitlistSubscribed}
+				onSubscribed={() => setIsWaitlistSubscribed(true)}
+			/>
+
+			{/* Floating Batch Save Bar */}
+			<SaveBar
+				dirtyCount={totalDirtyCount}
+				isSaving={isSaving}
+				onSave={handleSaveAll}
+				onDiscard={handleDiscardAll}
+			/>
+
+			{/* Toast Notifications */}
 			<Toaster
-				position="top-right"
-				containerStyle={{ marginTop: "40px" }}
+				position="bottom-center"
+				containerStyle={{ marginBottom: "20px" }}
 				toastOptions={{
-					style: { fontSize: 16, padding: "14px 16px" },
-					duration: 4000,
+					style: {
+						background: "#1b1b22",
+						color: "#fff",
+						fontSize: "13.5px",
+						padding: "10px 16px",
+						borderRadius: "10px",
+						boxShadow: "0 10px 30px rgba(20,20,40,0.25)",
+					},
+					duration: 3000,
 				}}
 			/>
 		</div>
 	);
 };
 
-// -------------------------------------------------------------------------------------------
-const preEl = document.querySelector(
-	`#boostify-blocks-dashboard-root`
-) as HTMLElement | null;
-
-if (preEl) {
-	let componentProps = preEl.getAttribute("data-props")
-		? JSON.parse(preEl.getAttribute("data-props") || "")
-		: {};
-	ReactDOM.render(<App {...componentProps} />, preEl);
+// Mount to DOM
+const dashboardRoot = document.getElementById("boostify-blocks-dashboard-root");
+if (dashboardRoot) {
+	const rawProps = dashboardRoot.getAttribute("data-props");
+	const props: DashboardProps = rawProps ? JSON.parse(rawProps) : {};
+	ReactDOM.render(<App {...props} />, dashboardRoot);
 }
 
-//
+export default App;

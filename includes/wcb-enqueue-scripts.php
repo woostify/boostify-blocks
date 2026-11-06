@@ -404,6 +404,7 @@ function boostify_blocks_enqueue_script_to_setting_page()
     if (
         !empty($currentScrren->id) && strpos($currentScrren->id, 'boostify-blocks-settings') !== false
     ) {
+        wp_enqueue_style('boostify-blocks-lineicons-3.0');
         wp_register_style('boostify-blocks-settings-page', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/style-index.css');
         wp_enqueue_style('boostify-blocks-settings-page');
         //

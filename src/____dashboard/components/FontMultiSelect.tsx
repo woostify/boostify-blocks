@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
+import { __ } from "@wordpress/i18n";
 import { XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import googleFonts from "../../components/controls/WcbFontFamilyPicker/google-fonts.json";
 
@@ -100,10 +101,13 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 	};
 
 	return (
-		<div ref={containerRef} className="relative">
+		<div
+			ref={containerRef}
+			className={`bb-font-select-wrap ${isOpen ? "is-open" : ""}`}
+		>
 			{/* Input box */}
 			<div
-				className="flex flex-wrap items-center gap-1.5 px-2.5 py-2 border border-gray-300 rounded-lg bg-white cursor-text min-h-[44px] focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500"
+				className="bb-font-input-box"
 				onClick={() => {
 					inputRef.current?.focus();
 					setIsOpen(true);
@@ -112,7 +116,7 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 				{value.map((font) => (
 					<span
 						key={font}
-						className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-sm font-medium shrink-0"
+						className="bb-font-pill"
 					>
 						{font}
 						<button
@@ -121,9 +125,10 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 								e.preventDefault();
 								removeFont(font);
 							}}
-							className="hover:text-blue-900 focus:outline-none"
+							className="bb-font-pill-remove"
+							title={__( "Remove font", "boostify-blocks" )}
 						>
-							<XMarkIcon className="w-3.5 h-3.5" />
+							<XMarkIcon style={{ width: "13px", height: "13px" }} />
 						</button>
 					</span>
 				))}
@@ -137,11 +142,11 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 					}}
 					onFocus={() => setIsOpen(true)}
 					onKeyDown={handleKeyDown}
-					placeholder={value.length === 0 ? "Search Google Fonts…" : ""}
-					className="flex-1 min-w-[140px] outline-none text-sm text-gray-700 bg-transparent placeholder-gray-400 py-0.5"
+					placeholder={value.length === 0 ? __( "Search Google Fonts…", "boostify-blocks" ) : ""}
+					className="bb-font-search-input"
 				/>
 				{/* Action buttons */}
-				<div className="flex items-center gap-0.5 ml-auto shrink-0">
+				<div className="bb-font-actions">
 					{value.length > 0 && (
 						<button
 							type="button"
@@ -149,10 +154,10 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 								e.preventDefault();
 								clearAll();
 							}}
-							className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
-							title="Clear all"
+							className="bb-font-action-btn"
+							title={__( "Clear all", "boostify-blocks" )}
 						>
-							<XMarkIcon className="w-4 h-4" />
+							<XMarkIcon style={{ width: "15px", height: "15px" }} />
 						</button>
 					)}
 					<button
@@ -162,10 +167,16 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 							setIsOpen((o) => !o);
 							if (!isOpen) inputRef.current?.focus();
 						}}
-						className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none"
+						className="bb-font-action-btn"
+						title={__( "Toggle font list", "boostify-blocks" )}
 					>
 						<ChevronDownIcon
-							className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+							style={{
+								width: "15px",
+								height: "15px",
+								transition: "transform 0.15s ease",
+								transform: isOpen ? "rotate(180deg)" : "none",
+							}}
 						/>
 					</button>
 				</div>
@@ -173,16 +184,13 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 
 			{/* Dropdown */}
 			{isOpen && (
-				<div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-					<ul
-						ref={listRef}
-						className="max-h-56 overflow-y-auto py-1 text-sm"
-					>
+				<div className="bb-font-dropdown">
+					<ul ref={listRef} className="bb-font-list">
 						{filtered.length === 0 ? (
-							<li className="px-4 py-2.5 text-gray-400">
+							<li className="bb-font-empty">
 								{value.length === ALL_FONTS.length
-									? "All fonts selected"
-									: "No fonts match"}
+									? __( "All fonts selected", "boostify-blocks" )
+									: __( "No fonts match", "boostify-blocks" )}
 							</li>
 						) : (
 							filtered.map((font, idx) => (
@@ -193,11 +201,7 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 										addFont(font);
 									}}
 									onMouseEnter={() => setHighlighted(idx)}
-									className={`px-4 py-2 cursor-pointer select-none ${
-										idx === highlighted
-											? "bg-blue-50 text-blue-700"
-											: "text-gray-700 hover:bg-gray-50"
-									}`}
+									className={`bb-font-item ${idx === highlighted ? "is-highlighted" : ""}`}
 								>
 									{font}
 								</li>
@@ -205,8 +209,8 @@ const FontMultiSelect: FC<Props> = ({ value, onChange }) => {
 						)}
 					</ul>
 					{filtered.length > 0 && (
-						<div className="px-4 py-1.5 border-t border-gray-100 text-xs text-gray-400">
-							{filtered.length} font{filtered.length !== 1 ? "s" : ""} available
+						<div className="bb-font-footer">
+							{filtered.length} {__( "fonts available", "boostify-blocks" )}
 						</div>
 					)}
 				</div>

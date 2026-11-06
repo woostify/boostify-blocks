@@ -71,6 +71,13 @@ This plugin loads the Tiny Slider library from the Cloudflare CDN (cdnjs.cloudfl
 It sends requests to https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js every time a page containing a slider block is loaded. Standard CDN access logs (IP address, browser info) may be retained by Cloudflare. No personal data is collected or stored by this plugin.
 This service is provided by "Cloudflare, Inc.": [Terms of Service](https://www.cloudflare.com/terms/), [Privacy Policy](https://www.cloudflare.com/privacypolicy/).
 
+= Woostify Pro Waitlist =
+
+This plugin allows site administrators to voluntarily subscribe to the Boostify Pro waitlist notification from the plugin dashboard.
+
+When an administrator submits their email address in the dashboard PRO waitlist form, their email and subscription source are sent to https://woostify.com/?fluentcrm=1&route=contact via secure server-side request. This data is used solely to notify the subscriber about the Boostify Pro release and is handled by Woostify. No data is sent automatically without explicit user action.
+This service is provided by "Woostify": [Terms of Service](https://woostify.com/terms/), [Privacy Policy](https://woostify.com/privacy-policy/).
+
 == Frequently Asked Questions ==
 
 = Who should use Boostify Blocks? =

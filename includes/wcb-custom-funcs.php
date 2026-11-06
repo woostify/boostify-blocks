@@ -109,6 +109,8 @@ function boostify_blocks_get_default_blocks_settings()
         'site_visibility_page'        => '',
         'site_visibility_page_title'  => '',
         'site_visibility_template'    => 'blank',
+        // Extensions
+        'enableDisplayConditions'     => 'true',
     ];
 }
 
@@ -200,3 +202,43 @@ function boostify_blocks_get_layout_global_settings()
 
     return $boostify_layout_global_settings;
 }
+
+/**
+ * Parse changelog from readme.txt with auto cache invalidation based on file modification time.
+ *
+ * @param int $limit Optional. Number of changelog versions to return. 0 for all.
+ * @return array
+ */
+function boostify_blocks_get_changelog( $limit = 0 ) {
+    $file    = BOOSTIFY_BLOCKS_PATH . 'readme.txt';
+    $mtime   = file_exists( $file ) ? filemtime( $file ) : 0;
+    $version = defined( 'BOOSTIFY_BLOCKS_VERSION' ) ? BOOSTIFY_BLOCKS_VERSION : '1.0.0';
+    $key     = 'boostify_blocks_changelog_' . md5( $version . '_' . $mtime );
+    $cached  = get_transient( $key );
+
+    if ( ! is_array( $cached ) || ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) {
+        $cached = array();
+        if ( is_readable( $file ) ) {
+            $content = file_get_contents( $file );
+            if ( preg_match( '/^==\s*Changelog\s*==\s*$(.*?)(?=^==\s*[^=]|\z)/ms', $content, $sec ) ) {
+                preg_match_all( '/^=\s*(\d[\w.\-]*)\s*=\s*$(.*?)(?=^=\s*\d|\z)/ms', $sec[1], $m, PREG_SET_ORDER );
+                foreach ( $m as $row ) {
+                    $items = array();
+                    foreach ( preg_split( '/\R/', trim( $row[2] ) ) as $line ) {
+                        $line = trim( preg_replace( '/^[\*\-]\s*/', '', trim( $line ) ) );
+                        if ( '' !== $line ) {
+                            $items[] = sanitize_text_field( $line );
+                        }
+                    }
+                    $cached[] = array(
+                        'version' => sanitize_text_field( $row[1] ),
+                        'items'   => $items,
+                    );
+                }
+            }
+        }
+        set_transient( $key, $cached, defined( 'DAY_IN_SECONDS' ) ? DAY_IN_SECONDS : 86400 );
+    }
+    return $limit ? array_slice( $cached, 0, $limit ) : $cached;
+}
+
