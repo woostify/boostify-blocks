@@ -65,6 +65,15 @@
 		}
 	}
 
+	// Nothing to slide (testimonials <= columns at the current breakpoint):
+	// Swiper's watchOverflow adds these lock classes, but its own
+	// `display: none` is weaker than the `display: flex` rules above.
+	.swiper-button-prev.swiper-button-lock,
+	.swiper-button-next.swiper-button-lock,
+	.swiper-pagination.swiper-pagination-lock {
+		display: none;
+	}
+
 	.swiper-wrapper {
 		min-width: 0px;
 	}
