@@ -45,6 +45,24 @@
 		}
 	}
 
+	// Nothing to slide (sliders <= columns at the current breakpoint):
+	// Swiper's watchOverflow adds this lock class, but its own
+	// `display: none` is weaker than the `display: flex` rule above.
+	.swiper-button-prev.swiper-button-lock,
+	.swiper-button-next.swiper-button-lock,
+	// Editor only: set by Edit.tsx when slides <= columns (see isNoOverflow).
+	.wcb-slider__wrap-items--no-overflow > .swiper-button-prev,
+	.wcb-slider__wrap-items--no-overflow > .swiper-button-next {
+		display: none;
+	}
+
+	// Same for the dots - needs !important to beat the
+	// `display: flex !important` on .swiper-pagination above.
+	.swiper-pagination.swiper-pagination-lock,
+	.wcb-slider__wrap-items--no-overflow > .swiper-pagination {
+		display: none !important;
+	}
+
 	.swiper-wrapper {
 		min-width: 0px;
 		display: flex !important;

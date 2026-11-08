@@ -1020,6 +1020,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 	const showArrows = showArrowsDots !== "Dot";
 	const showDots = showArrowsDots !== "Arrow";
 
+	// Nothing to slide when every slide already fits (slides <= columns for
+	// the device being edited). The frontend relies on Swiper's watchOverflow
+	// adding .swiper-button-lock, but in the editor the arrows are rebound
+	// via refs after init (and re-inited by swiper/react on param changes),
+	// so Swiper often misses toggling that class - compute it here instead.
+	const isNoOverflow = innerBlocks.length <= activeCols;
+	const wrapItemsClassName = `wcb-slider__wrap-items${isNoOverflow ? " wcb-slider__wrap-items--no-overflow" : ""}`;
+
 	// Selector scope from parentCssClass (available right away from clientId)
 	const swiperSelectorScope = `.${parentCssClass}`;
 
@@ -1148,7 +1156,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			observeParents: true,
 			observeSlideChildren: true,
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating InspectorControls
-			rewind: !! rewind,
+			rewind: false,
 			speed: animationDuration || 500,
 			autoplay: false,
 			slidesPerView: activeCols || 1,
@@ -1239,7 +1247,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 		if (innerBlocks.length === 0) {
 			return (
-				<div className="wcb-slider__wrap-items">
+				<div className={wrapItemsClassName}>
 					<Swiper {...swiperCommonProps}>
 						<SwiperSlide>
 							<div {...innerBlocksProps} />
@@ -1251,7 +1259,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 
 		return (
-			<div className="wcb-slider__wrap-items">
+			<div className={wrapItemsClassName}>
 				<Swiper {...swiperCommonProps}>
 					{innerBlocks.map((block: any, index: number) => {
 						const isChildSelected =
