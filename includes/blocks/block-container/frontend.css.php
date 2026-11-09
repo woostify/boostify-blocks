@@ -88,6 +88,33 @@ if ( ! empty( $gc ) ) {
 		$mw_t = $custom_width['Tablet'] ?? $mw_d;
 		$mw_m = $custom_width['Mobile'] ?? $mw_t;
 
+		// Child columns: grow by any negative left/right margin so sibling
+		// columns don't shift (mirrors withNegativeMargin in GlobalCss.tsx).
+		if ( 'is_wcb_container_child' === ( $attr['containerClassName'] ?? '' ) ) {
+			$margin   = $attr['styles_dimensions']['margin'] ?? array();
+			$margin_d = $margin['Desktop'] ?? null;
+			$margin_t = $margin['Tablet'] ?? $margin_d;
+			$margin_m = $margin['Mobile'] ?? $margin_t;
+
+			$with_negative_margin = function ( $width, $margin_value ) {
+				if ( null === $width || '' === $width || ! is_array( $margin_value ) ) {
+					return $width;
+				}
+				$offsets = array();
+				foreach ( array( 'left', 'right' ) as $side ) {
+					$v = trim( (string) ( $margin_value[ $side ] ?? '' ) );
+					if ( '' !== $v && '-' === $v[0] && 0.0 !== (float) $v ) {
+						$offsets[] = WCB_Block_Helper::get_css_value( substr( $v, 1 ) );
+					}
+				}
+				return $offsets ? 'calc(' . $width . ' + ' . implode( ' + ', $offsets ) . ')' : $width;
+			};
+
+			$mw_d = $with_negative_margin( $mw_d, $margin_d );
+			$mw_t = $with_negative_margin( $mw_t, $margin_t );
+			$mw_m = $with_negative_margin( $mw_m, $margin_m );
+		}
+
 		if ( null !== $mw_d && '' !== $mw_d ) {
 			$css['desktop'][ $wrap_class ]['max-width'] = $mw_d . ' !important';
 			$css['desktop'][ $wrap_class ]['width']     = $mw_d;
