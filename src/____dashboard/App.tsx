@@ -49,6 +49,36 @@ const App: FC<Props> = ({
 	//
 	const [currentPath, setcurrentPath] = useState<Path>(PAGES[0].path);
 	const [blocksStatus, setBlocksStatus] = useState<Wcb_blocks_enable_disable_options_Type>(boostify_blocks_enable_disable_options);
+	const [allSettings, setAllSettings] = useState(boostify_blocks_settings_options);
+
+	const handleUpdateSettings = (newData: Partial<typeof window.boostify_blocks_global_variables>) => {
+		if (typeof jQuery !== "function") {
+			return;
+		}
+
+		const newSettings = {
+			...allSettings,
+			...newData,
+		};
+		setAllSettings(newSettings);
+		const data = {
+			action: "boostify_blocks_dashboard_update_settings",
+			nonce: (window as any)?.boostify_blocks_frontend_ajax_object?.nonce,
+			settings: newSettings,
+		};
+
+		toast.promise(
+			// @ts-ignore
+			jQuery.post(ajaxurl, data, function (response) {
+				console.log("Got this from the server: ", response);
+			}),
+			{
+				loading: "Saving...",
+				success: <div>Successful saved!</div>,
+				error: <div>Could not save.</div>,
+			}
+		);
+	};
 
 	useEffect(() => {
 		const queryString = window.location.search;
@@ -81,13 +111,17 @@ const App: FC<Props> = ({
 						initWcbBlocksEnableDisable={boostify_blocks_enable_disable_options}
 						blocksStatus={blocksStatus}
 						setBlocksStatus={setBlocksStatus}
+						allSettings={allSettings}
+						onUpdateSettings={handleUpdateSettings}
 					/>
 				);
 			case "settings":
 				return (
 					<SettingsPage
-						initData={boostify_blocks_settings_options}
+						initData={allSettings}
 						themeLayoutGlobal={boostify_blocks_layout_global_settings}
+						allSettings={allSettings}
+						onUpdateSettings={handleUpdateSettings}
 					/>
 				);
 			case "welcome":
