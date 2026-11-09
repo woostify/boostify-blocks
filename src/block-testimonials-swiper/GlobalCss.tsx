@@ -33,6 +33,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const ITEM_CLASSNAME = `${WRAP_CLASSNAME} .wcb-testimonials-swiper__item`;
+	// The visible card is .__item-background (it carries the background), so
+	// border/radius must target it - otherwise the rounded corners land on a
+	// transparent box and are invisible.
+	const ITEM_BACKGROUND = `${ITEM_CLASSNAME} .wcb-testimonials-swiper__item-background`;
 	const ITEM_NAME = `${WRAP_CLASSNAME} .wcb-testimonials-swiper__item-name`;
 	const ITEM_CONTENT = `${WRAP_CLASSNAME} .wcb-testimonials-swiper__item-content`;
 	const ITEM_COMPANY = `${WRAP_CLASSNAME} .wcb-testimonials-swiper__item-company`;
@@ -158,7 +162,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 				styles={[
 					getBorderStyles({
 						border: style_backgroundAndBorder.border,
-						className: ITEM_CLASSNAME,
+						className: ITEM_BACKGROUND,
 						isWithRadius: true,
 					}),
 					getStyleObjectFromResponsiveAttr({
@@ -173,7 +177,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						margin: style_dimension.margin,
 					}),
 					getStyleBackground({
-						className: `${ITEM_CLASSNAME} .wcb-testimonials-swiper__item-background`,
+						className: ITEM_BACKGROUND,
 						styles_background: style_backgroundAndBorder.background,
 					}),
 				]}
