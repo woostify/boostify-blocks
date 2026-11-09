@@ -115,7 +115,9 @@ if ( ! empty( $sr['color'] ) ) {
 
 // 8. Background & Border.
 if ( ! empty( $sab['border'] ) ) {
-	WCB_Block_Helper::add_border_css( $css, $item_sel, $sab['border'], true );
+	// Same target as ITEM_BACKGROUND in GlobalCss.tsx - the element that
+	// carries the background, so the rounded corners are actually visible.
+	WCB_Block_Helper::add_border_css( $css, $item_bg_sel, $sab['border'], true );
 }
 if ( ! empty( $sab['background'] ) ) {
 	WCB_Block_Helper::add_background_css( $css, $item_bg_sel, $sab['background'] );
