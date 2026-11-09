@@ -20,8 +20,11 @@ export interface WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE {
 	textColor: string;
 	backgroundColor: string;
 	marginBottom: HasResponsive<string>;
-	position?: "top-left" | "top-right";
+	position?: "top-left" | "top-right" | "none";
 	shape?: "round" | "square" | string;
+	borderRadius?: number;
+	isSquare?: boolean;
+	size?: number;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE =

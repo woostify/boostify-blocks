@@ -55,7 +55,8 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
             'Mobile'  => $curr_col_mobile  ?? ($style_layout['numberOfColumn']['Mobile']  ?? null),
         ];
     }
-    $theme_align = $theme['shop_archive_product_content']['align'] ?? null;
+    $content = $theme['shop_archive_product_content'] ?? [];
+    $theme_align = $content['align'] ?? null;
     if ($block_overrides) {
         // Block's textAlignment takes priority; only use Customizer if block has none.
         if (!isset($style_layout['textAlignment']) && $theme_align !== null) {
@@ -66,6 +67,9 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
             $style_layout['textAlignment'] = $theme_align;
         }
     }
+    // Equal height for product content
+    $style_layout['contentEqualHeight'] = $pick_bool($content['equal_flag'] ?? false, $style_layout['contentEqualHeight'] ?? null);
+    $style_layout['contentMinHeight']   = $pick($content['min_height'] ?? 160, $style_layout['contentMinHeight'] ?? null);
     $attributes['style_layout'] = $style_layout;
 
     // Border
@@ -84,6 +88,12 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 $border['width'] ?? null
             ),
         ];
+    } elseif (!$block_overrides) {
+        $attributes['style_border']['mainSettings'] = [
+            'color' => 'transparent',
+            'style' => 'none',
+            'width' => '0px',
+        ];
     }
 
     // Sorting & filtering
@@ -95,22 +105,35 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     );
 
     // Content visibility flags
-    $content = $theme['shop_archive_product_content'] ?? [];
+    $sale_pos        = $theme['shop_archive_sale_tag']['position'] ?? 'none';
+    $theme_show_sale = ( 'none' !== $sale_pos );
+    $out_pos         = $theme['shop_archive_out_of_stock']['position'] ?? 'none';
+    $theme_show_out  = ( 'none' !== $out_pos );
+
     $attributes['general_content'] = array_merge(
         $attributes['general_content'] ?? [],
         [
-            'isShowTitle'    => $pick_bool($content['title_flag'] ?? null, $attributes['general_content']['isShowTitle'] ?? null),
-            'isShowCategory' => $pick_bool($content['category_flag'] ?? null, $attributes['general_content']['isShowCategory'] ?? null),
-            'isShowRating'   => $pick_bool($content['rating_flag'] ?? null, $attributes['general_content']['isShowRating'] ?? null),
-            'isShowPrice'    => $pick_bool($content['price_flag'] ?? null, $attributes['general_content']['isShowPrice'] ?? null),
+            'isShowTitle'                 => $pick_bool($content['title_flag'] ?? null, $attributes['general_content']['isShowTitle'] ?? null),
+            'isShowCategory'              => $pick_bool($content['category_flag'] ?? null, $attributes['general_content']['isShowCategory'] ?? null),
+            'isShowRating'                => $pick_bool($content['rating_flag'] ?? null, $attributes['general_content']['isShowRating'] ?? null),
+            'isShowPrice'                 => $pick_bool($content['price_flag'] ?? null, $attributes['general_content']['isShowPrice'] ?? null),
+            'isShowSaleBadge'             => $pick_bool($theme_show_sale, $attributes['general_content']['isShowSaleBadge'] ?? null),
+            'showSaleBadgeDiscoutPercent' => $pick_bool($theme['shop_archive_sale_tag']['sale_percent'] ?? false, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? null),
+            'saleBadgePosition'           => $block_overrides
+                ? ($attributes['general_content']['saleBadgePosition'] ?? ($theme_show_sale ? 'Inside image' : 'none'))
+                : ($theme_show_sale ? 'Inside image' : 'none'),
+            'isShowOutOfStock'            => $pick_bool($theme_show_out, $attributes['general_content']['isShowOutOfStock'] ?? null),
         ]
     );
 
-    // Featured image hover
+    // Featured image hover & equal height
+    $fi_theme = $theme['shop_archive_product_image'] ?? [];
     $attributes['general_featuredImage'] = array_merge(
         $attributes['general_featuredImage'] ?? [],
         [
-            'hoverType' => $pick($theme['shop_archive_product_image']['hover'] ?? null, $attributes['general_featuredImage']['hoverType'] ?? null),
+            'hoverType'         => $pick($fi_theme['hover'] ?? null, $attributes['general_featuredImage']['hoverType'] ?? null),
+            'equal_height_flag' => $fi_theme['equal_height_flag'] ?? false,
+            'image_height'      => $fi_theme['image_height'] ?? 300,
         ]
     );
 
@@ -129,12 +152,20 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 $featured_border['width'] ?? null
             ),
         ];
+    } elseif (!$block_overrides) {
+        $attributes['style_featuredImage']['border']['mainSettings'] = [
+            'color' => 'transparent',
+            'style' => 'none',
+            'width' => '0px',
+        ];
     }
 
     // Sale badge
     $sale = $theme['shop_archive_sale_tag'] ?? [];
     $sale_position = $pick($sale['position'] ?? null, $attributes['style_saleBadge']['position'] ?? null) ?? 'top-right';
-    $mapped_sale_position = ( 'left' === $sale_position || 'top-left' === $sale_position ) ? 'top-left' : 'top-right';
+    $mapped_sale_position = ( 'left' === $sale_position || 'top-left' === $sale_position )
+        ? 'top-left'
+        : ( 'none' === $sale_position ? 'none' : 'top-right' );
     $attributes['style_saleBadge'] = array_merge(
         $attributes['style_saleBadge'] ?? [],
         [
@@ -142,6 +173,10 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
             'textColor'       => $pick($sale['text_color'] ?? null, $attributes['style_saleBadge']['textColor'] ?? null),
             'position'        => $mapped_sale_position,
             'shape'           => $pick($sale['shape'] ?? 'rectangular', $attributes['style_saleBadge']['shape'] ?? null),
+            'borderRadius'    => $pick($sale['border_radius'] ?? null, $attributes['style_saleBadge']['borderRadius'] ?? null),
+            'isSquare'        => $pick($sale['is_square'] ?? null, $attributes['style_saleBadge']['isSquare'] ?? null),
+            'size'            => $pick($sale['size'] ?? null, $attributes['style_saleBadge']['size'] ?? null),
+            'text'            => $pick($sale['text'] ?? null, $attributes['style_saleBadge']['text'] ?? null),
         ]
     );
 
@@ -158,6 +193,10 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
             'textColor'       => $pick($outofstock['text_color'] ?? null, $attributes['style_outOfStock']['textColor'] ?? null),
             'position'        => $mapped_out_position,
             'shape'           => $pick($outofstock['shape'] ?? 'rectangular', $attributes['style_outOfStock']['shape'] ?? null),
+            'borderRadius'    => $pick($outofstock['border_radius'] ?? null, $attributes['style_outOfStock']['borderRadius'] ?? null),
+            'isSquare'        => $pick($outofstock['is_square'] ?? null, $attributes['style_outOfStock']['isSquare'] ?? null),
+            'size'            => $pick($outofstock['size'] ?? null, $attributes['style_outOfStock']['size'] ?? null),
+            'text'            => $pick($outofstock['text'] ?? null, $attributes['style_outOfStock']['text'] ?? null),
         ]
     );
 
@@ -216,16 +255,34 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
         ]
     );
 
-    // Add to cart styles
+    // Add to cart general settings
     $atc = $theme['shop_archive_add_to_cart_btn'] ?? [];
+    $atc_position = $atc['position'] ?? null;
+    $mapped_atc_position = $atc_position === 'bottom-visible' ? 'bottom visible'
+        : ($atc_position === 'image' ? 'inside image'
+            : ($atc_position === 'icon' ? 'icon'
+                : ($atc_position === 'bottom' ? 'bottom'
+                    : ($atc_position ?: ($attributes['general_addToCartBtn']['position'] ?? null)))));
+
+    $block_atc_pos = $attributes['general_addToCartBtn']['position'] ?? null;
+    if ( 'bottom-visible' === $block_atc_pos ) {
+        $block_atc_pos = 'bottom visible';
+    } elseif ( 'image' === $block_atc_pos ) {
+        $block_atc_pos = 'inside image';
+    }
+
+    $effective_atc_pos = $block_overrides && !empty($block_atc_pos)
+        ? $block_atc_pos
+        : $mapped_atc_position;
+
+    // Add to cart styles (by-position theme styles)
+    $by_pos    = $atc['by_position'] ?? [];
+    $pos_style = $by_pos[ $effective_atc_pos ] ?? ( $by_pos[ $atc_position ] ?? $atc );
+
     $existing_colors = $attributes['style_addToCardBtn']['colorAndBackgroundColor'] ?? [];
 
-    // When the Customizer has a non-zero border_radius, always apply it as a uniform string so
-    // getBorderRadiusStyles converts it to equal values for all 4 corners. This prevents a stored
-    // per-corner object (e.g. {topLeft:"10px",topRight:"0px",...}) from being used instead of the
-    // Customizer's intended uniform radius.
-    $atc_radius_val = (int)($atc['border_radius'] ?? 0);
-    $atc_radius_px  = $atc_radius_val > 0 ? $atc_radius_val . 'px' : null;
+    $atc_radius_val = isset($pos_style['border_radius']) && '' !== (string)$pos_style['border_radius'] ? (int)$pos_style['border_radius'] : 0;
+    $atc_radius_px  = $atc_radius_val . 'px';
 
     $attributes['style_addToCardBtn'] = array_merge(
         $attributes['style_addToCardBtn'] ?? [],
@@ -234,12 +291,12 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 $existing_colors,
                 [
                     'Normal' => [
-                        'color'           => $pick($atc['text_color'] ?? null, $existing_colors['Normal']['color'] ?? null),
-                        'backgroundColor' => $pick($atc['bg_color'] ?? null, $existing_colors['Normal']['backgroundColor'] ?? null),
+                        'color'           => $pick($pos_style['text_color'] ?? null, $existing_colors['Normal']['color'] ?? null),
+                        'backgroundColor' => $pick($pos_style['bg_color'] ?? null, $existing_colors['Normal']['backgroundColor'] ?? null),
                     ],
                     'Hover' => [
-                        'color'           => $pick($atc['hover_text_color'] ?? null, $existing_colors['Hover']['color'] ?? null),
-                        'backgroundColor' => $pick($atc['hover_bg_color'] ?? null, $existing_colors['Hover']['backgroundColor'] ?? null),
+                        'color'           => $pick($pos_style['hover_text_color'] ?? null, $existing_colors['Hover']['color'] ?? null),
+                        'backgroundColor' => $pick($pos_style['hover_bg_color'] ?? null, $existing_colors['Hover']['backgroundColor'] ?? null),
                     ],
                 ]
             ),
@@ -247,31 +304,28 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 $attributes['style_addToCardBtn']['border'] ?? [],
                 [
                     'radius' => [
-                        'Desktop' => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null),
-                        'Tablet'  => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null),
-                        'Mobile'  => $atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null),
+                        'Desktop' => $block_overrides
+                            ? ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? $atc_radius_px)
+                            : ($atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Desktop'] ?? null)),
+                        'Tablet'  => $block_overrides
+                            ? ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? $atc_radius_px)
+                            : ($atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Tablet'] ?? null)),
+                        'Mobile'  => $block_overrides
+                            ? ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? $atc_radius_px)
+                            : ($atc_radius_px ?? ($attributes['style_addToCardBtn']['border']['radius']['Mobile'] ?? null)),
                     ],
                 ]
             ),
         ]
     );
 
-    // Add to cart general settings
-    $atc_position = $atc['position'] ?? null;
-    $mapped_atc_position = $atc_position === 'bottom-visible' ? 'bottom visible'
-        : ($atc_position === 'image' ? 'inside image'
-            : ($atc_position === 'icon' ? 'icon'
-                : ($atc_position === 'bottom' ? 'bottom'
-                    : ($atc_position ?: ($attributes['general_addToCartBtn']['position'] ?? null)))));
     $attributes['general_addToCartBtn'] = array_merge(
         $attributes['general_addToCartBtn'] ?? [],
         [
             'isShowButton' => $block_overrides
                 ? ($attributes['general_addToCartBtn']['isShowButton'] ?? ($atc_position !== 'none'))
                 : ($atc_position === 'none' ? false : ($attributes['general_addToCartBtn']['isShowButton'] ?? true)),
-            'position' => $block_overrides && !empty($attributes['general_addToCartBtn']['position'])
-                ? $attributes['general_addToCartBtn']['position']
-                : $mapped_atc_position,
+            'position' => $effective_atc_pos,
             'isShowQuantity' => $pick_bool($content['quantity_flag'] ?? null, $attributes['general_addToCartBtn']['isShowQuantity'] ?? null),
             'isShowIcon' => isset($atc['show_icon'])
                 ? (bool)$atc['show_icon']
@@ -287,23 +341,27 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
             'position'               => $wishlist['position'] ?? ($attributes['style_wishlistBtn']['position'] ?? 'none'),
             'style'                  => $wishlist['style'] ?? ($attributes['style_wishlistBtn']['style'] ?? 'ti'),
             'wishlist_plugin_active' => $wishlist['wishlist_plugin_active'] ?? ($attributes['style_wishlistBtn']['wishlist_plugin_active'] ?? false),
+            'color'                  => $wishlist['color'] ?? ($attributes['style_wishlistBtn']['color'] ?? '#2b2b2b'),
+            'backgroundColor'        => $wishlist['bg_color'] ?? ($attributes['style_wishlistBtn']['backgroundColor'] ?? '#ffffff'),
+            'hoverColor'             => $wishlist['hover_color'] ?? ($attributes['style_wishlistBtn']['hoverColor'] ?? '#ffffff'),
+            'hoverBackgroundColor'   => $wishlist['hover_bg_color'] ?? ($attributes['style_wishlistBtn']['hoverBackgroundColor'] ?? '#e33333'),
         ]
     );
 
-    // Quick view button — follows Customizer unless block overrides are enabled
+    // Quick view button — follows Customizer since there is no block UI panel for quick view
     $quickview = $theme['shop_quick_view_btn'] ?? [];
     $attributes['style_quickViewBtn'] = array_merge(
         $attributes['style_quickViewBtn'] ?? [],
         [
-            'enabled'             => $pick_bool($quickview['enabled'] ?? null, $attributes['style_quickViewBtn']['enabled'] ?? null),
-            'position'            => $pick($quickview['position'] ?? null, $attributes['style_quickViewBtn']['position'] ?? null),
-            'show_icon'           => $pick($quickview['show_icon'] ?? null, $attributes['style_quickViewBtn']['show_icon'] ?? null),
-            'bg_color'            => $pick($quickview['bg_color'] ?? null, $attributes['style_quickViewBtn']['bg_color'] ?? null),
-            'text_color'          => $pick($quickview['text_color'] ?? null, $attributes['style_quickViewBtn']['text_color'] ?? null),
-            'hover_bg_color'      => $pick($quickview['hover_bg_color'] ?? null, $attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
-            'hover_text_color'    => $pick($quickview['hover_text_color'] ?? null, $attributes['style_quickViewBtn']['hover_text_color'] ?? null),
-            'border_radius'       => $pick(isset($quickview['border_radius']) ? (is_numeric($quickview['border_radius']) ? (int)$quickview['border_radius'] : $quickview['border_radius']) : null, $attributes['style_quickViewBtn']['border_radius'] ?? null),
-            'woostify_pro_active' => $pick($quickview['woostify_pro_active'] ?? null, $attributes['style_quickViewBtn']['woostify_pro_active'] ?? null),
+            'enabled'             => $quickview['enabled'] ?? ($attributes['style_quickViewBtn']['enabled'] ?? false),
+            'position'            => $quickview['position'] ?? ($attributes['style_quickViewBtn']['position'] ?? 'center-image'),
+            'show_icon'           => isset( $quickview['show_icon'] ) ? (bool) $quickview['show_icon'] : true,
+            'bg_color'            => $quickview['bg_color'] ?? ($attributes['style_quickViewBtn']['bg_color'] ?? null),
+            'text_color'          => $quickview['text_color'] ?? ($attributes['style_quickViewBtn']['text_color'] ?? null),
+            'hover_bg_color'      => $quickview['hover_bg_color'] ?? ($attributes['style_quickViewBtn']['hover_bg_color'] ?? null),
+            'hover_text_color'    => $quickview['hover_text_color'] ?? ($attributes['style_quickViewBtn']['hover_text_color'] ?? null),
+            'border_radius'       => isset($quickview['border_radius']) ? (is_numeric($quickview['border_radius']) ? (int)$quickview['border_radius'] : $quickview['border_radius']) : ($attributes['style_quickViewBtn']['border_radius'] ?? null),
+            'woostify_pro_active' => $quickview['woostify_pro_active'] ?? ($attributes['style_quickViewBtn']['woostify_pro_active'] ?? false),
         ]
     );
 
@@ -330,6 +388,12 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
             'hideAfterTimeUp'        => $cu['hide_after_time_up'] ?? ($attributes['style_countdownUrgency']['hideAfterTimeUp'] ?? null),
         ]
     );
+
+    // Catalog mode: if enabled in theme and block overrides is false, disable add-to-cart button and quantity
+    if ( ! empty( $theme['catalog_mode'] ) && ! $block_overrides ) {
+        $attributes['general_addToCartBtn']['isShowButton']   = false;
+        $attributes['general_addToCartBtn']['isShowQuantity'] = false;
+    }
 
     return $attributes;
 }
@@ -511,7 +575,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         $data->rating = boostify_blocks_block_products_get_rating_html($product, $attributes);
     }
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowSaleBadge'] ?? "")) {
-        $data->badge = boostify_blocks_block_products_get_sale_badge_html($product, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? false);
+        $data->badge = boostify_blocks_block_products_get_sale_badge_html($product, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? false, $attributes);
     }
     
     // Quantity input
@@ -521,6 +585,11 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
 
     $add_to_cart_position = $attributes['general_addToCartBtn']['position'] ?? '';
+    if ( 'bottom-visible' === $add_to_cart_position ) {
+        $add_to_cart_position = 'bottom visible';
+    } elseif ( 'image' === $add_to_cart_position ) {
+        $add_to_cart_position = 'inside image';
+    }
 
     if ($add_to_cart_position === "bottom" || $add_to_cart_position === "bottom visible") {
         $price_html  = '';
@@ -559,8 +628,10 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         if (boostify_blocks_is_enabled($attributes['general_content']['isShowPrice'] ?? "")) {
             $data->price = boostify_blocks_block_products_get_price_html($product);
         }
-        if (boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
+        if ($add_to_cart_position === "inside image" && boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowButton'] ?? "")) {
             $data->button = boostify_blocks_block_products_get_button_html($product, $attributes, $product->get_price_html());
+        } else {
+            $data->button = "";
         }
     }
 
@@ -569,12 +640,12 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
 
     if (boostify_blocks_is_enabled($attributes['general_content']['isShowOutOfStock'] ?? true)) {
-        $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product);
+        $data->out_of_stock = boostify_blocks_block_products__get_out_of_stock_html($product, $attributes);
     }
     // pre-order badge
     $data->preorder_badge = boostify_blocks_block_products__get_preorder_html($product);
-    $btnInsideImage = ($attributes['general_addToCartBtn']['position'] ?? "") === "inside image";
-    $btnIconAddToCart = ($attributes['general_addToCartBtn']['position'] ?? "") === "icon";
+    $btnInsideImage = ($add_to_cart_position === "inside image");
+    $btnIconAddToCart = ($add_to_cart_position === "icon");
     $saleInsideImage = ($attributes['general_content']['saleBadgePosition'] ?? "") === "Inside image";
     $btnQuickViewBottomImage = ($attributes['style_quickViewBtn']['position'] ?? "") === "bottom-image" || ($attributes['style_quickViewBtn']['position'] ?? "") === "center-image" || ($attributes['style_quickViewBtn']['position'] ?? "") === "top-right";
 
@@ -599,6 +670,14 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     // button
     $classes .= $btnInsideImage ? " wcb-products__product--btnInsideImage" : "";
     $classes .= $btnIconAddToCart ? " wcb-products__product--btnIconAddToCart" : "";
+    $classes .= ( 'bottom' === $add_to_cart_position ) ? " wcb-products__product--btnBottom" : "";
+    $classes .= ( 'bottom visible' === $add_to_cart_position ) ? " wcb-products__product--btnBottomVisible" : "";
+    if ( ! empty( $has_quantity ) ) {
+        $classes .= " wcb-products__product--has-quantity";
+    }
+    if ( isset( $attributes['style_layout']['isEqualHeight'] ) && false === $attributes['style_layout']['isEqualHeight'] ) {
+        $classes .= " wcb-products__product--no-equal-height";
+    }
 
     // quick view position
     if ( $btnQuickViewBottomImage ) {
@@ -608,7 +687,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
 
     // Add to Cart button
     $btn1 = $btnInsideImage ? $data->button : "";
-    $btn2 = $btnInsideImage ? "" : $data->button;
+    $btn2 = ( $add_to_cart_position === "bottom" || $add_to_cart_position === "bottom visible" ) ? $data->button : "";
 
     // sale badge
     $classes .= $saleInsideImage ? " wcb-products__product--onsaleInsideImage" : "";
@@ -661,14 +740,19 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                 $product->is_purchasable() &&
                 ($product->is_in_stock() || $product->backorders_allowed())) ? ' ajax_add_to_cart' : '';
 
+            $cart_icon_svg = class_exists('Woostify_Icon')
+                ? Woostify_Icon::fetch_svg_icon('shopping-cart-2', false)
+                : '<span class="woostify-svg-icon icon-shopping-cart-2"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17"><path d="m 14.176,12.5 c 0.965,0 1.75,0.785 1.75,1.75 0,0.965 -0.785,1.75 -1.75,1.75 -0.965,0 -1.75,-0.785 -1.75,-1.75 0,-0.965 0.785,-1.75 1.75,-1.75 z m 0,2.5 c 0.414,0 0.75,-0.337 0.75,-0.75 0,-0.413 -0.336,-0.75 -0.75,-0.75 -0.414,0 -0.75,0.337 -0.75,0.75 0,0.413 0.336,0.75 0.75,0.75 z m -8.5,-2.5 c 0.965,0 1.75,0.785 1.75,1.75 0,0.965 -0.785,1.75 -1.75,1.75 -0.965,0 -1.75,-0.785 -1.75,-1.75 0,-0.965 0.785,-1.75 1.75,-1.75 z m 0,2.5 c 0.414,0 0.75,-0.337 0.75,-0.75 0,-0.413 -0.336,-0.75 -0.75,-0.75 -0.414,0 -0.75,0.337 -0.75,0.75 0,0.413 0.336,0.75 0.75,0.75 z M 3.555,2 3.857,4 H 17 l -1.118,8.036 H 3.969 L 2.931,4.573 2.695,3 H -0.074 V 2 Z M 4,5 4.139,6 H 15.713 L 15.852,5 Z M 15.012,11.036 15.573,7 H 4.278 l 0.561,4.036 z" fill="currentColor"></path></svg></span>';
+
             $topRightItems[] = '
                 <a
                     href="' . $add_to_cart_url . '"
                     data-product_id="' . $product_id_attr . '"
                     data-quantity="1"' . ($has_quantity ? ' data-wp-bind--data-quantity="context.quantity"' : '') . '
                     class="wcb-products__product--btnIconAddToCart--item add_to_cart_button ' . $ajax_class . '"
+                    aria-label="' . esc_attr($product->add_to_cart_description()) . '"
                     rel="nofollow"
-                ></a>';
+                >' . $cart_icon_svg . '</a>';
         }
 
         if ($btnWishListTopRight) {
@@ -695,8 +779,9 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         ></button>' : '';
     
     // Quick view button at bottom of image
+    $qv_show_icon = ! empty( $attributes['style_quickViewBtn']['show_icon'] );
     $btnQuickViewBottomImageHtml = $btnQuickViewBottomImage ?
-        boostify_blocks_block_products__build_quick_view_html($product_id_attr, $attributes['style_quickViewBtn']['position']) : '';
+        boostify_blocks_block_products__build_quick_view_html( $product_id_attr, $attributes['style_quickViewBtn']['position'] ?? 'center-image', $qv_show_icon ) : '';
 
     // Countdown urgency
     $countdownHtml = boostify_blocks_block_products__get_countdown_html( $attributes['style_countdownUrgency'] ?? [] );
@@ -856,7 +941,7 @@ function boostify_blocks_block_products__get_countdown_html( $countdown_attrs ) 
  * attributes. @param string $position The position of the quick view button (e.g., 'bottom-image', 'center-image', 'top-right').
  * @return string The generated HTML for the quick view button, or an empty string if the position is not recognized.
  */
-function boostify_blocks_block_products__build_quick_view_html( $product_id_attr, $position ) {
+function boostify_blocks_block_products__build_quick_view_html( $product_id_attr, $position, $show_icon = true ) {
 
     // Context for the Interactivity API store (see public/js/quick-view/wcb-quick-view-preview.js).
     $preview_context = wp_json_encode(
@@ -883,12 +968,15 @@ function boostify_blocks_block_products__build_quick_view_html( $product_id_attr
         aria-haspopup="dialog"
     >';
 
-    $html .= '
-        <span class="wcb-products__product--quickViewBottomImage-svg__icon icon-eye">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
-                <path d="M16.965 8.817c-1.284-3.267-4.687-5.463-8.465-5.463s-7.181 2.196-8.465 5.463c-0.046 0.117-0.046 0.248 0 0.365 1.285 3.268 4.687 5.464 8.465 5.464s7.18-2.195 8.465-5.463c0.047-0.118 0.047-0.248 0-0.366zM8.5 13.646c-3.298 0-6.269-1.859-7.459-4.646 1.189-2.787 4.16-4.646 7.459-4.646s6.27 1.859 7.459 4.646c-1.19 2.786-4.161 4.646-7.459 4.646zM8.5 5.357c-2.009 0-3.643 1.634-3.643 3.643s1.634 3.643 3.644 3.643c2.008 0 3.643-1.634 3.643-3.643s-1.635-3.643-3.644-3.643zM8.5 11.643c-1.458 0-2.644-1.186-2.644-2.643s1.187-2.643 2.644-2.643c1.457 0 2.643 1.186 2.643 2.643s-1.185 2.643-2.643 2.643z" fill="currentColor"></path>
-            </svg>
-        </span>';
+    $show_icon_in_btn = ( 'top-right' === $position ) ? true : (bool) $show_icon;
+    if ( $show_icon_in_btn ) {
+        $html .= '
+            <span class="wcb-products__product--quickViewBottomImage-svg__icon icon-eye">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
+                    <path d="M16.965 8.817c-1.284-3.267-4.687-5.463-8.465-5.463s-7.181 2.196-8.465 5.463c-0.046 0.117-0.046 0.248 0 0.365 1.285 3.268 4.687 5.464 8.465 5.464s7.18-2.195 8.465-5.463c0.047-0.118 0.047-0.248 0-0.366zM8.5 13.646c-3.298 0-6.269-1.859-7.459-4.646 1.189-2.787 4.16-4.646 7.459-4.646s6.27 1.859 7.459 4.646c-1.19 2.786-4.161 4.646-7.459 4.646zM8.5 5.357c-2.009 0-3.643 1.634-3.643 3.643s1.634 3.643 3.644 3.643c2.008 0 3.643-1.634 3.643-3.643s-1.635-3.643-3.644-3.643zM8.5 11.643c-1.458 0-2.644-1.186-2.644-2.643s1.187-2.643 2.644-2.643c1.457 0 2.643 1.186 2.643 2.643s-1.185 2.643-2.643 2.643z" fill="currentColor"></path>
+                </svg>
+            </span>';
+    }
 
     if ( $position !== 'top-right' ) {
         $html .= '<span class="wcb-products__product--quickViewBottomImage__text">'
@@ -938,25 +1026,22 @@ function boostify_blocks_block_products_get_image_html($product, $attributes = [
     // Get Woostify theme settings
     $woostify = get_option('woostify_setting') ?: [];
 
-    // Get image height from theme setting
-    if (($attributes['general_featuredImage']['hoverType'] ?? "") === 'swap') {
-        $imageHeight = !empty($woostify['shop_page_product_image_height'])
-                ? intval($woostify['shop_page_product_image_height'])
-                : 'auto';
-    } else {
-        $imageHeight = 'auto';
-    }
+    // Check equal height from theme settings or block attributes
+    $equal_height = !empty($attributes['general_featuredImage']['equal_height_flag']) || !empty($woostify['shop_page_product_image_equal_height']);
 
     // Get the default WooCommerce thumbnail HTML
     $image_html = $product->get_image('woocommerce_thumbnail', $attr);
 
-    // Add inline style to control rendered height
-    // This forces the browser to display the image at that height
-    $height_value = ($imageHeight === 'auto' || empty($imageHeight)) ? 'auto' : intval($imageHeight) . 'px';
-    $style = 'style="height:' . esc_attr($height_value) . '; object-fit:cover;"';
+    if ($equal_height) {
+        $imageHeight = !empty($attributes['general_featuredImage']['image_height'])
+            ? intval($attributes['general_featuredImage']['image_height'])
+            : (!empty($woostify['shop_page_product_image_height']) ? intval($woostify['shop_page_product_image_height']) : 300);
 
-    // Inject the style attribute into the <img> tag
-    $image_html = preg_replace('/<img(.*?)>/', '<img$1 ' . $style . '>', $image_html);
+        if ($imageHeight > 0) {
+            $style = 'style="height:' . esc_attr($imageHeight) . 'px; object-fit:cover;"';
+            $image_html = preg_replace('/<img(.*?)>/', '<img$1 ' . $style . '>', $image_html);
+        }
+    }
 
     // Return the final HTML wrapped in a container
     return '<div class="wcb-products__product-image wc-block-grid__product-image">' . $image_html . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscapedaped
@@ -1054,7 +1139,7 @@ function boostify_blocks_block_products_add_percentage_to_sale_badge($product)
  * @param bool $showSaleBadgeDiscoutPercent Whether to show the discount percentage on the sale badge.
  * @return string The generated HTML for the sale badge.
  */
-function boostify_blocks_block_products_get_sale_badge_html($product,  $showSaleBadgeDiscoutPercent)
+function boostify_blocks_block_products_get_sale_badge_html($product,  $showSaleBadgeDiscoutPercent, $attributes = [])
 {
     if (!$product->is_on_sale()) {
         return;
@@ -1073,15 +1158,26 @@ function boostify_blocks_block_products_get_sale_badge_html($product,  $showSale
         $is_show_sale_percent = true;
     }
 
+    $sale_pos   = $attributes['style_saleBadge']['position'] ?? 'top-right';
+    $sale_shape = $attributes['style_saleBadge']['shape'] ?? 'round';
+    $pos_class  = ( 'left' === $sale_pos || 'top-left' === $sale_pos )
+        ? ' wcb-products__product-salebadge--left'
+        : ' wcb-products__product-salebadge--right';
+    $pos_class .= ' wcb-products__product-salebadge--' . sanitize_html_class( $sale_shape );
+
     if ($product->is_on_sale() && $is_show_sale_percent) {
-        return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
+        return '<div class="wcb-products__product-salebadge' . $pos_class . '"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
             ' . boostify_blocks_block_products_add_percentage_to_sale_badge($product) . '
             <span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
         </div></div>';
     }
 
-    return '<div class="wcb-products__product-salebadge"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
-			<span aria-hidden="true">' . esc_html__($woostify['shop_page_sale_text'] ?? 'Sale', 'boostify-blocks') . '</span>
+    $sale_text = !empty($attributes['style_saleBadge']['text'])
+        ? $attributes['style_saleBadge']['text']
+        : ($woostify['shop_page_sale_text'] ?? 'Sale');
+
+    return '<div class="wcb-products__product-salebadge' . $pos_class . '"><div class="wcb-products__product-onsale wc-block-grid__product-onsale">
+			<span aria-hidden="true">' . esc_html($sale_text) . '</span>
 			<span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
 		</div></div>';
 }
@@ -1089,16 +1185,31 @@ function boostify_blocks_block_products_get_sale_badge_html($product,  $showSale
 /**
  * Generate the HTML for the out of stock badge.
  * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributes The block attributes.
  * @return string The generated HTML for the out of stock badge.
  */
-function boostify_blocks_block_products__get_out_of_stock_html($product)
+function boostify_blocks_block_products__get_out_of_stock_html($product, $attributes = [])
 {
     $woostify = get_option('woostify_setting') ?: [];
 
-
     if ($product->get_stock_status() === 'outofstock') {
-        return '<div class="wcb-products__product-outofstock-badge"><div class="wcb-products__product-on-outofstock wc-block-grid__product-outofstock">
-                    <span aria-hidden="true">' . esc_html__($woostify['shop_page_out_of_stock_text'] ?? 'Sold Out', 'boostify-blocks') . '</span>
+        $out_pos   = $attributes['style_outOfStock']['position'] ?? 'top-left';
+        if ( 'none' === $out_pos ) {
+            return '';
+        }
+
+        $out_shape = $attributes['style_outOfStock']['shape'] ?? 'round';
+        $pos_class = ( 'right' === $out_pos || 'top-right' === $out_pos )
+            ? ' wcb-products__product-outofstock-badge--right'
+            : ' wcb-products__product-outofstock-badge--left';
+        $pos_class .= ' wcb-products__product-outofstock-badge--' . sanitize_html_class( $out_shape );
+
+        $out_text = !empty($attributes['style_outOfStock']['text'])
+            ? $attributes['style_outOfStock']['text']
+            : ($woostify['shop_page_out_of_stock_text'] ?? 'Sold Out');
+
+        return '<div class="wcb-products__product-outofstock-badge' . $pos_class . '"><div class="wcb-products__product-on-outofstock wc-block-grid__product-outofstock">
+                    <span aria-hidden="true">' . esc_html($out_text) . '</span>
                     <span class="screen-reader-text">' . esc_html__('Product on sale', 'boostify-blocks') . '</span>
                 </div></div>';
     }
@@ -1107,9 +1218,10 @@ function boostify_blocks_block_products__get_out_of_stock_html($product)
 /**
  * Generate the HTML for the pre-order badge.
  * @param WC_Product $product The WooCommerce product object.
+ * @param array $attributes The block attributes.
  * @return string The generated HTML for the pre-order badge.
  */
-function boostify_blocks_block_products__get_preorder_html( $product ) {
+function boostify_blocks_block_products__get_preorder_html( $product, $attributes = [] ) {
 
     if ( ! $product instanceof WC_Product ) {
         return '';
@@ -1127,6 +1239,15 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
         return '';
     }
 
+    if ( ! class_exists( 'Woostify_Pre_Order' ) ) {
+        return '';
+    }
+
+    $preorder_opts = Woostify_Pre_Order::get_instance()->get_options();
+    if ( isset( $preorder_opts['shop_page'] ) && '1' !== $preorder_opts['shop_page'] ) {
+        return '';
+    }
+
     $product_id = $product->get_id();
 
     // Woostify Pre-Order detection
@@ -1137,12 +1258,22 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
     }
 
     // Optional: hide badge if preorder expired
-    if ( strtotime( $preorder_date ) < current_time( 'timestamp' ) ) {
+    $is_expired = strtotime( $preorder_date ) < current_time( 'timestamp' );
+    if ( $is_expired ) {
         return '';
     }
 
-    // Format the date to display (e.g., "January 29, 2026")
-    $formatted_date = wp_date( 'F d, Y', strtotime( $preorder_date ) );
+    $label_text = ! empty( $preorder_opts['label'] ) ? $preorder_opts['label'] : __( 'Pre-Order', 'boostify-blocks' );
+    $message = Woostify_Pre_Order::get_instance()->get_message( $product_id );
+    if ( empty( $message ) ) {
+        $formatted_date = wp_date( get_option( 'date_format' ), strtotime( $preorder_date ) );
+        $message = sprintf( __( 'Available for Pre-Order - This item will be available on %s', 'boostify-blocks' ), $formatted_date );
+    }
+
+    $days_label  = $preorder_opts['days_label'] ?? 'd';
+    $hours_label = $preorder_opts['hours_label'] ?? 'h';
+    $mins_label  = $preorder_opts['minutes_label'] ?? 'm';
+    $secs_label  = $preorder_opts['seconds_label'] ?? 's';
 
     // Context for the Interactivity API store (see public/js/pre-order/wcb-pre-order-view.js).
     $preorder_context = wp_json_encode(
@@ -1156,10 +1287,12 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
         )
     );
 
+    $show_countdown = ! isset( $preorder_opts['countdown'] ) || '1' === $preorder_opts['countdown'];
+
     $html = '<div class="wcb-products__product-preorder-badge">';
     $html .= '<div class="wcb-products__product-salebadge">';
     $html .= '<div class="wcb-products__product-onsale wc-block-grid__product-onsale">';
-    $html .= '<span aria-hidden="true">Pre-Order</span>';
+    $html .= '<span aria-hidden="true">' . esc_html( $label_text ) . '</span>';
     $html .= '</div>';
     $html .= '</div>';
     $html .= '<div class="wcb-products__product-preorder-info"'
@@ -1167,13 +1300,15 @@ function boostify_blocks_block_products__get_preorder_html( $product ) {
         . ' data-wp-context=\'' . esc_attr( $preorder_context ) . '\''
         . ' data-wp-init="callbacks.start"'
         . '>';
-    $html .= '<div class="wcb-products__product-preorder-countdown" data-wp-bind--hidden="context.closed">';
-    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.days"></span>d</span>';
-    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.hours"></span>h</span>';
-    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.minutes"></span>m</span>';
-    $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.seconds"></span>s</span>';
-    $html .= '</div>';
-    $html .= '<span class="wcb-products__product-preorder-message">Available for Pre-Order - This item will be available on ' . esc_html( $formatted_date ) . '</span>';
+    if ( $show_countdown ) {
+        $html .= '<div class="wcb-products__product-preorder-countdown" data-wp-bind--hidden="context.closed">';
+        $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.days"></span>' . esc_html( $days_label ) . '</span>';
+        $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.hours"></span>' . esc_html( $hours_label ) . '</span>';
+        $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.minutes"></span>' . esc_html( $mins_label ) . '</span>';
+        $html .= '<span class="wcb-products__product-preorder-countdown-item"><span data-wp-text="context.seconds"></span>' . esc_html( $secs_label ) . '</span>';
+        $html .= '</div>';
+    }
+    $html .= '<span class="wcb-products__product-preorder-message">' . wp_kses_post( $message ) . '</span>';
     $html .= '</div>';
     $html .= '</div>';
 
@@ -1264,8 +1399,15 @@ function boostify_blocks_block_products_get_add_to_cart($product, $attributesFro
  */
 function boostify_blocks_block_products_has_quantity_feature($attributes)
 {
+    $pos = $attributes['general_addToCartBtn']['position'] ?? '';
+    if ( 'bottom-visible' === $pos ) {
+        $pos = 'bottom visible';
+    } elseif ( 'image' === $pos ) {
+        $pos = 'inside image';
+    }
+
     return boostify_blocks_is_enabled($attributes['general_addToCartBtn']['isShowQuantity'] ?? "")
-        && ($attributes['general_addToCartBtn']['position'] ?? '') !== "none";
+        && ( 'bottom' === $pos || 'bottom visible' === $pos );
 }
 
 /**

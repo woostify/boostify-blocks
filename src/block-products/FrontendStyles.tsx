@@ -59,6 +59,11 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 		document.addEventListener("click", (e) => {
 			const theme = getThemeDefaults();
 			const addToCartBtn = theme?.shop_archive_add_to_cart_btn;
+			const isOverride = !!props?.general_layout?.isCustomizerGeneralLayout;
+			const effectivePosition =
+				isOverride && props?.general_addToCartBtn?.position
+					? props.general_addToCartBtn.position
+					: (addToCartBtn?.position || props?.general_addToCartBtn?.position);
 
 			const target = e.target as HTMLElement;
 
@@ -69,11 +74,13 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 
 			if (!btnLayoutInsiteImage) return;
 
-			switch (addToCartBtn?.position) {
+			switch (effectivePosition) {
 				case 'bottom-visible':
+				case 'bottom visible':
 					btnLayoutInsiteImage.classList.add("wcb-products__product-style-hidden-btn-add-to-cart");
 					break;
 				case 'inside image':
+				case 'image':
 					setTimeout(() => {
 						btnLayoutInsiteImage.classList.add("wcb-products__product-style-hidden-btn-add-to-cart");
 					}, 200);
@@ -144,6 +151,11 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 		document.addEventListener("click", (e) => {
 			const theme = getThemeDefaults();
 			const addToCartBtn = theme?.shop_archive_add_to_cart_btn;
+			const isOverride = !!props?.general_layout?.isCustomizerGeneralLayout;
+			const effectivePosition =
+				isOverride && props?.general_addToCartBtn?.position
+					? props.general_addToCartBtn.position
+					: (addToCartBtn?.position || props?.general_addToCartBtn?.position);
 			const target = e.target as HTMLElement;
 
 			// Find button add-to-cart depence on block
@@ -159,13 +171,15 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 			// 1. Add className loading
 			if (btnLayoutBottomVisible || btnLayoutTopRightIcon) {
 			
-				switch (addToCartBtn?.position) {
+				switch (effectivePosition) {
 					case 'bottom-visible':
+					case 'bottom visible':
 						if (checkIsLoadingAddToCart(btnLayoutBottomVisible)){
 							btnLayoutBottomVisible.classList.add("add_to_cart_button--loading");
 						}
 						break;
 					case 'inside image':
+					case 'image':
 						if (checkIsLoadingAddToCart(btnLayoutBottomVisible)){
 							btnLayoutBottomVisible?.classList.add("add_to_cart_button__insite-image--loading");
 						}

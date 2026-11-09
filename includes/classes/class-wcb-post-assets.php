@@ -206,9 +206,10 @@ class WCB_Post_Assets {
 		// Clean up assets when a post is permanently deleted.
 		add_action( 'before_delete_post', array( $this, 'delete_all_post_assets' ) );
 
-		// Invalidate assets cache when Woostify theme or Product Label settings are updated.
+		// Invalidate assets cache when Woostify theme or Woostify Pro settings are updated.
 		$theme_options_to_watch = array(
 			'woostify_setting',
+			'woostify_pro_options',
 			'woostify_product_label',
 			'woostify_product_label_style',
 			'woostify_product_label_sale_percentage',
@@ -216,6 +217,35 @@ class WCB_Post_Assets {
 			'woostify_product_label_text_color',
 			'woostify_product_label_out_of_stock_background',
 			'woostify_product_label_out_of_stock_text_color',
+			'woostify_countdown_urgency',
+			'woostify_countdown_urgency_style',
+			'woostify_countdown_urgency_apply_for',
+			'woostify_countdown_urgency_categories_selected',
+			'woostify_countdown_urgency_products_selected',
+			'woostify_countdown_urgency_categories_exclude',
+			'woostify_countdown_urgency_products_exclude',
+			'woostify_countdown_urgency_time_duration',
+			'woostify_countdown_urgency_time_type',
+			'woostify_countdown_urgency_message',
+			'woostify_countdown_urgency_days_label',
+			'woostify_countdown_urgency_hours_label',
+			'woostify_countdown_urgency_minutes_label',
+			'woostify_countdown_urgency_seconds_label',
+			'woostify_countdown_urgency_display_on_thumbnail',
+			'woostify_countdown_urgency_hide_after_time_up',
+			'woostify_wc_pre_order',
+			'woostify_pre_order_label',
+			'woostify_pre_order_closed_label',
+			'woostify_pre_order_message',
+			'woostify_pre_order_countdown',
+			'woostify_pre_order_countdown_label',
+			'woostify_pre_order_label_position',
+			'woostify_pre_order_shop_page',
+			'woostify_pre_order_label_text_color',
+			'woostify_pre_order_label_background_color',
+			'woostify_pre_order_label_border_radius',
+			'woostify_pre_order_label_font_size',
+			'woostify_quick_view',
 		);
 		foreach ( $theme_options_to_watch as $opt_name ) {
 			add_action( "update_option_{$opt_name}", array( __CLASS__, 'update_global_asset_version' ) );

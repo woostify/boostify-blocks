@@ -22,6 +22,9 @@ export interface WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK {
 	marginBottom: HasResponsive<string>;
 	position: "top-left" | "top-right" | "none";
 	shape?: "round" | "square" | string;
+	borderRadius?: number;
+	isSquare?: boolean;
+	size?: number;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK =

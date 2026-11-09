@@ -78,6 +78,7 @@ import WcbProductsPanel_StyleDimension, {
 } from "./WcbProductsPanel_StyleDimension";
 import { getThemeDefaults } from "../utils/themeDefaults";
 import {
+	applyThemeDefaultsToBlockAttributes,
 	buildStyleBorderDefault,
 	buildStyleLayoutDefault,
 	buildGeneralContractDefault,
@@ -796,47 +797,57 @@ const Edit: FC<Props> = (props) => {
 		style_dimension,
 	]);
 
+	const effectiveAttrs = useMemo(() => {
+		return applyThemeDefaultsToBlockAttributes(attributes);
+	}, [attributes]);
+
 	const WcbAttrsForServerSide = useMemo(() => {
 		return {
 			className,
 			uniqueId,
-			general_sortingAndFiltering,
-			general_content,
-			general_layout,
-			general_featuredImage,
-			general_addToCartBtn,
-			general_pagination,
-			style_wishlistBtn,
-			style_quickViewBtn,
-			style_addToCardBtn,
+			general_sortingAndFiltering: effectiveAttrs.general_sortingAndFiltering,
+			general_content: effectiveAttrs.general_content,
+			general_layout: effectiveAttrs.general_layout,
+			general_featuredImage: effectiveAttrs.general_featuredImage,
+			general_addToCartBtn: effectiveAttrs.general_addToCartBtn,
+			general_pagination: effectiveAttrs.general_pagination,
+			style_title: effectiveAttrs.style_title,
+			style_featuredImage: effectiveAttrs.style_featuredImage,
+			style_layout: effectiveAttrs.style_layout,
+			style_addToCardBtn: effectiveAttrs.style_addToCardBtn,
+			style_pagination: effectiveAttrs.style_pagination,
+			style_saleBadge: effectiveAttrs.style_saleBadge,
+			style_outOfStock: effectiveAttrs.style_outOfStock,
+			style_border: effectiveAttrs.style_border,
+			style_price: effectiveAttrs.style_price,
+			style_rating: effectiveAttrs.style_rating,
+			style_wishlistBtn: effectiveAttrs.style_wishlistBtn,
+			style_quickViewBtn: effectiveAttrs.style_quickViewBtn,
+			style_countdownUrgency: effectiveAttrs.style_countdownUrgency,
+			style_dimension: effectiveAttrs.style_dimension,
+			style_category: effectiveAttrs.style_category,
+			advance_responsiveCondition: effectiveAttrs.advance_responsiveCondition,
+			advance_zIndex: effectiveAttrs.advance_zIndex,
+			advance_motionEffect: effectiveAttrs.advance_motionEffect,
 		};
-	}, [
-		uniqueId,
-		className,
-		general_sortingAndFiltering,
-		general_content,
-		general_layout,
-		general_featuredImage,
-		general_addToCartBtn,
-		general_pagination,
-		style_wishlistBtn,
-		style_quickViewBtn,
-		style_addToCardBtn,
-	]);
+	}, [effectiveAttrs, className, uniqueId]);
 
-	const WcbAttrsForSaveValue = WcbAttrsForSave();
-	const numCol = style_layout?.numberOfColumn;
+	const WcbAttrsForSaveValue = useMemo(() => {
+		return effectiveAttrs as WcbAttrsForSave;
+	}, [effectiveAttrs]);
+
+	const numCol = effectiveAttrs.style_layout?.numberOfColumn;
 	const colDesk = typeof numCol === "object" && numCol !== null ? (numCol.Desktop ?? 2) : (numCol ?? 2);
 	const colTab = typeof numCol === "object" && numCol !== null ? (numCol.Tablet ?? colDesk) : colDesk;
 	const colMob = typeof numCol === "object" && numCol !== null ? (numCol.Mobile ?? colTab) : colTab;
 
-	const rowGapDesk = style_layout?.rowGap?.Desktop ?? "1rem";
-	const rowGapTab = style_layout?.rowGap?.Tablet ?? rowGapDesk;
-	const rowGapMob = style_layout?.rowGap?.Mobile ?? rowGapTab;
+	const rowGapDesk = effectiveAttrs.style_layout?.rowGap?.Desktop ?? "1rem";
+	const rowGapTab = effectiveAttrs.style_layout?.rowGap?.Tablet ?? rowGapDesk;
+	const rowGapMob = effectiveAttrs.style_layout?.rowGap?.Mobile ?? rowGapTab;
 
-	const colGapDesk = style_layout?.colunmGap?.Desktop ?? "1rem";
-	const colGapTab = style_layout?.colunmGap?.Tablet ?? colGapDesk;
-	const colGapMob = style_layout?.colunmGap?.Mobile ?? colGapTab;
+	const colGapDesk = effectiveAttrs.style_layout?.colunmGap?.Desktop ?? "1rem";
+	const colGapTab = effectiveAttrs.style_layout?.colunmGap?.Tablet ?? colGapDesk;
+	const colGapMob = effectiveAttrs.style_layout?.colunmGap?.Mobile ?? colGapTab;
 
 	return (
 		<MyCacheProvider uniqueKey={clientId}>

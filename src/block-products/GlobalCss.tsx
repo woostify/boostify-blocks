@@ -13,7 +13,10 @@ import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueFor
 import { getThemeDefaults } from "../utils/themeDefaults";
 import { SHOPPING_CART_SVG, svgToDataUrl } from "./base-utils";
 
-const getBadgeShapeStyles = (shape?: string): CSSObject => {
+const getBadgeShapeStyles = (
+	shape?: string,
+	badgeOpts?: { borderRadius?: number; isSquare?: boolean; size?: number }
+): CSSObject => {
 	switch (shape) {
 		case "round":
 			return {
@@ -60,11 +63,28 @@ const getBadgeShapeStyles = (shape?: string): CSSObject => {
 				paddingLeft: "15px",
 			};
 		case "rectangular":
-		default:
-			return {
-				borderRadius: "2px",
+		default: {
+			const radius =
+				badgeOpts?.borderRadius !== undefined &&
+				badgeOpts.borderRadius !== null &&
+				String(badgeOpts.borderRadius) !== ""
+					? `${badgeOpts.borderRadius}px`
+					: "0px";
+			const base: CSSObject = {
+				borderRadius: radius,
 				padding: "2px 8px",
 			};
+			if (badgeOpts?.isSquare) {
+				const size = `${Math.max(20, badgeOpts.size || 40)}px`;
+				base.width = size;
+				base.height = size;
+				base.padding = "0";
+				base.display = "inline-flex";
+				base.alignItems = "center";
+				base.justifyContent = "center";
+			}
+			return base;
+		}
 	}
 };
 
@@ -125,6 +145,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 		? (style_quickViewBtn?.enabled !== undefined ? style_quickViewBtn?.enabled : qvTheme?.enabled)
 		: (qvTheme?.enabled !== undefined ? qvTheme?.enabled : style_quickViewBtn?.enabled);
 	const isQvEnabled = Boolean(effectiveQvEnabled) && String(effectiveQvEnabled) !== "0";
+
+	const rawQvShowIcon = qvTheme?.show_icon !== undefined ? qvTheme.show_icon : style_quickViewBtn?.show_icon;
+	const isQvShowIcon = effectiveQvPosition === "top-right"
+		? true
+		: (rawQvShowIcon !== undefined
+			? (Boolean(rawQvShowIcon) && String(rawQvShowIcon) !== "0" && String(rawQvShowIcon) !== "false")
+			: true);
 
 	const getQuickViewBorderRadius = (): string => {
 		const val = effectiveQvBorderRadius;
@@ -273,29 +300,33 @@ const GlobalCss: FC<Props> = (attrs) => {
 					// ------ end setting snap scroll x
 				},
 				// SALE BADGE positioning
-				...(style_saleBadge?.position === "top-left"
+				...(style_saleBadge?.position === "top-left" || (style_saleBadge?.position as string) === "left"
 					? {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge": {
 								left: "0.5rem",
+								right: "auto",
 							},
 					  }
 					: {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge": {
 								right: "0.5rem",
+								left: "auto",
 							},
 					  }),
 
 				// OUT OF STOCK BADGE positioning
-				...(style_outOfStock?.position === "top-left"
+				...(style_outOfStock?.position === "top-left" || (style_outOfStock?.position as string) === "left"
 					? {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
 								left: "0.5rem",
+								right: "auto",
 							},
 					  }
-					: style_outOfStock?.position === "top-right"
+					: style_outOfStock?.position === "top-right" || (style_outOfStock?.position as string) === "right"
 					? {
 							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
 								right: "0.5rem",
+								left: "auto",
 							},
 					  }
 					: {
@@ -539,6 +570,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 						...(hasQvBorderRadius ? { borderRadius: getQuickViewBorderRadius() } : {}),
 						...(!isQvEnabled ? { display: "none !important" } : {}),
 					},
+					...(!isQvShowIcon
+						? {
+								".wcb-products__product--quickViewBottomImage-svg__icon": {
+									display: "none !important",
+								},
+						  }
+						: {}),
 					":hover": {
 						".wcb-products__product--quickViewBottomImage--item": {
 							...(hasQvBorderRadius ? { borderRadius: getQuickViewBorderRadius() } : {}),
@@ -554,47 +592,60 @@ const GlobalCss: FC<Props> = (attrs) => {
 					},
 					"&.wcb-products__product--btnIconAddToCart": {
 						".wcb-products__product--btnIconAddToCart--item": {
-							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor &&
-							style_addToCardBtn.colorAndBackgroundColor.Normal.backgroundColor !== "#ffffff"
+							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color
+								? { color: style_addToCardBtn.colorAndBackgroundColor.Normal.color }
+								: {}),
+							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor
 								? { background: style_addToCardBtn.colorAndBackgroundColor.Normal.backgroundColor }
 								: {}),
-							...(typeof style_addToCardBtn?.border?.radius?.Desktop === "string" &&
-							style_addToCardBtn.border.radius.Desktop !== "50%"
-								? { borderRadius: style_addToCardBtn.border.radius.Desktop }
-								: typeof style_addToCardBtn?.border?.radius?.Desktop === "object" &&
-								  style_addToCardBtn?.border?.radius?.Desktop !== null
-								? {
-										borderTopLeftRadius: (style_addToCardBtn.border.radius.Desktop as any).topLeft,
-										borderTopRightRadius: (style_addToCardBtn.border.radius.Desktop as any).topRight,
-										borderBottomRightRadius: (style_addToCardBtn.border.radius.Desktop as any).bottomRight,
-										borderBottomLeftRadius: (style_addToCardBtn.border.radius.Desktop as any).bottomLeft,
-								  }
+							".woostify-svg-icon": {
+								color: "inherit",
+								"svg, svg path": {
+									fill: "currentColor",
+								},
+							},
+						},
+						...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor ||
+						style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color
+							? {
+									".wcb-products__product--btnIconAddToCart--item:hover": {
+										...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor
+											? { background: style_addToCardBtn.colorAndBackgroundColor.Hover.backgroundColor }
+											: {}),
+										...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color
+											? { color: style_addToCardBtn.colorAndBackgroundColor.Hover.color }
+											: {}),
+									},
+							  }
+							: {}),
+					},
+					"&.wcb-products__product--wishlistTopRight, &.wcb-products__product--wishlistBottomRight": {
+						".wcb-products__product--wishlistTopRight--item, .wcb-products__product--wishlistBottomRight--item": {
+							...(style_wishlistBtn?.backgroundColor
+								? { backgroundColor: style_wishlistBtn.backgroundColor }
 								: {}),
-							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color
+							...(style_wishlistBtn?.color
 								? {
-										"&::after": {
-											backgroundImage: `${svgToDataUrl(
-												`${SHOPPING_CART_SVG(style_addToCardBtn.colorAndBackgroundColor.Normal.color as any)}`
-											)} !important` as any,
+										color: style_wishlistBtn.color,
+										"&::before": {
+											color: "inherit",
 										},
 								  }
 								: {}),
+							"&:hover": {
+								...(style_wishlistBtn?.hoverBackgroundColor
+									? { backgroundColor: style_wishlistBtn.hoverBackgroundColor }
+									: {}),
+								...(style_wishlistBtn?.hoverColor
+									? {
+											color: style_wishlistBtn.hoverColor,
+											"&::before": {
+												color: style_wishlistBtn.hoverColor,
+											},
+									  }
+									: {}),
+							},
 						},
-						...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor &&
-						style_addToCardBtn.colorAndBackgroundColor.Hover.backgroundColor !== "#474747"
-							? {
-									".wcb-products__product--btnIconAddToCart--item:hover": {
-										background: style_addToCardBtn.colorAndBackgroundColor.Hover.backgroundColor,
-									},
-							  }
-							: {}),
-						...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color
-							? {
-									".wcb-products__product--btnIconAddToCart--item:hover::after": {
-										backgroundImage: `${svgToDataUrl(SHOPPING_CART_SVG(style_addToCardBtn.colorAndBackgroundColor.Hover.color as any))} !important` as any,
-									},
-							  }
-							: {}),
 					},
 				},
 			},
@@ -604,15 +655,25 @@ const GlobalCss: FC<Props> = (attrs) => {
 					textAlign: style_layout?.textAlignment,
 					backgroundColor: style_layout?.backgroundColor,
 					".wcb-products__price-button-wrapper": {
-						// Add element quantity
-						height: general_addToCartBtn?.position === "bottom visible" ? "auto" : general_addToCartBtn?.isShowQuantity ? "84px" : "50px",
-						lineHeight: general_addToCartBtn?.position === "bottom visible" ? "normal" : "36px",
-						overflow: "hidden",
+						...(general_addToCartBtn?.position === "bottom"
+							? {
+									height: general_addToCartBtn?.isShowQuantity ? "84px" : "50px",
+									lineHeight: "36px",
+									overflow: "hidden",
+							  }
+							: {
+									height: "auto",
+									lineHeight: "normal",
+									overflow: "visible",
+							  }),
 					},
 					// Style layout bottom add to cart button
 					".wcb-products__product-style-hidden-btn-add-to-cart": {
-						display: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === "inside image") ? "none !important" : "unset",
+						display: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === "inside image" || general_addToCartBtn?.position === "icon") ? "none !important" : "unset",
 						alignItems: "center",
+					},
+					".wcb-products__product-add-to-cart": {
+						display: (general_addToCartBtn?.position === "icon") ? "none !important" : undefined,
 					},
 					".wcb-products__add-to-cart-icon, .wcb-products__add-to-cart-label": {
 						display: (general_addToCartBtn?.position === "icon") ? "none" : "block",
@@ -705,12 +766,21 @@ const GlobalCss: FC<Props> = (attrs) => {
 							color: style_category?.textColor,
 						},
 					},
+					".wcb-products__product-content": {
+						minHeight: style_layout?.contentEqualHeight
+							? `${style_layout?.contentMinHeight || 160}px`
+							: undefined,
+					},
 					".wcb-products__product-salebadge": {
 						marginBottom: saleBadgeMarginBottom_mobile_new ?? undefined,
 						".wcb-products__product-onsale": {
 							color: style_saleBadge?.textColor,
 							backgroundColor: style_saleBadge?.backgroundColor,
-							...getBadgeShapeStyles(style_saleBadge?.shape || "round"),
+							...getBadgeShapeStyles(style_saleBadge?.shape || "round", {
+								borderRadius: style_saleBadge?.borderRadius,
+								isSquare: style_saleBadge?.isSquare,
+								size: style_saleBadge?.size,
+							}),
 						},
 					},
 					".wcb-products__product-outofstock-badge": {
@@ -718,7 +788,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 						".wcb-products__product-on-outofstock": {
 							color: style_outOfStock?.textColor,
 							backgroundColor: style_outOfStock?.backgroundColor,
-							...getBadgeShapeStyles(style_outOfStock?.shape || "round"),
+							...getBadgeShapeStyles(style_outOfStock?.shape || "round", {
+								borderRadius: style_outOfStock?.borderRadius,
+								isSquare: style_outOfStock?.isSquare,
+								size: style_outOfStock?.size,
+							}),
 						},
 					},
 					// Alignment for the rating stars row.
