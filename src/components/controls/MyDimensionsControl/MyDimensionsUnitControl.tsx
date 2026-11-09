@@ -57,15 +57,18 @@ const SideSlider: FC<{
 	const { num, unit } = parseValue(value);
 	const max = getMaxForUnit(unit);
 	const step = getStepForUnit(unit);
-	const clamped = Math.max(min, Math.min(max, num));
-	const pct = max > min ? ((clamped - min) / (max - min)) * 100 : 0;
+	// When negatives are allowed, mirror the slider range around 0
+	// (e.g. -1000..1000px, -20..20rem) instead of using the raw input min.
+	const sliderMin = min < 0 ? -max : min;
+	const clamped = Math.max(sliderMin, Math.min(max, num));
+	const pct = max > sliderMin ? ((clamped - sliderMin) / (max - sliderMin)) * 100 : 0;
 
 	return (
 		<input
 			className="wcb-dimensions-unit-control__range"
 			type="range"
 			value={clamped}
-			min={min}
+			min={sliderMin}
 			max={max}
 			step={step}
 			style={{ background: `linear-gradient(to right, #0073aa ${pct}%, #ddd ${pct}%)` }}
