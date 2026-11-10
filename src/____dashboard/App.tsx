@@ -56,18 +56,43 @@ const App: FC<DashboardProps> = ({
 	const fetchRemoteDemos = useCallback(async (forceRefresh = false) => {
 		setIsDemosLoading(true);
 		try {
-			const res = await postAjax<{ demos?: RemoteDemosMap }>({
+			const res = await postAjax<{
+				demos?: RemoteDemosMap;
+				partial?: boolean;
+				remoteError?: boolean;
+			}>({
 				action: "boostify_blocks_get_block_demos",
 				data: forceRefresh ? { refresh: "1" } : {},
-				timeout: 15000,
+				timeout: 22000,
 			});
-			if (res?.data?.demos && typeof res.data.demos === "object") {
-				setRemoteDemos(res.data.demos);
+
+			const rawDemos = res?.data?.demos;
+			const hasValidDemos = Boolean(
+				rawDemos &&
+				typeof rawDemos === "object" &&
+				!Array.isArray(rawDemos) &&
+				Object.keys(rawDemos).length > 0
+			);
+
+			if (hasValidDemos && rawDemos) {
+				setRemoteDemos(rawDemos);
 			}
-			if (forceRefresh) {
-				toast.success(__( "Demo previews refreshed.", "boostify-blocks" ));
+
+			if (res?.data?.remoteError) {
+				if (forceRefresh) {
+					toast.error(__( "Could not reach the demo library. Keeping available previews.", "boostify-blocks" ));
+				}
+			} else if (forceRefresh) {
+				toast.success(
+					res?.data?.partial
+						? __( "Loaded available demo previews (partial sync).", "boostify-blocks" )
+						: __( "Demo previews refreshed.", "boostify-blocks" )
+				);
 			}
 		} catch {
+			if (forceRefresh) {
+				toast.error(__( "Request timed out while refreshing demo previews.", "boostify-blocks" ));
+			}
 			// Fallback illustration UI renders automatically when offline or unreachable
 		} finally {
 			setIsDemosLoading(false);

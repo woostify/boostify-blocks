@@ -74,12 +74,13 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 
 	const modalDialogRef = useRef<HTMLDivElement | null>(null);
 	const copyResetTimerRef = useRef<number | null>(null);
+	const pillRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
 	useEffect(() => {
 		setActiveIndex(0);
 		setFailedImageIds({});
 		setIsCopied(false);
-	}, [block?.id, remotePatterns.length]);
+	}, [block?.id, remotePatterns]);
 
 	useEffect(() => {
 		setIsCopied(false);
@@ -100,6 +101,49 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 		activePattern && activePattern.imageUrl && !failedImageIds[activeImageKey]
 	);
 	const hasPatternContent = Boolean(hasValidRemoteImage && activePattern?.content?.trim());
+
+	// Keep the active pattern pill scrolled into view when cycling across many templates.
+	useEffect(() => {
+		if (!isOpen || remotePatterns.length <= 1) return;
+		const activePill = pillRefs.current[safeIndex];
+		if (activePill && typeof activePill.scrollIntoView === "function") {
+			activePill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+		}
+	}, [isOpen, safeIndex, remotePatterns.length]);
+
+	// Preload neighboring pattern screenshots so switching across many demos feels instant.
+	useEffect(() => {
+		if (!isOpen || remotePatterns.length <= 1) return;
+		const prevIdx = (safeIndex - 1 + remotePatterns.length) % remotePatterns.length;
+		const nextIdx = (safeIndex + 1) % remotePatterns.length;
+		[prevIdx, nextIdx].forEach((idx) => {
+			const url = remotePatterns[idx]?.imageUrl;
+			if (url) {
+				const img = new window.Image();
+				img.src = url;
+			}
+		});
+	}, [isOpen, safeIndex, remotePatterns]);
+
+	// Support Left/Right arrow keys for navigating many templates cleanly.
+	useEffect(() => {
+		if (!isOpen || remotePatterns.length <= 1) return;
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+			const target = e.target as HTMLElement | null;
+			if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+
+			if (e.key === "ArrowLeft") {
+				e.preventDefault();
+				setActiveIndex((prev) => (prev - 1 + remotePatterns.length) % remotePatterns.length);
+			} else if (e.key === "ArrowRight") {
+				e.preventDefault();
+				setActiveIndex((prev) => (prev + 1) % remotePatterns.length);
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [isOpen, remotePatterns.length]);
 
 	const isEnabled = block?.status === "enabled";
 
@@ -163,8 +207,12 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 								{remotePatterns.map((pat, idx) => (
 									<button
 										key={`${pat.id}-${idx}`}
+										ref={(el) => {
+											pillRefs.current[idx] = el;
+										}}
 										type="button"
 										onClick={() => setActiveIndex(idx)}
+										title={pat.title || `#${idx + 1}`}
 										className={`bb-demo-pattern-pill ${idx === safeIndex ? "is-active" : ""}`}
 									>
 										{pat.title || `#${idx + 1}`}

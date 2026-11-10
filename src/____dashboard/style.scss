@@ -2883,21 +2883,45 @@ body.boostify-blocks-includes-settings-page-php,
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	padding-bottom: 12px;
 	border-bottom: 1px solid #f0f0f4;
+
+	@media (max-width: 640px) {
+		flex-wrap: wrap;
+	}
 }
 
 .bb-demo-pattern-pills {
 	display: flex;
 	align-items: center;
 	gap: 6px;
-	flex-wrap: wrap;
+	flex: 1 1 auto;
+	min-width: 0;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #d6d6e0 transparent;
+	padding-bottom: 2px;
+
+	&::-webkit-scrollbar {
+		height: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #d6d6e0;
+		border-radius: 999px;
+	}
 }
 
 .bb-demo-pattern-pill {
 	all: unset;
 	cursor: pointer !important;
+	flex-shrink: 0;
+	max-width: 190px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	padding: 5px 11px;
 	border-radius: 7px;
 	font-size: 12.5px;

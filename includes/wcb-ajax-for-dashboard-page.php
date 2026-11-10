@@ -323,6 +323,99 @@ function boostify_blocks_resolve_demo_block_key( $raw_slug )
 }
 
 /**
+ * Return per-block demo cap, bounded safely to keep payloads and transients fast.
+ *
+ * @return int Max demos kept per block key.
+ */
+function boostify_blocks_get_demo_per_block_limit()
+{
+    $limit = absint( apply_filters( 'boostify_blocks_demo_per_block_limit', 12 ) );
+    return max( 1, min( 50, $limit ) );
+}
+
+/**
+ * Sort, deduplicate by post ID, and trim a single demoKey bucket to the configured cap.
+ *
+ * Keeps internal `_priority` when `$strip_priority` is false so subsequent pages can merge accurately.
+ *
+ * @param array $items          List of candidate demo entries.
+ * @param int   $limit          Max items to keep per block.
+ * @param bool  $strip_priority Whether to remove `_priority` from entries.
+ * @return array Finalized/trimmed list for one block key.
+ */
+function boostify_blocks_rank_demo_bucket( $items, $limit, $strip_priority = false )
+{
+    $by_id = array();
+    foreach ( $items as $item ) {
+        $post_id = absint( $item['id'] ?? 0 );
+        $dedup_k = $post_id > 0 ? 'id_' . $post_id : 'u_' . md5( ( $item['title'] ?? '' ) . '|' . ( $item['imageUrl'] ?? '' ) );
+        if ( ! isset( $by_id[ $dedup_k ] ) || ( $item['_priority'] ?? 99 ) < ( $by_id[ $dedup_k ]['_priority'] ?? 99 ) ) {
+            $by_id[ $dedup_k ] = $item;
+        }
+    }
+
+    $ranked = array_values( $by_id );
+    usort(
+        $ranked,
+        function ( $a, $b ) {
+            $pa = $a['_priority'] ?? 99;
+            $pb = $b['_priority'] ?? 99;
+            if ( $pa !== $pb ) {
+                return $pa <=> $pb;
+            }
+            return ( $b['id'] ?? 0 ) <=> ( $a['id'] ?? 0 );
+        }
+    );
+
+    $ranked = array_slice( $ranked, 0, $limit );
+    if ( $strip_priority ) {
+        $ranked = array_map(
+            function ( $item ) {
+                unset( $item['_priority'] );
+                return $item;
+            },
+            $ranked
+        );
+    }
+
+    return $ranked;
+}
+
+/**
+ * Merge mapped candidates from one page into the multi-page accumulator bucket,
+ * keeping memory bounded at O(blocks * limit) across arbitrarily many remote pages.
+ *
+ * @param array $bucket Accumulator map passed by reference.
+ * @param array $nodes  GraphQL wcbBlocks nodes from current page.
+ * @param int   $limit  Max demos retained per block.
+ * @return void
+ */
+function boostify_blocks_merge_remote_demos_page( array &$bucket, array $nodes, $limit )
+{
+    $page_grouped = boostify_blocks_map_remote_demos_from_nodes( $nodes, $limit, true );
+    foreach ( $page_grouped as $demo_key => $items ) {
+        $merged = isset( $bucket[ $demo_key ] ) ? array_merge( $bucket[ $demo_key ], $items ) : $items;
+        $bucket[ $demo_key ] = boostify_blocks_rank_demo_bucket( $merged, $limit, false );
+    }
+}
+
+/**
+ * Strip internal sorting metadata from an accumulated demo bucket.
+ *
+ * @param array $bucket Accumulated map of demoKey => ranked items with `_priority`.
+ * @param int   $limit  Max demos retained per block.
+ * @return array Clean demo map ready for transient caching and JSON output.
+ */
+function boostify_blocks_finalize_remote_demos_map( array $bucket, $limit )
+{
+    $final = array();
+    foreach ( $bucket as $demo_key => $items ) {
+        $final[ $demo_key ] = boostify_blocks_rank_demo_bucket( $items, $limit, true );
+    }
+    return $final;
+}
+
+/**
  * Map GraphQL wcbBlocks nodes into a compact demo map indexed by canonical block demoKey.
  *
  * Priority order per block:
@@ -330,12 +423,15 @@ function boostify_blocks_resolve_demo_block_key( $raw_slug )
  * 2 = wcb-blocks-cat match
  * 3 = block usage detected in contentOrigin for feature blocks (excludes generic layout wrappers)
  *
- * @param array $nodes List of GraphQL wcbBlocks node arrays.
+ * @param array    $nodes           List of GraphQL wcbBlocks node arrays.
+ * @param int|null $per_block_limit Optional max items per block (defaults to filterable cap).
+ * @param bool     $keep_priority   Preserve internal `_priority` for multi-page incremental merging.
  * @return array Map of demoKey => list of compact demo entries.
  */
-function boostify_blocks_map_remote_demos_from_nodes( $nodes )
+function boostify_blocks_map_remote_demos_from_nodes( $nodes, $per_block_limit = null, $keep_priority = false )
 {
     $generic_wrapper_keys = array( 'container', 'heading', 'buttons', 'image' );
+    $limit   = null !== $per_block_limit ? max( 1, absint( $per_block_limit ) ) : boostify_blocks_get_demo_per_block_limit();
     $grouped = array();
 
     foreach ( $nodes as $node ) {
@@ -417,48 +513,22 @@ function boostify_blocks_map_remote_demos_from_nodes( $nodes )
             if ( ! isset( $grouped[ $demo_key ] ) ) {
                 $grouped[ $demo_key ] = array();
             }
-            // Deduplicate by post databaseId.
-            $already_added = false;
-            foreach ( $grouped[ $demo_key ] as $existing ) {
-                if ( $existing['id'] === $post_id && $post_id > 0 ) {
-                    $already_added = true;
-                    break;
-                }
-            }
-            if ( ! $already_added ) {
-                $grouped[ $demo_key ][] = array(
-                    'id'         => $post_id,
-                    'title'      => $title,
-                    'imageUrl'   => $image_url,
-                    'link'       => $link,
-                    'category'   => $primary_category,
-                    'sourceType' => $match_info['sourceType'],
-                    'content'    => trim( $content_origin ),
-                    '_priority'  => $match_info['priority'],
-                );
-            }
+            $grouped[ $demo_key ][] = array(
+                'id'         => $post_id,
+                'title'      => $title,
+                'imageUrl'   => $image_url,
+                'link'       => $link,
+                'category'   => $primary_category,
+                'sourceType' => $match_info['sourceType'],
+                'content'    => trim( $content_origin ),
+                '_priority'  => $match_info['priority'],
+            );
         }
     }
 
-    // Sort by explicit tag priority first, then newest databaseId, and cap at 12 per block.
+    // Sort by explicit tag priority first, then newest databaseId, and cap per block.
     foreach ( $grouped as $demo_key => $items ) {
-        usort(
-            $items,
-            function ( $a, $b ) {
-                if ( $a['_priority'] !== $b['_priority'] ) {
-                    return $a['_priority'] <=> $b['_priority'];
-                }
-                return $b['id'] <=> $a['id'];
-            }
-        );
-
-        $grouped[ $demo_key ] = array_map(
-            function ( $item ) {
-                unset( $item['_priority'] );
-                return $item;
-            },
-            array_slice( $items, 0, 12 )
-        );
+        $grouped[ $demo_key ] = boostify_blocks_rank_demo_bucket( $items, $limit, ! $keep_priority );
     }
 
     return $grouped;
@@ -467,13 +537,22 @@ function boostify_blocks_map_remote_demos_from_nodes( $nodes )
 /**
  * Fetch published wcb-blocks items from boostifyblocks.com GraphQL endpoint.
  *
- * @return array{ok:bool,demos:array}
+ * Uses incremental per-page merging and a bounded time budget so large remote
+ * template libraries stay fast and never discard already-fetched pages on timeout.
+ *
+ * @return array{ok:bool,demos:array,partial:bool,totalFetched:int}
  */
 function boostify_blocks_fetch_remote_block_demos()
 {
-    $graphql_url = apply_filters( 'boostify_blocks_demo_graphql_url', 'https://boostifyblocks.com/graphql' );
+    $graphql_url      = apply_filters( 'boostify_blocks_demo_graphql_url', 'https://boostifyblocks.com/graphql' );
+    $per_block_limit  = boostify_blocks_get_demo_per_block_limit();
+    $max_pages        = max( 1, min( 20, absint( apply_filters( 'boostify_blocks_demo_fetch_max_pages', 10 ) ) ) );
+    $per_page_timeout = 6;
+    $time_budget      = 12.0;
+    $started_at       = microtime( true );
+
     $query = 'query BoostifyDashboardDemos($after: String) {
-        wcbBlocks(where: { status: PUBLISH }, first: 100, after: $after) {
+        wcbBlocks(where: { status: PUBLISH }, first: 50, after: $after) {
             pageInfo {
                 hasNextPage
                 endCursor
@@ -510,11 +589,18 @@ function boostify_blocks_fetch_remote_block_demos()
         }
     }';
 
-    $all_nodes = array();
-    $after     = null;
-    $max_pages = 5;
+    $bucket        = array();
+    $after         = null;
+    $pages_loaded  = 0;
+    $total_fetched = 0;
+    $partial       = false;
 
     for ( $page = 0; $page < $max_pages; $page++ ) {
+        if ( $page > 0 && ( microtime( true ) - $started_at ) >= $time_budget ) {
+            $partial = true;
+            break;
+        }
+
         $payload = array(
             'query'     => $query,
             'variables' => array(
@@ -525,7 +611,7 @@ function boostify_blocks_fetch_remote_block_demos()
         $response = wp_remote_post(
             $graphql_url,
             array(
-                'timeout' => 12,
+                'timeout' => $per_page_timeout,
                 'headers' => array(
                     'Content-Type' => 'application/json',
                     'Accept'       => 'application/json',
@@ -534,38 +620,68 @@ function boostify_blocks_fetch_remote_block_demos()
             )
         );
 
+        $page_failed = false;
         if ( is_wp_error( $response ) ) {
-            return array( 'ok' => false, 'demos' => array() );
+            $page_failed = true;
+        } else {
+            $code = wp_remote_retrieve_response_code( $response );
+            if ( $code < 200 || $code >= 300 ) {
+                $page_failed = true;
+            }
         }
 
-        $code = wp_remote_retrieve_response_code( $response );
-        if ( $code < 200 || $code >= 300 ) {
-            return array( 'ok' => false, 'demos' => array() );
+        $decoded = $page_failed ? null : json_decode( wp_remote_retrieve_body( $response ), true );
+        unset( $response );
+
+        if ( $page_failed || ! is_array( $decoded ) || ! isset( $decoded['data']['wcbBlocks']['edges'] ) || ! is_array( $decoded['data']['wcbBlocks']['edges'] ) ) {
+            if ( $pages_loaded > 0 ) {
+                // Keep partial pages already loaded instead of discarding everything.
+                $partial = true;
+                break;
+            }
+            return array(
+                'ok'           => false,
+                'demos'        => array(),
+                'partial'      => false,
+                'totalFetched' => 0,
+            );
         }
 
-        $decoded = json_decode( wp_remote_retrieve_body( $response ), true );
-        if ( ! is_array( $decoded ) || ! isset( $decoded['data']['wcbBlocks']['edges'] ) || ! is_array( $decoded['data']['wcbBlocks']['edges'] ) ) {
-            return array( 'ok' => false, 'demos' => array() );
-        }
-
+        $page_nodes = array();
         foreach ( $decoded['data']['wcbBlocks']['edges'] as $edge ) {
             if ( isset( $edge['node'] ) && is_array( $edge['node'] ) ) {
-                $all_nodes[] = $edge['node'];
+                $page_nodes[] = $edge['node'];
             }
         }
 
         $page_info     = $decoded['data']['wcbBlocks']['pageInfo'] ?? array();
         $has_next_page = ! empty( $page_info['hasNextPage'] );
         $end_cursor    = $page_info['endCursor'] ?? '';
+        unset( $decoded );
+
+        $total_fetched += count( $page_nodes );
+        $pages_loaded++;
+
+        boostify_blocks_merge_remote_demos_page( $bucket, $page_nodes, $per_block_limit );
+        unset( $page_nodes );
+
         if ( ! $has_next_page || '' === $end_cursor ) {
             break;
         }
+
+        if ( ( $page + 1 ) === $max_pages ) {
+            $partial = true;
+            break;
+        }
+
         $after = $end_cursor;
     }
 
     return array(
-        'ok'    => true,
-        'demos' => boostify_blocks_map_remote_demos_from_nodes( $all_nodes ),
+        'ok'           => true,
+        'demos'        => boostify_blocks_finalize_remote_demos_map( $bucket, $per_block_limit ),
+        'partial'      => $partial,
+        'totalFetched' => $total_fetched,
     );
 }
 
@@ -575,7 +691,7 @@ function boostify_blocks_fetch_remote_block_demos()
 add_action( 'wp_ajax_boostify_blocks_get_block_demos', 'boostify_blocks_ajax_get_block_demos' );
 function boostify_blocks_ajax_get_block_demos()
 {
-    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce']) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
         wp_send_json_error( array( 'message' => esc_html__( 'Invalid nonce.', 'boostify-blocks' ) ), 403 );
     }
 
@@ -585,14 +701,26 @@ function boostify_blocks_ajax_get_block_demos()
 
     $force_refresh = ! empty( $_POST['refresh'] ) && 'false' !== $_POST['refresh'];
     $transient_key = 'boostify_blocks_remote_demos_v2';
+    $backoff_key   = 'boostify_blocks_remote_demos_backoff_v2';
 
     if ( ! $force_refresh ) {
         $cached = get_transient( $transient_key );
         if ( is_array( $cached ) ) {
             wp_send_json_success(
                 array(
-                    'demos'  => $cached,
+                    'demos'  => empty( $cached ) ? new stdClass() : $cached,
                     'cached' => true,
+                )
+            );
+        }
+
+        if ( get_transient( $backoff_key ) ) {
+            wp_send_json_success(
+                array(
+                    'demos'       => new stdClass(),
+                    'cached'      => false,
+                    'remoteError' => true,
+                    'backoff'     => true,
                 )
             );
         }
@@ -600,20 +728,30 @@ function boostify_blocks_ajax_get_block_demos()
 
     $result = boostify_blocks_fetch_remote_block_demos();
     if ( ! empty( $result['ok'] ) ) {
-        set_transient( $transient_key, $result['demos'], 12 * HOUR_IN_SECONDS );
+        delete_transient( $backoff_key );
+        $is_partial = ! empty( $result['partial'] );
+        $ttl        = $is_partial ? 30 * MINUTE_IN_SECONDS : 12 * HOUR_IN_SECONDS;
+        set_transient( $transient_key, $result['demos'], $ttl );
+
         wp_send_json_success(
             array(
-                'demos'  => $result['demos'],
-                'cached' => false,
+                'demos'        => empty( $result['demos'] ) ? new stdClass() : $result['demos'],
+                'cached'       => false,
+                'partial'      => $is_partial,
+                'totalFetched' => (int) ( $result['totalFetched'] ?? 0 ),
             )
         );
     }
 
-    // Graceful fallback: return empty map instead of error status so fallback UI displays cleanly.
+    // Short negative backoff prevents repeated 6-12s hangs if remote host is down.
+    set_transient( $backoff_key, 1, 2 * MINUTE_IN_SECONDS );
+
+    // Preserve stale cached demos on manual Refresh failure if still present in transient.
+    $stale_cached = get_transient( $transient_key );
     wp_send_json_success(
         array(
-            'demos'  => array(),
-            'cached' => false,
+            'demos'       => is_array( $stale_cached ) && ! empty( $stale_cached ) ? $stale_cached : new stdClass(),
+            'cached'      => false,
             'remoteError' => true,
         )
     );
