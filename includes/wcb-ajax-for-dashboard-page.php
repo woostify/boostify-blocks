@@ -259,3 +259,362 @@ function boostify_blocks_ajax_waitlist_subscribe()
         'message' => esc_html__('Thank you! You have been added to the waitlist.', 'boostify-blocks'),
     ));
 }
+
+/**
+ * Resolve canonical dashboard demo keys from a tag/category slug or block slug.
+ *
+ * @param string $raw_slug Raw taxonomy slug, name, or block slug.
+ * @return string|null Canonical demoKey matching dashboard BLOCK_META demoSlug, or null.
+ */
+function boostify_blocks_resolve_demo_block_key( $raw_slug )
+{
+    $key = sanitize_title( (string) $raw_slug );
+    if ( '' === $key ) {
+        return null;
+    }
+
+    $aliases = array(
+        'container'           => 'container',
+        'heading'             => 'heading',
+        'posts-grid'          => 'posts-grid',
+        'post-grid'           => 'posts-grid',
+        'posts'               => 'posts-grid',
+        'products'            => 'products',
+        'product'             => 'products',
+        'buttons'             => 'buttons',
+        'button'              => 'buttons',
+        'faq'                 => 'faq',
+        'team'                => 'team',
+        'icon-box'            => 'icon-box',
+        'info-box'            => 'icon-box',
+        'info-boxes'          => 'icon-box',
+        'icon-list'           => 'icon-list',
+        'form'                => 'form',
+        'contact'             => 'form',
+        'newsletter'          => 'form',
+        'testimonials'        => 'testimonials',
+        'testimonial'         => 'testimonials',
+        'testimonials-swiper' => 'testimonials',
+        'countdown'           => 'countdown',
+        'counter'             => 'counter',
+        'image'               => 'image',
+        'google-maps'         => 'google-maps',
+        'google-map'          => 'google-maps',
+        'map'                 => 'google-maps',
+        'maps'                => 'google-maps',
+        'icon'                => 'icon',
+        'boostify-icon'       => 'icon',
+        'slider'              => 'slider',
+        'slider-swiper'       => 'slider',
+        'accordion'           => 'accordion',
+        'tabs'                => 'tabs',
+        'tab'                 => 'tabs',
+        'display-conditions'  => 'display-conditions',
+        'display-condition'   => 'display-conditions',
+        'popup'               => 'popup',
+        'pricing'             => 'pricing',
+        'pricing-table'       => 'pricing',
+        'mega-menu'           => 'mega-menu',
+        'dynamic'             => 'dynamic',
+        'dynamic-content'     => 'dynamic',
+    );
+
+    return $aliases[ $key ] ?? null;
+}
+
+/**
+ * Map GraphQL wcbBlocks nodes into a compact demo map indexed by canonical block demoKey.
+ *
+ * Priority order per block:
+ * 1 = explicit wcb-blocks-tag match (matches all blocks including container/heading/buttons/image & upcoming blocks)
+ * 2 = wcb-blocks-cat match
+ * 3 = block usage detected in contentOrigin for feature blocks (excludes generic layout wrappers)
+ *
+ * @param array $nodes List of GraphQL wcbBlocks node arrays.
+ * @return array Map of demoKey => list of compact demo entries.
+ */
+function boostify_blocks_map_remote_demos_from_nodes( $nodes )
+{
+    $generic_wrapper_keys = array( 'container', 'heading', 'buttons', 'image' );
+    $grouped = array();
+
+    foreach ( $nodes as $node ) {
+        if ( ! is_array( $node ) ) {
+            continue;
+        }
+
+        $image_url = esc_url_raw( $node['featuredImage']['node']['sourceUrl'] ?? '' );
+        if ( '' === $image_url ) {
+            continue;
+        }
+
+        $post_id = absint( $node['databaseId'] ?? 0 );
+        $title   = sanitize_text_field( $node['title'] ?? '' );
+        $link    = esc_url_raw( $node['link'] ?? '' );
+
+        $category_names = array();
+        $cat_edges = $node['wcbBlocksCategories']['edges'] ?? array();
+        if ( is_array( $cat_edges ) ) {
+            foreach ( $cat_edges as $cat_edge ) {
+                if ( ! empty( $cat_edge['node']['name'] ) ) {
+                    $category_names[] = sanitize_text_field( $cat_edge['node']['name'] );
+                }
+            }
+        }
+        $primary_category = ! empty( $category_names ) ? $category_names[0] : '';
+
+        // Track best (lowest) priority per block key for this node.
+        $matched_keys = array();
+        $register_match = function ( $demo_key, $priority, $source_type ) use ( &$matched_keys ) {
+            if ( ! $demo_key ) {
+                return;
+            }
+            if ( ! isset( $matched_keys[ $demo_key ] ) || $priority < $matched_keys[ $demo_key ]['priority'] ) {
+                $matched_keys[ $demo_key ] = array(
+                    'priority'   => $priority,
+                    'sourceType' => $source_type,
+                );
+            }
+        };
+
+        // 1. Explicit wcb-blocks-tag matches (highest priority)
+        $tag_edges = $node['wcbBlocksTags']['edges'] ?? array();
+        if ( is_array( $tag_edges ) ) {
+            foreach ( $tag_edges as $tag_edge ) {
+                $tag_node = $tag_edge['node'] ?? array();
+                $resolved = boostify_blocks_resolve_demo_block_key( $tag_node['slug'] ?? '' );
+                if ( ! $resolved ) {
+                    $resolved = boostify_blocks_resolve_demo_block_key( $tag_node['name'] ?? '' );
+                }
+                $register_match( $resolved, 1, 'tag' );
+            }
+        }
+
+        // 2. Category matches
+        if ( is_array( $cat_edges ) ) {
+            foreach ( $cat_edges as $cat_edge ) {
+                $cat_node = $cat_edge['node'] ?? array();
+                $resolved = boostify_blocks_resolve_demo_block_key( $cat_node['slug'] ?? '' );
+                if ( ! $resolved ) {
+                    $resolved = boostify_blocks_resolve_demo_block_key( $cat_node['name'] ?? '' );
+                }
+                $register_match( $resolved, 2, 'category' );
+            }
+        }
+
+        // 3. Content block markup detection (for specialty blocks, avoids generic wrapper noise)
+        $content_origin = is_string( $node['contentOrigin'] ?? null ) ? $node['contentOrigin'] : '';
+        if ( '' !== $content_origin && preg_match_all( '/<!--\s+wp:boostify-blocks\/([a-z0-9-]+)/', $content_origin, $matches ) ) {
+            foreach ( array_unique( $matches[1] ) as $block_slug ) {
+                $resolved = boostify_blocks_resolve_demo_block_key( $block_slug );
+                if ( $resolved && ! in_array( $resolved, $generic_wrapper_keys, true ) ) {
+                    $register_match( $resolved, 3, 'content' );
+                }
+            }
+        }
+
+        foreach ( $matched_keys as $demo_key => $match_info ) {
+            if ( ! isset( $grouped[ $demo_key ] ) ) {
+                $grouped[ $demo_key ] = array();
+            }
+            // Deduplicate by post databaseId.
+            $already_added = false;
+            foreach ( $grouped[ $demo_key ] as $existing ) {
+                if ( $existing['id'] === $post_id && $post_id > 0 ) {
+                    $already_added = true;
+                    break;
+                }
+            }
+            if ( ! $already_added ) {
+                $grouped[ $demo_key ][] = array(
+                    'id'         => $post_id,
+                    'title'      => $title,
+                    'imageUrl'   => $image_url,
+                    'link'       => $link,
+                    'category'   => $primary_category,
+                    'sourceType' => $match_info['sourceType'],
+                    'content'    => trim( $content_origin ),
+                    '_priority'  => $match_info['priority'],
+                );
+            }
+        }
+    }
+
+    // Sort by explicit tag priority first, then newest databaseId, and cap at 12 per block.
+    foreach ( $grouped as $demo_key => $items ) {
+        usort(
+            $items,
+            function ( $a, $b ) {
+                if ( $a['_priority'] !== $b['_priority'] ) {
+                    return $a['_priority'] <=> $b['_priority'];
+                }
+                return $b['id'] <=> $a['id'];
+            }
+        );
+
+        $grouped[ $demo_key ] = array_map(
+            function ( $item ) {
+                unset( $item['_priority'] );
+                return $item;
+            },
+            array_slice( $items, 0, 12 )
+        );
+    }
+
+    return $grouped;
+}
+
+/**
+ * Fetch published wcb-blocks items from boostifyblocks.com GraphQL endpoint.
+ *
+ * @return array{ok:bool,demos:array}
+ */
+function boostify_blocks_fetch_remote_block_demos()
+{
+    $graphql_url = apply_filters( 'boostify_blocks_demo_graphql_url', 'https://boostifyblocks.com/graphql' );
+    $query = 'query BoostifyDashboardDemos($after: String) {
+        wcbBlocks(where: { status: PUBLISH }, first: 100, after: $after) {
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+            edges {
+                node {
+                    databaseId
+                    title
+                    link
+                    featuredImage {
+                        node {
+                            sourceUrl
+                        }
+                    }
+                    wcbBlocksCategories {
+                        edges {
+                            node {
+                                name
+                                slug
+                            }
+                        }
+                    }
+                    wcbBlocksTags {
+                        edges {
+                            node {
+                                name
+                                slug
+                            }
+                        }
+                    }
+                    contentOrigin
+                }
+            }
+        }
+    }';
+
+    $all_nodes = array();
+    $after     = null;
+    $max_pages = 5;
+
+    for ( $page = 0; $page < $max_pages; $page++ ) {
+        $payload = array(
+            'query'     => $query,
+            'variables' => array(
+                'after' => $after,
+            ),
+        );
+
+        $response = wp_remote_post(
+            $graphql_url,
+            array(
+                'timeout' => 12,
+                'headers' => array(
+                    'Content-Type' => 'application/json',
+                    'Accept'       => 'application/json',
+                ),
+                'body'    => wp_json_encode( $payload ),
+            )
+        );
+
+        if ( is_wp_error( $response ) ) {
+            return array( 'ok' => false, 'demos' => array() );
+        }
+
+        $code = wp_remote_retrieve_response_code( $response );
+        if ( $code < 200 || $code >= 300 ) {
+            return array( 'ok' => false, 'demos' => array() );
+        }
+
+        $decoded = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( ! is_array( $decoded ) || ! isset( $decoded['data']['wcbBlocks']['edges'] ) || ! is_array( $decoded['data']['wcbBlocks']['edges'] ) ) {
+            return array( 'ok' => false, 'demos' => array() );
+        }
+
+        foreach ( $decoded['data']['wcbBlocks']['edges'] as $edge ) {
+            if ( isset( $edge['node'] ) && is_array( $edge['node'] ) ) {
+                $all_nodes[] = $edge['node'];
+            }
+        }
+
+        $page_info     = $decoded['data']['wcbBlocks']['pageInfo'] ?? array();
+        $has_next_page = ! empty( $page_info['hasNextPage'] );
+        $end_cursor    = $page_info['endCursor'] ?? '';
+        if ( ! $has_next_page || '' === $end_cursor ) {
+            break;
+        }
+        $after = $end_cursor;
+    }
+
+    return array(
+        'ok'    => true,
+        'demos' => boostify_blocks_map_remote_demos_from_nodes( $all_nodes ),
+    );
+}
+
+/**
+ * AJAX handler for fetching cached block demo illustrations from boostifyblocks.com.
+ */
+add_action( 'wp_ajax_boostify_blocks_get_block_demos', 'boostify_blocks_ajax_get_block_demos' );
+function boostify_blocks_ajax_get_block_demos()
+{
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'boostifyblocks_dashboard_settings_nonce' ) ) {
+        wp_send_json_error( array( 'message' => esc_html__( 'Invalid nonce.', 'boostify-blocks' ) ), 403 );
+    }
+
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( array( 'message' => esc_html__( 'Permission denied.', 'boostify-blocks' ) ), 403 );
+    }
+
+    $force_refresh = ! empty( $_POST['refresh'] ) && 'false' !== $_POST['refresh'];
+    $transient_key = 'boostify_blocks_remote_demos_v2';
+
+    if ( ! $force_refresh ) {
+        $cached = get_transient( $transient_key );
+        if ( is_array( $cached ) ) {
+            wp_send_json_success(
+                array(
+                    'demos'  => $cached,
+                    'cached' => true,
+                )
+            );
+        }
+    }
+
+    $result = boostify_blocks_fetch_remote_block_demos();
+    if ( ! empty( $result['ok'] ) ) {
+        set_transient( $transient_key, $result['demos'], 12 * HOUR_IN_SECONDS );
+        wp_send_json_success(
+            array(
+                'demos'  => $result['demos'],
+                'cached' => false,
+            )
+        );
+    }
+
+    // Graceful fallback: return empty map instead of error status so fallback UI displays cleanly.
+    wp_send_json_success(
+        array(
+            'demos'  => array(),
+            'cached' => false,
+            'remoteError' => true,
+        )
+    );
+}

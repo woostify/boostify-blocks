@@ -77,6 +77,7 @@ export function useBlocksManager({
 				status,
 				isNew: !!meta.isNew,
 				source: "real",
+				demoKey: slug,
 				demoUrl: demoBase ? `${demoBase}/${slug}` : undefined,
 			});
 		});
@@ -84,6 +85,7 @@ export function useBlocksManager({
 		// 2. Extensions (Display Conditions)
 		EXTENSIONS_LIST.forEach((ext) => {
 			const status = isDisplayConditionsEnabled ? "enabled" : "disabled";
+			const extKey = ext.demoSlug || ext.id;
 			items.push({
 				id: ext.id,
 				name: ext.name,
@@ -95,16 +97,19 @@ export function useBlocksManager({
 				isExtension: true,
 				source: "extension",
 				settingKey: ext.settingKey,
-				demoUrl: demoBase ? `${demoBase}/${ext.demoSlug || ext.id}` : undefined,
+				demoKey: extKey,
+				demoUrl: demoBase ? `${demoBase}/${extKey}` : undefined,
 			});
 		});
 
 		// 3. Sample PRO blocks (if enabled)
 		if (showSample) {
 			SAMPLE_PRO_BLOCKS.forEach((item) => {
+				const sampleKey = item.id.replace("sample-", "");
 				items.push({
 					...item,
-					demoUrl: demoBase ? `${demoBase}/${item.id.replace("sample-", "")}` : undefined,
+					demoKey: sampleKey,
+					demoUrl: demoBase ? `${demoBase}/${sampleKey}` : undefined,
 				});
 			});
 		}
@@ -191,25 +196,32 @@ export function useBlocksManager({
 		[onToggleDisplayConditions]
 	);
 
-	// Enable all real parent blocks
-	const enableAll = useCallback(() => {
-		const updated: Wcb_blocks_enable_disable_options_Type = { ...blocksStatus };
-		realParentBlocks.forEach((b) => {
-			updated[b.name] = "enabled";
-		});
-		setBlocksStatus(updated);
-		onToggleDisplayConditions?.(true);
-	}, [blocksStatus, realParentBlocks, onToggleDisplayConditions]);
+	// Enable or disable only the blocks/extensions within the selected category tab
+	const toggleCategoryBlocks = useCallback(
+		(category: string, enabled: boolean) => {
+			const nextStatus = enabled ? "enabled" : "disabled";
+			const normalizedCat = category.toLowerCase();
+			const isAll = normalizedCat === "all";
 
-	// Disable all real parent blocks
-	const disableAll = useCallback(() => {
-		const updated: Wcb_blocks_enable_disable_options_Type = { ...blocksStatus };
-		realParentBlocks.forEach((b) => {
-			updated[b.name] = "disabled";
-		});
-		setBlocksStatus(updated);
-		onToggleDisplayConditions?.(false);
-	}, [blocksStatus, realParentBlocks, onToggleDisplayConditions]);
+			const updated: Wcb_blocks_enable_disable_options_Type = { ...blocksStatus };
+			let hasRealUpdates = false;
+			realParentBlocks.forEach((b) => {
+				const metaCat = (BLOCK_META[b.name]?.cat || FALLBACK_CATEGORY).toLowerCase();
+				if (isAll || metaCat === normalizedCat) {
+					updated[b.name] = nextStatus;
+					hasRealUpdates = true;
+				}
+			});
+			if (hasRealUpdates) {
+				setBlocksStatus(updated);
+			}
+
+			if (isAll || normalizedCat === "extensions") {
+				onToggleDisplayConditions?.(enabled);
+			}
+		},
+		[blocksStatus, realParentBlocks, onToggleDisplayConditions]
+	);
 
 	// Discard unsaved changes
 	const discardChanges = useCallback(
@@ -269,8 +281,7 @@ export function useBlocksManager({
 		viewMode,
 		setViewMode,
 		toggleBlock,
-		enableAll,
-		disableAll,
+		toggleCategoryBlocks,
 		dirtyCount,
 		isSaving,
 		discardChanges,

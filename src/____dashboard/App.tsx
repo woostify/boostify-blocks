@@ -1,16 +1,18 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { __ } from "@wordpress/i18n";
 import toast, { Toaster } from "react-hot-toast";
 import Nav from "./components/Nav";
 import OverviewPage from "./components/overview/OverviewPage";
 import BlocksPage from "./components/blocks/BlocksPage";
+import BlockDemoModal from "./components/blocks/BlockDemoModal";
 import SettingsPage from "./components/settings/SettingsPage";
 import SaveBar from "./components/common/SaveBar";
 import NotifyMeModal from "./components/common/NotifyMeModal";
 import { useBlocksManager } from "./hooks/useBlocksManager";
 import { useDashboardSettings } from "./hooks/useDashboardSettings";
-import { DashboardProps, Path } from "./types";
+import { DashboardProps, Path, RemoteDemosMap, UnifiedBlockItem } from "./types";
+import { postAjax } from "./utils/ajax";
 import "../________";
 
 const App: FC<DashboardProps> = ({
@@ -44,6 +46,44 @@ const App: FC<DashboardProps> = ({
 		setNotifyTargetTitle(title || null);
 		setIsNotifyModalOpen(true);
 	};
+
+	// Block Demo Modal state & cached fetch from boostifyblocks.com
+	const [demoTargetBlockId, setDemoTargetBlockId] = useState<string | null>(null);
+	const [remoteDemos, setRemoteDemos] = useState<RemoteDemosMap>({});
+	const [hasLoadedDemos, setHasLoadedDemos] = useState(false);
+	const [isDemosLoading, setIsDemosLoading] = useState(false);
+
+	const fetchRemoteDemos = useCallback(async (forceRefresh = false) => {
+		setIsDemosLoading(true);
+		try {
+			const res = await postAjax<{ demos?: RemoteDemosMap }>({
+				action: "boostify_blocks_get_block_demos",
+				data: forceRefresh ? { refresh: "1" } : {},
+				timeout: 15000,
+			});
+			if (res?.data?.demos && typeof res.data.demos === "object") {
+				setRemoteDemos(res.data.demos);
+			}
+			if (forceRefresh) {
+				toast.success(__( "Demo previews refreshed.", "boostify-blocks" ));
+			}
+		} catch {
+			// Fallback illustration UI renders automatically when offline or unreachable
+		} finally {
+			setIsDemosLoading(false);
+			setHasLoadedDemos(true);
+		}
+	}, []);
+
+	const handleOpenDemoModal = useCallback(
+		(block: UnifiedBlockItem) => {
+			setDemoTargetBlockId(block.id);
+			if (!hasLoadedDemos && !isDemosLoading) {
+				fetchRemoteDemos(false);
+			}
+		},
+		[hasLoadedDemos, isDemosLoading, fetchRemoteDemos]
+	);
 
 	// Sync path with URL history
 	const handleChangePath = (nextPath: Path) => {
@@ -192,8 +232,8 @@ const App: FC<DashboardProps> = ({
 					viewMode={blocksManager.viewMode}
 					setViewMode={blocksManager.setViewMode}
 					onToggle={blocksManager.toggleBlock}
-					onEnableAll={blocksManager.enableAll}
-					onDisableAll={blocksManager.disableAll}
+					onBulkToggleCategory={blocksManager.toggleCategoryBlocks}
+					onOpenDemo={handleOpenDemoModal}
 					onNotifyMe={handleOpenNotifyModal}
 					isSubscribed={isWaitlistSubscribed}
 				/>
@@ -207,6 +247,25 @@ const App: FC<DashboardProps> = ({
 					showSample={boostify_blocks_meta?.showSample ?? true}
 				/>
 			)}
+
+			{/* Block Demo Modal (fetches screenshots from boostifyblocks.com + fallback UI) */}
+			{(() => {
+				const demoBlock = demoTargetBlockId
+					? blocksManager.allUnifiedBlocks.find((b) => b.id === demoTargetBlockId) || null
+					: null;
+				const demoPatterns = demoBlock?.demoKey ? remoteDemos[demoBlock.demoKey] || [] : [];
+				return (
+					<BlockDemoModal
+						isOpen={!!demoBlock}
+						block={demoBlock}
+						remotePatterns={demoPatterns}
+						isLoading={isDemosLoading}
+						onClose={() => setDemoTargetBlockId(null)}
+						onRefresh={() => fetchRemoteDemos(true)}
+						onToggleBlock={blocksManager.toggleBlock}
+					/>
+				);
+			})()}
 
 			{/* Notify Me / Pro Waitlist Modal */}
 			<NotifyMeModal

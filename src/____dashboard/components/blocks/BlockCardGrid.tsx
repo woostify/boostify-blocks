@@ -6,11 +6,18 @@ import { UnifiedBlockItem } from "../../types";
 interface BlockCardGridProps {
 	block: UnifiedBlockItem;
 	onToggle: (id: string, nextStatus: "enabled" | "disabled") => void;
+	onOpenDemo: (block: UnifiedBlockItem) => void;
 	onNotifyMe?: (title?: string) => void;
 	isSubscribed?: boolean;
 }
 
-const BlockCardGrid: FC<BlockCardGridProps> = ({ block, onToggle, onNotifyMe, isSubscribed }) => {
+const BlockCardGrid: FC<BlockCardGridProps> = ({
+	block,
+	onToggle,
+	onOpenDemo,
+	onNotifyMe,
+	isSubscribed,
+}) => {
 	const isEnabled = block.status === "enabled";
 	const isPro = !!block.isPro;
 
@@ -81,21 +88,14 @@ const BlockCardGrid: FC<BlockCardGridProps> = ({ block, onToggle, onNotifyMe, is
 			<div className="bb-card-footer">
 				{!isPro ? (
 					<div className="bb-card-footer-group">
-						{block.demoUrl && block.demoUrl !== "#" ? (
-							<a
-								href={block.demoUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="bb-card-footer-link"
-							>
-								<span>{__( "Demo", "boostify-blocks" )}</span>
-								<DynamicIcon name="arrow_outward" size={15} />
-							</a>
-						) : (
-							<span className="bb-card-footer-muted">
-								{__( "Documentation", "boostify-blocks" )}
-							</span>
-						)}
+						<button
+							type="button"
+							onClick={() => onOpenDemo(block)}
+							className="bb-card-footer-demo-btn"
+						>
+							<DynamicIcon name="visibility" size={16} />
+							<span>{__( "Demo", "boostify-blocks" )}</span>
+						</button>
 					</div>
 				) : (
 					<div className="bb-card-footer-pro-row">

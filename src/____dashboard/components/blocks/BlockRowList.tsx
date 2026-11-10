@@ -7,11 +7,18 @@ interface BlockRowListProps {
 	block: UnifiedBlockItem;
 	isFirst?: boolean;
 	onToggle: (id: string, nextStatus: "enabled" | "disabled") => void;
+	onOpenDemo: (block: UnifiedBlockItem) => void;
 	onNotifyMe?: (title?: string) => void;
 	isSubscribed?: boolean;
 }
 
-const BlockRowList: FC<BlockRowListProps> = ({ block, onToggle, onNotifyMe, isSubscribed }) => {
+const BlockRowList: FC<BlockRowListProps> = ({
+	block,
+	onToggle,
+	onOpenDemo,
+	onNotifyMe,
+	isSubscribed,
+}) => {
 	const isEnabled = block.status === "enabled";
 	const isPro = !!block.isPro;
 
@@ -53,6 +60,20 @@ const BlockRowList: FC<BlockRowListProps> = ({ block, onToggle, onNotifyMe, isSu
 			{/* Description */}
 			<div className={`bb-list-desc ${!isEnabled ? "is-disabled" : ""}`}>
 				{block.description}
+			</div>
+
+			{/* Demo Action */}
+			<div className="bb-list-demo-col">
+				{!isPro && (
+					<button
+						type="button"
+						onClick={() => onOpenDemo(block)}
+						className="bb-list-demo-btn"
+					>
+						<DynamicIcon name="visibility" size={16} />
+						<span>{__( "Demo", "boostify-blocks" )}</span>
+					</button>
+				)}
 			</div>
 
 			{/* Switch or Lock / Notify me */}

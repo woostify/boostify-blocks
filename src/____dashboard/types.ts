@@ -65,6 +65,18 @@ export type BlockCategory =
 	| "Interactive"
 	| "Extensions";
 
+export interface RemoteDemoPattern {
+	id: number;
+	title: string;
+	imageUrl: string;
+	link: string;
+	category: string;
+	sourceType?: "tag" | "category" | "content";
+	content?: string;
+}
+
+export type RemoteDemosMap = Record<string, RemoteDemoPattern[]>;
+
 export interface UnifiedBlockItem {
 	id: string;
 	name: string;
@@ -78,5 +90,6 @@ export interface UnifiedBlockItem {
 	isExtension?: boolean;
 	source: "real" | "sample" | "extension";
 	settingKey?: string;
+	demoKey?: string;
 	demoUrl?: string;
 }
