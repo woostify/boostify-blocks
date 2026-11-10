@@ -94,6 +94,7 @@ import {
 	buildStyleWishlistButtonDefault,
 	buildStyleQuickViewButtonDefault,
 	buildStyleCountdownUrgencyDefault,
+	normalizeAddToCartPosition,
 } from "./WcbThemeDefaults";
 
 interface Props extends EditProps<WcbAttrs> { }
@@ -180,7 +181,7 @@ const Edit: FC<Props> = (props) => {
 		setAttributes({ ...DEFAULT });
 	}, [style_layout]);
 
-	// When isCustomizerGeneralLayout switches from true → false, reset affected attributes to customizer defaults
+	// When isCustomizerGeneralLayout switches between true/false
 	const prevIsCustomizerGeneralLayout = useRef(general_layout?.isCustomizerGeneralLayout);
 	useEffect(() => {
 		const prev = prevIsCustomizerGeneralLayout.current;
@@ -188,6 +189,9 @@ const Edit: FC<Props> = (props) => {
 		prevIsCustomizerGeneralLayout.current = curr;
 
 		if (prev === true && curr === false) {
+			const theme = getThemeDefaults();
+			const curPos = theme.shop_archive_add_to_cart_btn?.position || 'bottom';
+			const normalizedPos = normalizeAddToCartPosition(curPos);
 			setAttributes({
 				general_content: buildGeneralContractDefault(undefined),
 				general_featuredImage: buildGeneralFeaturedImageDefault(undefined),
@@ -200,10 +204,41 @@ const Edit: FC<Props> = (props) => {
 				style_outOfStock: buildStyleOutOfStockDefault(undefined),
 				style_title: buildStyleTitleDefault(undefined),
 				style_price: buildStylePriceDefault(undefined),
-				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined),
+				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined, normalizedPos),
 				style_wishlistBtn: buildStyleWishlistButtonDefault(undefined),
 				style_quickViewBtn: buildStyleQuickViewButtonDefault(undefined),
 				style_countdownUrgency: buildStyleCountdownUrgencyDefault(undefined),
+			});
+		} else if (prev === false && curr === true) {
+			// When switching to block custom style, snapshot all current Customizer defaults into block attributes.
+			const synced = applyThemeDefaultsToBlockAttributes({
+				...attributes,
+				general_layout: {
+					...general_layout,
+					isCustomizerGeneralLayout: false,
+				},
+			});
+			setAttributes({
+				general_content: synced.general_content,
+				general_featuredImage: synced.general_featuredImage,
+				general_addToCartBtn: synced.general_addToCartBtn,
+				general_sortingAndFiltering: synced.general_sortingAndFiltering,
+				style_layout: synced.style_layout
+					? {
+							...synced.style_layout,
+							isNumberOfColumnEdited: style_layout?.isNumberOfColumnEdited,
+					  }
+					: style_layout,
+				style_border: synced.style_border,
+				style_featuredImage: synced.style_featuredImage,
+				style_saleBadge: synced.style_saleBadge,
+				style_outOfStock: synced.style_outOfStock,
+				style_title: synced.style_title,
+				style_price: synced.style_price,
+				style_addToCardBtn: synced.style_addToCardBtn,
+				style_wishlistBtn: synced.style_wishlistBtn,
+				style_quickViewBtn: synced.style_quickViewBtn,
+				style_countdownUrgency: synced.style_countdownUrgency,
 			});
 		}
 	}, [general_layout?.isCustomizerGeneralLayout]);
@@ -255,14 +290,17 @@ const Edit: FC<Props> = (props) => {
 	}, [style_countdownUrgency]);
 
 	useEffect(() => {
-		const currentQuickView = buildStyleQuickViewButtonDefault(
-			attributes.style_quickViewBtn as any
-		);
+		const currentQuickView = buildStyleQuickViewButtonDefault(undefined);
 		if (
 			!style_quickViewBtn ||
 			style_quickViewBtn.position !== currentQuickView.position ||
 			style_quickViewBtn.enabled !== currentQuickView.enabled ||
-			style_quickViewBtn.show_icon !== currentQuickView.show_icon
+			style_quickViewBtn.show_icon !== currentQuickView.show_icon ||
+			style_quickViewBtn.bg_color !== currentQuickView.bg_color ||
+			style_quickViewBtn.text_color !== currentQuickView.text_color ||
+			style_quickViewBtn.hover_bg_color !== currentQuickView.hover_bg_color ||
+			style_quickViewBtn.hover_text_color !== currentQuickView.hover_text_color ||
+			style_quickViewBtn.border_radius !== currentQuickView.border_radius
 		) {
 			setAttributes({
 				style_quickViewBtn: currentQuickView,
@@ -387,7 +425,28 @@ const Edit: FC<Props> = (props) => {
 											opened={tabGeneralIsPanelOpen === "Button" || undefined}
 											//
 											setAttr__={(data) => {
-												setAttributes({ general_addToCartBtn: data });
+												const isPosChanged = data.position !== general_addToCartBtn?.position;
+												if (isPosChanged) {
+													const posDefaults = buildStyleAddToCartBtnDefault(undefined, data.position);
+													setAttributes({
+														general_addToCartBtn: data,
+														style_addToCardBtn: {
+															...posDefaults,
+															...style_addToCardBtn,
+															typography: style_addToCardBtn?.typography ?? posDefaults.typography,
+															padding: style_addToCardBtn?.padding ?? posDefaults.padding,
+															marginBottom: style_addToCardBtn?.marginBottom ?? posDefaults.marginBottom,
+															colorAndBackgroundColor: posDefaults.colorAndBackgroundColor,
+															border: {
+																...(posDefaults.border || {}),
+																...(style_addToCardBtn?.border || {}),
+																radius: posDefaults.border?.radius ?? style_addToCardBtn?.border?.radius,
+															},
+														},
+													});
+												} else {
+													setAttributes({ general_addToCartBtn: data });
+												}
 											}}
 											panelData={general_addToCartBtn}
 										/>
@@ -765,6 +824,7 @@ const Edit: FC<Props> = (props) => {
 			style_rating,
 			style_wishlistBtn,
 			style_quickViewBtn,
+			style_countdownUrgency,
 			advance_motionEffect,
 			style_category,
 			style_dimension,
@@ -792,6 +852,7 @@ const Edit: FC<Props> = (props) => {
 		style_rating,
 		style_wishlistBtn,
 		style_quickViewBtn,
+		style_countdownUrgency,
 		advance_motionEffect,
 		style_category,
 		style_dimension,
@@ -854,7 +915,7 @@ const Edit: FC<Props> = (props) => {
 			<div
 				{...wrapBlockProps}
 				className={`${wrapBlockProps.className
-					} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX ? style_layout.swithToScrollSnapX.toString() : "None"}`}
+					} wcb-block-products-editor-swithToScrollSnapX__${effectiveAttrs.style_layout?.swithToScrollSnapX ? effectiveAttrs.style_layout.swithToScrollSnapX.toString() : "None"}`}
 				style={{
 					...wrapBlockProps.style,
 					"--wcb-editor-col-mobile": colMob,

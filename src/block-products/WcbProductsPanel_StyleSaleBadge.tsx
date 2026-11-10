@@ -25,6 +25,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE {
 	borderRadius?: number;
 	isSquare?: boolean;
 	size?: number;
+	text?: string;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE =

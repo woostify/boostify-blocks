@@ -47,7 +47,6 @@ $sb  = $attr['style_border'] ?? array();
 $sd  = $attr['style_dimension'] ?? array();
 $sw  = $attr['style_wishlistBtn'] ?? array();
 $sq  = $attr['style_quickViewBtn'] ?? array();
-$scu = $attr['style_countdownUrgency'] ?? array();
 
 $wrap_sel          = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
 $list_sel          = $wrap_sel . ' .wcb-products__list';
@@ -60,9 +59,8 @@ $price_sel         = $wrap_sel . ' .wcb-products__product-price';
 $rating_sel        = $wrap_sel . ' .wcb-products__product-rating';
 $image_sel         = $wrap_sel . ' .wcb-products__product-featured';
 $image_link_sel    = $wrap_sel . ' .wcb-products__product-image-link';
-$overlay_sel       = $wrap_sel . ' .wcb-products__product-image-overlay';
 $add_cart_wrap_sel = $wrap_sel . ' .wcb-products__product-add-to-cart';
-$add_cart_sel      = $wrap_sel . ' .wcb-products__product-add-to-cart a';
+$add_cart_sel      = $product_sel . ' .wcb-products__product-add-to-cart a';
 $sale_sel          = $wrap_sel . ' .wcb-products__product-salebadge';
 $sale_badge_sel    = $wrap_sel . ' .wcb-products__product-salebadge .wcb-products__product-onsale';
 $out_of_stock_sel  = $wrap_sel . ' .wcb-products__product-outofstock-badge';
@@ -71,23 +69,15 @@ $pag_wrap_sel      = $wrap_sel . ' .wcb-products__pagination';
 $pag_sel           = $pag_wrap_sel . ' .page-numbers';
 $pag_active        = $pag_wrap_sel . ' .page-numbers.current';
 
-// Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
-// Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
-$css['desktop'][ $wrap_sel ]['display'] = 'block';
-
 // 1. Products List Layout: Grid vs Carousel (Scroll Snap Slider)
+// Static display/overflow/scroll-snap/indicator rules live in src/block-products/style.scss
+// via .swithToScrollSnapX--{None|Desktop|Tablet|Mobile}. Only dynamic gaps, columns, and flex-basis are emitted here.
 $switch_snap     = $sl['swithToScrollSnapX'] ?? 'None';
 $is_snap_desktop = ( 'Desktop' === $switch_snap );
 $is_snap_tablet  = ( $is_snap_desktop || 'Tablet' === $switch_snap );
 $is_snap_mobile  = ( $is_snap_tablet  || 'Mobile' === $switch_snap );
 
-$indicators_sel = $wrap_sel . ' .indicators';
-$item_sel       = $list_sel . ' > div';
-
-// Visibility of carousel indicators / arrows
-$css['desktop'][ $indicators_sel ]['display'] = $is_snap_desktop ? 'block' : 'none';
-$css['tablet'][ $indicators_sel ]['display']  = $is_snap_tablet ? 'block' : 'none';
-$css['mobile'][ $indicators_sel ]['display']  = $is_snap_mobile ? 'block' : 'none';
+$item_sel = $list_sel . ' > div';
 
 // Number of columns responsive
 $num_col = $sl['numberOfColumn'] ?? 4;
@@ -140,54 +130,48 @@ $pk_m_fmt = $wcb_format_unit( $pk_m, $pk_t_fmt );
 $css['desktop'][ $list_sel ]['row-gap']    = $rg_d_fmt;
 $css['desktop'][ $list_sel ]['column-gap'] = $cg_d_fmt;
 if ( $is_snap_desktop ) {
-	$css['desktop'][ $list_sel ]['display']          = 'flex';
-	$css['desktop'][ $list_sel ]['overflow-x']       = 'auto';
-	$css['desktop'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
 	$nc_d_num = max( 1, intval( $nc_d ) );
-	$css['desktop'][ $item_sel ]['scroll-snap-align'] = 'start';
-	$css['desktop'][ $item_sel ]['flex-shrink']        = '0';
-	$css['desktop'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_d_num - 1 ) . " * {$cg_d_fmt})) / {$nc_d_num} - {$pk_d_fmt})";
+	$css['desktop'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_d_num - 1 ) . " * {$cg_d_fmt})) / {$nc_d_num} - {$pk_d_fmt})";
 } else {
-	$css['desktop'][ $list_sel ]['display']               = 'grid';
 	$css['desktop'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_d}, minmax(0, 1fr))";
 }
 
 // --- Tablet (Media Query) ---
-$css['tablet'][ $list_sel ]['row-gap']    = $rg_t_fmt;
-$css['tablet'][ $list_sel ]['column-gap'] = $cg_t_fmt;
+if ( $rg_t_fmt !== $rg_d_fmt ) {
+	$css['tablet'][ $list_sel ]['row-gap'] = $rg_t_fmt;
+}
+if ( $cg_t_fmt !== $cg_d_fmt ) {
+	$css['tablet'][ $list_sel ]['column-gap'] = $cg_t_fmt;
+}
 if ( $is_snap_tablet ) {
-	$css['tablet'][ $list_sel ]['display']          = 'flex';
-	$css['tablet'][ $list_sel ]['overflow-x']       = 'auto';
-	$css['tablet'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
 	$nc_t_num = max( 1, intval( $nc_t ) );
-	$css['tablet'][ $item_sel ]['scroll-snap-align'] = 'start';
-	$css['tablet'][ $item_sel ]['flex-shrink']        = '0';
-	$css['tablet'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_t_num - 1 ) . " * {$cg_t_fmt})) / {$nc_t_num} - {$pk_t_fmt})";
-} else {
-	$css['tablet'][ $list_sel ]['display']               = 'grid';
+	$css['tablet'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_t_num - 1 ) . " * {$cg_t_fmt})) / {$nc_t_num} - {$pk_t_fmt})";
+} elseif ( $nc_t !== $nc_d || $is_snap_desktop ) {
 	$css['tablet'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_t}, minmax(0, 1fr))";
 }
 
 // --- Mobile (Media Query) ---
-$css['mobile'][ $list_sel ]['row-gap']    = $rg_m_fmt;
-$css['mobile'][ $list_sel ]['column-gap'] = $cg_m_fmt;
+if ( $rg_m_fmt !== $rg_t_fmt || $rg_m_fmt !== $rg_d_fmt ) {
+	$css['mobile'][ $list_sel ]['row-gap'] = $rg_m_fmt;
+}
+if ( $cg_m_fmt !== $cg_t_fmt || $cg_m_fmt !== $cg_d_fmt ) {
+	$css['mobile'][ $list_sel ]['column-gap'] = $cg_m_fmt;
+}
 if ( $is_snap_mobile ) {
-	$css['mobile'][ $list_sel ]['display']          = 'flex';
-	$css['mobile'][ $list_sel ]['overflow-x']       = 'auto';
-	$css['mobile'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
 	$nc_m_num = max( 1, intval( $nc_m ) );
-	$css['mobile'][ $item_sel ]['scroll-snap-align'] = 'start';
-	$css['mobile'][ $item_sel ]['flex-shrink']        = '0';
-	$css['mobile'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_m_num - 1 ) . " * {$cg_m_fmt})) / {$nc_m_num} - {$pk_m_fmt})";
-} else {
-	$css['mobile'][ $list_sel ]['display']               = 'grid';
+	$css['mobile'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_m_num - 1 ) . " * {$cg_m_fmt})) / {$nc_m_num} - {$pk_m_fmt})";
+} elseif ( $nc_m !== $nc_t || $nc_m !== $nc_d || $is_snap_tablet ) {
 	$css['mobile'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_m}, minmax(0, 1fr))";
 }
 
 // 2. Product Card Base
 $ga       = $attr['general_addToCartBtn'] ?? array();
 $cart_pos = $ga['position'] ?? 'inside image';
-$show_qty = ! empty( $ga['isShowQuantity'] );
+if ( 'bottom-visible' === $cart_pos ) {
+	$cart_pos = 'bottom visible';
+} elseif ( 'image' === $cart_pos ) {
+	$cart_pos = 'inside image';
+}
 if ( ! empty( $sl['textAlignment'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $product_sel, 'text-align', $sl['textAlignment'] );
 	$justify = 'center';
@@ -217,7 +201,7 @@ if ( ! empty( $sl['contentEqualHeight'] ) ) {
 
 // 3. Title
 if ( ! empty( $st['typography'] ) ) {
-	WCB_Block_Helper::add_typography_css( $css, $title_sel, $st['typography'] );
+	WCB_Block_Helper::add_typography_css( $css, $title_sel . ', ' . $title_a_sel, $st['typography'] );
 }
 if ( ! empty( $st['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $title_sel, 'color', $st['textColor'] );
@@ -229,7 +213,7 @@ if ( ! empty( $st['marginBottom'] ) ) {
 
 // 4. Category
 if ( ! empty( $sc['typography'] ) ) {
-	WCB_Block_Helper::add_typography_css( $css, $category_sel, $sc['typography'] );
+	WCB_Block_Helper::add_typography_css( $css, $category_sel . ', ' . $category_a_sel, $sc['typography'] );
 }
 if ( ! empty( $sc['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $category_sel, 'color', $sc['textColor'] );
@@ -261,9 +245,6 @@ if ( ! empty( $sr['marginBottom'] ) ) {
 // 7. Featured Image
 if ( ! empty( $sf['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $image_sel, 'margin-bottom', $sf['marginBottom'] );
-}
-if ( ! empty( $sf['backgroundOverlay'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $overlay_sel, 'background-color', $sf['backgroundOverlay'] );
 }
 if ( ! empty( $sf['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $image_link_sel, $sf['border'], true, true );
@@ -351,7 +332,8 @@ if ( ! empty( $sa['colorAndBackgroundColor'] ) ) {
 	}
 	if ( ! empty( $cbc['Hover']['color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover', 'color', $cbc['Hover']['color'] );
-		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover svg path', 'fill', $cbc['Hover']['color'] . ' !important' );
+		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover span', 'color', $cbc['Hover']['color'] );
+		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover svg path', 'fill', $cbc['Hover']['color'] );
 	}
 	if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover', 'background-color', $cbc['Hover']['backgroundColor'] );
@@ -369,18 +351,15 @@ if ( ! empty( $sa['border'] ) ) {
 
 // Icon visibility
 if ( false === ( $ga['isShowIcon'] ?? null ) ) {
-	$css['desktop'][ $wrap_sel . ' .wcb-products__add-to-cart-icon' ]['display'] = 'none !important';
+	$css['desktop'][ $wrap_sel . ' .wcb-products__add-to-cart-icon' ]['display'] = 'none';
 }
 if ( ! empty( $sa['colorAndBackgroundColor']['Normal']['color'] ) ) {
-	$css['desktop'][ $wrap_sel . ' .wcb-products__add-to-cart-icon svg path' ]['fill'] = $sa['colorAndBackgroundColor']['Normal']['color'] . ' !important';
+	$css['desktop'][ $wrap_sel . ' .wcb-products__add-to-cart-icon svg path' ]['fill'] = $sa['colorAndBackgroundColor']['Normal']['color'];
 }
 
 // Top-right icon button style & inline SVG coloring
 if ( 'icon' === $cart_pos ) {
-	$css['desktop'][ $wrap_sel . ' .wcb-products__product-add-to-cart' ]['display'] = 'none !important';
-	$css['desktop'][ $wrap_sel . ' .wcb-products__product-style-hidden-btn-add-to-cart' ]['display'] = 'none !important';
-
-	$icon_btn_sel = $wrap_sel . ' .wcb-products__product--btnIconAddToCart--item';
+	$icon_btn_sel = $product_sel . '.wcb-products__product--btnIconAddToCart .wcb-products__product--btnIconAddToCart--item';
 
 	if ( ! empty( $sa['colorAndBackgroundColor']['Normal']['color'] ) ) {
 		$css['desktop'][ $icon_btn_sel ]['color'] = $sa['colorAndBackgroundColor']['Normal']['color'];
@@ -396,22 +375,20 @@ if ( 'icon' === $cart_pos ) {
 	}
 	if ( ! empty( $sa['border'] ) ) {
 		WCB_Block_Helper::add_border_css( $css, $icon_btn_sel, $sa['border'], true, true );
-	} elseif ( isset( $sa['border']['radius']['Desktop'] ) && '' !== (string) $sa['border']['radius']['Desktop'] ) {
-		$rad_val = WCB_Block_Helper::get_css_value( $sa['border']['radius']['Desktop'] );
-		$css['desktop'][ $icon_btn_sel ]['border-radius'] = $rad_val;
 	}
 }
 
 // Wishlist button styles
-$wl_top_sel = $wrap_sel . ' .wcb-products__product--wishlistTopRight--item';
-$wl_bot_sel = $wrap_sel . ' .wcb-products__product--wishlistBottomRight--item';
+$wl_top_sel = $product_sel . '.wcb-products__product--wishlistTopRight .wcb-products__product--wishlistTopRight--item';
+$wl_bot_sel = $product_sel . '.wcb-products__product--wishlistBottomRight .wcb-products__product--wishlistBottomRight--item';
 
 foreach ( array( $wl_top_sel, $wl_bot_sel ) as $wl_sel ) {
 	if ( ! empty( $sw['backgroundColor'] ) ) {
 		$css['desktop'][ $wl_sel ]['background-color'] = $sw['backgroundColor'];
 	}
 	if ( ! empty( $sw['color'] ) ) {
-		$css['desktop'][ $wl_sel ]['color'] = $sw['color'];
+		$css['desktop'][ $wl_sel ]['color']           = $sw['color'];
+		$css['desktop'][ $wl_sel . '::before' ]['color'] = $sw['color'];
 	}
 	if ( ! empty( $sw['hoverBackgroundColor'] ) ) {
 		$css['desktop'][ $wl_sel . ':hover' ]['background-color'] = $sw['hoverBackgroundColor'];
@@ -459,9 +436,8 @@ if ( ! empty( $sd['margin'] ) ) {
 
 
 // 14. Quick View Button
-$qv_btn_sel        = $wrap_sel . ' .wcb-products__product .wcb-products__product--quickViewBottomImage--item';
-$qv_prod_hover_sel = $wrap_sel . ' .wcb-products__product:hover .wcb-products__product--quickViewBottomImage--item';
-$qv_btn_hover_sel  = $qv_btn_sel . ':hover';
+$qv_btn_sel       = $wrap_sel . ' .wcb-products__product .wcb-products__product--quickViewBottomImage--item';
+$qv_btn_hover_sel = $qv_btn_sel . ':hover';
 
 $qv_enabled = ! empty( $sq['enabled'] );
 
@@ -469,7 +445,7 @@ if ( ! $qv_enabled ) {
 	$css['desktop'][ $qv_btn_sel ]['display'] = 'none !important';
 } else {
 	if ( isset( $sq['show_icon'] ) && ! $sq['show_icon'] && ( $sq['position'] ?? '' ) !== 'top-right' ) {
-		$css['desktop'][ $wrap_sel . ' .wcb-products__product--quickViewBottomImage-svg__icon' ]['display'] = 'none !important';
+		$css['desktop'][ $wrap_sel . ' .wcb-products__product--quickViewBottomImage-svg__icon' ]['display'] = 'none';
 	}
 
 	// Dynamic colors & border radius
@@ -482,7 +458,6 @@ if ( ! $qv_enabled ) {
 
 	if ( isset( $sq['border_radius'] ) && '' !== (string) $sq['border_radius'] ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
-		WCB_Block_Helper::add_responsive_css( $css, $qv_prod_hover_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
 	}
 
 	if ( ! empty( $sq['hover_bg_color'] ) ) {
@@ -490,20 +465,6 @@ if ( ! $qv_enabled ) {
 	}
 	if ( ! empty( $sq['hover_text_color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'color', $sq['hover_text_color'] );
-	}
-}
-
-// 15. Countdown Urgency
-if ( ! empty( $scu ) ) {
-	$cu_sel = $wrap_sel . ' .wcb-products__countdown-urgency';
-	if ( ! empty( $scu['textColor'] ) ) {
-		WCB_Block_Helper::add_responsive_css( $css, $cu_sel, 'color', $scu['textColor'] );
-	}
-	if ( ! empty( $scu['backgroundColor'] ) ) {
-		WCB_Block_Helper::add_responsive_css( $css, $cu_sel, 'background-color', $scu['backgroundColor'] );
-	}
-	if ( ! empty( $scu['border'] ) ) {
-		WCB_Block_Helper::add_border_css( $css, $cu_sel, $scu['border'], true, true );
 	}
 }
 

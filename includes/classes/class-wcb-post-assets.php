@@ -246,6 +246,7 @@ class WCB_Post_Assets {
 			'woostify_pre_order_label_border_radius',
 			'woostify_pre_order_label_font_size',
 			'woostify_quick_view',
+			'woostify_wc_quick_view',
 		);
 		foreach ( $theme_options_to_watch as $opt_name ) {
 			add_action( "update_option_{$opt_name}", array( __CLASS__, 'update_global_asset_version' ) );

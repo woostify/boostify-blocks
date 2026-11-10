@@ -9,6 +9,8 @@ export interface WCB_PRODUCTS_PANEL_FEATURED_IMAGE {
 	featuredImagePosition: "top" | "background";
 	linkCompleteBox: boolean;
 	hoverType?: "swap" | "zoom" | "none";
+	equal_height_flag?: boolean;
+	image_height?: number;
 }
 
 export const WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO: WCB_PRODUCTS_PANEL_FEATURED_IMAGE =

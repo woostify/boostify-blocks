@@ -52,9 +52,13 @@ const getBackgroundColorGradientStyles = ({
 	return {
 		[`${className}`]: {
 			[`${preBgName}`]: `${bgValue}`,
-			":hover": {
-				[`${preBgName_h}`]: `${bgValue_h || null}`,
-			},
+			...(preBgName_h && bgValue_h
+				? {
+						"&:hover": {
+							[`${preBgName_h}`]: `${bgValue_h}`,
+						},
+				  }
+				: {}),
 		},
 	};
 };

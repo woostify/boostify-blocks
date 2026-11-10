@@ -126,6 +126,8 @@ export function buildGeneralFeaturedImageDefault(_attr?: Partial<typeof WCB_PROD
         hoverType:
             content?.hover ??
             WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO.hoverType,
+        equal_height_flag: Boolean(content?.equal_height_flag),
+        image_height: content?.image_height ?? 300,
     };
 }
 
@@ -186,6 +188,7 @@ export function buildStyleSaleBadgeDefault(_attr?: Partial<typeof WCB_PRODUCTS_P
         borderRadius: saleTag?.border_radius ?? 0,
         isSquare: saleTag?.is_square ?? false,
         size: saleTag?.size ?? 40,
+        text: saleTag?.text ?? "Sale!",
     };
 }
 
@@ -221,6 +224,7 @@ export function buildStyleOutOfStockDefault(_attr?: Partial<typeof WCB_PRODUCTS_
         borderRadius: outOfStock?.border_radius ?? 0,
         isSquare: outOfStock?.is_square ?? false,
         size: outOfStock?.size ?? 40,
+        text: outOfStock?.text ?? "Out Of Stock",
     };
 }
 
@@ -282,6 +286,15 @@ export function buildStylePriceDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL
     };
 }
 
+export const normalizeAddToCartPosition = (p?: string): WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN['position'] => {
+    if (p === 'bottom-visible' || p === 'bottom visible') return 'bottom visible';
+    if (p === 'image' || p === 'inside image') return 'inside image';
+    if (p === 'icon') return 'icon';
+    if (p === 'none') return 'none';
+    if (p === 'bottom') return 'bottom';
+    return 'bottom';
+};
+
 /**
  * Builds style_addToCartBtn with theme styles.
  * Customizer attributes use the theme value; all others use demo defaults.
@@ -290,7 +303,7 @@ export function buildStyleAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCT
     const theme = getThemeDefaults();
     const addToCartBtn = theme.shop_archive_add_to_cart_btn;
     const pos = currentPos || addToCartBtn?.position || 'bottom';
-    const normalizedPos = pos === 'bottom-visible' ? 'bottom visible' : pos === 'image' ? 'inside image' : pos;
+    const normalizedPos = normalizeAddToCartPosition(pos);
     const posStyle = addToCartBtn?.by_position?.[normalizedPos] || addToCartBtn?.by_position?.[pos];
 
     const isIconPos = normalizedPos === 'icon';
@@ -344,13 +357,7 @@ export function buildGeneralAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODU
     return {
         ...WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
         isShowButton: isShowBtn,
-        position:
-            addToCartBtn?.position === 'bottom-visible' ? 'bottom visible' :
-            addToCartBtn?.position === 'image' ? 'inside image' :
-            addToCartBtn?.position === 'icon' ? 'icon' :
-            addToCartBtn?.position === 'bottom' ? 'bottom' :
-            addToCartBtn?.position ??
-            WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.position,
+        position: normalizeAddToCartPosition(addToCartBtn?.position),
         isShowQuantity: isShowQty,
         isShowIcon:
             addToCartBtn?.show_icon !== undefined
@@ -424,7 +431,7 @@ export function buildStyleQuickViewButtonDefault(_attr?: Partial<typeof WCB_PROD
             quickViewBtn?.hover_text_color ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.hover_text_color,
         border_radius:
-            quickViewBtn?.border_radius !== undefined
+            quickViewBtn?.border_radius !== undefined && quickViewBtn.border_radius !== ''
                 ? (typeof quickViewBtn.border_radius === 'string' ? parseInt(quickViewBtn.border_radius, 10) || 0 : Number(quickViewBtn.border_radius))
                 : (_attr?.border_radius ?? WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.border_radius),
         woostify_pro_active:
@@ -572,6 +579,7 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
               isShowSaleBadge: themeSaleTag?.position !== 'none',
               showSaleBadgeDiscoutPercent: Boolean(themeSaleTag?.sale_percent),
               isShowOutOfStock: themeOut?.position !== 'none',
+              saleBadgePosition: 'Inside image',
           };
 
     // 4. Featured Image
@@ -581,6 +589,8 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
         hoverType: isOverride
             ? (baseFeatured.hoverType || theme.shop_archive_product_image?.hover || 'swap')
             : (theme.shop_archive_product_image?.hover || baseFeatured.hoverType || 'swap'),
+        equal_height_flag: Boolean(theme.shop_archive_product_image?.equal_height_flag),
+        image_height: theme.shop_archive_product_image?.image_height ?? 300,
     };
 
     // 5. Add to Cart Button
@@ -588,19 +598,13 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
     const themeAddToCart = theme.shop_archive_add_to_cart_btn;
     const isCatalog = Boolean(theme.catalog_mode);
 
-    let mappedThemePos: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN['position'] = 'bottom';
-    const rawPos = themeAddToCart?.position;
-    if (rawPos === 'bottom-visible') mappedThemePos = 'bottom visible';
-    else if (rawPos === 'image') mappedThemePos = 'inside image';
-    else if (rawPos === 'icon') mappedThemePos = 'icon';
-    else if (rawPos === 'none') mappedThemePos = 'none';
-    else if (rawPos === 'bottom') mappedThemePos = 'bottom';
+    const mappedThemePos = normalizeAddToCartPosition(themeAddToCart?.position);
 
     const effectiveAddToCartBtn: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN = isOverride
         ? {
               ...baseAddToCart,
               isShowButton: isCatalog ? false : (baseAddToCart.isShowButton !== undefined ? baseAddToCart.isShowButton : (themeAddToCart?.position !== 'none')),
-              position: (baseAddToCart.position as WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN['position']) || mappedThemePos,
+              position: baseAddToCart.position ? normalizeAddToCartPosition(baseAddToCart.position) : mappedThemePos,
               isShowQuantity: isCatalog ? false : (baseAddToCart.isShowQuantity !== undefined ? baseAddToCart.isShowQuantity : toBool(themeContent?.quantity_flag, false)),
               isShowIcon: baseAddToCart.isShowIcon !== undefined ? baseAddToCart.isShowIcon : (themeAddToCart?.show_icon ?? true),
           }
@@ -613,10 +617,26 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
           };
 
     // 6. Style Add to Cart Button
-    const baseStyleAddToCart = attrs.style_addToCardBtn || buildStyleAddToCartBtnDefault(undefined, effectiveAddToCartBtn.position);
+    const defaultStyleAddToCart = buildStyleAddToCartBtnDefault(undefined, effectiveAddToCartBtn.position);
+    const baseStyleAddToCart = attrs.style_addToCardBtn;
     const effectiveStyleAddToCart = isOverride
-        ? baseStyleAddToCart
-        : buildStyleAddToCartBtnDefault(undefined, effectiveAddToCartBtn.position);
+        ? {
+              ...defaultStyleAddToCart,
+              ...(baseStyleAddToCart || {}),
+              colorAndBackgroundColor: {
+                  ...defaultStyleAddToCart.colorAndBackgroundColor,
+                  ...(baseStyleAddToCart?.colorAndBackgroundColor || {}),
+                  Normal: {
+                      ...defaultStyleAddToCart.colorAndBackgroundColor?.Normal,
+                      ...(baseStyleAddToCart?.colorAndBackgroundColor?.Normal || {}),
+                  },
+                  Hover: {
+                      ...defaultStyleAddToCart.colorAndBackgroundColor?.Hover,
+                      ...(baseStyleAddToCart?.colorAndBackgroundColor?.Hover || {}),
+                  },
+              },
+          }
+        : defaultStyleAddToCart;
 
     // 7. Style Sale Badge & Out of Stock
     const effectiveSaleBadge = isOverride

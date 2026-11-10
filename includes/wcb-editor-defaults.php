@@ -104,11 +104,19 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		}
 
 		// Quick view defaults (Woostify Pro).
-		$quick_view_enabled  = $woostify_pro_active && ( 'activated' === get_option( 'woostify_wc_quick_view' ) || defined( 'WOOSTIFY_PRO_QUICK_VIEW' ) || class_exists( 'Woostify_Quick_View' ) );
 		$quick_view_position = $non_empty( $woostify_pro['shop_page_quick_view_position'] ?? null, 'top-right' );
-		$quick_view_radius   = ( null !== ( $woostify_pro['shop_product_quick_view_radius'] ?? null ) && '' !== (string) ( $woostify_pro['shop_product_quick_view_radius'] ?? '' ) )
+		$quick_view_enabled  = $woostify_pro_active
+			&& ( 'none' !== $quick_view_position )
+			&& ( 'activated' === get_option( 'woostify_wc_quick_view' ) || defined( 'WOOSTIFY_PRO_QUICK_VIEW' ) || class_exists( 'Woostify_Quick_View' ) );
+		$has_custom_qv_rad   = ( null !== ( $woostify_pro['shop_product_quick_view_radius'] ?? null ) && '' !== (string) ( $woostify_pro['shop_product_quick_view_radius'] ?? '' ) );
+		$quick_view_radius   = $has_custom_qv_rad
 			? (int) $woostify_pro['shop_product_quick_view_radius']
-			: '';
+			: ( 'center-image' === $quick_view_position ? $btn_radius : 0 );
+		$qv_is_text_btn      = ( 'top-right' !== $quick_view_position );
+		$qv_bg_default       = $qv_is_text_btn ? $btn_bg_color : '#ffffff';
+		$qv_text_default     = $qv_is_text_btn ? $btn_text_color : '#2b2b2b';
+		$qv_hover_bg_default = $btn_hover_bg_color;
+		$qv_hover_tx_default = $qv_is_text_btn ? $btn_hover_text_color : '#ffffff';
 		$qv_raw_icon         = $woostify_pro['shop_product_quick_view_icon'] ?? true;
 		$qv_show_icon        = ! ( false === $qv_raw_icon || 0 === $qv_raw_icon || '0' === (string) $qv_raw_icon || 'false' === (string) $qv_raw_icon || '' === $qv_raw_icon );
 
@@ -214,7 +222,7 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 				'size'          => $out_size,
 			),
 			'shop_archive_general_design'  => array(
-				'title_color'     => $non_empty( $woostify['shop_page_product_title_color'] ?? null, '#2b2b2b' ),
+				'title_color'     => $non_empty( $woostify['shop_page_product_title_color'] ?? null, '#8f8f8f' ),
 				'title_font_size' => array(
 					'desktop' => (int) $non_empty( $woostify['shop_page_product_title_font_size'] ?? null, 14 ),
 					'tablet'  => (int) $non_empty( $woostify['shop_page_product_title_tablet_font_size'] ?? null, 14 ),
@@ -250,10 +258,10 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 				'enabled'             => $quick_view_enabled,
 				'position'            => $quick_view_position,
 				'show_icon'           => (bool) $qv_show_icon,
-				'bg_color'            => $non_empty( $woostify_pro['shop_product_quick_view_background'] ?? null, '' ),
-				'text_color'          => $non_empty( $woostify_pro['shop_product_quick_view_color'] ?? null, '' ),
-				'hover_bg_color'      => $non_empty( $woostify_pro['shop_product_quick_view_bg_hover'] ?? null, '' ),
-				'hover_text_color'    => $non_empty( $woostify_pro['shop_product_quick_view_c_hover'] ?? null, '' ),
+				'bg_color'            => $non_empty( $woostify_pro['shop_product_quick_view_background'] ?? null, $qv_bg_default ),
+				'text_color'          => $non_empty( $woostify_pro['shop_product_quick_view_color'] ?? null, $qv_text_default ),
+				'hover_bg_color'      => $non_empty( $woostify_pro['shop_product_quick_view_bg_hover'] ?? null, $qv_hover_bg_default ),
+				'hover_text_color'    => $non_empty( $woostify_pro['shop_product_quick_view_c_hover'] ?? null, $qv_hover_tx_default ),
 				'border_radius'       => $quick_view_radius,
 				'woostify_pro_active' => (bool) $woostify_pro_active,
 			),
@@ -270,108 +278,27 @@ if ( ! function_exists( 'boostify_blocks_get_badge_shape_css_rules' ) ) {
 	 * @return array<string, string>
 	 */
 	function boostify_blocks_get_badge_shape_css_rules( $shape, $badge_opts = array() ) {
-		switch ( $shape ) {
-			case 'round':
-				return array(
-					'border-radius' => '50%',
-					'min-width'     => '40px',
-					'min-height'    => '40px',
-					'padding'       => '5px',
-					'text-align'    => 'center',
-					'word-break'    => 'break-all',
-					'box-shadow'    => '0 1px 2px rgba(0,0,0,0.1)',
-				);
-			case 'pill':
-				return array(
-					'border-radius' => '9999px',
-					'padding'       => '2px 12px',
-				);
-			case 'leaf':
-				return array(
-					'border-radius' => '10px 0 10px 0',
-					'padding'       => '2px 8px',
-				);
-			case 'parallelogram':
-				return array(
-					'border-radius' => '0',
-					'clip-path'     => 'polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)',
-					'padding-left'  => '15px',
-					'padding-right' => '15px',
-				);
-			case 'teardrop':
-				return array(
-					'border-radius' => '50% 50% 50% 0',
-					'padding'       => '4px 8px',
-				);
-			case 'ribbon':
-				return array(
-					'border-radius' => '0',
-					'clip-path'     => 'polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)',
-					'padding-right' => '15px',
-				);
-			case 'tag-left':
-				return array(
-					'border-radius' => '0',
-					'clip-path'     => 'polygon(10px 0%, 100% 0, 100% 100%, 10px 100%, 0% 50%)',
-					'padding-left'  => '15px',
-				);
-			case 'rectangular':
-			default:
-				$radius = isset( $badge_opts['border_radius'] ) && '' !== (string) $badge_opts['border_radius']
-					? intval( $badge_opts['border_radius'] ) . 'px'
-					: '0px';
-				$rules  = array(
-					'border-radius' => $radius,
-					'padding'       => '2px 8px',
-				);
-				if ( ! empty( $badge_opts['is_square'] ) ) {
-					$size             = max( 20, intval( $badge_opts['size'] ?? 40 ) ) . 'px';
-					$rules['width']   = $size;
-					$rules['height']  = $size;
-					$rules['padding'] = '0';
-				}
-				return $rules;
+		if ( ! empty( $shape ) && 'rectangular' !== $shape ) {
+			return array();
 		}
+
+		$rules = array();
+		if ( isset( $badge_opts['border_radius'] ) && '' !== (string) $badge_opts['border_radius'] ) {
+			$rules['border-radius'] = intval( $badge_opts['border_radius'] ) . 'px';
+		}
+		if ( ! empty( $badge_opts['is_square'] ) ) {
+			$size             = max( 20, intval( $badge_opts['size'] ?? 40 ) ) . 'px';
+			$rules['width']   = $size;
+			$rules['height']  = $size;
+			$rules['padding'] = '0';
+		}
+		return $rules;
 	}
 }
 
 add_action( 'enqueue_block_editor_assets', function () {
 	$data = boostify_blocks_get_theme_defaults_data();
 	wp_add_inline_script( 'wp-blocks', 'window.BOOSTIFY_BLOCKS_THEME_DEFAULTS=' . wp_json_encode( $data ) . ';', 'before' );
-
-	$editor_css = '
-		.editor-styles-wrapper .wcb-products__product-salebadge .wcb-products__product-onsale,
-		.wcb-products__product-salebadge .wcb-products__product-onsale {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			line-height: 1.2;
-			white-space: nowrap;
-		}
-		.editor-styles-wrapper .wcb-products__product-salebadge .wcb-products__product-onsale span.onsale,
-		.wcb-products__product-salebadge .wcb-products__product-onsale span.onsale {
-			position: static !important;
-			margin: 0 !important;
-			padding: 0 !important;
-			display: inline !important;
-			font-size: inherit !important;
-			line-height: inherit !important;
-			color: inherit !important;
-			background-color: transparent !important;
-		}
-		.editor-styles-wrapper .wcb-products__product-outofstock-badge .wcb-products__product-on-outofstock,
-		.wcb-products__product-outofstock-badge .wcb-products__product-on-outofstock {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			line-height: 1.2;
-			white-space: nowrap;
-		}
-	';
-
-	wp_register_style( 'boostify-blocks-editor-badge-sync', false );
-	wp_enqueue_style( 'boostify-blocks-editor-badge-sync' );
-	wp_add_inline_style( 'boostify-blocks-editor-badge-sync', $editor_css );
 
 	wp_enqueue_script(
 		'boostify-blocks-countdown-urgency-editor',

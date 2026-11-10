@@ -25,6 +25,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK {
 	borderRadius?: number;
 	isSquare?: boolean;
 	size?: number;
+	text?: string;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK =
