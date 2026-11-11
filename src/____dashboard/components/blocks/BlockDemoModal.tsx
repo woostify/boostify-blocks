@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useState, useEffect, useRef } from "react";
+import React, { FC, Fragment, useState, useEffect, useRef, useCallback } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { __ } from "@wordpress/i18n";
 import toast from "react-hot-toast";
@@ -6,63 +6,39 @@ import {
 	ArrowPathIcon,
 	ArrowTopRightOnSquareIcon,
 	CheckIcon,
-	ChevronLeftIcon,
-	ChevronRightIcon,
 	ClipboardDocumentIcon,
 } from "@heroicons/react/24/outline";
 import DynamicIcon from "../common/DynamicIcon";
+import DevicePreviewSwitcher from "../common/DevicePreviewSwitcher";
+import BlockDemoViewport from "./BlockDemoViewport";
 import BlockDemoFallback from "./BlockDemoFallback";
-import { RemoteDemoPattern, UnifiedBlockItem } from "../../types";
+import { useLiveDemoPreview } from "../../hooks/useLiveDemoPreview";
+import { copyTextToClipboard } from "../../utils/clipboard";
+import { PreviewDevice, RemoteDemoPattern, UnifiedBlockItem } from "../../types";
+
+const DEMO_PREVIEW_DEVICES: PreviewDevice[] = ["desktop", "mobile"];
 
 interface BlockDemoModalProps {
 	isOpen: boolean;
 	block: UnifiedBlockItem | null;
 	remotePatterns: RemoteDemoPattern[];
+	demosVersion?: number;
+	breakpoints?: {
+		tablet?: number;
+		desktop?: number;
+	};
 	isLoading: boolean;
 	onClose: () => void;
 	onRefresh: () => void;
 	onToggleBlock: (id: string, nextStatus: "enabled" | "disabled") => void;
 }
 
-/**
- * Fallback clipboard helper that works on HTTP origins (e.g. *.local) and stays
- * inside Headless UI Dialog's FocusTrap by appending the textarea inside container.
- */
-function copyTextExecCommand(text: string, container?: HTMLElement | null): boolean {
-	const textarea = document.createElement("textarea");
-	textarea.value = text;
-	textarea.setAttribute("readonly", "");
-	textarea.style.position = "fixed";
-	textarea.style.top = "-9999px";
-	textarea.style.left = "-9999px";
-	textarea.style.opacity = "0";
-
-	const host = container || document.body;
-	host.appendChild(textarea);
-
-	const previousActive = document.activeElement as HTMLElement | null;
-	textarea.focus({ preventScroll: true });
-	textarea.select();
-	textarea.setSelectionRange(0, text.length);
-
-	let copied = false;
-	try {
-		copied = document.execCommand("copy");
-	} catch {
-		copied = false;
-	}
-
-	host.removeChild(textarea);
-	if (previousActive && typeof previousActive.focus === "function") {
-		previousActive.focus({ preventScroll: true });
-	}
-	return copied;
-}
-
 const BlockDemoModal: FC<BlockDemoModalProps> = ({
 	isOpen,
 	block,
 	remotePatterns,
+	demosVersion = 0,
+	breakpoints,
 	isLoading,
 	onClose,
 	onRefresh,
@@ -71,20 +47,44 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [failedImageIds, setFailedImageIds] = useState<Record<string, boolean>>({});
 	const [isCopied, setIsCopied] = useState(false);
+	const [device, setDevice] = useState<PreviewDevice>("desktop");
+	const [viewMode, setViewMode] = useState<"live" | "image">("live");
+	const [zoomMode, setZoomMode] = useState<"fit" | "full">("fit");
 
 	const modalDialogRef = useRef<HTMLDivElement | null>(null);
+	const demoStageRef = useRef<HTMLDivElement | null>(null);
 	const copyResetTimerRef = useRef<number | null>(null);
-	const pillRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+	const resetStageScroll = useCallback(() => {
+		if (demoStageRef.current) {
+			demoStageRef.current.scrollTop = 0;
+		}
+	}, []);
 
 	useEffect(() => {
 		setActiveIndex(0);
 		setFailedImageIds({});
 		setIsCopied(false);
-	}, [block?.id, remotePatterns]);
+		setDevice("desktop");
+		setViewMode("live");
+		setZoomMode("fit");
+		resetStageScroll();
+	}, [block?.id, remotePatterns, resetStageScroll]);
+
+	useEffect(() => {
+		if (!isOpen) {
+			setDevice("desktop");
+			setViewMode("live");
+			setZoomMode("fit");
+		}
+	}, [isOpen]);
 
 	useEffect(() => {
 		setIsCopied(false);
-	}, [activeIndex]);
+		setViewMode("live");
+		setZoomMode("fit");
+		resetStageScroll();
+	}, [activeIndex, resetStageScroll]);
 
 	useEffect(() => {
 		return () => {
@@ -100,74 +100,60 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 	const hasValidRemoteImage = Boolean(
 		activePattern && activePattern.imageUrl && !failedImageIds[activeImageKey]
 	);
-	const hasPatternContent = Boolean(hasValidRemoteImage && activePattern?.content?.trim());
 
-	// Keep the active pattern pill scrolled into view when cycling across many templates.
-	useEffect(() => {
-		if (!isOpen || remotePatterns.length <= 1) return;
-		const activePill = pillRefs.current[safeIndex];
-		if (activePill && typeof activePill.scrollIntoView === "function") {
-			activePill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-		}
-	}, [isOpen, safeIndex, remotePatterns.length]);
+	const {
+		stageContainerRef,
+		iframeRef,
+		hasPatternMarkup,
+		patternCacheKey,
+		activeLiveHtml,
+		isPreviewFetching,
+		isIframeReady,
+		deviceWidths,
+		stageWidth,
+		stageHeight,
+		iframeHeight,
+		handleIframeLoad,
+	} = useLiveDemoPreview({
+		isOpen,
+		isLoading,
+		blockId: block?.id,
+		demoKey: block?.demoKey,
+		activePattern,
+		demosVersion,
+		device,
+		viewMode,
+		breakpoints,
+		stageViewportRef: demoStageRef,
+	});
 
-	// Preload neighboring pattern screenshots so switching across many demos feels instant.
-	useEffect(() => {
-		if (!isOpen || remotePatterns.length <= 1) return;
-		const prevIdx = (safeIndex - 1 + remotePatterns.length) % remotePatterns.length;
-		const nextIdx = (safeIndex + 1) % remotePatterns.length;
-		[prevIdx, nextIdx].forEach((idx) => {
-			const url = remotePatterns[idx]?.imageUrl;
-			if (url) {
-				const img = new window.Image();
-				img.src = url;
-			}
-		});
-	}, [isOpen, safeIndex, remotePatterns]);
-
-	// Support Left/Right arrow keys for navigating many templates cleanly.
-	useEffect(() => {
-		if (!isOpen || remotePatterns.length <= 1) return;
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
-			const target = e.target as HTMLElement | null;
-			if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
-
-			if (e.key === "ArrowLeft") {
-				e.preventDefault();
-				setActiveIndex((prev) => (prev - 1 + remotePatterns.length) % remotePatterns.length);
-			} else if (e.key === "ArrowRight") {
-				e.preventDefault();
-				setActiveIndex((prev) => (prev + 1) % remotePatterns.length);
-			}
-		};
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [isOpen, remotePatterns.length]);
+	const activeMode: "live" | "image" | "fallback" = activeLiveHtml
+		? viewMode === "image" && hasValidRemoteImage
+			? "image"
+			: "live"
+		: hasValidRemoteImage
+		? "image"
+		: "fallback";
 
 	const isEnabled = block?.status === "enabled";
+
+	const handleSelectDevice = (nextDevice: PreviewDevice) => {
+		setDevice(nextDevice);
+		setZoomMode("fit");
+		if (viewMode === "image" && activeLiveHtml) {
+			setViewMode("live");
+		}
+	};
 
 	const handleCopyBlock = async () => {
 		if (!block) return;
 
-		const markup = hasPatternContent && activePattern?.content
-			? activePattern.content.trim()
-			: `<!-- wp:${block.name} /-->`;
+		const markup =
+			hasPatternMarkup && activePattern?.content
+				? activePattern.content.trim()
+				: `<!-- wp:${block.name} /-->`;
 
-		let copied = false;
-		if (typeof navigator !== "undefined" && navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-			try {
-				await navigator.clipboard.writeText(markup);
-				copied = true;
-			} catch {
-				copied = false;
-			}
-		}
-
-		if (!copied) {
-			copied = copyTextExecCommand(markup, modalDialogRef.current);
-		}
-
+		const copied = await copyTextToClipboard(markup, modalDialogRef.current);
 		if (copied) {
 			setIsCopied(true);
 			if (copyResetTimerRef.current) {
@@ -177,12 +163,12 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 				setIsCopied(false);
 			}, 2000);
 			toast.success(
-				hasPatternContent
-					? __( "Pattern markup copied!", "boostify-blocks" )
-					: __( "Block markup copied!", "boostify-blocks" )
+				hasPatternMarkup
+					? __("Pattern markup copied!", "boostify-blocks")
+					: __("Block markup copied!", "boostify-blocks")
 			);
 		} else {
-			toast.error(__( "Could not copy to clipboard.", "boostify-blocks" ));
+			toast.error(__("Could not copy to clipboard.", "boostify-blocks"));
 		}
 	};
 
@@ -193,79 +179,45 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 			return (
 				<div className="bb-demo-loading">
 					<div className="bb-demo-spinner" aria-hidden="true" />
-					<span>{__( "Loading preview...", "boostify-blocks" )}</span>
+					<span>{__("Loading preview...", "boostify-blocks")}</span>
 				</div>
 			);
 		}
 
-		if (hasValidRemoteImage && activePattern) {
+		if (activePattern && (activeLiveHtml || hasValidRemoteImage || isPreviewFetching)) {
 			return (
-				<div className="bb-demo-card">
-					{remotePatterns.length > 1 && (
-						<div className="bb-demo-pattern-bar">
-							<div className="bb-demo-pattern-pills">
-								{remotePatterns.map((pat, idx) => (
-									<button
-										key={`${pat.id}-${idx}`}
-										ref={(el) => {
-											pillRefs.current[idx] = el;
-										}}
-										type="button"
-										onClick={() => setActiveIndex(idx)}
-										title={pat.title || `#${idx + 1}`}
-										className={`bb-demo-pattern-pill ${idx === safeIndex ? "is-active" : ""}`}
-									>
-										{pat.title || `#${idx + 1}`}
-									</button>
-								))}
-							</div>
-							<div className="bb-demo-pattern-nav">
-								<button
-									type="button"
-									onClick={() =>
-										setActiveIndex((safeIndex - 1 + remotePatterns.length) % remotePatterns.length)
-									}
-									className="bb-demo-nav-arrow"
-									aria-label={__( "Previous pattern", "boostify-blocks" )}
-								>
-									<ChevronLeftIcon width={15} height={15} />
-								</button>
-								<span className="bb-demo-nav-counter">
-									{safeIndex + 1} / {remotePatterns.length}
-								</span>
-								<button
-									type="button"
-									onClick={() => setActiveIndex((safeIndex + 1) % remotePatterns.length)}
-									className="bb-demo-nav-arrow"
-									aria-label={__( "Next pattern", "boostify-blocks" )}
-								>
-									<ChevronRightIcon width={15} height={15} />
-								</button>
-							</div>
-						</div>
-					)}
-
-					<div className="bb-demo-image-wrap">
-						<img
-							src={activePattern.imageUrl}
-							alt={activePattern.title || block.title}
-							className="bb-demo-image"
-							onError={() =>
-								setFailedImageIds((prev) => ({
-									...prev,
-									[activeImageKey]: true,
-								}))
-							}
-						/>
-					</div>
-
-					<div className="bb-demo-caption">
-						<span className="bb-demo-caption-title">{activePattern.title}</span>
-						{activePattern.category && (
-							<span className="bb-demo-caption-badge">{activePattern.category}</span>
-						)}
-					</div>
-				</div>
+				<BlockDemoViewport
+					isOpen={isOpen}
+					blockTitle={block.title}
+					patterns={remotePatterns}
+					safeIndex={safeIndex}
+					onSelectIndex={setActiveIndex}
+					activePattern={activePattern}
+					device={device}
+					deviceWidths={deviceWidths}
+					stageContainerRef={stageContainerRef}
+					stageWidth={stageWidth}
+					stageHeight={stageHeight}
+					zoomMode={zoomMode}
+					onToggleZoomMode={() => setZoomMode((prev) => (prev === "fit" ? "full" : "fit"))}
+					iframeRef={iframeRef}
+					iframeHeight={iframeHeight}
+					isIframeReady={isIframeReady}
+					onIframeLoad={handleIframeLoad}
+					patternCacheKey={patternCacheKey}
+					activeLiveHtml={activeLiveHtml}
+					isPreviewFetching={isPreviewFetching}
+					hasValidRemoteImage={hasValidRemoteImage}
+					activeMode={activeMode}
+					viewMode={viewMode}
+					onChangeViewMode={setViewMode}
+					onImageError={() =>
+						setFailedImageIds((prev) => ({
+							...prev,
+							[activeImageKey]: true,
+						}))
+					}
+				/>
 			);
 		}
 
@@ -274,6 +226,7 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 				demoKey={block.demoKey}
 				title={block.title}
 				description={block.description}
+				device={device}
 			/>
 		);
 	};
@@ -321,12 +274,19 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 										</div>
 
 										<div className="bb-demo-header-actions">
+											<DevicePreviewSwitcher
+												device={device}
+												onChange={handleSelectDevice}
+												devices={DEMO_PREVIEW_DEVICES}
+												deviceWidths={deviceWidths}
+											/>
+
 											<button
 												type="button"
 												onClick={onRefresh}
 												disabled={isLoading}
-												title={__( "Refresh preview", "boostify-blocks" )}
-												aria-label={__( "Refresh preview", "boostify-blocks" )}
+												title={__("Refresh preview", "boostify-blocks")}
+												aria-label={__("Refresh preview", "boostify-blocks")}
 												className="bb-demo-icon-btn"
 											>
 												<ArrowPathIcon
@@ -339,8 +299,8 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 											<button
 												type="button"
 												onClick={onClose}
-												title={__( "Close", "boostify-blocks" )}
-												aria-label={__( "Close", "boostify-blocks" )}
+												title={__("Close", "boostify-blocks")}
+												aria-label={__("Close", "boostify-blocks")}
 												className="bb-demo-icon-btn"
 											>
 												<DynamicIcon name="close" size={18} />
@@ -354,7 +314,7 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 									)}
 
 									{/* Preview Stage */}
-									<div className="bb-demo-stage">{renderBody()}</div>
+									<div ref={demoStageRef} className="bb-demo-stage">{renderBody()}</div>
 
 									{/* Footer */}
 									<div className="bb-demo-footer">
@@ -372,20 +332,20 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 											</button>
 											<span className="bb-demo-status-label">
 												{isEnabled
-													? __( "Enabled on this site", "boostify-blocks" )
-													: __( "Disabled. Turn on to use it in the editor.", "boostify-blocks" )}
+													? __("Enabled on this site", "boostify-blocks")
+													: __("Disabled. Turn on to use it in the editor.", "boostify-blocks")}
 											</span>
 										</div>
 
 										<div className="bb-demo-footer-actions">
-											{hasValidRemoteImage && activePattern?.link && (
+											{(Boolean(activeLiveHtml) || hasValidRemoteImage) && activePattern?.link && (
 												<a
 													href={activePattern.link}
 													target="_blank"
 													rel="noopener noreferrer"
 													className="bb-demo-action-btn"
 												>
-													<span>{__( "View live demo", "boostify-blocks" )}</span>
+													<span>{__("View live demo", "boostify-blocks")}</span>
 													<ArrowTopRightOnSquareIcon width={15} height={15} />
 												</a>
 											)}
@@ -403,8 +363,8 @@ const BlockDemoModal: FC<BlockDemoModalProps> = ({
 													)}
 													<span>
 														{isCopied
-															? __( "Copied!", "boostify-blocks" )
-															: __( "Copy block", "boostify-blocks" )}
+															? __("Copied!", "boostify-blocks")
+															: __("Copy block", "boostify-blocks")}
 													</span>
 												</button>
 											)}

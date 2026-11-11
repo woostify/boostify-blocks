@@ -65,6 +65,18 @@ export type BlockCategory =
 	| "Interactive"
 	| "Extensions";
 
+export type PreviewDevice = "desktop" | "tablet" | "mobile";
+
+export interface RenderedDemoPreview {
+	html: string;
+	hasContent: boolean;
+	reason?: string;
+	breakpoints?: {
+		tablet?: number;
+		desktop?: number;
+	};
+}
+
 export interface RemoteDemoPattern {
 	id: number;
 	title: string;
