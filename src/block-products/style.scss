@@ -139,7 +139,7 @@
 
 
 .wcb-products__product {
-	font-size: 16px;
+	// Inherit theme body font-size so Editor and Frontend stay aligned when element typography is unset.
 	height: auto;
 	display: flex;
 	flex-direction: column;
@@ -1011,13 +1011,20 @@
 	}
 }
 
-.wcb-products__wrap .wcb-products__product-title {
+.wcb-products__wrap .wcb-products__product .wcb-products__product-title {
 	margin-top: 0;
 	line-height: 1.5;
+
+	// Defeat WooCommerce `.wc-block-grid__product-title { font-family: inherit }` on heading titles
+	// while keeping lower specificity than block-level Custom Typography overrides `(0, 4, 0)`.
+	&:is(h1, h2, h3, h4, h5, h6) {
+		font-family: var(--theme-heading-font, inherit);
+	}
 
 	a {
 		color: inherit;
 		text-decoration: none;
+		font-family: inherit;
 		font-weight: 400;
 		line-height: inherit;
 	}
@@ -1032,7 +1039,11 @@
 	}
 }
 
-.wcb-products__product-price {
+.wcb-products__wrap .wcb-products__product .wcb-products__product-price {
+	del {
+		opacity: 0.5;
+	}
+
 	ins {
 		text-decoration: none;
 	}

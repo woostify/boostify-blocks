@@ -96,11 +96,13 @@ import {
 	buildStyleCountdownUrgencyDefault,
 	normalizeAddToCartPosition,
 } from "./WcbThemeDefaults";
+import useGetDeviceType from "../hooks/useGetDeviceType";
 
 interface Props extends EditProps<WcbAttrs> { }
 
 const Edit: FC<Props> = (props) => {
 	const { attributes, setAttributes, clientId } = props;
+	const deviceType = useGetDeviceType() || "Desktop";
 	const {
 		className,
 		advance_responsiveCondition,
@@ -222,7 +224,12 @@ const Edit: FC<Props> = (props) => {
 				general_content: synced.general_content,
 				general_featuredImage: synced.general_featuredImage,
 				general_addToCartBtn: synced.general_addToCartBtn,
-				general_sortingAndFiltering: synced.general_sortingAndFiltering,
+				general_sortingAndFiltering: synced.general_sortingAndFiltering
+					? {
+							...synced.general_sortingAndFiltering,
+							isNumberOfItemsEdited: general_sortingAndFiltering?.isNumberOfItemsEdited,
+					  }
+					: general_sortingAndFiltering,
 				style_layout: synced.style_layout
 					? {
 							...synced.style_layout,
@@ -347,7 +354,35 @@ const Edit: FC<Props> = (props) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [!!style_layout]);
 
+	// Sync Customizer "Products Per Page" to block when not manually overridden by user.
+	useEffect(() => {
+		if (!general_sortingAndFiltering || general_sortingAndFiltering.isNumberOfItemsEdited) {
+			return;
+		}
+		const customizerPerPage = getThemeDefaults()?.product_per_page ?? null;
+		const stored = general_sortingAndFiltering.numberOfItemsFromCustomizer;
+		if (stored === undefined || customizerPerPage === null || stored === customizerPerPage) {
+			return;
+		}
+
+		setAttributes({
+			general_sortingAndFiltering: {
+				...general_sortingAndFiltering,
+				numberOfItems: customizerPerPage,
+				numberOfItemsFromCustomizer: customizerPerPage,
+			},
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [!!general_sortingAndFiltering]);
+
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
+		// Inside-image badges use position: absolute, so margin-bottom only affects static placement.
+		const showBadgeMarginBottom = !(
+			(effectiveAttrs.general_featuredImage?.isShowFeaturedImage ?? true) &&
+			(effectiveAttrs.general_content?.saleBadgePosition ?? "Inside image") ===
+				"Inside image"
+		);
+
 		switch (tab.name) {
 			case "General":
 				return (
@@ -368,7 +403,7 @@ const Edit: FC<Props> = (props) => {
 								setAttr__={(data) => {
 									setAttributes({ general_sortingAndFiltering: data });
 								}}
-								panelData={general_sortingAndFiltering}
+								panelData={effectiveAttrs.general_sortingAndFiltering || general_sortingAndFiltering}
 							/>
 						)}
 						{
@@ -533,7 +568,7 @@ const Edit: FC<Props> = (props) => {
 											setAttr__={(data) => {
 												setAttributes({ style_title: data });
 											}}
-											panelData={style_title}
+											panelData={effectiveAttrs.style_title || style_title}
 										/>
 									)}
 
@@ -542,6 +577,7 @@ const Edit: FC<Props> = (props) => {
 											onToggle={() => handleTogglePanel("Styles", "_StyleSaleBadge")}
 											initialOpen={tabStylesIsPanelOpen === "_StyleSaleBadge"}
 											opened={tabStylesIsPanelOpen === "_StyleSaleBadge" || undefined}
+											showMarginBottom={showBadgeMarginBottom}
 											//
 											setAttr__={(data) => {
 												setAttributes({ style_saleBadge: data });
@@ -555,6 +591,7 @@ const Edit: FC<Props> = (props) => {
 												onToggle={() => handleTogglePanel("Styles", "_StyleOutOfStock")}
 												initialOpen={tabStylesIsPanelOpen === "_StyleOutOfStock"}
 												opened={tabStylesIsPanelOpen === "_StyleOutOfStock" || undefined}
+												showMarginBottom={showBadgeMarginBottom}
 												//
 												setAttr__={(data) => {
 													setAttributes({ style_outOfStock: data });
@@ -585,7 +622,7 @@ const Edit: FC<Props> = (props) => {
 											setAttr__={(data) => {
 												setAttributes({ style_price: data });
 											}}
-											panelData={style_price}
+											panelData={effectiveAttrs.style_price || style_price}
 										/>
 									)}
 
@@ -676,7 +713,7 @@ const Edit: FC<Props> = (props) => {
 			return null;
 		}
 
-		const itemPerPage = general_sortingAndFiltering?.numberOfItems || 9;
+		const itemPerPage = effectiveAttrs.general_sortingAndFiltering?.numberOfItems || 9;
 		const columnDesktop = style_layout?.numberOfColumn.Desktop || 1;
 		const isShowPagination = general_pagination?.isShowPagination;
 		const maxPageShow = general_pagination?.pageLimit || 0;
@@ -709,6 +746,7 @@ const Edit: FC<Props> = (props) => {
 											general_sortingAndFiltering: {
 												...general_sortingAndFiltering,
 												numberOfItems: Number(value || 1),
+												isNumberOfItemsEdited: true,
 											},
 										});
 									}}
@@ -910,6 +948,21 @@ const Edit: FC<Props> = (props) => {
 	const colGapTab = effectiveAttrs.style_layout?.colunmGap?.Tablet ?? colGapDesk;
 	const colGapMob = effectiveAttrs.style_layout?.colunmGap?.Mobile ?? colGapTab;
 
+	const activeCol =
+		deviceType === "Mobile" ? colMob : deviceType === "Tablet" ? colTab : colDesk;
+	const activeRowGap =
+		deviceType === "Mobile"
+			? rowGapMob
+			: deviceType === "Tablet"
+			? rowGapTab
+			: rowGapDesk;
+	const activeColGap =
+		deviceType === "Mobile"
+			? colGapMob
+			: deviceType === "Tablet"
+			? colGapTab
+			: colGapDesk;
+
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
@@ -918,11 +971,12 @@ const Edit: FC<Props> = (props) => {
 					} wcb-block-products-editor-swithToScrollSnapX__${effectiveAttrs.style_layout?.swithToScrollSnapX ? effectiveAttrs.style_layout.swithToScrollSnapX.toString() : "None"}`}
 				style={{
 					...wrapBlockProps.style,
+					"--wcb-editor-col": activeCol,
 					"--wcb-editor-col-mobile": colMob,
 					"--wcb-editor-col-tablet": colTab,
 					"--wcb-editor-col-desktop": colDesk,
-					"--wcb-editor-row-gap": rowGapDesk,
-					"--wcb-editor-col-gap": colGapDesk,
+					"--wcb-editor-row-gap": activeRowGap,
+					"--wcb-editor-col-gap": activeColGap,
 					"--wcb-editor-row-gap-mobile": rowGapMob,
 					"--wcb-editor-row-gap-tablet": rowGapTab,
 					"--wcb-editor-row-gap-desktop": rowGapDesk,
@@ -946,8 +1000,12 @@ const Edit: FC<Props> = (props) => {
 					!!style_price &&
 					!!advance_zIndex &&
 					!!advance_responsiveCondition &&
-					!!advance_motionEffect &&
-					<GlobalCss {...(WcbAttrsForSaveValue as Required<WcbAttrsForSave>)} />}
+					!!advance_motionEffect && (
+						<GlobalCss
+							{...(WcbAttrsForSaveValue as Required<WcbAttrsForSave>)}
+							previewDeviceType={deviceType}
+						/>
+					)}
 
 				{/* CHILD CONTENT  */}
 				{uniqueId && !!style_layout && !!style_price && (

@@ -125,6 +125,9 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         'style_countdownUrgency' => array(
                             'type'      => 'object',
                         ),
+                        'style_dimension' => array(
+                            'type'      => 'object',
+                        ),
                         'advance_responsiveCondition' => array(
                             'type'      => 'object',
                         ),

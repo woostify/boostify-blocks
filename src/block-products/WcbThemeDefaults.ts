@@ -2,7 +2,7 @@ import { WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO, WCB_PRODUCTS_PANEL_STYLE_LAYOUT }
 import { MY_BORDER_CONTROL_DEMO } from "../components/controls/MyBorderControl/types";
 import { getThemeDefaults } from "../utils/themeDefaults";
 import { WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO } from "./WcbProducstPanelSortingAndFiltering";
-import { WCB_PRODUCTS_PANEL_COTENT_DEMO } from "./WcbProductsPanelContent";
+import { WCB_PRODUCTS_PANEL_COTENT_DEMO, WCB_PRODUCTS_PANEL_COTENT } from "./WcbProductsPanelContent";
 import { WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO } from "./WcbProductsPanelFeaturedImage";
 import { WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO } from "./WcbProductsPanel_StyleFeaturedImage";
 import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO, WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE } from "./WcbProductsPanel_StyleSaleBadge";
@@ -80,11 +80,14 @@ export function buildSortingAndFilteringDefault(
     _attr?: Partial<typeof WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO>
 ) {
     const theme = getThemeDefaults();
+    const perPage =
+        theme.product_per_page ||
+        WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO.numberOfItems;
     return {
         ...WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO,
-        numberOfItems:
-            theme.product_per_page ||
-            WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO.numberOfItems,
+        numberOfItems: perPage,
+        numberOfItemsFromCustomizer: theme.product_per_page,
+        isNumberOfItemsEdited: false,
     };
 }
 
@@ -228,33 +231,41 @@ export function buildStyleOutOfStockDefault(_attr?: Partial<typeof WCB_PRODUCTS_
     };
 }
 
+const formatPxSize = (val: unknown, fallback: string): string =>
+    val != null && String(val).trim() !== "" ? `${val}px` : fallback;
+
+function buildTextStyleDefault<
+    T extends typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO | typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO
+>(
+    demo: T,
+    color: string | undefined,
+    sizes: { desktop?: unknown; tablet?: unknown; mobile?: unknown } | undefined
+): T {
+    return {
+        ...demo,
+        textColor: color ?? demo.textColor,
+        typography: {
+            ...demo.typography,
+            fontSizes: {
+                Desktop: formatPxSize(sizes?.desktop, demo.typography.fontSizes.Desktop ?? ""),
+                Tablet: formatPxSize(sizes?.tablet, demo.typography.fontSizes.Tablet ?? ""),
+                Mobile: formatPxSize(sizes?.mobile, demo.typography.fontSizes.Mobile ?? ""),
+            },
+        },
+    };
+}
+
 /**
  * Builds style_title with theme title styles.
  * Customizer attributes use the theme value; all others use demo defaults.
  */
 export function buildStyleTitleDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO>) {
-    const theme = getThemeDefaults();
-    const general = theme.shop_archive_general_design;
-    return {
-        ...WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO,
-        textColor:
-            general?.title_color ??
-            WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.textColor,
-        typography: {
-            ...WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography,
-            fontSizes: {
-                Desktop:
-                    (general?.title_font_size != null ? `${general.title_font_size.desktop}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Desktop,
-                Tablet:
-                    (general?.title_font_size != null ? `${general.title_font_size.tablet}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Tablet,
-                Mobile:
-                    (general?.title_font_size != null ? `${general.title_font_size.mobile}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Mobile,
-            },
-        },
-    };
+    const general = getThemeDefaults().shop_archive_general_design;
+    return buildTextStyleDefault(
+        WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO,
+        general?.title_color,
+        general?.title_font_size
+    );
 }
 
 /**
@@ -262,28 +273,12 @@ export function buildStyleTitleDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL
  * Customizer attributes use the theme value; all others use demo defaults.
  */
 export function buildStylePriceDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO>) {
-    const theme = getThemeDefaults();
-    const general = theme.shop_archive_general_design;
-    return {
-        ...WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
-        textColor:
-            general?.price_color ??
-            WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.textColor,
-        typography: {
-            ...WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography,
-            fontSizes: {
-                Desktop:
-                    (general?.price_font_size != null ? `${general.price_font_size.desktop}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Desktop,
-                Tablet:
-                    (general?.price_font_size != null ? `${general.price_font_size.tablet}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Tablet,
-                Mobile:
-                    (general?.price_font_size != null ? `${general.price_font_size.mobile}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Mobile,
-            },
-        },
-    };
+    const general = getThemeDefaults().shop_archive_general_design;
+    return buildTextStyleDefault(
+        WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
+        general?.price_color,
+        general?.price_font_size
+    );
 }
 
 export const normalizeAddToCartPosition = (p?: string): WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN['position'] => {
@@ -546,11 +541,13 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
 
     // 2. Sorting & Filtering
     const baseSort = attrs.general_sortingAndFiltering || buildSortingAndFilteringDefault();
+    const isItemsEdited = Boolean(baseSort.isNumberOfItemsEdited);
     const effectiveSort = {
         ...baseSort,
-        numberOfItems: isOverride
-            ? (baseSort.numberOfItems || theme.product_per_page || 12)
-            : (theme.product_per_page || baseSort.numberOfItems || 12),
+        numberOfItems:
+            isItemsEdited || isOverride
+                ? (baseSort.numberOfItems || theme.product_per_page || 12)
+                : (theme.product_per_page || baseSort.numberOfItems || 12),
     };
 
     // 3. Content flags
@@ -559,7 +556,7 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
     const themeSaleTag = theme.shop_archive_sale_tag;
     const themeOut = theme.shop_archive_out_of_stock;
 
-    const effectiveContent = isOverride
+    const effectiveContent: WCB_PRODUCTS_PANEL_COTENT = isOverride
         ? {
               ...baseContent,
               isShowTitle: baseContent.isShowTitle !== undefined ? baseContent.isShowTitle : toBool(themeContent?.title_flag, true),
@@ -579,7 +576,7 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
               isShowSaleBadge: themeSaleTag?.position !== 'none',
               showSaleBadgeDiscoutPercent: Boolean(themeSaleTag?.sale_percent),
               isShowOutOfStock: themeOut?.position !== 'none',
-              saleBadgePosition: 'Inside image',
+              saleBadgePosition: 'Inside image' as const,
           };
 
     // 4. Featured Image

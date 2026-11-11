@@ -12,15 +12,18 @@ export const capitalizeFirstLetter = (string) => {
 };
 
 export const getDocumentHead = () => {
-	let head = document.querySelector('head');
-
 	if (isEditingContent()) {
-		head = document
-			.querySelector('iframe[name="editor-canvas"]')
-			.contentWindow.document.querySelector('head');
+		const iframe = document.querySelector('iframe[name="editor-canvas"]');
+		const iframeHead =
+			iframe?.contentDocument?.head ||
+			iframe?.contentWindow?.document?.head ||
+			null;
+		if (iframeHead) {
+			return iframeHead;
+		}
 	}
 
-	return head;
+	return document.querySelector('head');
 };
 
 export const isEditingContent = () =>

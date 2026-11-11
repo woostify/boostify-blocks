@@ -9,6 +9,11 @@ function boostify_blocks_my_scripts_method()
     $common_ver      = file_exists( $common_css_path ) ? filemtime( $common_css_path ) : BOOSTIFY_BLOCKS_VERSION;
     wp_enqueue_style( 'boostify-blocks-frontend-css', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'build/block-common-css/style-index.css', array(), $common_ver );
 
+    $theme_frontend_vars = boostify_blocks_get_theme_frontend_typography_css();
+    if ( '' !== $theme_frontend_vars ) {
+        wp_add_inline_style( 'boostify-blocks-frontend-css', $theme_frontend_vars );
+    }
+
     $frontend_css_path = BOOSTIFY_BLOCKS_PATH . 'public/css/frontend.css';
     $frontend_ver      = file_exists( $frontend_css_path ) ? filemtime( $frontend_css_path ) : BOOSTIFY_BLOCKS_VERSION;
     wp_enqueue_style( 'boostify-blocks-frontend', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/css/frontend.css', array(), $frontend_ver );
@@ -269,57 +274,179 @@ function boostify_blocks_enqueue_lineicons_for_gutenbeg_editor()
     // Inject frontend styles into the iframed editor canvas
     add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/block-common-css/style-index.css');
     add_editor_style(plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/frontend.css');
-
-    // Register active theme Google fonts into the iframed editor canvas
-    $opts         = function_exists( 'woostify_options' ) ? woostify_options( false ) : ( get_option( 'woostify_setting', array() ) );
-    $body_font    = ! empty( $opts['body_font_family'] ) ? $opts['body_font_family'] : 'Poppins';
-    $heading_font = ! empty( $opts['heading_font_family'] ) ? $opts['heading_font_family'] : 'Poppins';
-    $system_fonts = array(
-        'arial', 'helvetica', 'times new roman', 'times', 'courier new', 'courier',
-        'verdana', 'georgia', 'palatino', 'garamond', 'bookman', 'comic sans ms',
-        'trebuchet ms', 'arial black', 'impact', 'sans-serif', 'serif', 'monospace', 'inherit', 'initial'
-    );
-    $b_settings   = get_option( 'boostify_blocks_settings_options', array() );
-    $load_locally = ( $b_settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
-
-    foreach ( array_unique( array_filter( array( $body_font, $heading_font ) ) ) as $f_name ) {
-        $clean = trim( $f_name );
-        if ( ! empty( $clean ) && ! in_array( strtolower( $clean ), $system_fonts, true ) ) {
-            $font_url = false;
-            if ( $load_locally && function_exists( 'boostify_blocks_download_google_font' ) ) {
-                $font_url = boostify_blocks_download_google_font( $clean );
-            }
-            if ( ! $font_url ) {
-                $family   = str_replace( ' ', '+', $clean );
-                $font_url = 'https://fonts.googleapis.com/css?family=' . $family . ':100,200,300,400,500,600,700,800,900&display=swap';
-            }
-            add_editor_style( $font_url );
-        }
-    }
 }
 add_action('admin_init', 'boostify_blocks_enqueue_lineicons_for_gutenbeg_editor');
 
 /**
+ * Strips characters that could break out of a CSS declaration value.
+ */
+function boostify_blocks_sanitize_css_font_value( string $value ): string {
+    return trim( (string) preg_replace( '/[{};<>]/', '', $value ) );
+}
+
+/**
+ * Converts a theme font setting into a valid CSS `font-family` value matching Woostify.
+ * Avoids Woostify_Fonts_Helpers::woostify_get_font_family_css(), which triggers an
+ * Undefined array key warning for missing `*_family_category` defaults and returns a
+ * trailing comma (`"Poppins", `) that invalidates CSS `font-family`.
+ */
+function boostify_blocks_resolve_css_font_family( string $raw_font ): string {
+    $raw_trimmed = trim( $raw_font );
+    if ( '' === $raw_trimmed || 0 === strcasecmp( $raw_trimmed, 'inherit' ) ) {
+        return 'inherit';
+    }
+
+    if ( 'System Stack' === $raw_trimmed ) {
+        return apply_filters(
+            'woostify_typography_system_stack',
+            '-apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
+        );
+    }
+
+    // Already a multi-family stack such as "Georgia, Times New Roman, serif".
+    if ( false !== strpos( $raw_trimmed, ',' ) ) {
+        return boostify_blocks_sanitize_css_font_value( $raw_trimmed );
+    }
+
+    $normalized = function_exists( 'boostify_blocks_normalize_font_name' )
+        ? boostify_blocks_normalize_font_name( $raw_trimmed )
+        : $raw_trimmed;
+
+    if ( '' === $normalized ) {
+        return 'inherit';
+    }
+
+    $is_system = function_exists( 'boostify_blocks_is_system_font' ) && boostify_blocks_is_system_font( $normalized );
+    if ( $is_system ) {
+        if ( preg_match( '/^(sans-serif|serif|monospace|cursive|fantasy|system-ui|ui-sans-serif|ui-serif|ui-monospace|inherit|initial|unset|revert)$/i', $normalized ) ) {
+            return strtolower( $normalized );
+        }
+        if ( preg_match( '/^(georgia|times|times new roman|garamond|palatino|palatino linotype|book antiqua)$/i', $normalized ) ) {
+            $fallback = 'serif';
+        } elseif ( preg_match( '/^(courier|courier new|lucida console)$/i', $normalized ) ) {
+            $fallback = 'monospace';
+        } else {
+            $fallback = 'sans-serif';
+        }
+        return boostify_blocks_sanitize_css_font_value( '"' . $normalized . '", ' . $fallback );
+    }
+
+    $fallback = function_exists( 'boostify_blocks_get_google_font_fallback' )
+        ? boostify_blocks_get_google_font_fallback( $normalized )
+        : 'sans-serif';
+
+    return boostify_blocks_sanitize_css_font_value( '"' . $normalized . '", ' . $fallback );
+}
+
+/**
+ * Returns normalized Woostify typography context when Woostify options exist,
+ * or null on non-Woostify sites so unrelated themes are never overridden.
+ *
+ * @return array{
+ *     opts: array,
+ *     body_font_css: string,
+ *     heading_font_css: string,
+ *     google_fonts: string[]
+ * }|null
+ */
+function boostify_blocks_get_woostify_typography_context(): ?array {
+    $saved_settings = get_option( 'woostify_setting', array() );
+    if ( ! function_exists( 'woostify_options' ) && empty( $saved_settings ) ) {
+        return null;
+    }
+
+    $opts = function_exists( 'woostify_options' ) ? woostify_options( false ) : $saved_settings;
+    if ( ! is_array( $opts ) || empty( $opts ) ) {
+        return null;
+    }
+
+    $body_raw    = isset( $opts['body_font_family'] ) ? (string) $opts['body_font_family'] : '';
+    $heading_raw = isset( $opts['heading_font_family'] ) ? (string) $opts['heading_font_family'] : '';
+
+    $body_font_css    = boostify_blocks_resolve_css_font_family( $body_raw );
+    $heading_font_css = boostify_blocks_resolve_css_font_family( $heading_raw );
+
+    $google_fonts = array();
+    foreach ( array( $body_raw, $heading_raw ) as $raw ) {
+        $normalized = function_exists( 'boostify_blocks_normalize_font_name' )
+            ? boostify_blocks_normalize_font_name( $raw )
+            : trim( $raw );
+        if ( '' !== $normalized && ( ! function_exists( 'boostify_blocks_is_system_font' ) || ! boostify_blocks_is_system_font( $normalized ) ) ) {
+            $google_fonts[] = $normalized;
+        }
+    }
+
+    return array(
+        'opts'             => $opts,
+        'body_font_css'    => $body_font_css,
+        'heading_font_css' => $heading_font_css,
+        'google_fonts'     => array_values( array_unique( $google_fonts ) ),
+    );
+}
+
+/**
+ * Enqueues active theme Google Fonts via enqueue_block_assets (admin only)
+ * so WordPress injects them into <iframe name="editor-canvas">.
+ */
+function boostify_blocks_enqueue_theme_fonts_in_editor(): void {
+    if ( ! is_admin() ) {
+        return;
+    }
+
+    $ctx = boostify_blocks_get_woostify_typography_context();
+    if ( empty( $ctx['google_fonts'] ) ) {
+        return;
+    }
+
+    if ( function_exists( 'boostify_blocks_enqueue_font_list' ) ) {
+        boostify_blocks_enqueue_font_list( $ctx['google_fonts'] );
+    }
+}
+add_action( 'enqueue_block_assets', 'boostify_blocks_enqueue_theme_fonts_in_editor' );
+
+/**
+ * Emits `--theme-body-font` and `--theme-heading-font` on the frontend so
+ * blocks referencing those CSS variables match the block editor canvas.
+ */
+function boostify_blocks_get_theme_frontend_typography_css(): string {
+    $ctx = boostify_blocks_get_woostify_typography_context();
+    if ( null === $ctx ) {
+        return '';
+    }
+
+    return sprintf(
+        ":root {\n\t--theme-body-font: %s;\n\t--theme-heading-font: %s;\n}",
+        $ctx['body_font_css'],
+        $ctx['heading_font_css']
+    );
+}
+
+/**
  * Generate dynamic CSS reflecting active theme Customizer typography.
- * Uses :where() for zero specificity so block custom settings always take precedence.
+ * Returns empty string on non-Woostify sites so their editor styles stay untouched.
  *
  * @return string Dynamic CSS rules.
  */
 function boostify_blocks_get_theme_editor_typography_css() {
-    $opts = function_exists( 'woostify_options' ) ? woostify_options( false ) : ( get_option( 'woostify_setting', array() ) );
+    $ctx = boostify_blocks_get_woostify_typography_context();
+    if ( null === $ctx ) {
+        return '';
+    }
 
-    $body_font      = ! empty( $opts['body_font_family'] ) ? $opts['body_font_family'] : 'Poppins';
+    $opts         = $ctx['opts'];
+    $body_font    = $ctx['body_font_css'];
+    $heading_font = $ctx['heading_font_css'];
+
     $body_size      = ! empty( $opts['body_font_size'] ) ? intval( $opts['body_font_size'] ) : 14;
-    $body_weight    = ! empty( $opts['body_font_weight'] ) ? $opts['body_font_weight'] : '500';
-    $body_lh        = ! empty( $opts['body_line_height'] ) ? ( is_numeric( $opts['body_line_height'] ) ? $opts['body_line_height'] . 'px' : $opts['body_line_height'] ) : '28px';
-    $body_transform = ! empty( $opts['body_font_transform'] ) ? $opts['body_font_transform'] : 'none';
-    $text_color     = ! empty( $opts['text_color'] ) ? $opts['text_color'] : '#474747';
+    $body_weight    = ! empty( $opts['body_font_weight'] ) ? boostify_blocks_sanitize_css_font_value( (string) $opts['body_font_weight'] ) : '400';
+    $body_lh        = ! empty( $opts['body_line_height'] ) ? ( is_numeric( $opts['body_line_height'] ) ? $opts['body_line_height'] . 'px' : boostify_blocks_sanitize_css_font_value( (string) $opts['body_line_height'] ) ) : '28px';
+    $body_transform = ! empty( $opts['body_font_transform'] ) ? boostify_blocks_sanitize_css_font_value( (string) $opts['body_font_transform'] ) : 'none';
+    $text_color     = ! empty( $opts['text_color'] ) ? boostify_blocks_sanitize_css_font_value( (string) $opts['text_color'] ) : '#474747';
 
-    $heading_font      = ! empty( $opts['heading_font_family'] ) ? $opts['heading_font_family'] : 'Poppins';
-    $heading_weight    = ! empty( $opts['heading_font_weight'] ) ? $opts['heading_font_weight'] : '600';
-    $heading_lh        = ! empty( $opts['heading_line_height'] ) ? $opts['heading_line_height'] : '1.5';
-    $heading_transform = ! empty( $opts['heading_font_transform'] ) ? $opts['heading_font_transform'] : 'none';
-    $heading_color     = ! empty( $opts['heading_color'] ) ? $opts['heading_color'] : '#2b2b2b';
+    $heading_weight    = ! empty( $opts['heading_font_weight'] ) ? boostify_blocks_sanitize_css_font_value( (string) $opts['heading_font_weight'] ) : '600';
+    $heading_lh        = ! empty( $opts['heading_line_height'] ) ? boostify_blocks_sanitize_css_font_value( (string) $opts['heading_line_height'] ) : '1.5';
+    $heading_transform = ! empty( $opts['heading_font_transform'] ) ? boostify_blocks_sanitize_css_font_value( (string) $opts['heading_font_transform'] ) : 'none';
+    $heading_color     = ! empty( $opts['heading_color'] ) ? boostify_blocks_sanitize_css_font_value( (string) $opts['heading_color'] ) : '#2b2b2b';
 
     $h1_size = ! empty( $opts['heading_h1_font_size'] ) ? intval( $opts['heading_h1_font_size'] ) : 48;
     $h2_size = ! empty( $opts['heading_h2_font_size'] ) ? intval( $opts['heading_h2_font_size'] ) : 36;
@@ -328,47 +455,15 @@ function boostify_blocks_get_theme_editor_typography_css() {
     $h5_size = ! empty( $opts['heading_h5_font_size'] ) ? intval( $opts['heading_h5_font_size'] ) : 26;
     $h6_size = ! empty( $opts['heading_h6_font_size'] ) ? intval( $opts['heading_h6_font_size'] ) : 18;
 
-    $google_font_imports = '';
-    $system_fonts = array(
-        'arial', 'helvetica', 'times new roman', 'times', 'courier new', 'courier',
-        'verdana', 'georgia', 'palatino', 'garamond', 'bookman', 'comic sans ms',
-        'trebuchet ms', 'arial black', 'impact', 'sans-serif', 'serif', 'monospace', 'inherit', 'initial'
-    );
-    $b_settings   = get_option( 'boostify_blocks_settings_options', array() );
-    $load_locally = ( $b_settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
-
-    $fonts_to_load = array();
-    foreach ( array_unique( array_filter( array( $body_font, $heading_font ) ) ) as $f_name ) {
-        $clean = trim( $f_name );
-        if ( ! empty( $clean ) && ! in_array( strtolower( $clean ), $system_fonts, true ) ) {
-            $font_url = false;
-            if ( $load_locally && function_exists( 'boostify_blocks_download_google_font' ) ) {
-                $font_url = boostify_blocks_download_google_font( $clean );
-            }
-            if ( ! $font_url ) {
-                $family_encoded = str_replace( ' ', '+', $clean );
-                $font_url       = "https://fonts.googleapis.com/css?family={$family_encoded}:100,200,300,400,500,600,700,800,900&display=swap";
-            }
-            $fonts_to_load[] = $font_url;
-        }
-    }
-    if ( ! empty( $fonts_to_load ) ) {
-        $import_rules = array();
-        foreach ( $fonts_to_load as $f_url ) {
-            $import_rules[] = "@import url('{$f_url}');";
-        }
-        $google_font_imports = implode( "\n", $import_rules ) . "\n";
-    }
-
-    return "{$google_font_imports}
+    return "
     :root, .editor-styles-wrapper {
-        --theme-body-font: '{$body_font}', sans-serif;
+        --theme-body-font: {$body_font};
         --theme-body-font-size: {$body_size}px;
         --theme-body-font-weight: {$body_weight};
         --theme-body-line-height: {$body_lh};
         --theme-body-transform: {$body_transform};
         --theme-body-color: {$text_color};
-        --theme-heading-font: '{$heading_font}', sans-serif;
+        --theme-heading-font: {$heading_font};
         --theme-heading-font-weight: {$heading_weight};
         --theme-heading-line-height: {$heading_lh};
         --theme-heading-transform: {$heading_transform};

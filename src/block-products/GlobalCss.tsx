@@ -11,6 +11,7 @@ import { WcbAttrsForSave } from "./Save";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
 import { getThemeDefaults } from "../utils/themeDefaults";
+import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 
 const getBadgeShapeStyles = (
 	shape?: string,
@@ -36,13 +37,104 @@ const getBadgeShapeStyles = (
 	return base;
 };
 
-interface Props extends Required<WcbAttrsForSave> {}
+export type PreviewDeviceType = "Desktop" | "Tablet" | "Mobile";
+
+type ResponsiveScalarStyle = Record<
+	string,
+	string | number | Record<string, string | number> | undefined
+>;
+
+const pickDefined = <T,>(...values: (T | undefined | null)[]): T | undefined =>
+	values.find((v): v is T => v !== undefined && v !== null && v !== "");
+
+const pickDeviceValue = <T,>(
+	deviceType: PreviewDeviceType,
+	mobile: T | undefined | null,
+	tablet: T | undefined | null,
+	desktop: T | undefined | null
+): T | undefined => {
+	if (deviceType === "Mobile") {
+		return pickDefined(mobile, tablet, desktop);
+	}
+	if (deviceType === "Tablet") {
+		return pickDefined(tablet, desktop, mobile);
+	}
+	return pickDefined(desktop, tablet, mobile);
+};
+
+const getResponsiveScalarStyle = ({
+	cssProp,
+	mobile,
+	tablet,
+	desktop,
+	previewDeviceType,
+	mediaTablet,
+	mediaDesktop,
+}: {
+	cssProp: string;
+	mobile?: string | null;
+	tablet?: string | null;
+	desktop?: string | null;
+	previewDeviceType?: PreviewDeviceType;
+	mediaTablet: string;
+	mediaDesktop: string;
+}): ResponsiveScalarStyle => {
+	if (previewDeviceType) {
+		const activeVal = pickDeviceValue(previewDeviceType, mobile, tablet, desktop);
+		return activeVal !== undefined ? { [cssProp]: activeVal } : {};
+	}
+	const {
+		mobile_v: mobileNew,
+		tablet_v: tabletNew,
+		desktop_v: desktopNew,
+	} = checkResponsiveValueForOptimizeCSS({
+		mobile_v: mobile,
+		tablet_v: tablet,
+		desktop_v: desktop,
+	});
+	return {
+		[cssProp]: mobileNew ?? undefined,
+		[`@media (min-width: ${mediaTablet})`]: tabletNew
+			? { [cssProp]: tabletNew }
+			: undefined,
+		[`@media (min-width: ${mediaDesktop})`]: desktopNew
+			? { [cssProp]: desktopNew }
+			: undefined,
+	};
+};
+
+const buildListLayoutStyles = (
+	cols: string | number | null | undefined,
+	colGap: string | null | undefined,
+	rowGap: string | null | undefined,
+	peek: string | null | undefined,
+	isSnap: boolean
+): CSSObject => ({
+	rowGap: rowGap ?? undefined,
+	columnGap: colGap ?? undefined,
+	...(isSnap
+		? {
+				"> div": {
+					flexBasis: `calc((100% - (${
+						Number(cols) - 1
+					} * ${colGap})) / ${Number(cols)} - ${peek})`,
+				},
+		  }
+		: {
+				gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+		  }),
+});
+
+interface Props extends Required<WcbAttrsForSave> {
+	previewDeviceType?: PreviewDeviceType;
+}
 
 const hasValue = (val: unknown): boolean => val !== undefined && val !== null && val !== "";
 
 const GlobalCss: FC<Props> = (attrs) => {
 	const {
 		uniqueId,
+		previewDeviceType,
 		// ATTRS OF BLOCK
 		general_addToCartBtn,
 		general_content,
@@ -90,6 +182,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 			? (Boolean(rawQvShowIcon) && String(rawQvShowIcon) !== "0" && String(rawQvShowIcon) !== "false")
 			: true);
 
+	const isBadgeInsideImage =
+		(general_featuredImage?.isShowFeaturedImage ?? true) &&
+		(general_content?.saleBadgePosition ?? "Inside image") === "Inside image";
+
 	const getQuickViewBorderRadius = (): string => {
 		const valStr = String(effectiveQvBorderRadius).trim();
 		if (valStr.endsWith("px") || valStr.endsWith("%") || valStr.endsWith("rem") || valStr.endsWith("em")) {
@@ -105,9 +201,32 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const LIST_CLASS = `${WRAP_CLASSNAME} .wcb-products__list`;
 	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .wcb-products__product`;
+	const PRICE_TEXT_CLASS = `${POST_CARD_CLASS} .wcb-products__product-price, ${POST_CARD_CLASS} .wcb-products__product-price .woocommerce-Price-amount, ${POST_CARD_CLASS} .wcb-products__product-price del, ${POST_CARD_CLASS} .wcb-products__product-price ins`;
 	const ADD_TO_CART_BTN_BG = `${POST_CARD_CLASS} .wcb-products__product-add-to-cart`;
 	const ADD_TO_CART_BTN = `${POST_CARD_CLASS} .wcb-products__product-add-to-cart a`;
 	const PRODUCT_IMAGE_CLASS = `${WRAP_CLASSNAME} .wcb-products__product-image`;
+
+	const resolveSpacing = (
+		cssProp: string,
+		cssProperty?: HasResponsive<string>
+	): ResponsiveScalarStyle => {
+		if (!cssProperty) {
+			return {};
+		}
+		const { value_mobile, value_tablet, value_desktop } =
+			getCssProperyHasResponsive<string>({
+				cssProperty,
+			});
+		return getResponsiveScalarStyle({
+			cssProp,
+			mobile: value_mobile,
+			tablet: value_tablet,
+			desktop: value_desktop,
+			previewDeviceType,
+			mediaTablet: media_tablet,
+			mediaDesktop: media_desktop,
+		});
+	};
 
 	// ------------------- WRAP DIV
 
@@ -141,243 +260,74 @@ const GlobalCss: FC<Props> = (attrs) => {
 			isSnapScrollDesktop || swithToScrollSnapX === "Tablet";
 		const isSnapScrollMobile =
 			isSnapScrollTablet || swithToScrollSnapX === "Mobile";
-		const listWrapStyles: CSSObject = {
-			[LIST_CLASS]: {
-				...(isSnapScrollMobile
-					? {
-							"> div": {
-								flexBasis: `calc((100% - (${
-									Number(numberOfColumn_mobile) - 1
-								} * ${colunmGap_mobile})) / ${Number(
-									numberOfColumn_mobile
-								)} - ${peekAfter_mobile})`,
-							},
-					  }
-					: {
-							gridTemplateColumns: `repeat(${numberOfColumn_mobile}, minmax(0, 1fr))`,
-					  }),
-				rowGap: rowGap_mobile ?? undefined,
-				columnGap: colunmGap_mobile ?? undefined,
-				[`@media (min-width: ${media_tablet})`]: {
-					rowGap: rowGap_tablet ?? undefined,
-					columnGap: colunmGap_tablet ?? undefined,
-					...(isSnapScrollTablet
-						? {
-								"> div": {
-									flexBasis: `calc((100% - (${
-										Number(numberOfColumn_tablet) - 1
-									} * ${colunmGap_tablet})) / ${Number(
-										numberOfColumn_tablet
-									)} - ${peekAfter_tablet})`,
-								},
-						  }
-						: {
-								gridTemplateColumns: `repeat(${numberOfColumn_tablet}, minmax(0, 1fr))`,
-						  }),
-				},
-				[`@media (min-width: ${media_desktop})`]: {
-					rowGap: rowGap_desktop,
-					columnGap: colunmGap_desktop,
-					...(isSnapScrollDesktop
-						? {
-								"> div": {
-									flexBasis: `calc((100% - (${
-										Number(numberOfColumn_desktop) - 1
-									} * ${colunmGap_desktop})) / ${Number(
-										numberOfColumn_desktop
-									)} - ${peekAfter_desktop})`,
-								},
-						  }
-						: {
-								gridTemplateColumns: `repeat(${numberOfColumn_desktop}, minmax(0, 1fr))`,
-						  }),
-				},
-			},
-		};
+
+		const mobileStyles = buildListLayoutStyles(
+			numberOfColumn_mobile,
+			colunmGap_mobile,
+			rowGap_mobile,
+			peekAfter_mobile,
+			isSnapScrollMobile
+		);
+		const tabletStyles = buildListLayoutStyles(
+			numberOfColumn_tablet,
+			colunmGap_tablet,
+			rowGap_tablet,
+			peekAfter_tablet,
+			isSnapScrollTablet
+		);
+		const desktopStyles = buildListLayoutStyles(
+			numberOfColumn_desktop,
+			colunmGap_desktop,
+			rowGap_desktop,
+			peekAfter_desktop,
+			isSnapScrollDesktop
+		);
+
+		const listWrapStyles: CSSObject = previewDeviceType
+			? {
+					[LIST_CLASS]:
+						previewDeviceType === "Mobile"
+							? mobileStyles
+							: previewDeviceType === "Tablet"
+							? tabletStyles
+							: desktopStyles,
+			  }
+			: {
+					[LIST_CLASS]: {
+						...mobileStyles,
+						[`@media (min-width: ${media_tablet})`]: tabletStyles,
+						[`@media (min-width: ${media_desktop})`]: desktopStyles,
+					},
+			  };
 
 		return <Global styles={listWrapStyles} />;
 	};
 
-	const getDivWrapStyles_Pagination = (): CSSObject => {
-		const {
-			value_mobile: marginTop_mobile,
-			value_tablet: marginTop_tablet,
-			value_desktop: marginTop_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_pagination?.marginTop,
-		});
-		const {
-			mobile_v: marginTop_mobile_new,
-			tablet_v: marginTop_tablet_new,
-			desktop_v: marginTop_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: marginTop_mobile,
-			tablet_v: marginTop_tablet,
-			desktop_v: marginTop_desktop,
-		});
-		return {
-			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-				marginTop: marginTop_mobile_new ?? undefined,
-				justifyContent: style_pagination?.justifyContent,
-				[`.page-numbers`]: {
-					color: style_pagination?.mainStyle?.Normal?.color,
-					backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
-				},
-				[`.page-numbers.current`]: {
-					color: style_pagination?.mainStyle?.Active?.color,
-					backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
-				},
-				[`@media (min-width: ${media_tablet})`]: marginTop_tablet_new
-					? {
-							marginTop: marginTop_tablet_new,
-					  }
-					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginTop_desktop_new
-					? {
-							marginTop: marginTop_desktop_new,
-					  }
-					: undefined,
+	const getDivWrapStyles_Pagination = (): CSSObject => ({
+		[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
+			...resolveSpacing("marginTop", style_pagination?.marginTop),
+			justifyContent: style_pagination?.justifyContent,
+			[`.page-numbers`]: {
+				color: style_pagination?.mainStyle?.Normal?.color,
+				backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
 			},
-		};
-	};
+			[`.page-numbers.current`]: {
+				color: style_pagination?.mainStyle?.Active?.color,
+				backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
+			},
+		},
+	});
 
-	const getDivWrapStyles_Rating = (): CSSObject => {
-		const {
-			value_mobile: marginBottom_mobile,
-			value_tablet: marginBottom_tablet,
-			value_desktop: marginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_rating?.marginBottom,
-		});
-		const {
-			mobile_v: marginBottom_mobile_new,
-			tablet_v: marginBottom_tablet_new,
-			desktop_v: marginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: marginBottom_mobile,
-			tablet_v: marginBottom_tablet,
-			desktop_v: marginBottom_desktop,
-		});
-		return {
-			[`${WRAP_CLASSNAME} .wcb-products__product-rating`]: {
-				marginBottom: marginBottom_mobile_new ?? undefined,
-				color: style_rating?.color,
-				[`@media (min-width: ${media_tablet})`]: marginBottom_tablet_new
-					? {
-							marginBottom: marginBottom_tablet_new,
-					  }
-					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginBottom_desktop_new
-					? {
-							marginBottom: marginBottom_desktop_new,
-					  }
-					: undefined,
-			},
-		};
-	};
+	const getDivWrapStyles_Rating = (): CSSObject => ({
+		[`${WRAP_CLASSNAME} .wcb-products__product-rating`]: {
+			...resolveSpacing("marginBottom", style_rating?.marginBottom),
+			color: style_rating?.color,
+		},
+	});
 	//
 
 	//
 	const getPostCardWrapStyles = (): CSSObject[] => {
-		const {
-			value_mobile: titleMarginBottom_mobile,
-			value_tablet: titleMarginBottom_tablet,
-			value_desktop: titleMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_title?.marginBottom,
-		});
-		const {
-			value_mobile: saleBadgeMarginBottom_mobile,
-			value_tablet: saleBadgeMarginBottom_tablet,
-			value_desktop: saleBadgeMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_saleBadge?.marginBottom,
-		});
-		const {
-			value_mobile: outofstockBadgeMarginBottom_mobile,
-			value_tablet: outofstockBadgeMarginBottom_tablet,
-			value_desktop: outofstockBadgeMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_outOfStock?.marginBottom,
-		});
-		const {
-			value_mobile: featuredImageMarginBottom_mobile,
-			value_tablet: featuredImageMarginBottom_tablet,
-			value_desktop: featuredImageMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_featuredImage?.marginBottom,
-		});
-		const {
-			value_mobile: priceMarginBottom_mobile,
-			value_tablet: priceMarginBottom_tablet,
-			value_desktop: priceMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_price?.marginBottom,
-		});
-		const {
-			value_mobile: categoryMarginBottom_mobile,
-			value_tablet: categoryMarginBottom_tablet,
-			value_desktop: categoryMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_category?.marginBottom,
-		});
-
-		//
-		const {
-			mobile_v: titleMarginBottom_mobile_new,
-			tablet_v: titleMarginBottom_tablet_new,
-			desktop_v: titleMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: titleMarginBottom_mobile,
-			tablet_v: titleMarginBottom_tablet,
-			desktop_v: titleMarginBottom_desktop,
-		});
-		const {
-			mobile_v: saleBadgeMarginBottom_mobile_new,
-			tablet_v: saleBadgeMarginBottom_tablet_new,
-			desktop_v: saleBadgeMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: saleBadgeMarginBottom_mobile,
-			tablet_v: saleBadgeMarginBottom_tablet,
-			desktop_v: saleBadgeMarginBottom_desktop,
-		});
-		const {
-			mobile_v: outofstockBadgeMarginBottom_mobile_new,
-			tablet_v: outofstockBadgeMarginBottom_tablet_new,
-			desktop_v: outofstockBadgeMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: outofstockBadgeMarginBottom_mobile,
-			tablet_v: outofstockBadgeMarginBottom_tablet,
-			desktop_v: outofstockBadgeMarginBottom_desktop,
-		});
-		const {
-			mobile_v: featuredImageMarginBottom_mobile_new,
-			tablet_v: featuredImageMarginBottom_tablet_new,
-			desktop_v: featuredImageMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: featuredImageMarginBottom_mobile,
-			tablet_v: featuredImageMarginBottom_tablet,
-			desktop_v: featuredImageMarginBottom_desktop,
-		});
-		const {
-			mobile_v: priceMarginBottom_mobile_new,
-			tablet_v: priceMarginBottom_tablet_new,
-			desktop_v: priceMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: priceMarginBottom_mobile,
-			tablet_v: priceMarginBottom_tablet,
-			desktop_v: priceMarginBottom_desktop,
-		});
-		const {
-			mobile_v: categoryMarginBottom_mobile_new,
-			tablet_v: categoryMarginBottom_tablet_new,
-			desktop_v: categoryMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: categoryMarginBottom_mobile,
-			tablet_v: categoryMarginBottom_tablet,
-			desktop_v: categoryMarginBottom_desktop,
-		});
-		//
 		return [
 			{
 				[POST_CARD_CLASS]: {
@@ -463,41 +413,28 @@ const GlobalCss: FC<Props> = (attrs) => {
 				[POST_CARD_CLASS]: {
 					textAlign: style_layout?.textAlignment,
 					backgroundColor: style_layout?.backgroundColor,
-					".wcb-products__product-price": {
-						marginBottom: priceMarginBottom_mobile_new ?? undefined,
+					".wcb-products__product-price": resolveSpacing(
+						"marginBottom",
+						style_price?.marginBottom
+					),
+					".wcb-products__product-price, .wcb-products__product-price .woocommerce-Price-amount, .wcb-products__product-price del, .wcb-products__product-price ins": {
 						color: style_price?.textColor,
 					},
 
-					".wcb-products__product-featured":
-						featuredImageMarginBottom_mobile_new ||
-						featuredImageMarginBottom_tablet_new ||
-						featuredImageMarginBottom_desktop_new
-							? {
-									marginBottom: featuredImageMarginBottom_mobile_new,
-									[`@media (min-width: ${media_tablet})`]:
-										featuredImageMarginBottom_tablet_new
-											? {
-													marginBottom: featuredImageMarginBottom_tablet_new,
-											  }
-											: undefined,
-									[`@media (min-width: ${media_desktop})`]:
-										featuredImageMarginBottom_desktop_new
-											? {
-													marginBottom: featuredImageMarginBottom_desktop_new,
-											  }
-											: undefined,
-							  }
-							: undefined,
+					".wcb-products__product-featured": resolveSpacing(
+						"marginBottom",
+						style_featuredImage?.marginBottom
+					),
 
 					".wcb-products__product-title": {
-						marginBottom: titleMarginBottom_mobile_new ?? undefined,
+						...resolveSpacing("marginBottom", style_title?.marginBottom),
 						color: style_title?.textColor,
 						a: {
 							color: style_title?.textColor,
 						},
 					},
 					".wcb-products__product-categories": {
-						marginBottom: categoryMarginBottom_mobile_new ?? undefined,
+						...resolveSpacing("marginBottom", style_category?.marginBottom),
 						color: style_category?.textColor,
 						a: {
 							color: style_category?.textColor,
@@ -509,7 +446,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 							: undefined,
 					},
 					".wcb-products__product-salebadge": {
-						marginBottom: saleBadgeMarginBottom_mobile_new ?? undefined,
+						...(!isBadgeInsideImage
+							? resolveSpacing("marginBottom", style_saleBadge?.marginBottom)
+							: {}),
 						".wcb-products__product-onsale": {
 							color: style_saleBadge?.textColor,
 							backgroundColor: style_saleBadge?.backgroundColor,
@@ -521,7 +460,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 					},
 					".wcb-products__product-outofstock-badge": {
-						marginBottom: outofstockBadgeMarginBottom_mobile_new ?? undefined,
+						...(!isBadgeInsideImage
+							? resolveSpacing("marginBottom", style_outOfStock?.marginBottom)
+							: {}),
 						".wcb-products__product-on-outofstock": {
 							color: style_outOfStock?.textColor,
 							backgroundColor: style_outOfStock?.backgroundColor,
@@ -546,80 +487,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 							: style_layout?.textAlignment === "right" ? "flex-end"
 							: "center",
 					},
-					[`@media (min-width: ${media_tablet})`]:
-						titleMarginBottom_tablet_new ||
-						categoryMarginBottom_tablet_new ||
-						saleBadgeMarginBottom_tablet_new ||
-						priceMarginBottom_tablet_new ||
-						outofstockBadgeMarginBottom_tablet_new
-							? {
-									".wcb-products__product-title": titleMarginBottom_tablet_new
-										? {
-												marginBottom: titleMarginBottom_tablet_new,
-										  }
-										: undefined,
-									".wcb-products__product-categories":
-										categoryMarginBottom_tablet_new
-											? {
-													marginBottom: categoryMarginBottom_tablet_new,
-											  }
-											: undefined,
-									".wcb-products__product-salebadge":
-										saleBadgeMarginBottom_tablet_new
-											? {
-													marginBottom: saleBadgeMarginBottom_tablet_new,
-											  }
-											: undefined,
-									".wcb-products__product-outofstock-badge":
-										outofstockBadgeMarginBottom_tablet_new
-											? {
-													marginBottom: outofstockBadgeMarginBottom_tablet_new,
-											  }
-											: undefined,
-									".wcb-products__product-price": priceMarginBottom_tablet_new
-										? {
-												marginBottom: priceMarginBottom_tablet_new,
-										  }
-										: undefined,
-							  }
-							: undefined,
-					[`@media (min-width: ${media_desktop})`]:
-						titleMarginBottom_desktop_new ||
-						categoryMarginBottom_desktop_new ||
-						saleBadgeMarginBottom_desktop_new ||
-						priceMarginBottom_desktop_new ||
-						outofstockBadgeMarginBottom_desktop_new
-							? {
-									".wcb-products__product-title": titleMarginBottom_desktop_new
-										? {
-												marginBottom: titleMarginBottom_desktop_new,
-										  }
-										: undefined,
-									".wcb-products__product-categories":
-										categoryMarginBottom_desktop_new
-											? {
-													marginBottom: categoryMarginBottom_desktop_new,
-											  }
-											: undefined,
-									".wcb-products__product-salebadge":
-										saleBadgeMarginBottom_desktop_new
-											? {
-													marginBottom: saleBadgeMarginBottom_desktop_new,
-											  }
-											: undefined,
-									".wcb-products__product-outofstock-badge":
-										outofstockBadgeMarginBottom_desktop_new
-											? {
-													marginBottom: outofstockBadgeMarginBottom_desktop_new,
-											  }
-											: undefined,
-									".wcb-products__product-price": priceMarginBottom_desktop_new
-										? {
-												marginBottom: priceMarginBottom_desktop_new,
-										  }
-										: undefined,
-							  }
-							: undefined,
 				},
 			} as CSSObject,
 			getBorderStyles({
@@ -644,24 +511,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 			style_addToCardBtn?.colorAndBackgroundColor?.Normal ?? {};
 		const { backgroundColor: backgroundColor_h, color: color_h } =
 			style_addToCardBtn?.colorAndBackgroundColor?.Hover ?? {};
-		const {
-			value_mobile: marginBottom_mobile,
-			value_tablet: marginBottom_tablet,
-			value_desktop: marginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_addToCardBtn?.marginBottom || { Desktop: "1rem" },
-		});
-
-		//
-		const {
-			mobile_v: marginBottom_mobile_new,
-			tablet_v: marginBottom_tablet_new,
-			desktop_v: marginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: marginBottom_mobile,
-			tablet_v: marginBottom_tablet,
-			desktop_v: marginBottom_desktop,
-		});
 		// Maps textAlignment setting to CSS align-items value for flex column containers.
 		// Replaces the old inline style approach (align-items set directly in PHP render)
 		// to avoid inline style overriding this CSS class rule.
@@ -695,7 +544,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 			[ADD_TO_CART_BTN]: {
 				color: color || undefined,
 				backgroundColor: backgroundColor || undefined,
-				marginBottom: marginBottom_mobile_new ?? undefined,
+				...resolveSpacing(
+					"marginBottom",
+					style_addToCardBtn?.marginBottom || { Desktop: "1rem" }
+				),
 				".wcb-products__add-to-cart-icon": {
 					display: general_addToCartBtn?.isShowIcon === false ? "none" : undefined,
 					...(color
@@ -716,16 +568,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 						fill: color_h || undefined,
 					},
 				},
-				[`@media (min-width: ${media_tablet})`]: marginBottom_tablet_new
-					? {
-							marginBottom: marginBottom_tablet_new,
-					  }
-					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginBottom_desktop_new
-					? {
-							marginBottom: marginBottom_desktop_new,
-					  }
-					: undefined,
 			},
 		};
 	};
@@ -744,6 +586,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={getTypographyStyles({
 						className: `${POST_CARD_CLASS} .wcb-products__product-title, ${POST_CARD_CLASS} .wcb-products__product-title a`,
 						typography: style_title?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -754,6 +597,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={getTypographyStyles({
 						className: `${WRAP_CLASSNAME} .wcb-products__product-categories, ${WRAP_CLASSNAME} .wcb-products__product-categories a`,
 						typography: style_category?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -767,8 +611,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content?.isShowPrice && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-price",
+						className: PRICE_TEXT_CLASS,
 						typography: style_price?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -779,6 +624,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-onsale",
 						typography: style_saleBadge?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -789,6 +635,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-on-outofstock",
 						typography: style_outOfStock?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -852,6 +699,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							styles={getTypographyStyles({
 								className: ADD_TO_CART_BTN,
 								typography: style_addToCardBtn?.typography,
+								deviceType: previewDeviceType,
 							})}
 						/>
 						<Global

@@ -95,10 +95,16 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
     }
 
     // Sorting & filtering
+    $sorting         = $attributes['general_sortingAndFiltering'] ?? [];
+    $is_items_edited = ! empty( $sorting['isNumberOfItemsEdited'] );
+    $theme_per_page  = $theme['product_per_page'] ?? null;
+    $block_per_page  = $sorting['numberOfItems'] ?? null;
     $attributes['general_sortingAndFiltering'] = array_merge(
-        $attributes['general_sortingAndFiltering'] ?? [],
+        $sorting,
         [
-            'numberOfItems' => $pick($theme['product_per_page'] ?? null, $attributes['general_sortingAndFiltering']['numberOfItems'] ?? null),
+            'numberOfItems' => $is_items_edited
+                ? ( $block_per_page ?? $theme_per_page )
+                : $pick( $theme_per_page, $block_per_page ),
         ]
     );
 
@@ -197,60 +203,57 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
         ]
     );
 
-    // Title styles
-    $general_design = $theme['shop_archive_general_design'] ?? [];
-    $attributes['style_title'] = array_merge(
-        $attributes['style_title'] ?? [],
-        [
-            'textColor' => $pick($general_design['title_color'] ?? null, $attributes['style_title']['textColor'] ?? null),
-            'typography' => array_merge(
-                $attributes['style_title']['typography'] ?? [],
-                [
-                    'fontSizes' => [
-                        'Desktop' => $pick(
-                            isset($general_design['title_font_size']['desktop']) ? $general_design['title_font_size']['desktop'] . 'px' : null,
-                            $attributes['style_title']['typography']['fontSizes']['Desktop'] ?? null
-                        ),
-                        'Tablet' => $pick(
-                            isset($general_design['title_font_size']['tablet']) ? $general_design['title_font_size']['tablet'] . 'px' : null,
-                            $attributes['style_title']['typography']['fontSizes']['Tablet'] ?? null
-                        ),
-                        'Mobile' => $pick(
-                            isset($general_design['title_font_size']['mobile']) ? $general_design['title_font_size']['mobile'] . 'px' : null,
-                            $attributes['style_title']['typography']['fontSizes']['Mobile'] ?? null
-                        ),
-                    ],
-                ]
-            ),
-        ]
-    );
+    // Title and price styles
+    $general_design    = $theme['shop_archive_general_design'] ?? [];
+    $apply_text_design = static function ( array $existing, string $color_key, string $size_key ) use ( $general_design, $pick, $block_overrides ): array {
+        $design_sizes   = $general_design[ $size_key ] ?? [];
+        $existing_typo  = $existing['typography'] ?? [];
+        $existing_sizes = $existing_typo['fontSizes'] ?? [];
+        $format_px      = static function ( $val ): ?string {
+            return isset( $val ) && '' !== trim( (string) $val ) ? $val . 'px' : null;
+        };
 
-    // Price styles
-    $attributes['style_price'] = array_merge(
-        $attributes['style_price'] ?? [],
-        [
-            'textColor' => $pick($general_design['price_color'] ?? null, $attributes['style_price']['textColor'] ?? null),
-            'typography' => array_merge(
-                $attributes['style_price']['typography'] ?? [],
-                [
-                    'fontSizes' => [
-                        'Desktop' => $pick(
-                            isset($general_design['price_font_size']['desktop']) ? $general_design['price_font_size']['desktop'] . 'px' : null,
-                            $attributes['style_price']['typography']['fontSizes']['Desktop'] ?? null
-                        ),
-                        'Tablet' => $pick(
-                            isset($general_design['price_font_size']['tablet']) ? $general_design['price_font_size']['tablet'] . 'px' : null,
-                            $attributes['style_price']['typography']['fontSizes']['Tablet'] ?? null
-                        ),
-                        'Mobile' => $pick(
-                            isset($general_design['price_font_size']['mobile']) ? $general_design['price_font_size']['mobile'] . 'px' : null,
-                            $attributes['style_price']['typography']['fontSizes']['Mobile'] ?? null
-                        ),
-                    ],
-                ]
-            ),
-        ]
-    );
+        $base_style = $block_overrides
+            ? $existing
+            : [
+                'marginBottom' => [ 'Desktop' => '0.75rem' ],
+            ];
+
+        $base_typo = $block_overrides
+            ? $existing_typo
+            : [
+                'fontFamily'     => '',
+                'appearance'     => [
+                    'key'   => 'default',
+                    'name'  => 'Default',
+                    'style' => [],
+                ],
+                'textDecoration' => '',
+                'textTransform'  => '',
+                'lineHeight'     => [],
+                'letterSpacing'  => [],
+            ];
+
+        return array_merge(
+            $base_style,
+            [
+                'textColor'  => $pick( $general_design[ $color_key ] ?? null, $existing['textColor'] ?? null ),
+                'typography' => array_merge(
+                    $base_typo,
+                    [
+                        'fontSizes' => [
+                            'Desktop' => $pick( $format_px( $design_sizes['desktop'] ?? null ), $existing_sizes['Desktop'] ?? null ),
+                            'Tablet'  => $pick( $format_px( $design_sizes['tablet'] ?? null ), $existing_sizes['Tablet'] ?? null ),
+                            'Mobile'  => $pick( $format_px( $design_sizes['mobile'] ?? null ), $existing_sizes['Mobile'] ?? null ),
+                        ],
+                    ]
+                ),
+            ]
+        );
+    };
+
+    $attributes['style_title'] = $apply_text_design( $attributes['style_title'] ?? [], 'title_color', 'title_font_size' );
+    $attributes['style_price'] = $apply_text_design( $attributes['style_price'] ?? [], 'price_color', 'price_font_size' );
 
     // Add to cart general settings
     $atc = $theme['shop_archive_add_to_cart_btn'] ?? [];
@@ -275,7 +278,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
 
     // Add to cart styles (by-position theme styles)
     $by_pos    = $atc['by_position'] ?? [];
-    $pos_style = $by_pos[ $effective_atc_pos ] ?? ( $by_pos[ $atc_position ] ?? $atc );
+    $pos_style = $by_pos[ $effective_atc_pos ?? '' ] ?? ( $by_pos[ $atc_position ?? '' ] ?? $atc );
 
     $existing_colors = $attributes['style_addToCardBtn']['colorAndBackgroundColor'] ?? [];
 

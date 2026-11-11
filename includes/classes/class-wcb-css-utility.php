@@ -53,7 +53,16 @@ class WCB_CSS_Utility {
 
 				if ( ! empty( $val ) || ( empty( $val ) && 'content' === $property ) || 0 === $val ) {
 					if ( 'font-family' === $property ) {
-						$css .= $property . ': "' . self::sanitize_css_value( $val ) . '";';
+						$sanitized = self::sanitize_css_value( $val );
+						if (
+							preg_match( '/^(inherit|initial|unset|revert|sans-serif|serif|monospace|cursive|fantasy|system-ui|ui-sans-serif|ui-serif|ui-monospace)$/i', trim( $sanitized ) )
+							|| 0 === stripos( trim( $sanitized ), 'var(' )
+							|| false !== strpos( $sanitized, ',' )
+						) {
+							$css .= $property . ': ' . $sanitized . ';';
+						} else {
+							$css .= $property . ': "' . trim( $sanitized, "\"' " ) . '";';
+						}
 					} else {
 						if ( is_array( $val ) ) {
 							foreach ( $val as $index => $property_val ) {
