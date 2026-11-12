@@ -151,7 +151,10 @@ if ( ! empty( $sa['arrowDistance'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_next, 'right', $sa['arrowDistance'] );
 }
 
-// 11. Dimensions - on the outer wrap, same target as the editor's GlobalCss.
+// 11. Dimensions - card inner padding on background container, outer wrap margin/padding on wrap.
+if ( ! empty( $sdm['itemPadding'] ) ) {
+	WCB_Block_Helper::add_dimension_css( $css, $item_bg_sel, 'padding', $sdm['itemPadding'] );
+}
 if ( ! empty( $sdm['padding'] ) ) {
 	WCB_Block_Helper::add_dimension_css( $css, $wrap_main_sel, 'padding', $sdm['padding'] );
 }
