@@ -12,10 +12,7 @@ import {
 } from "../components/controls/MyTypographyControl/types";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
-import {
-	// @ts-ignore
-	__experimentalBoxControl as BoxControl,
-} from "@wordpress/components";
+import MyDimensionsUnitControl from "../components/controls/MyDimensionsControl/MyDimensionsUnitControl";
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import MyTabPanel from "../components/controls/MyTabPanel/MyTabPanel";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
@@ -41,10 +38,10 @@ export const WCB_TABS_PANEL_STYLE_BODY_DEMO: WCB_TABS_PANEL_STYLE_BODY = {
 	border: MY_BORDER_CONTROL_DEMO,
 	margin: {
 		Desktop: {
-			top: "0rem",
-			left: "0rem",
-			right: "0rem",
-			bottom: "1rem",
+			top: "",
+			left: "",
+			right: "",
+			bottom: "",
 		},
 	},
 	padding: {
@@ -59,6 +56,20 @@ export const WCB_TABS_PANEL_STYLE_BODY_DEMO: WCB_TABS_PANEL_STYLE_BODY = {
 	backgroundColorHover: "",
 	color: "",
 	colorHover: "",
+};
+
+export const WCB_TABS_BODY_SOLID_PRESET: WCB_TABS_PANEL_STYLE_BODY = {
+	...WCB_TABS_PANEL_STYLE_BODY_DEMO,
+	backgroundColor: "#f5f5f5",
+	border: {
+		...MY_BORDER_CONTROL_DEMO,
+		mainSettings: {
+			...MY_BORDER_CONTROL_DEMO.mainSettings,
+			color: "#f5f5f5",
+			style: "solid",
+			width: "1px",
+		},
+	},
 };
 
 type TabHere = "Normal" | "Hover";
@@ -179,40 +190,43 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 				</MyDisclosure>
 
 				<MyDisclosure label={__("Dimension", "boostify-blocks")}>
-					<BoxControl
-						label={
-							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
-							</MyLabelControl>
-						}
-						values={currentPadding}
-						onChange={(value: any) => {
-							setAttr__({
-								...panelData,
-								padding: {
-									...padding,
-									[deviceType]: value,
-								},
-							});
-						}}
-					/>
-					<BoxControl
-						label={
-							<MyLabelControl className="" hasResponsive>
-								{__("Margin", "boostify-blocks")}
-							</MyLabelControl>
-						}
-						values={currentMargin}
-						onChange={(value: any) => {
-							setAttr__({
-								...panelData,
-								margin: {
-									...margin,
-									[deviceType]: value,
-								},
-							});
-						}}
-					/>
+					<div className="space-y-5">
+						<MyDimensionsUnitControl
+							label={
+								<MyLabelControl className="" hasResponsive>
+									{__("Padding", "boostify-blocks")}
+								</MyLabelControl>
+							}
+							values={currentPadding ?? {}}
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									padding: {
+										...padding,
+										[deviceType]: value,
+									},
+								});
+							}}
+							min={0}
+						/>
+						<MyDimensionsUnitControl
+							label={
+								<MyLabelControl className="" hasResponsive>
+									{__("Margin", "boostify-blocks")}
+								</MyLabelControl>
+							}
+							values={currentMargin ?? {}}
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									margin: {
+										...margin,
+										[deviceType]: value,
+									},
+								});
+							}}
+						/>
+					</div>
 				</MyDisclosure>
 			</div>
 		</PanelBody>

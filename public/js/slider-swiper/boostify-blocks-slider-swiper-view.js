@@ -105,6 +105,8 @@ function mountSwiper( ref, context ) {
 
 	try {
 		new window.Swiper( ref, {
+			observer: true,
+			observeParents: true,
 			loop: !! rewind,
 			speed: animationDuration || 500,
 			autoplay: isAutoPlay

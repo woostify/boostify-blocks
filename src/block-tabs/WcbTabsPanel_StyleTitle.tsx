@@ -22,6 +22,7 @@ import {
 	MyBorderControlData,
 } from "../components/controls/MyBorderControl/types";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
+import { getThemeDefaults } from "../utils/themeDefaults";
 import { WCB_TAGS_PANEL_GENERAL } from "./WcbTabsPanelGeneral";
 
 export interface WCB_TABS_PANEL_STYLE_TITLE {
@@ -55,6 +56,43 @@ export const WCB_TABS_PANEL_STYLE_TITLE_DEMO: WCB_TABS_PANEL_STYLE_TITLE = {
 	colorActive: "",
 	colunmGap: { Desktop: "1rem" },
 	rowGap: { Desktop: "1rem" },
+};
+
+const isLightBackgroundColor = (color: string): boolean => {
+	const trimmed = (color || "").trim();
+	const hexMatch = trimmed.match(/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i);
+	if (hexMatch) {
+		let hex = hexMatch[1];
+		if (hex.length === 3) {
+			hex = hex.split("").map((ch) => ch + ch).join("");
+		}
+		const r = parseInt(hex.slice(0, 2), 16);
+		const g = parseInt(hex.slice(2, 4), 16);
+		const b = parseInt(hex.slice(4, 6), 16);
+		return (r * 299 + g * 587 + b * 114) / 1000 >= 186;
+	}
+	const rgbMatch = trimmed.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+	if (rgbMatch) {
+		const r = Number(rgbMatch[1]);
+		const g = Number(rgbMatch[2]);
+		const b = Number(rgbMatch[3]);
+		return (r * 299 + g * 587 + b * 114) / 1000 >= 186;
+	}
+	return false;
+};
+
+/**
+ * Resolve default active tab colors from the active theme color setting.
+ */
+export const getTabsThemeActiveColors = (): Pick<
+	WCB_TABS_PANEL_STYLE_TITLE,
+	"backgroundColorActive" | "colorActive"
+> => {
+	const themeColor = getThemeDefaults()?.theme_color || "#1346af";
+	return {
+		backgroundColorActive: themeColor,
+		colorActive: isLightBackgroundColor(themeColor) ? "#111827" : "#ffffff",
+	};
 };
 
 type TabHere = "Normal" | "Active";
@@ -198,9 +236,8 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 				</MyDisclosure>
 				
 				{
-					// Render border settings only if the style is not horizontalStyle2
-					// If style is horizontalStyle2, use default CSS from GlobalCss file
-					style !== "horizontalStyle2" && (
+					// Folder-tab styles use their own connected active/panel borders.
+					style !== "horizontalStyle2" && style !== "verticalStyle2" && (
 						<MyDisclosure label={__("Border", "boostify-blocks")}>
 							<MyTabPanel tabs={PANEL_COLOR_TABS}>{renderBorderTab}</MyTabPanel>
 						</MyDisclosure>

@@ -1,6 +1,7 @@
 import { TextAlignment} from "../components/controls/MyTextAlignControl/MyTextAlignControl";
 
 export type ThemeDefaults = {
+    theme_color?: string;
     product_per_row?: { desktop?: number; tablet?: number; mobile?: number };
     product_per_page?: number;
     shop_archive_border?: { style?: string; width?: number; color?: string };

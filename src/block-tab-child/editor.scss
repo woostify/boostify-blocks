@@ -1,3 +1,6 @@
+.wp-block.wcb-tab-child__wrap,
 .wp-block .wcb-tab-child__wrap {
-	max-width: 100% !important;
+	width: auto;
+	max-width: none !important;
+	box-sizing: border-box;
 }

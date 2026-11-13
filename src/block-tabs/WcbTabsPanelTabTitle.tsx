@@ -40,6 +40,7 @@ interface Props
 	setAttr__: (data: WCB_TABS_PANEL_TAB_TITLE) => void;
 	//
 	tabTitles: BlockTabTitleItem[];
+	isGridLayout?: boolean;
 }
 
 const WcbTabsPanelTabTitle: FC<Props> = ({
@@ -49,6 +50,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	onToggle,
 	opened,
 	tabTitles,
+	isGridLayout = false,
 }) => {
 	const {
 		textAlignment,
@@ -62,6 +64,7 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 	const OPTION_INIT_OPEN_TAB_DEMO: Option<
 		WCB_TABS_PANEL_TAB_TITLE["initOpenTab"]
 	>[] = [
+		{ value: "", label: __("Default (First Tab)", "boostify-blocks") },
 		...tabTitles.map((_, i) => ({
 			value: `tab${i + 1}`,
 			label: `Tab ${i + 1}`,
@@ -97,18 +100,20 @@ const WcbTabsPanelTabTitle: FC<Props> = ({
 					}}
 				/>
 
-				<MyRadioGroup
-					hasResponsive={false}
-					label={__("Tab Alignment", "boostify-blocks")}
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							tabAlignment: value,
-						});
-					}}
-					value={tabAlignment}
-					plans={ALIGNMENT_PLANS_DEMO}
-				/>
+				{!isGridLayout && (
+					<MyRadioGroup
+						hasResponsive={false}
+						label={__("Tab Alignment", "boostify-blocks")}
+						onChange={(value) => {
+							setAttr__({
+								...panelData,
+								tabAlignment: value,
+							});
+						}}
+						value={tabAlignment}
+						plans={ALIGNMENT_PLANS_DEMO}
+					/>
+				)}
 				<MyRadioGroup
 					hasResponsive={false}
 					label={__("Text Alignment", "boostify-blocks")}
