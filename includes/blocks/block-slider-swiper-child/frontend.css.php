@@ -51,6 +51,18 @@ if ( ! empty( $sn['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $name_sel, 'margin-bottom', $sn['marginBottom'] );
 }
 
+// 2.1 Layout Preset (runs before explicit textAlignment so manual textAlignment overrides preset).
+$layout_preset = $attr['style_layoutPreset'] ?? array();
+$preset_name   = $layout_preset['preset'] ?? '';
+$icon_pos      = $si['iconPosition'] ?? '';
+if ( in_array( $preset_name, array( 'wcb-layout-2', 'wcb-layout-3', 'wcb-layout-5' ), true ) || 'left' === $icon_pos ) {
+	$css['desktop'][ $item_inner_sel ]['align-items'] = 'flex-start';
+	$css['desktop'][ $item_inner_sel ]['text-align']  = 'start';
+} elseif ( 'right' === $icon_pos ) {
+	$css['desktop'][ $item_inner_sel ]['align-items'] = 'flex-end';
+	$css['desktop'][ $item_inner_sel ]['text-align']  = 'end';
+}
+
 // 3. Content.
 if ( ! empty( $sc['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $content_sel, $sc['typography'] );
@@ -61,7 +73,7 @@ if ( ! empty( $sc['textColor'] ) ) {
 if ( ! empty( $sc['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $content_sel, 'margin-bottom', $sc['marginBottom'] );
 }
-if ( ! empty( $sc['textAlignment'] ) ) {
+if ( ! empty( $sc['textAlignment'] ) && is_array( $sc['textAlignment'] ) ) {
 	$get_align_val = function( $align ) {
 		if ( 'left' === $align ) {
 			return 'start';
@@ -86,33 +98,36 @@ if ( ! empty( $sc['textAlignment'] ) ) {
 		}
 		return '';
 	};
-	if ( is_array( $sc['textAlignment'] ) ) {
-		$d_align = $get_align_val( $sc['textAlignment']['Desktop'] ?? '' );
-		$t_align = $get_align_val( $sc['textAlignment']['Tablet'] ?? '' );
-		$m_align = $get_align_val( $sc['textAlignment']['Mobile'] ?? '' );
 
-		$d_flex = $get_flex_align( $sc['textAlignment']['Desktop'] ?? '' );
-		$t_flex = $get_flex_align( $sc['textAlignment']['Tablet'] ?? '' );
-		$m_flex = $get_flex_align( $sc['textAlignment']['Mobile'] ?? '' );
+	$d_raw = $sc['textAlignment']['Desktop'] ?? '';
+	$t_raw = ! empty( $sc['textAlignment']['Tablet'] ) ? $sc['textAlignment']['Tablet'] : $d_raw;
+	$m_raw = ! empty( $sc['textAlignment']['Mobile'] ) ? $sc['textAlignment']['Mobile'] : $t_raw;
 
-		if ( $d_align ) {
-			$css['desktop'][ $content_sel ]['text-align']    = $d_align;
-			$css['desktop'][ $name_sel ]['text-align']       = $d_align;
-			$css['desktop'][ $item_inner_sel ]['text-align'] = $d_align;
-			$css['desktop'][ $item_inner_sel ]['align-items'] = $d_flex;
-		}
-		if ( $t_align ) {
-			$css['tablet'][ $content_sel ]['text-align']    = $t_align;
-			$css['tablet'][ $name_sel ]['text-align']       = $t_align;
-			$css['tablet'][ $item_inner_sel ]['text-align'] = $t_align;
-			$css['tablet'][ $item_inner_sel ]['align-items'] = $t_flex;
-		}
-		if ( $m_align ) {
-			$css['mobile'][ $content_sel ]['text-align']    = $m_align;
-			$css['mobile'][ $name_sel ]['text-align']       = $m_align;
-			$css['mobile'][ $item_inner_sel ]['text-align'] = $m_align;
-			$css['mobile'][ $item_inner_sel ]['align-items'] = $m_flex;
-		}
+	$d_align = $get_align_val( $d_raw );
+	$t_align = $get_align_val( $t_raw );
+	$m_align = $get_align_val( $m_raw );
+
+	$d_flex = $get_flex_align( $d_raw );
+	$t_flex = $get_flex_align( $t_raw );
+	$m_flex = $get_flex_align( $m_raw );
+
+	if ( $d_align ) {
+		$css['desktop'][ $content_sel ]['text-align']     = $d_align;
+		$css['desktop'][ $name_sel ]['text-align']        = $d_align;
+		$css['desktop'][ $item_inner_sel ]['text-align']  = $d_align;
+		$css['desktop'][ $item_inner_sel ]['align-items'] = $d_flex;
+	}
+	if ( $t_align ) {
+		$css['tablet'][ $content_sel ]['text-align']     = $t_align;
+		$css['tablet'][ $name_sel ]['text-align']        = $t_align;
+		$css['tablet'][ $item_inner_sel ]['text-align']  = $t_align;
+		$css['tablet'][ $item_inner_sel ]['align-items'] = $t_flex;
+	}
+	if ( $m_align ) {
+		$css['mobile'][ $content_sel ]['text-align']     = $m_align;
+		$css['mobile'][ $name_sel ]['text-align']        = $m_align;
+		$css['mobile'][ $item_inner_sel ]['text-align']  = $m_align;
+		$css['mobile'][ $item_inner_sel ]['align-items'] = $m_flex;
 	}
 }
 
@@ -156,18 +171,6 @@ if ( ! empty( $sb_preset['iconSpacing'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $btn_spacing_sel, $spacing_prop, $sb_preset['iconSpacing'] );
 }
 
-// 4.2 Layout Preset.
-$layout_preset = $attr['style_layoutPreset'] ?? array();
-$preset_name   = $layout_preset['preset'] ?? '';
-$icon_pos      = $si['iconPosition'] ?? '';
-if ( in_array( $preset_name, array( 'wcb-layout-2', 'wcb-layout-3', 'wcb-layout-5' ), true ) || 'left' === $icon_pos ) {
-	$css['desktop'][ $item_inner_sel ]['align-items'] = 'flex-start';
-	$css['desktop'][ $item_inner_sel ]['text-align']  = 'start';
-} elseif ( 'right' === $icon_pos ) {
-	$css['desktop'][ $item_inner_sel ]['align-items'] = 'flex-end';
-	$css['desktop'][ $item_inner_sel ]['text-align']  = 'end';
-}
-
 // 5. Icon / Image.
 if ( ! empty( $si['enableIcon'] ) ) {
 	if ( ! empty( $si['iconDimensions']['margin'] ) ) {
@@ -197,26 +200,22 @@ if ( ! empty( $si['enableIcon'] ) ) {
 if ( ! empty( $si['isShowImage'] ) && ! empty( $si['image']['mediaId'] ) ) {
 	$pos = $si['imagePosition'] ?? '';
 	if ( 'above-title' === $pos || 'blow-title' === $pos || 'bottom' === $pos ) {
-		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__content-image' ]['display']        = 'flex';
-		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__content-image' ]['flex-direction'] = 'column';
-		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__content-image' ]['align-items']    = 'center';
-
 		if ( ! empty( $si['imageAlignSelf'] ) ) {
 			WCB_Block_Helper::add_responsive_css( $css, $image_sel, 'align-self', $si['imageAlignSelf'] );
 		}
-		$css['desktop'][ $image_sel ]['width']      = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
-		$css['desktop'][ $image_sel ]['height']     = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
-		$css['desktop'][ $image_sel ]['object-fit'] = 'cover';
-		$css['desktop'][ $image_sel ]['margin']     = 'auto';
+		$css['desktop'][ $image_sel ]['width']  = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
+		$css['desktop'][ $image_sel ]['height'] = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
 	} elseif ( 'left' === $pos || 'right' === $pos ) {
-		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner' ]['display']        = 'flex';
-		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner' ]['flex-direction'] = 'row';
-		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner' ]['gap']            = '10px';
+		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner > div' ]['display']        = 'flex';
+		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner > div' ]['flex-direction'] = 'row';
+		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner > div' ]['align-items']    = 'center';
+		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner > div' ]['gap']            = '10px';
+		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__item-wrap-inner > div' ]['width']          = '100%';
 
-		$css['desktop'][ $image_sel ]['display']    = 'block';
-		$css['desktop'][ $image_sel ]['width']      = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
-		$css['desktop'][ $image_sel ]['height']     = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
-		$css['desktop'][ $image_sel ]['object-fit'] = 'cover';
+		$css['desktop'][ $wrap_sel . ' .wcb-slider-child__content-image' ]['max-width'] = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '50%';
+
+		$css['desktop'][ $image_sel ]['width']  = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
+		$css['desktop'][ $image_sel ]['height'] = ( ( $si['imageSize'] ?? '' ) === 'thumbnail' ) ? '100px' : '100%';
 	}
 }
 

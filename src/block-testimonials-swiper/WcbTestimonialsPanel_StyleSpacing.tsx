@@ -113,6 +113,7 @@ const WcbTestimonialsPanel_StyleSpacing: FC<Props> = ({
 					}
 					values={currentItemPadding || {}}
 					onChange={handleChangeItemPadding}
+					min={0}
 				/>
 			</div>
 		</PanelBody>

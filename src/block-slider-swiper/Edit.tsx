@@ -631,6 +631,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								setAttributes({ style_arrowAndDots: data });
 							}}
 							panelData={style_arrowAndDots}
+							showArrowsDots={general_carousel?.showArrowsDots}
 						/>
 						<WcbSlidersPanel_StyleDimension
 							onToggle={() =>

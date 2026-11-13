@@ -1,3 +1,8 @@
 // Editor-specific styles for slider-swiper block
 // Note: common.scss is imported in style.scss (style-index.css) which is loaded in both editor and frontend.
 
+// Do not css border child item when selected parent
+.block-editor-block-list__layout .is-selected.wp-block-wcb-slider {
+    box-shadow: none;
+}
+

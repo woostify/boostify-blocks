@@ -94,7 +94,7 @@ const MyDimensionsUnitControl: FC<Props> = ({
 	label,
 	values = {},
 	onChange,
-	min = -99999,
+	min = 0,
 	allowReset = true,
 }) => {
 	styles.useInjectStyles();

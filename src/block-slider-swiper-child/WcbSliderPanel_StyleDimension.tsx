@@ -34,6 +34,8 @@ const WcbTestimonialsPanel_StyleDimension: FC<Props> = ({
 				<MyDimensionsNoGapControl
 					dimensionControl={panelData as MyDimensionsNoGapControlData}
 					setAttrs__dimensions={(data) => setAttr__({ ...panelData, ...data })}
+					paddingMin={0}
+					marginMin={-99999}
 				/>
 			</div>
 		</PanelBody>

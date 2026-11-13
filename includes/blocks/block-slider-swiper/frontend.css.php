@@ -68,36 +68,26 @@ if ( ! empty( $sa['color'] ) ) {
 }
 if ( ! empty( $sa['backgroundColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow, 'background-color', $sa['backgroundColor'] );
-	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow_svg, 'background', $sa['backgroundColor'] );
 }
 if ( ! empty( $sa['arrowSize'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow_svg, 'width', $sa['arrowSize'] );
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_arrow_svg, 'height', $sa['arrowSize'] );
 }
 
-$gc         = $attr['general_carousel'] ?? array();
-$wrap_items = $wrap_sel . ' .wcb-slider__wrap-items';
-
-$show_dots = ( $gc['showArrowsDots'] ?? '' ) !== 'Arrow';
-
 if ( ! empty( $sa['dotsMarginTop'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'bottom', $sa['dotsMarginTop'] );
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'margin-top', $sa['dotsMarginTop'] );
 
-	if ( $show_dots ) {
-		$dots_map = is_array( $sa['dotsMarginTop'] ) ? $sa['dotsMarginTop'] : array( 'Desktop' => $sa['dotsMarginTop'] );
-		$d_dots   = $dots_map['Desktop'] ?? ( $dots_map['desktop'] ?? '0px' );
-		$t_dots   = $dots_map['Tablet'] ?? ( $dots_map['tablet'] ?? $d_dots );
-		$m_dots   = $dots_map['Mobile'] ?? ( $dots_map['mobile'] ?? $t_dots );
+	$dots_map = is_array( $sa['dotsMarginTop'] ) ? $sa['dotsMarginTop'] : array( 'Desktop' => $sa['dotsMarginTop'] );
+	$d_dots   = $dots_map['Desktop'] ?? ( $dots_map['desktop'] ?? '0px' );
+	$t_dots   = $dots_map['Tablet'] ?? ( $dots_map['tablet'] ?? $d_dots );
+	$m_dots   = $dots_map['Mobile'] ?? ( $dots_map['mobile'] ?? $t_dots );
 
-		$padding_bottom_resp = array(
-			'Desktop' => 'calc(' . $d_dots . ' + 8px + 10px)',
-			'Tablet'  => 'calc(' . $t_dots . ' + 8px + 10px)',
-			'Mobile'  => 'calc(' . $m_dots . ' + 8px + 10px)',
-		);
-		WCB_Block_Helper::add_responsive_css( $css, $wrap_items, 'padding-bottom', $padding_bottom_resp );
-	}
-} elseif ( $show_dots ) {
-	$css['desktop'][ $wrap_items ]['padding-bottom'] = 'calc(0px + 8px + 10px)';
+	$margin_bottom_resp = array(
+		'Desktop' => 'max(0px, calc(-1 * (' . $d_dots . ' + 8px)))',
+		'Tablet'  => 'max(0px, calc(-1 * (' . $t_dots . ' + 8px)))',
+		'Mobile'  => 'max(0px, calc(-1 * (' . $m_dots . ' + 8px)))',
+	);
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'margin-bottom', $margin_bottom_resp );
 }
 
 if ( ! empty( $sa['arrowDistance'] ) ) {

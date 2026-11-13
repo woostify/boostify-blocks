@@ -418,6 +418,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								setAttributes({ style_arrowAndDots: data });
 							}}
 							panelData={style_arrowAndDots}
+							showArrowsDots={general_carousel?.showArrowsDots}
 						/>
 						<WcbTestimonialsPanel_StyleBackground
 							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}

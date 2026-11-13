@@ -103,6 +103,7 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 							},
 						});
 					}}
+					min={0}
 				/>
 
 				<MyDimensionsBoxControl
@@ -121,6 +122,7 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 							},
 						});
 					}}
+					min={-99999}
 				/>
 
 				{containerData && setAttr__container && (

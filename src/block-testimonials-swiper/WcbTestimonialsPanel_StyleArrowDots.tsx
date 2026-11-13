@@ -20,6 +20,7 @@ export interface WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS {
 	arrowDistance?: HasResponsive<string>;
 	dotsMarginTop: HasResponsive<string>;
 	color: string;
+	backgroundColor?: string;
 }
 export const WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS =
 	{
@@ -35,27 +36,35 @@ export const WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO: WCB_TESTIMONIALS_PANE
 			hoverColor: "#6b7280",
 			radius: { Desktop: "99px" },
 		},
+		arrowDistance: { Desktop: "0px" },
 		dotsMarginTop: { Desktop: "8px" },
 		color: "#374151",
+		backgroundColor: "#fff",
 	};
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS;
 	setAttr__: (data: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS) => void;
+	showArrowsDots?: "Dot" | "Arrow" | "Both";
 }
 
 const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
 	panelData = WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
 	setAttr__,
+	showArrowsDots = "Both",
 	initialOpen,
 	onToggle,
 	opened,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-	const { arrowSize, border, dotsMarginTop, color } = panelData;
+	const { arrowSize, border, arrowDistance, dotsMarginTop, color, backgroundColor } = panelData;
 	const { currentDeviceValue: currentDotsMarginTop } =
 		getValueFromAttrsResponsives(dotsMarginTop, deviceType);
+	const { currentDeviceValue: currentArrowDistance } =
+		getValueFromAttrsResponsives(arrowDistance, deviceType);
+	const showArrows = showArrowsDots !== "Dot";
+	const showDots = showArrowsDots !== "Arrow";
 	//
 	return (
 		<PanelBody
@@ -65,45 +74,69 @@ const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
 			title={__("Arrow & Dots", "boostify-blocks")}
 		>
 			<div className="space-y-5">
-				<MyDisclosure defaultOpen label="Arrow settings">
+				{showArrows && (
+					<>
+						<MyDisclosure defaultOpen label="Arrow settings">
+							<MySpacingSizesControl
+								onChange={(value) => {
+									setAttr__({
+										...panelData,
+										arrowSize: value,
+									});
+								}}
+								value={arrowSize || "1.25rem"}
+								hasResponsive={false}
+								label={__("Arrow size", "boostify-blocks")}
+							/>
+
+							<MyBorderControl
+								borderControl={border}
+								setAttrs__border={(border: MyBorderControlData) => {
+									setAttr__({
+										...panelData,
+										border,
+									});
+								}}
+							/>
+						</MyDisclosure>
+
+						<MySpacingSizesControl
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									arrowDistance: {
+										Desktop: arrowDistance?.Desktop ?? "0px",
+										...arrowDistance,
+										[deviceType]: value,
+									},
+								});
+							}}
+							minCustomValue={-100}
+							value={currentArrowDistance || "0px"}
+							label={__("Arrow Distance from Edges", "boostify-blocks")}
+						/>
+					</>
+				)}
+
+				{showDots && (
 					<MySpacingSizesControl
 						onChange={(value) => {
 							setAttr__({
 								...panelData,
-								arrowSize: value,
+								dotsMarginTop: {
+									...dotsMarginTop,
+									[deviceType]: value,
+								},
 							});
 						}}
-						value={arrowSize || "2rem"}
-						hasResponsive={false}
-						label={__("Arrow size", "boostify-blocks")}
+						minCustomValue={-200}
+						value={currentDotsMarginTop || "8px"}
+						label={__("Dots Margin top", "boostify-blocks")}
 					/>
-
-					<MyBorderControl
-						borderControl={border}
-						setAttrs__border={(border: MyBorderControlData) => {
-							setAttr__({
-								...panelData,
-								border,
-							});
-						}}
-					/>
-				</MyDisclosure>
-
-				<MySpacingSizesControl
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							dotsMarginTop: {
-								...dotsMarginTop,
-								[deviceType]: value,
-							},
-						});
-					}}
-					value={currentDotsMarginTop || "2rem"}
-					label={__("Dots Margin top", "boostify-blocks")}
-				/>
+				)}
 
 				<MyColorPicker
+					label={__("Color", "boostify-blocks")}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -112,6 +145,19 @@ const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
 					}}
 					color={color}
 				/>
+
+				{showArrows && (
+					<MyColorPicker
+						label={__("Background Color", "boostify-blocks")}
+						onChange={(value) => {
+							setAttr__({
+								...panelData,
+								backgroundColor: value,
+							});
+						}}
+						color={backgroundColor || "#fff"}
+					/>
+				)}
 			</div>
 		</PanelBody>
 	);

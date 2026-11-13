@@ -530,6 +530,8 @@ const WcbSliderPanelCallToActionButton: FC<Props> = ({
 							<MyDimensionsNoGapControl
 								dimensionControl={panelData}
 								setAttrs__dimensions={(data) => setAttr__({ ...panelData, ...data })}
+								paddingMin={0}
+								marginMin={-99999}
 							/>
 						</div>
 				</PanelBody>

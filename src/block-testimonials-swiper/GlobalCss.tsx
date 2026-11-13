@@ -31,7 +31,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
+	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid="${uniqueId}"]`;
 	const ITEM_CLASSNAME = `${WRAP_CLASSNAME} .wcb-testimonials-swiper__item`;
 	// The visible card is .__item-background (it carries the background), so
 	// border/radius must target it - otherwise the rounded corners land on a
@@ -67,6 +67,17 @@ const GlobalCss: FC<Props> = (attrs) => {
 				prefix: "textAlign",
 			}),
 		];
+	};
+
+	const getDotsMarginBottom = () => {
+		const d = style_arrowAndDots.dotsMarginTop?.Desktop ?? "8px";
+		const t = style_arrowAndDots.dotsMarginTop?.Tablet ?? d;
+		const m = style_arrowAndDots.dotsMarginTop?.Mobile ?? t;
+		return {
+			Desktop: `max(0px, calc(-1 * (${d} + 10px)))`,
+			Tablet: `max(0px, calc(-1 * (${t} + 10px)))`,
+			Mobile: `max(0px, calc(-1 * (${m} + 10px)))`,
+		};
 	};
 
 	if (!uniqueId) {
@@ -179,6 +190,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						className: `${WRAP_CLASSNAME}.wcb-testimonials-swiper__wrap`,
 						padding: style_dimension.padding,
 						margin: style_dimension.margin,
+						importantHorizontalMargin: true,
 					}),
 					getStyleBackground({
 						className: ITEM_BACKGROUND,
@@ -200,6 +212,18 @@ const GlobalCss: FC<Props> = (attrs) => {
 						value: style_arrowAndDots.dotsMarginTop,
 						prefix: "marginTop",
 					}),
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_DOTS,
+						value: getDotsMarginBottom(),
+						prefix: "marginBottom",
+					}),
+					style_arrowAndDots.backgroundColor
+						? {
+							[SWIPER_ARROW]: {
+								backgroundColor: style_arrowAndDots.backgroundColor,
+							},
+						}
+						: null,
 					{
 						[`${SWIPER_ARROW_SVG}`]: {
 							width: style_arrowAndDots.arrowSize,
