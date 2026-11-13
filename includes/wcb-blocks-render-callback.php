@@ -187,7 +187,8 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
             // Signal the JS whether CSS was already loaded (from static file or server-side inline <head>).
             // When CSS is loaded, JS skips emotion <Global> rendering to completely eliminate FOUC,
             // while still executing interactive init functions (carousels, animations, counters).
-            if (class_exists('WCB_Post_Assets')) {
+            static $boostify_blocks_asset_flags_enqueued = false;
+            if (!$boostify_blocks_asset_flags_enqueued && class_exists('WCB_Post_Assets')) {
                 $assets      = WCB_Post_Assets::instance();
                 $is_ready    = $assets->is_file_css_enqueued();
                 $skip_inline = apply_filters('boostify_blocks_skip_inline_styles', false);
@@ -204,6 +205,7 @@ if (!function_exists('boostify_blocks_enqueue_script_block_commoncss_frontend_st
                     )) . ';',
                     'before'
                 );
+                $boostify_blocks_asset_flags_enqueued = true;
             }
 
             // Expose theme defaults on the frontend so JS helpers can read them.

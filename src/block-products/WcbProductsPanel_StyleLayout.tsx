@@ -36,6 +36,8 @@ export interface WCB_PRODUCTS_PANEL_STYLE_LAYOUT
 	// peekAfter - The value of the future viewports which have to be visible in the current view
 	peekAfter: HasResponsive<string>;
 	isEqualHeight: boolean;
+	contentEqualHeight?: boolean;
+	contentMinHeight?: number;
 	swithToScrollSnapX: ResponsiveDevices | "None";
 }
 

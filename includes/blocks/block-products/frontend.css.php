@@ -47,7 +47,6 @@ $sb  = $attr['style_border'] ?? array();
 $sd  = $attr['style_dimension'] ?? array();
 $sw  = $attr['style_wishlistBtn'] ?? array();
 $sq  = $attr['style_quickViewBtn'] ?? array();
-$scu = $attr['style_countdownUrgency'] ?? array();
 
 $wrap_sel          = '.' . $unique_id . '[data-uniqueid="' . $unique_id . '"]';
 $list_sel          = $wrap_sel . ' .wcb-products__list';
@@ -56,13 +55,13 @@ $title_sel         = $product_sel . ' .wcb-products__product-title';
 $title_a_sel       = $product_sel . ' .wcb-products__product-title a';
 $category_sel      = $wrap_sel . ' .wcb-products__product-categories, ' . $wrap_sel . ' .wcb-products__product-category';
 $category_a_sel    = $wrap_sel . ' .wcb-products__product-categories a, ' . $wrap_sel . ' .wcb-products__product-category a';
-$price_sel         = $wrap_sel . ' .wcb-products__product-price';
+$price_sel         = $product_sel . ' .wcb-products__product-price';
+$price_text_sel    = $price_sel . ', ' . $price_sel . ' .woocommerce-Price-amount, ' . $price_sel . ' del, ' . $price_sel . ' ins';
 $rating_sel        = $wrap_sel . ' .wcb-products__product-rating';
 $image_sel         = $wrap_sel . ' .wcb-products__product-featured';
 $image_link_sel    = $wrap_sel . ' .wcb-products__product-image-link';
-$overlay_sel       = $wrap_sel . ' .wcb-products__product-image-overlay';
 $add_cart_wrap_sel = $wrap_sel . ' .wcb-products__product-add-to-cart';
-$add_cart_sel      = $wrap_sel . ' .wcb-products__product-add-to-cart a';
+$add_cart_sel      = $product_sel . ' .wcb-products__product-add-to-cart a';
 $sale_sel          = $wrap_sel . ' .wcb-products__product-salebadge';
 $sale_badge_sel    = $wrap_sel . ' .wcb-products__product-salebadge .wcb-products__product-onsale';
 $out_of_stock_sel  = $wrap_sel . ' .wcb-products__product-outofstock-badge';
@@ -71,23 +70,15 @@ $pag_wrap_sel      = $wrap_sel . ' .wcb-products__pagination';
 $pag_sel           = $pag_wrap_sel . ' .page-numbers';
 $pag_active        = $pag_wrap_sel . ' .page-numbers.current';
 
-// Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
-// Ensure block wrapper is displayed (overrides the display: none anti-FOUC rule in style-index.css).
-$css['desktop'][ $wrap_sel ]['display'] = 'block';
-
 // 1. Products List Layout: Grid vs Carousel (Scroll Snap Slider)
+// Static display/overflow/scroll-snap/indicator rules live in src/block-products/style.scss
+// via .swithToScrollSnapX--{None|Desktop|Tablet|Mobile}. Only dynamic gaps, columns, and flex-basis are emitted here.
 $switch_snap     = $sl['swithToScrollSnapX'] ?? 'None';
 $is_snap_desktop = ( 'Desktop' === $switch_snap );
 $is_snap_tablet  = ( $is_snap_desktop || 'Tablet' === $switch_snap );
 $is_snap_mobile  = ( $is_snap_tablet  || 'Mobile' === $switch_snap );
 
-$indicators_sel = $wrap_sel . ' .indicators';
-$item_sel       = $list_sel . ' > div';
-
-// Visibility of carousel indicators / arrows
-$css['desktop'][ $indicators_sel ]['display'] = $is_snap_desktop ? 'block' : 'none';
-$css['tablet'][ $indicators_sel ]['display']  = $is_snap_tablet ? 'block' : 'none';
-$css['mobile'][ $indicators_sel ]['display']  = $is_snap_mobile ? 'block' : 'none';
+$item_sel = $list_sel . ' > div';
 
 // Number of columns responsive
 $num_col = $sl['numberOfColumn'] ?? 4;
@@ -140,71 +131,48 @@ $pk_m_fmt = $wcb_format_unit( $pk_m, $pk_t_fmt );
 $css['desktop'][ $list_sel ]['row-gap']    = $rg_d_fmt;
 $css['desktop'][ $list_sel ]['column-gap'] = $cg_d_fmt;
 if ( $is_snap_desktop ) {
-	$css['desktop'][ $list_sel ]['display']          = 'flex';
-	$css['desktop'][ $list_sel ]['overflow-x']       = 'auto';
-	$css['desktop'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
 	$nc_d_num = max( 1, intval( $nc_d ) );
-	$css['desktop'][ $item_sel ]['scroll-snap-align'] = 'start';
-	$css['desktop'][ $item_sel ]['flex-shrink']        = '0';
-	$css['desktop'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_d_num - 1 ) . " * {$cg_d_fmt})) / {$nc_d_num} - {$pk_d_fmt})";
+	$css['desktop'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_d_num - 1 ) . " * {$cg_d_fmt})) / {$nc_d_num} - {$pk_d_fmt})";
 } else {
-	$css['desktop'][ $list_sel ]['display']               = 'grid';
 	$css['desktop'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_d}, minmax(0, 1fr))";
 }
 
 // --- Tablet (Media Query) ---
-$css['tablet'][ $list_sel ]['row-gap']    = $rg_t_fmt;
-$css['tablet'][ $list_sel ]['column-gap'] = $cg_t_fmt;
+if ( $rg_t_fmt !== $rg_d_fmt ) {
+	$css['tablet'][ $list_sel ]['row-gap'] = $rg_t_fmt;
+}
+if ( $cg_t_fmt !== $cg_d_fmt ) {
+	$css['tablet'][ $list_sel ]['column-gap'] = $cg_t_fmt;
+}
 if ( $is_snap_tablet ) {
-	$css['tablet'][ $list_sel ]['display']          = 'flex';
-	$css['tablet'][ $list_sel ]['overflow-x']       = 'auto';
-	$css['tablet'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
 	$nc_t_num = max( 1, intval( $nc_t ) );
-	$css['tablet'][ $item_sel ]['scroll-snap-align'] = 'start';
-	$css['tablet'][ $item_sel ]['flex-shrink']        = '0';
-	$css['tablet'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_t_num - 1 ) . " * {$cg_t_fmt})) / {$nc_t_num} - {$pk_t_fmt})";
-} else {
-	$css['tablet'][ $list_sel ]['display']               = 'grid';
+	$css['tablet'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_t_num - 1 ) . " * {$cg_t_fmt})) / {$nc_t_num} - {$pk_t_fmt})";
+} elseif ( $nc_t !== $nc_d || $is_snap_desktop ) {
 	$css['tablet'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_t}, minmax(0, 1fr))";
 }
 
 // --- Mobile (Media Query) ---
-$css['mobile'][ $list_sel ]['row-gap']    = $rg_m_fmt;
-$css['mobile'][ $list_sel ]['column-gap'] = $cg_m_fmt;
+if ( $rg_m_fmt !== $rg_t_fmt || $rg_m_fmt !== $rg_d_fmt ) {
+	$css['mobile'][ $list_sel ]['row-gap'] = $rg_m_fmt;
+}
+if ( $cg_m_fmt !== $cg_t_fmt || $cg_m_fmt !== $cg_d_fmt ) {
+	$css['mobile'][ $list_sel ]['column-gap'] = $cg_m_fmt;
+}
 if ( $is_snap_mobile ) {
-	$css['mobile'][ $list_sel ]['display']          = 'flex';
-	$css['mobile'][ $list_sel ]['overflow-x']       = 'auto';
-	$css['mobile'][ $list_sel ]['scroll-snap-type'] = 'x proximity';
 	$nc_m_num = max( 1, intval( $nc_m ) );
-	$css['mobile'][ $item_sel ]['scroll-snap-align'] = 'start';
-	$css['mobile'][ $item_sel ]['flex-shrink']        = '0';
-	$css['mobile'][ $item_sel ]['flex-basis']         = "calc((100% - (" . ( $nc_m_num - 1 ) . " * {$cg_m_fmt})) / {$nc_m_num} - {$pk_m_fmt})";
-} else {
-	$css['mobile'][ $list_sel ]['display']               = 'grid';
+	$css['mobile'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_m_num - 1 ) . " * {$cg_m_fmt})) / {$nc_m_num} - {$pk_m_fmt})";
+} elseif ( $nc_m !== $nc_t || $nc_m !== $nc_d || $is_snap_tablet ) {
 	$css['mobile'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_m}, minmax(0, 1fr))";
 }
 
 // 2. Product Card Base
-$ga = $attr['general_addToCartBtn'] ?? array();
-if ( isset( $sl['isEqualHeight'] ) && false === $sl['isEqualHeight'] ) {
-	$css['desktop'][ $product_sel ]['height'] = 'max-content';
-}
-// Quantity & hidden button layout settings
+$ga       = $attr['general_addToCartBtn'] ?? array();
 $cart_pos = $ga['position'] ?? 'inside image';
-$show_qty = ! empty( $ga['isShowQuantity'] );
-$btn_wrap_sel = $wrap_sel . ' .wcb-products__price-button-wrapper';
-$hidden_btn_sel = $wrap_sel . ' .wcb-products__product-style-hidden-btn-add-to-cart';
-
-$css['desktop'][ $btn_wrap_sel ]['height']      = ( 'bottom visible' === $cart_pos ) ? 'auto' : ( $show_qty ? '84px' : '50px' );
-$css['desktop'][ $btn_wrap_sel ]['line-height'] = ( 'bottom visible' === $cart_pos ) ? 'normal' : '36px';
-$css['desktop'][ $btn_wrap_sel ]['overflow']    = 'hidden';
-
-if ( 'bottom' === $cart_pos || 'inside image' === $cart_pos ) {
-	$css['desktop'][ $hidden_btn_sel ]['display'] = 'none !important';
-} else {
-	$css['desktop'][ $hidden_btn_sel ]['display'] = 'unset';
+if ( 'bottom-visible' === $cart_pos ) {
+	$cart_pos = 'bottom visible';
+} elseif ( 'image' === $cart_pos ) {
+	$cart_pos = 'inside image';
 }
-$css['desktop'][ $hidden_btn_sel ]['align-items'] = 'center';
 if ( ! empty( $sl['textAlignment'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $product_sel, 'text-align', $sl['textAlignment'] );
 	$justify = 'center';
@@ -226,9 +194,15 @@ if ( ! empty( $sb ) ) {
 	WCB_Block_Helper::add_border_css( $css, $product_sel, $sb, true, true );
 }
 
+// Product content equal height
+if ( ! empty( $sl['contentEqualHeight'] ) ) {
+	$min_h = intval( $sl['contentMinHeight'] ?? 160 );
+	$css['desktop'][ $wrap_sel . ' .wcb-products__product-content' ]['min-height'] = $min_h . 'px';
+}
+
 // 3. Title
 if ( ! empty( $st['typography'] ) ) {
-	WCB_Block_Helper::add_typography_css( $css, $title_sel, $st['typography'] );
+	WCB_Block_Helper::add_typography_css( $css, $title_sel . ', ' . $title_a_sel, $st['typography'] );
 }
 if ( ! empty( $st['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $title_sel, 'color', $st['textColor'] );
@@ -240,7 +214,7 @@ if ( ! empty( $st['marginBottom'] ) ) {
 
 // 4. Category
 if ( ! empty( $sc['typography'] ) ) {
-	WCB_Block_Helper::add_typography_css( $css, $category_sel, $sc['typography'] );
+	WCB_Block_Helper::add_typography_css( $css, $category_sel . ', ' . $category_a_sel, $sc['typography'] );
 }
 if ( ! empty( $sc['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $category_sel, 'color', $sc['textColor'] );
@@ -252,10 +226,10 @@ if ( ! empty( $sc['marginBottom'] ) ) {
 
 // 5. Price
 if ( ! empty( $sp['typography'] ) ) {
-	WCB_Block_Helper::add_typography_css( $css, $price_sel, $sp['typography'] );
+	WCB_Block_Helper::add_typography_css( $css, $price_text_sel, $sp['typography'] );
 }
 if ( ! empty( $sp['textColor'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $price_sel, 'color', $sp['textColor'] );
+	WCB_Block_Helper::add_responsive_css( $css, $price_text_sel, 'color', $sp['textColor'] );
 }
 if ( ! empty( $sp['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $price_sel, 'margin-bottom', $sp['marginBottom'] );
@@ -273,9 +247,6 @@ if ( ! empty( $sr['marginBottom'] ) ) {
 if ( ! empty( $sf['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $image_sel, 'margin-bottom', $sf['marginBottom'] );
 }
-if ( ! empty( $sf['backgroundOverlay'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $overlay_sel, 'background-color', $sf['backgroundOverlay'] );
-}
 if ( ! empty( $sf['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $image_link_sel, $sf['border'], true, true );
 
@@ -284,19 +255,27 @@ if ( ! empty( $sf['border'] ) ) {
 	}
 }
 
+if ( ! empty( $attr['general_featuredImage']['equal_height_flag'] ) ) {
+	$img_h = intval( $attr['general_featuredImage']['image_height'] ?? 300 );
+	$css['desktop'][ $wrap_sel . ' .wcb-products__product-image img' ]['height'] = $img_h . 'px';
+}
+
 // 8. Sale Badge
-$apply_badge_shape_css = function ( $shape, $sel ) use ( &$css ) {
+$apply_badge_shape_css = function ( $shape, $sel, $badge_opts = array() ) use ( &$css ) {
 	if ( function_exists( 'boostify_blocks_get_badge_shape_css_rules' ) ) {
-		$rules = boostify_blocks_get_badge_shape_css_rules( $shape );
+		$rules = boostify_blocks_get_badge_shape_css_rules( $shape, $badge_opts );
 		foreach ( $rules as $prop => $val ) {
 			$css['desktop'][ $sel ][ $prop ] = $val;
 		}
 	}
 };
 
-if ( ! empty( $ss['shape'] ) ) {
-	$apply_badge_shape_css( $ss['shape'], $sale_badge_sel );
-}
+$sale_opts = array(
+	'border_radius' => $ss['borderRadius'] ?? ( $ss['border_radius'] ?? null ),
+	'is_square'     => $ss['isSquare'] ?? ( $ss['is_square'] ?? null ),
+	'size'          => $ss['size'] ?? null,
+);
+$apply_badge_shape_css( $ss['shape'] ?? 'round', $sale_badge_sel, $sale_opts );
 
 if ( ! empty( $ss['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $sale_badge_sel, $ss['typography'] );
@@ -307,21 +286,21 @@ if ( ! empty( $ss['backgroundColor'] ) ) {
 if ( ! empty( $ss['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $sale_badge_sel, 'color', $ss['textColor'] );
 }
-if ( ! empty( $ss['marginBottom'] ) ) {
+$sale_inside_image = ( ( $attr['general_content']['saleBadgePosition'] ?? 'Inside image' ) === 'Inside image' )
+	&& ( function_exists( 'boostify_blocks_is_enabled' )
+		? boostify_blocks_is_enabled( $attr['general_featuredImage']['isShowFeaturedImage'] ?? true )
+		: ! empty( $attr['general_featuredImage']['isShowFeaturedImage'] ?? true ) );
+
+if ( ! empty( $ss['marginBottom'] ) && ! $sale_inside_image ) {
 	WCB_Block_Helper::add_responsive_css( $css, $sale_sel, 'margin-bottom', $ss['marginBottom'] );
 }
-if ( ! empty( $ss['position'] ) ) {
-	$sale_inside = $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge';
-	if ( 'top-left' === $ss['position'] || 'left' === $ss['position'] ) {
-		$css['desktop'][ $sale_inside ]['left'] = '0.5rem';
-	} else {
-		$css['desktop'][ $sale_inside ]['right'] = '0.5rem';
-	}
-}
 
-if ( ! empty( $so['shape'] ) ) {
-	$apply_badge_shape_css( $so['shape'], $out_of_stock_bdg );
-}
+$oos_opts = array(
+	'border_radius' => $so['borderRadius'] ?? ( $so['border_radius'] ?? null ),
+	'is_square'     => $so['isSquare'] ?? ( $so['is_square'] ?? null ),
+	'size'          => $so['size'] ?? null,
+);
+$apply_badge_shape_css( $so['shape'] ?? 'round', $out_of_stock_bdg, $oos_opts );
 
 if ( ! empty( $so['typography'] ) ) {
 	WCB_Block_Helper::add_typography_css( $css, $out_of_stock_bdg, $so['typography'] );
@@ -332,28 +311,8 @@ if ( ! empty( $so['backgroundColor'] ) ) {
 if ( ! empty( $so['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $out_of_stock_bdg, 'color', $so['textColor'] );
 }
-if ( ! empty( $so['marginBottom'] ) ) {
+if ( ! empty( $so['marginBottom'] ) && ! $sale_inside_image ) {
 	WCB_Block_Helper::add_responsive_css( $css, $out_of_stock_sel, 'margin-bottom', $so['marginBottom'] );
-}
-if ( ! empty( $so['position'] ) ) {
-	$oos_inside = $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge';
-	if ( 'top-left' === $so['position'] || 'left' === $so['position'] ) {
-		$css['desktop'][ $oos_inside ]['left'] = '0.5rem';
-	} elseif ( 'top-right' === $so['position'] || 'right' === $so['position'] ) {
-		$css['desktop'][ $oos_inside ]['right'] = '0.5rem';
-	} else {
-		$css['desktop'][ $oos_inside ]['display'] = 'none';
-	}
-}
-
-// Stacking when both out-of-stock and sale badges are on the same side inside the image.
-$so_pos = ( ! empty( $so['position'] ) && ( 'top-right' === $so['position'] || 'right' === $so['position'] ) ) ? 'right' : 'left';
-$ss_pos = ( ! empty( $ss['position'] ) && ( 'top-right' === $ss['position'] || 'right' === $ss['position'] ) ) ? 'right' : 'left';
-if ( ! empty( $so['position'] ) && 'none' !== $so['position'] && ! empty( $ss['position'] ) && $so_pos === $ss_pos ) {
-	$badge_shape = $so['shape'] ?? $ss['shape'] ?? 'round';
-	$offset      = ( 'round' === $badge_shape ) ? '50px' : '32px';
-	$css['desktop'][ $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge' ]['top'] = 'calc(0.5rem + ' . $offset . ')';
-	$css['desktop'][ $wrap_sel . ' .wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge' ]['top'] = 'calc(0.5rem + ' . $offset . ')';
 }
 
 // 10. Add to Cart Button
@@ -379,7 +338,8 @@ if ( ! empty( $sa['colorAndBackgroundColor'] ) ) {
 	}
 	if ( ! empty( $cbc['Hover']['color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover', 'color', $cbc['Hover']['color'] );
-		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover svg path', 'fill', $cbc['Hover']['color'] . ' !important' );
+		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover span', 'color', $cbc['Hover']['color'] );
+		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover svg path', 'fill', $cbc['Hover']['color'] );
 	}
 	if ( ! empty( $cbc['Hover']['backgroundColor'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $add_cart_sel . ':hover', 'background-color', $cbc['Hover']['backgroundColor'] );
@@ -393,7 +353,56 @@ if ( ! empty( $sa['marginBottom'] ) ) {
 }
 if ( ! empty( $sa['border'] ) ) {
 	WCB_Block_Helper::add_border_css( $css, $add_cart_sel, $sa['border'], true, true );
-	WCB_Block_Helper::add_border_css( $css, $wrap_sel . ' .wcb-products__product--btnIconAddToCart--item', $sa['border'], true, true );
+}
+
+// Icon visibility
+if ( false === ( $ga['isShowIcon'] ?? null ) ) {
+	$css['desktop'][ $wrap_sel . ' .wcb-products__add-to-cart-icon' ]['display'] = 'none';
+}
+if ( ! empty( $sa['colorAndBackgroundColor']['Normal']['color'] ) ) {
+	$css['desktop'][ $wrap_sel . ' .wcb-products__add-to-cart-icon svg path' ]['fill'] = $sa['colorAndBackgroundColor']['Normal']['color'];
+}
+
+// Top-right icon button style & inline SVG coloring
+if ( 'icon' === $cart_pos ) {
+	$icon_btn_sel = $product_sel . '.wcb-products__product--btnIconAddToCart .wcb-products__product--btnIconAddToCart--item';
+
+	if ( ! empty( $sa['colorAndBackgroundColor']['Normal']['color'] ) ) {
+		$css['desktop'][ $icon_btn_sel ]['color'] = $sa['colorAndBackgroundColor']['Normal']['color'];
+	}
+	if ( ! empty( $sa['colorAndBackgroundColor']['Hover']['color'] ) ) {
+		$css['desktop'][ $icon_btn_sel . ':hover' ]['color'] = $sa['colorAndBackgroundColor']['Hover']['color'];
+	}
+	if ( ! empty( $sa['colorAndBackgroundColor']['Normal']['backgroundColor'] ) ) {
+		$css['desktop'][ $icon_btn_sel ]['background-color'] = $sa['colorAndBackgroundColor']['Normal']['backgroundColor'];
+	}
+	if ( ! empty( $sa['colorAndBackgroundColor']['Hover']['backgroundColor'] ) ) {
+		$css['desktop'][ $icon_btn_sel . ':hover' ]['background-color'] = $sa['colorAndBackgroundColor']['Hover']['backgroundColor'];
+	}
+	if ( ! empty( $sa['border'] ) ) {
+		WCB_Block_Helper::add_border_css( $css, $icon_btn_sel, $sa['border'], true, true );
+	}
+}
+
+// Wishlist button styles
+$wl_top_sel = $product_sel . '.wcb-products__product--wishlistTopRight .wcb-products__product--wishlistTopRight--item';
+$wl_bot_sel = $product_sel . '.wcb-products__product--wishlistBottomRight .wcb-products__product--wishlistBottomRight--item';
+
+foreach ( array( $wl_top_sel, $wl_bot_sel ) as $wl_sel ) {
+	if ( ! empty( $sw['backgroundColor'] ) ) {
+		$css['desktop'][ $wl_sel ]['background-color'] = $sw['backgroundColor'];
+	}
+	if ( ! empty( $sw['color'] ) ) {
+		$css['desktop'][ $wl_sel ]['color']           = $sw['color'];
+		$css['desktop'][ $wl_sel . '::before' ]['color'] = $sw['color'];
+	}
+	if ( ! empty( $sw['hoverBackgroundColor'] ) ) {
+		$css['desktop'][ $wl_sel . ':hover' ]['background-color'] = $sw['hoverBackgroundColor'];
+	}
+	if ( ! empty( $sw['hoverColor'] ) ) {
+		$css['desktop'][ $wl_sel . ':hover' ]['color']         = $sw['hoverColor'];
+		$css['desktop'][ $wl_sel . ':hover::before' ]['color'] = $sw['hoverColor'];
+	}
 }
 
 
@@ -433,47 +442,35 @@ if ( ! empty( $sd['margin'] ) ) {
 
 
 // 14. Quick View Button
-$qv_btn_sel        = $wrap_sel . ' .wcb-products__product .wcb-products__product--quickViewBottomImage--item';
-$qv_prod_hover_sel = $wrap_sel . ' .wcb-products__product:hover .wcb-products__product--quickViewBottomImage--item';
-$qv_btn_hover_sel  = $qv_btn_sel . ':hover';
+$qv_btn_sel       = $wrap_sel . ' .wcb-products__product .wcb-products__product--quickViewBottomImage--item';
+$qv_btn_hover_sel = $qv_btn_sel . ':hover';
 
 $qv_enabled = ! empty( $sq['enabled'] );
 
 if ( ! $qv_enabled ) {
 	$css['desktop'][ $qv_btn_sel ]['display'] = 'none !important';
 } else {
-	// Dynamic colors & border radius (only when customized, static defaults are in style.scss)
-	if ( ! empty( $sq['bg_color'] ) && '#ffffff' !== $sq['bg_color'] ) {
+	if ( isset( $sq['show_icon'] ) && ! $sq['show_icon'] && ( $sq['position'] ?? '' ) !== 'top-right' ) {
+		$css['desktop'][ $wrap_sel . ' .wcb-products__product--quickViewBottomImage-svg__icon' ]['display'] = 'none';
+	}
+
+	// Dynamic colors & border radius
+	if ( ! empty( $sq['bg_color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'background-color', $sq['bg_color'] );
 	}
-	if ( ! empty( $sq['text_color'] ) && '#000000' !== $sq['text_color'] ) {
+	if ( ! empty( $sq['text_color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'color', $sq['text_color'] );
 	}
 
-	if ( isset( $sq['border_radius'] ) && '' !== $sq['border_radius'] ) {
+	if ( isset( $sq['border_radius'] ) && '' !== (string) $sq['border_radius'] ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
-		WCB_Block_Helper::add_responsive_css( $css, $qv_prod_hover_sel, 'border-radius', WCB_Block_Helper::get_css_value( $sq['border_radius'] ) );
 	}
 
-	if ( ! empty( $sq['hover_bg_color'] ) && '#474747' !== $sq['hover_bg_color'] ) {
+	if ( ! empty( $sq['hover_bg_color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'background-color', $sq['hover_bg_color'] );
 	}
-	if ( ! empty( $sq['hover_text_color'] ) && '#ffffff' !== $sq['hover_text_color'] ) {
+	if ( ! empty( $sq['hover_text_color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'color', $sq['hover_text_color'] );
-	}
-}
-
-// 15. Countdown Urgency
-if ( ! empty( $scu ) ) {
-	$cu_sel = $wrap_sel . ' .wcb-products__countdown-urgency';
-	if ( ! empty( $scu['textColor'] ) ) {
-		WCB_Block_Helper::add_responsive_css( $css, $cu_sel, 'color', $scu['textColor'] );
-	}
-	if ( ! empty( $scu['backgroundColor'] ) ) {
-		WCB_Block_Helper::add_responsive_css( $css, $cu_sel, 'background-color', $scu['backgroundColor'] );
-	}
-	if ( ! empty( $scu['border'] ) ) {
-		WCB_Block_Helper::add_border_css( $css, $cu_sel, $scu['border'], true, true );
 	}
 }
 

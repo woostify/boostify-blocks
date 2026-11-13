@@ -70,6 +70,7 @@ const WcbProductsPanelContent: FC<Props> = ({
 		isShowRating,
 		isShowSKU,
 		isShowSaleBadge,
+		isShowOutOfStock,
 		saleBadgePosition,
 		isShowCategory,
 	} = panelData;
@@ -180,6 +181,14 @@ const WcbProductsPanelContent: FC<Props> = ({
 						checked={isShowSaleBadge}
 					/>
 				)}
+
+				<ToggleControl
+					label={__("Out of stock badge", "boostify-blocks")}
+					onChange={(checked) =>
+						setAttr__({ ...panelData, isShowOutOfStock: checked })
+					}
+					checked={isShowOutOfStock ?? true}
+				/>
 
 				<ToggleControl
 					label={__("Product rating", "boostify-blocks")}

@@ -68,6 +68,7 @@ const MyDimensionsNoGapControl: FC<Props> = ({
 				}
 				values={padding || {}}
 				onChange={handleChangePadding}
+				min={0}
 			/>
 			<MyDimensionsBoxControl
 				label={
@@ -77,6 +78,7 @@ const MyDimensionsNoGapControl: FC<Props> = ({
 				}
 				values={margin || {}}
 				onChange={handleChangeMargin}
+				min={-99999}
 			/>
 		</div>
 	);

@@ -48,16 +48,17 @@ const WcbFontFamilyPicker: FC<Props> = ({
 			: googleFontsList;
 
 	const handleChangeFont = (newFont: string | null) => {
-		setFontFamily(newFont || "");
-		onChangeFontFamily(newFont || "");
-		filteredGoogleFontsList.some((font) => {
-			if (font.value === newFont) {
-				loadGoogleFont(newFont);
-				return true;
+		const nextFont = newFont || "";
+		setFontFamily(nextFont);
+		onChangeFontFamily(nextFont);
+		if (nextFont) {
+			const fontMeta = (
+				googleFonts as Record<string, { weight?: string[] }>
+			)[nextFont];
+			if (fontMeta) {
+				loadGoogleFont(nextFont, fontMeta.weight);
 			}
-			return false;
-		});
-		loadGoogleFont("");
+		}
 	};
 
 	const FONTS = [

@@ -20,8 +20,12 @@ export interface WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE {
 	textColor: string;
 	backgroundColor: string;
 	marginBottom: HasResponsive<string>;
-	position?: "top-left" | "top-right";
+	position?: "top-left" | "top-right" | "none";
 	shape?: "round" | "square" | string;
+	borderRadius?: number;
+	isSquare?: boolean;
+	size?: number;
+	text?: string;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE =
@@ -48,6 +52,7 @@ interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE;
 	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE) => void;
+	showMarginBottom?: boolean;
 }
 
 const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
@@ -56,6 +61,7 @@ const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
 	initialOpen,
 	onToggle,
 	opened,
+	showMarginBottom = true,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	const { typography, textColor, marginBottom, backgroundColor } = panelData;
@@ -106,22 +112,24 @@ const WcbProductsPanel_StyleSaleBadge: FC<Props> = ({
 						color={backgroundColor}
 					/>
 
-					<MyUnitControl
-						onChange={(value) => {
-							setAttr__({
-								...panelData,
-								marginBottom: {
-									...marginBottom,
-									[deviceType]: value,
-								},
-							});
-						}}
-						value={MARGIN_BOTTOM || ""}
-						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
-						hasResponsive
-						className="flex-col space-y-2"
-					/>
+					{showMarginBottom && (
+						<MyUnitControl
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									marginBottom: {
+										...marginBottom,
+										[deviceType]: value,
+									},
+								});
+							}}
+							value={MARGIN_BOTTOM || ""}
+							units={MY_GAP_UNITS}
+							label={__("Margin bottom", "boostify-blocks")}
+							hasResponsive
+							className="flex-col space-y-2"
+						/>
+					)}
 				</MyDisclosure>
 			</div>
 		</PanelBody>

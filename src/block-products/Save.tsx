@@ -17,6 +17,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		general_addToCartBtn,
 		general_content,
 		general_featuredImage,
+		general_layout,
 		general_pagination,
 		general_sortingAndFiltering,
 		style_addToCardBtn,
@@ -25,6 +26,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_layout,
 		style_pagination,
 		style_price,
+		style_quickViewBtn,
 		style_rating,
 		style_saleBadge,
 		style_outOfStock,
@@ -81,6 +83,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		general_addToCartBtn: ensureObjectStructure(general_addToCartBtn),
 		general_content: ensureObjectStructure(general_content),
 		general_featuredImage: ensureObjectStructure(general_featuredImage),
+		general_layout: ensureObjectStructure(general_layout),
 		general_pagination: ensureObjectStructure(general_pagination),
 		general_sortingAndFiltering: ensureObjectStructure(general_sortingAndFiltering),
 		style_addToCardBtn: style_addToCardBtn ? {
@@ -95,6 +98,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 			...style_price,
 			typography: ensureTypographyConsistency(style_price.typography)
 		} : undefined,
+		style_quickViewBtn: style_quickViewBtn ? ensureObjectStructure(style_quickViewBtn) : undefined,
 		style_rating: ensureObjectStructure(style_rating),
 		style_saleBadge: style_saleBadge ? {
 			...style_saleBadge,

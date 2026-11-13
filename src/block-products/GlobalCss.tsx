@@ -11,70 +11,135 @@ import { WcbAttrsForSave } from "./Save";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
 import { getThemeDefaults } from "../utils/themeDefaults";
-import { SHOPPING_CART_SVG, svgToDataUrl } from "./base-utils";
+import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 
-const getBadgeShapeStyles = (shape?: string): CSSObject => {
-	switch (shape) {
-		case "round":
-			return {
-				borderRadius: "50%",
-				minWidth: "40px",
-				minHeight: "40px",
-				padding: "5px",
-				textAlign: "center",
-				wordBreak: "break-all",
-				boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-			};
-		case "pill":
-			return {
-				borderRadius: "9999px",
-				padding: "2px 12px",
-			};
-		case "leaf":
-			return {
-				borderRadius: "10px 0 10px 0",
-				padding: "2px 8px",
-			};
-		case "parallelogram":
-			return {
-				borderRadius: "0",
-				clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
-				paddingLeft: "15px",
-				paddingRight: "15px",
-			};
-		case "teardrop":
-			return {
-				borderRadius: "50% 50% 50% 0",
-				padding: "4px 8px",
-			};
-		case "ribbon":
-			return {
-				borderRadius: "0",
-				clipPath: "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
-				paddingRight: "15px",
-			};
-		case "tag-left":
-			return {
-				borderRadius: "0",
-				clipPath: "polygon(10px 0%, 100% 0, 100% 100%, 10px 100%, 0% 50%)",
-				paddingLeft: "15px",
-			};
-		case "rectangular":
-		default:
-			return {
-				borderRadius: "2px",
-				padding: "2px 8px",
-			};
+const getBadgeShapeStyles = (
+	shape?: string,
+	badgeOpts?: { borderRadius?: number; isSquare?: boolean; size?: number }
+): CSSObject => {
+	if (shape && shape !== "rectangular") {
+		return {};
 	}
+	const base: CSSObject = {};
+	if (
+		badgeOpts?.borderRadius !== undefined &&
+		badgeOpts.borderRadius !== null &&
+		String(badgeOpts.borderRadius) !== ""
+	) {
+		base.borderRadius = `${badgeOpts.borderRadius}px`;
+	}
+	if (badgeOpts?.isSquare) {
+		const size = `${Math.max(20, badgeOpts.size || 40)}px`;
+		base.width = size;
+		base.height = size;
+		base.padding = "0";
+	}
+	return base;
 };
 
-interface Props extends Required<WcbAttrsForSave> {}
+export type PreviewDeviceType = "Desktop" | "Tablet" | "Mobile";
+
+type ResponsiveScalarStyle = Record<
+	string,
+	string | number | Record<string, string | number> | undefined
+>;
+
+const pickDefined = <T,>(...values: (T | undefined | null)[]): T | undefined =>
+	values.find((v): v is T => v !== undefined && v !== null && v !== "");
+
+const pickDeviceValue = <T,>(
+	deviceType: PreviewDeviceType,
+	mobile: T | undefined | null,
+	tablet: T | undefined | null,
+	desktop: T | undefined | null
+): T | undefined => {
+	if (deviceType === "Mobile") {
+		return pickDefined(mobile, tablet, desktop);
+	}
+	if (deviceType === "Tablet") {
+		return pickDefined(tablet, desktop, mobile);
+	}
+	return pickDefined(desktop, tablet, mobile);
+};
+
+const getResponsiveScalarStyle = ({
+	cssProp,
+	mobile,
+	tablet,
+	desktop,
+	previewDeviceType,
+	mediaTablet,
+	mediaDesktop,
+}: {
+	cssProp: string;
+	mobile?: string | null;
+	tablet?: string | null;
+	desktop?: string | null;
+	previewDeviceType?: PreviewDeviceType;
+	mediaTablet: string;
+	mediaDesktop: string;
+}): ResponsiveScalarStyle => {
+	if (previewDeviceType) {
+		const activeVal = pickDeviceValue(previewDeviceType, mobile, tablet, desktop);
+		return activeVal !== undefined ? { [cssProp]: activeVal } : {};
+	}
+	const {
+		mobile_v: mobileNew,
+		tablet_v: tabletNew,
+		desktop_v: desktopNew,
+	} = checkResponsiveValueForOptimizeCSS({
+		mobile_v: mobile,
+		tablet_v: tablet,
+		desktop_v: desktop,
+	});
+	return {
+		[cssProp]: mobileNew ?? undefined,
+		[`@media (min-width: ${mediaTablet})`]: tabletNew
+			? { [cssProp]: tabletNew }
+			: undefined,
+		[`@media (min-width: ${mediaDesktop})`]: desktopNew
+			? { [cssProp]: desktopNew }
+			: undefined,
+	};
+};
+
+const buildListLayoutStyles = (
+	cols: string | number | null | undefined,
+	colGap: string | null | undefined,
+	rowGap: string | null | undefined,
+	peek: string | null | undefined,
+	isSnap: boolean
+): CSSObject => {
+	const safeCols = Math.max(1, Number(cols) || 1);
+	const safeColGap = colGap && String(colGap).trim() !== "" ? colGap : "0px";
+	const safePeek = peek && String(peek).trim() !== "" ? peek : "0px";
+	return {
+		rowGap: rowGap ?? undefined,
+		columnGap: colGap ?? undefined,
+		...(isSnap
+			? {
+					"> div": {
+						flexBasis: `calc((100% - (${
+							safeCols - 1
+						} * ${safeColGap})) / ${safeCols} - ${safePeek})`,
+					},
+			  }
+			: {
+					gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+			  }),
+	};
+};
+
+interface Props extends Required<WcbAttrsForSave> {
+	previewDeviceType?: PreviewDeviceType;
+}
 
 const hasValue = (val: unknown): boolean => val !== undefined && val !== null && val !== "";
 
 const GlobalCss: FC<Props> = (attrs) => {
 	const {
 		uniqueId,
+		previewDeviceType,
 		// ATTRS OF BLOCK
 		general_addToCartBtn,
 		general_content,
@@ -101,37 +166,33 @@ const GlobalCss: FC<Props> = (attrs) => {
 		advance_motionEffect,
 	} = attrs;
 
-	const isBlockOverride = Boolean(
-		general_layout?.isCustomizerGeneralLayout ||
-		(attrs as any)?.general_layout?.isCustomizerGeneralLayout
-	);
 	const theme = getThemeDefaults();
 	const qvTheme = theme?.shop_quick_view_btn;
 
-	const pickQv = <T,>(themeVal: T | undefined, blockVal: T | undefined): T | undefined => {
-		const primary = isBlockOverride ? blockVal : themeVal;
-		const fallback = isBlockOverride ? themeVal : blockVal;
-		return hasValue(primary) ? primary : fallback;
-	};
+	// Quick view button — always follows Customizer since there is no block UI panel for quick view
+	const effectiveQvPosition = qvTheme?.position ?? style_quickViewBtn?.position;
+	const effectiveQvBgColor = qvTheme?.bg_color ?? style_quickViewBtn?.bg_color;
+	const effectiveQvTextColor = qvTheme?.text_color ?? style_quickViewBtn?.text_color;
+	const effectiveQvHoverBgColor = qvTheme?.hover_bg_color ?? style_quickViewBtn?.hover_bg_color;
+	const effectiveQvHoverTextColor = qvTheme?.hover_text_color ?? style_quickViewBtn?.hover_text_color;
+	const effectiveQvBorderRadius = qvTheme?.border_radius ?? style_quickViewBtn?.border_radius;
 
-	const effectiveQvPosition = pickQv(qvTheme?.position, style_quickViewBtn?.position);
-	const effectiveQvBgColor = pickQv(qvTheme?.bg_color, style_quickViewBtn?.bg_color);
-	const effectiveQvTextColor = pickQv(qvTheme?.text_color, style_quickViewBtn?.text_color);
-	const effectiveQvHoverBgColor = pickQv(qvTheme?.hover_bg_color, style_quickViewBtn?.hover_bg_color);
-	const effectiveQvHoverTextColor = pickQv(qvTheme?.hover_text_color, style_quickViewBtn?.hover_text_color);
-	const effectiveQvBorderRadius = pickQv(qvTheme?.border_radius, style_quickViewBtn?.border_radius);
-
-	const effectiveQvEnabled = isBlockOverride
-		? (style_quickViewBtn?.enabled !== undefined ? style_quickViewBtn?.enabled : qvTheme?.enabled)
-		: (qvTheme?.enabled !== undefined ? qvTheme?.enabled : style_quickViewBtn?.enabled);
+	const effectiveQvEnabled = qvTheme?.enabled !== undefined ? qvTheme?.enabled : style_quickViewBtn?.enabled;
 	const isQvEnabled = Boolean(effectiveQvEnabled) && String(effectiveQvEnabled) !== "0";
 
+	const rawQvShowIcon = qvTheme?.show_icon !== undefined ? qvTheme.show_icon : style_quickViewBtn?.show_icon;
+	const isQvShowIcon = effectiveQvPosition === "top-right"
+		? true
+		: (rawQvShowIcon !== undefined
+			? (Boolean(rawQvShowIcon) && String(rawQvShowIcon) !== "0" && String(rawQvShowIcon) !== "false")
+			: true);
+
+	const isBadgeInsideImage =
+		(general_featuredImage?.isShowFeaturedImage ?? true) &&
+		(general_content?.saleBadgePosition ?? "Inside image") === "Inside image";
+
 	const getQuickViewBorderRadius = (): string => {
-		const val = effectiveQvBorderRadius;
-		if (!hasValue(val)) {
-			return (effectiveQvPosition === "top-right" || effectiveQvPosition === "center-image") ? "4px" : "0px";
-		}
-		const valStr = String(val).trim();
+		const valStr = String(effectiveQvBorderRadius).trim();
 		if (valStr.endsWith("px") || valStr.endsWith("%") || valStr.endsWith("rem") || valStr.endsWith("em")) {
 			return valStr;
 		}
@@ -145,11 +206,32 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const LIST_CLASS = `${WRAP_CLASSNAME} .wcb-products__list`;
 	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .wcb-products__product`;
-	const ADD_TO_CART_BTN_BG = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart`;
-	const ADD_TO_CART_BTN = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart a`;
-	const ADD_TO_CART_BTN_ICON = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart-icon`;
-	const ADD_TO_CART_VIEW_CARD_BTN = `${WRAP_CLASSNAME} .wcb-products__product-add-to-cart a.added_to_cart`;
+	const PRICE_TEXT_CLASS = `${POST_CARD_CLASS} .wcb-products__product-price, ${POST_CARD_CLASS} .wcb-products__product-price .woocommerce-Price-amount, ${POST_CARD_CLASS} .wcb-products__product-price del, ${POST_CARD_CLASS} .wcb-products__product-price ins`;
+	const ADD_TO_CART_BTN_BG = `${POST_CARD_CLASS} .wcb-products__product-add-to-cart`;
+	const ADD_TO_CART_BTN = `${POST_CARD_CLASS} .wcb-products__product-add-to-cart a`;
 	const PRODUCT_IMAGE_CLASS = `${WRAP_CLASSNAME} .wcb-products__product-image`;
+
+	const resolveSpacing = (
+		cssProp: string,
+		cssProperty?: HasResponsive<string>
+	): ResponsiveScalarStyle => {
+		if (!cssProperty) {
+			return {};
+		}
+		const { value_mobile, value_tablet, value_desktop } =
+			getCssProperyHasResponsive<string>({
+				cssProperty,
+			});
+		return getResponsiveScalarStyle({
+			cssProp,
+			mobile: value_mobile,
+			tablet: value_tablet,
+			desktop: value_desktop,
+			previewDeviceType,
+			mediaTablet: media_tablet,
+			mediaDesktop: media_desktop,
+		});
+	};
 
 	// ------------------- WRAP DIV
 
@@ -183,542 +265,217 @@ const GlobalCss: FC<Props> = (attrs) => {
 			isSnapScrollDesktop || swithToScrollSnapX === "Tablet";
 		const isSnapScrollMobile =
 			isSnapScrollTablet || swithToScrollSnapX === "Mobile";
-		const listWrapStyles: CSSObject = {
-			[`${WRAP_CLASSNAME} .indicators`]: {
-				display: isSnapScrollMobile ? "block" : "none",
-				[`@media (min-width: ${media_tablet})`]: {
-					display: isSnapScrollTablet ? "block" : "none",
-				},
-				[`@media (min-width: ${media_desktop})`]: {
-					display: isSnapScrollDesktop ? "block" : "none",
-				},
-			},
-			[LIST_CLASS]: {
-				// ------ setting snap scroll x
-				...(isSnapScrollMobile
-					? {
-							"> div": {
-								scrollSnapAlign: "start",
-								flexShrink: 0,
-								flexBasis: `calc((100% - (${
-									Number(numberOfColumn_mobile) - 1
-								} * ${colunmGap_mobile})) / ${Number(
-									numberOfColumn_mobile
-								)} - ${peekAfter_mobile})`,
-							},
-					  }
-					: {}),
 
-				overflowX: isSnapScrollMobile ? "auto" : undefined,
-				scrollSnapType: isSnapScrollMobile ? "x proximity" : undefined,
-				display: isSnapScrollMobile ? "flex" : "grid",
-				gridTemplateColumns: isSnapScrollMobile
-					? undefined
-					: `repeat(${numberOfColumn_mobile}, minmax(0, 1fr))`,
-				// ------ end setting snap scroll x
-				//
-				rowGap: rowGap_mobile ?? undefined,
-				columnGap: colunmGap_mobile ?? undefined,
-				[`@media (min-width: ${media_tablet})`]: {
-					rowGap: rowGap_tablet ?? undefined,
-					columnGap: colunmGap_tablet ?? undefined,
-					// ------ setting snap scroll x
-					...(isSnapScrollTablet
-						? {
-								"> div": {
-									scrollSnapAlign: "start",
-									flexShrink: 0,
-									flexBasis: `calc((100% - (${
-										Number(numberOfColumn_tablet) - 1
-									} * ${colunmGap_tablet})) / ${Number(
-										numberOfColumn_tablet
-									)} - ${peekAfter_tablet})`,
-								},
-						  }
-						: {}),
+		const mobileStyles = buildListLayoutStyles(
+			numberOfColumn_mobile,
+			colunmGap_mobile,
+			rowGap_mobile,
+			peekAfter_mobile,
+			isSnapScrollMobile
+		);
+		const tabletStyles = buildListLayoutStyles(
+			numberOfColumn_tablet,
+			colunmGap_tablet,
+			rowGap_tablet,
+			peekAfter_tablet,
+			isSnapScrollTablet
+		);
+		const desktopStyles = buildListLayoutStyles(
+			numberOfColumn_desktop,
+			colunmGap_desktop,
+			rowGap_desktop,
+			peekAfter_desktop,
+			isSnapScrollDesktop
+		);
 
-					overflowX: isSnapScrollTablet ? "auto" : undefined,
-					scrollSnapType: isSnapScrollTablet ? "x proximity" : undefined,
-					display: isSnapScrollTablet ? "flex" : "grid",
-					gridTemplateColumns: isSnapScrollTablet
-						? undefined
-						: `repeat(${numberOfColumn_tablet}, minmax(0, 1fr))`,
-					// ------ end setting snap scroll x
-				},
-				[`@media (min-width: ${media_desktop})`]: {
-					rowGap: rowGap_desktop,
-					columnGap: colunmGap_desktop,
-					// ------ setting snap scroll x
-					...(isSnapScrollDesktop
-						? {
-								"> div": {
-									scrollSnapAlign: "start",
-									flexShrink: 0,
-									// Calculate flex-basis to create the peek/overflow effect for the slider.
-									flexBasis: `calc((100% - (${
-										Number(numberOfColumn_desktop) - 1
-									} * ${colunmGap_desktop})) / ${Number(
-										numberOfColumn_desktop
-									)} - ${peekAfter_desktop})`,
-								},
-						  }
-						: {}),
-
-					overflowX: isSnapScrollDesktop ? "auto" : undefined,
-					scrollSnapType: isSnapScrollDesktop ? "x proximity" : undefined,
-					display: isSnapScrollDesktop ? "flex" : "grid",
-					gridTemplateColumns: isSnapScrollDesktop
-						? undefined
-						: `repeat(${numberOfColumn_desktop}, minmax(0, 1fr))`,
-					// ------ end setting snap scroll x
-				},
-				// SALE BADGE positioning
-				...(style_saleBadge?.position === "top-left"
-					? {
-							".wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge": {
-								left: "0.5rem",
-							},
-					  }
-					: {
-							".wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge": {
-								right: "0.5rem",
-							},
-					  }),
-
-				// OUT OF STOCK BADGE positioning
-				...(style_outOfStock?.position === "top-left"
-					? {
-							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
-								left: "0.5rem",
-							},
-					  }
-					: style_outOfStock?.position === "top-right"
-					? {
-							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
-								right: "0.5rem",
-							},
-					  }
-					: {
-							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge": {
-								display: "none",
-							},
-					  }),
-
-				// Stacking when both out-of-stock and sale badges are on the same side inside the image.
-				...((() => {
-					const soPos = (style_outOfStock?.position === "top-right" || (style_outOfStock?.position as string) === "right") ? "right" : "left";
-					const ssPos = (style_saleBadge?.position === "top-right" || (style_saleBadge?.position as string) === "right") ? "right" : "left";
-					const isOosActive = general_content?.isShowOutOfStock && style_outOfStock?.position && style_outOfStock?.position !== "none";
-					const isSaleActive = general_content?.isShowSaleBadge && Boolean(style_saleBadge?.position);
-					if (isOosActive && isSaleActive && soPos === ssPos) {
-						const shape = style_outOfStock?.shape || style_saleBadge?.shape || "round";
-						const offset = shape === "round" ? "50px" : "32px";
-						return {
-							".wcb-products__product--onsaleInsideImage .wcb-products__product-outofstock-badge ~ .wcb-products__product-salebadge": {
-								top: `calc(0.5rem + ${offset})`,
-							},
-							".wcb-products__product--onsaleInsideImage .wcb-products__product-salebadge ~ .wcb-products__product-outofstock-badge": {
-								top: `calc(0.5rem + ${offset})`,
-							},
-						};
-					}
-					return {};
-				})()),
-			},
-		};
+		const listWrapStyles: CSSObject = previewDeviceType
+			? {
+					[LIST_CLASS]:
+						previewDeviceType === "Mobile"
+							? mobileStyles
+							: previewDeviceType === "Tablet"
+							? tabletStyles
+							: desktopStyles,
+			  }
+			: {
+					[LIST_CLASS]: {
+						...mobileStyles,
+						[`@media (min-width: ${media_tablet})`]: tabletStyles,
+						[`@media (min-width: ${media_desktop})`]: desktopStyles,
+					},
+			  };
 
 		return <Global styles={listWrapStyles} />;
 	};
 
-	const getDivWrapStyles_Pagination = (): CSSObject => {
-		const {
-			value_mobile: marginTop_mobile,
-			value_tablet: marginTop_tablet,
-			value_desktop: marginTop_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_pagination?.marginTop,
-		});
-		const {
-			mobile_v: marginTop_mobile_new,
-			tablet_v: marginTop_tablet_new,
-			desktop_v: marginTop_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: marginTop_mobile,
-			tablet_v: marginTop_tablet,
-			desktop_v: marginTop_desktop,
-		});
-		return {
-			[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
-				marginTop: marginTop_mobile_new ?? undefined,
-				justifyContent: style_pagination?.justifyContent,
-				[`.page-numbers`]: {
-					color: style_pagination?.mainStyle?.Normal?.color,
-					backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
-				},
-				[`.page-numbers.current`]: {
-					color: style_pagination?.mainStyle?.Active?.color,
-					backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
-				},
-				[`@media (min-width: ${media_tablet})`]: marginTop_tablet_new
-					? {
-							marginTop: marginTop_tablet_new,
-					  }
-					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginTop_desktop_new
-					? {
-							marginTop: marginTop_desktop_new,
-					  }
-					: undefined,
+	const getDivWrapStyles_Pagination = (): CSSObject => ({
+		[`${WRAP_CLASSNAME} .wcb-products__pagination`]: {
+			...resolveSpacing("marginTop", style_pagination?.marginTop),
+			justifyContent: style_pagination?.justifyContent,
+			[`.page-numbers`]: {
+				color: style_pagination?.mainStyle?.Normal?.color,
+				backgroundColor: style_pagination?.mainStyle?.Normal?.backgroundColor,
 			},
-		};
-	};
+			[`.page-numbers.current`]: {
+				color: style_pagination?.mainStyle?.Active?.color,
+				backgroundColor: style_pagination?.mainStyle?.Active?.backgroundColor,
+			},
+		},
+	});
 
-	const getDivWrapStyles_Rating = (): CSSObject => {
-		const {
-			value_mobile: marginBottom_mobile,
-			value_tablet: marginBottom_tablet,
-			value_desktop: marginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_rating?.marginBottom,
-		});
-		const {
-			mobile_v: marginBottom_mobile_new,
-			tablet_v: marginBottom_tablet_new,
-			desktop_v: marginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: marginBottom_mobile,
-			tablet_v: marginBottom_tablet,
-			desktop_v: marginBottom_desktop,
-		});
-		return {
-			[`${WRAP_CLASSNAME} .wcb-products__product-rating`]: {
-				marginBottom: marginBottom_mobile_new ?? undefined,
-				color: style_rating?.color,
-				[`@media (min-width: ${media_tablet})`]: marginBottom_tablet_new
-					? {
-							marginBottom: marginBottom_tablet_new,
-					  }
-					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginBottom_desktop_new
-					? {
-							marginBottom: marginBottom_desktop_new,
-					  }
-					: undefined,
-			},
-		};
-	};
+	const getDivWrapStyles_Rating = (): CSSObject => ({
+		[`${WRAP_CLASSNAME} .wcb-products__product-rating`]: {
+			...resolveSpacing("marginBottom", style_rating?.marginBottom),
+			color: style_rating?.color,
+		},
+	});
 	//
 
 	//
 	const getPostCardWrapStyles = (): CSSObject[] => {
-		const {
-			value_mobile: titleMarginBottom_mobile,
-			value_tablet: titleMarginBottom_tablet,
-			value_desktop: titleMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_title?.marginBottom,
-		});
-		const {
-			value_mobile: saleBadgeMarginBottom_mobile,
-			value_tablet: saleBadgeMarginBottom_tablet,
-			value_desktop: saleBadgeMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_saleBadge?.marginBottom,
-		});
-		const {
-			value_mobile: outofstockBadgeMarginBottom_mobile,
-			value_tablet: outofstockBadgeMarginBottom_tablet,
-			value_desktop: outofstockBadgeMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_outOfStock?.marginBottom,
-		});
-		const {
-			value_mobile: featuredImageMarginBottom_mobile,
-			value_tablet: featuredImageMarginBottom_tablet,
-			value_desktop: featuredImageMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_featuredImage?.marginBottom,
-		});
-		const {
-			value_mobile: priceMarginBottom_mobile,
-			value_tablet: priceMarginBottom_tablet,
-			value_desktop: priceMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_price?.marginBottom,
-		});
-		const {
-			value_mobile: ratingMarginBottom_mobile,
-			value_tablet: ratingMarginBottom_tablet,
-			value_desktop: ratingMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_rating?.marginBottom,
-		});
-		const {
-			value_mobile: categoryMarginBottom_mobile,
-			value_tablet: categoryMarginBottom_tablet,
-			value_desktop: categoryMarginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_category?.marginBottom,
-		});
-
-		//
-		const {
-			mobile_v: titleMarginBottom_mobile_new,
-			tablet_v: titleMarginBottom_tablet_new,
-			desktop_v: titleMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: titleMarginBottom_mobile,
-			tablet_v: titleMarginBottom_tablet,
-			desktop_v: titleMarginBottom_desktop,
-		});
-		const {
-			mobile_v: saleBadgeMarginBottom_mobile_new,
-			tablet_v: saleBadgeMarginBottom_tablet_new,
-			desktop_v: saleBadgeMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: saleBadgeMarginBottom_mobile,
-			tablet_v: saleBadgeMarginBottom_tablet,
-			desktop_v: saleBadgeMarginBottom_desktop,
-		});
-		const {
-			mobile_v: outofstockBadgeMarginBottom_mobile_new,
-			tablet_v: outofstockBadgeMarginBottom_tablet_new,
-			desktop_v: outofstockBadgeMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: outofstockBadgeMarginBottom_mobile,
-			tablet_v: outofstockBadgeMarginBottom_tablet,
-			desktop_v: outofstockBadgeMarginBottom_desktop,
-		});
-		const {
-			mobile_v: featuredImageMarginBottom_mobile_new,
-			tablet_v: featuredImageMarginBottom_tablet_new,
-			desktop_v: featuredImageMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: featuredImageMarginBottom_mobile,
-			tablet_v: featuredImageMarginBottom_tablet,
-			desktop_v: featuredImageMarginBottom_desktop,
-		});
-		const {
-			mobile_v: priceMarginBottom_mobile_new,
-			tablet_v: priceMarginBottom_tablet_new,
-			desktop_v: priceMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: priceMarginBottom_mobile,
-			tablet_v: priceMarginBottom_tablet,
-			desktop_v: priceMarginBottom_desktop,
-		});
-		const {
-			mobile_v: ratingMarginBottom_mobile_new,
-			tablet_v: ratingMarginBottom_tablet_new,
-			desktop_v: ratingMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: ratingMarginBottom_mobile,
-			tablet_v: ratingMarginBottom_tablet,
-			desktop_v: ratingMarginBottom_desktop,
-		});
-		const {
-			mobile_v: categoryMarginBottom_mobile_new,
-			tablet_v: categoryMarginBottom_tablet_new,
-			desktop_v: categoryMarginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: categoryMarginBottom_mobile,
-			tablet_v: categoryMarginBottom_tablet,
-			desktop_v: categoryMarginBottom_desktop,
-		});
-		//
 		return [
 			{
 				[POST_CARD_CLASS]: {
 					".wcb-products__product--quickViewBottomImage--item": {
-						...(effectiveQvBgColor && effectiveQvBgColor !== "#ffffff"
+						...(effectiveQvBgColor
 							? { backgroundColor: effectiveQvBgColor }
 							: {}),
-						...(effectiveQvTextColor && effectiveQvTextColor !== "#000000"
+						...(effectiveQvTextColor
 							? { color: effectiveQvTextColor }
 							: {}),
 						...(hasQvBorderRadius ? { borderRadius: getQuickViewBorderRadius() } : {}),
 						...(!isQvEnabled ? { display: "none !important" } : {}),
-					},
-					":hover": {
-						".wcb-products__product--quickViewBottomImage--item": {
-							...(hasQvBorderRadius ? { borderRadius: getQuickViewBorderRadius() } : {}),
-							":hover": {
-								...(effectiveQvHoverTextColor && effectiveQvHoverTextColor !== "#fff" && effectiveQvHoverTextColor !== "#ffffff"
-									? { color: effectiveQvHoverTextColor }
-									: {}),
-								...(effectiveQvHoverBgColor && effectiveQvHoverBgColor !== "#474747"
-									? { backgroundColor: effectiveQvHoverBgColor }
-									: {}),
-							},
+						"&:hover": {
+							...(effectiveQvHoverTextColor
+								? { color: effectiveQvHoverTextColor }
+								: {}),
+							...(effectiveQvHoverBgColor
+								? { backgroundColor: effectiveQvHoverBgColor }
+								: {}),
 						},
 					},
+					...(!isQvShowIcon
+						? {
+								".wcb-products__product--quickViewBottomImage-svg__icon": {
+									display: "none",
+								},
+						  }
+						: {}),
 					"&.wcb-products__product--btnIconAddToCart": {
 						".wcb-products__product--btnIconAddToCart--item": {
-							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor &&
-							style_addToCardBtn.colorAndBackgroundColor.Normal.backgroundColor !== "#ffffff"
+							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color
+								? { color: style_addToCardBtn.colorAndBackgroundColor.Normal.color }
+								: {}),
+							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.backgroundColor
 								? { background: style_addToCardBtn.colorAndBackgroundColor.Normal.backgroundColor }
 								: {}),
-							...(typeof style_addToCardBtn?.border?.radius?.Desktop === "string" &&
-							style_addToCardBtn.border.radius.Desktop !== "50%"
-								? { borderRadius: style_addToCardBtn.border.radius.Desktop }
-								: typeof style_addToCardBtn?.border?.radius?.Desktop === "object" &&
-								  style_addToCardBtn?.border?.radius?.Desktop !== null
-								? {
-										borderTopLeftRadius: (style_addToCardBtn.border.radius.Desktop as any).topLeft,
-										borderTopRightRadius: (style_addToCardBtn.border.radius.Desktop as any).topRight,
-										borderBottomRightRadius: (style_addToCardBtn.border.radius.Desktop as any).bottomRight,
-										borderBottomLeftRadius: (style_addToCardBtn.border.radius.Desktop as any).bottomLeft,
-								  }
+						},
+						...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor ||
+						style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color
+							? {
+									".wcb-products__product--btnIconAddToCart--item:hover": {
+										...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor
+											? { background: style_addToCardBtn.colorAndBackgroundColor.Hover.backgroundColor }
+											: {}),
+										...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color
+											? { color: style_addToCardBtn.colorAndBackgroundColor.Hover.color }
+											: {}),
+									},
+							  }
+							: {}),
+					},
+					"&.wcb-products__product--wishlistTopRight, &.wcb-products__product--wishlistBottomRight": {
+						".wcb-products__product--wishlistTopRight--item, .wcb-products__product--wishlistBottomRight--item": {
+							...(style_wishlistBtn?.backgroundColor
+								? { backgroundColor: style_wishlistBtn.backgroundColor }
 								: {}),
-							...(style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color
+							...(style_wishlistBtn?.color
 								? {
-										"&::after": {
-											backgroundImage: `${svgToDataUrl(
-												`${SHOPPING_CART_SVG(style_addToCardBtn.colorAndBackgroundColor.Normal.color as any)}`
-											)} !important` as any,
+										color: style_wishlistBtn.color,
+										"&::before": {
+											color: "inherit",
 										},
 								  }
 								: {}),
+							"&:hover": {
+								...(style_wishlistBtn?.hoverBackgroundColor
+									? { backgroundColor: style_wishlistBtn.hoverBackgroundColor }
+									: {}),
+								...(style_wishlistBtn?.hoverColor
+									? {
+											color: style_wishlistBtn.hoverColor,
+											"&::before": {
+												color: style_wishlistBtn.hoverColor,
+											},
+									  }
+								: {}),
+							},
 						},
-						...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.backgroundColor &&
-						style_addToCardBtn.colorAndBackgroundColor.Hover.backgroundColor !== "#474747"
-							? {
-									".wcb-products__product--btnIconAddToCart--item:hover": {
-										background: style_addToCardBtn.colorAndBackgroundColor.Hover.backgroundColor,
-									},
-							  }
-							: {}),
-						...(style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color
-							? {
-									".wcb-products__product--btnIconAddToCart--item:hover::after": {
-										backgroundImage: `${svgToDataUrl(SHOPPING_CART_SVG(style_addToCardBtn.colorAndBackgroundColor.Hover.color as any))} !important` as any,
-									},
-							  }
-							: {}),
 					},
 				},
 			},
 			{
 				[POST_CARD_CLASS]: {
-					height: !style_layout?.isEqualHeight ? "max-content" : undefined,
 					textAlign: style_layout?.textAlignment,
 					backgroundColor: style_layout?.backgroundColor,
-					".wcb-products__price-button-wrapper": {
-						// Add element quantity
-						height: general_addToCartBtn?.position === "bottom visible" ? "auto" : general_addToCartBtn?.isShowQuantity ? "84px" : "50px",
-						lineHeight: general_addToCartBtn?.position === "bottom visible" ? "normal" : "36px",
-						overflow: "hidden",
-					},
-					// Style layout bottom add to cart button
-					".wcb-products__product-style-hidden-btn-add-to-cart": {
-						display: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === "inside image") ? "none !important" : "unset",
-						alignItems: "center",
-					},
-					".wcb-products__add-to-cart-icon, .wcb-products__add-to-cart-label": {
-						display: (general_addToCartBtn?.position === "icon") ? "none" : "block",
-						transform: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "translateY(0px)" : "unset",
-						transition: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "all 0.3s ease-in-out" : "unset",
-					},
-					".wcb-products__add-to-cart-icon": {
-						display: general_addToCartBtn?.isShowIcon === false ? "none !important" : undefined,
-					},
-					".wcb-products__product-price": {
-						transform:  (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "translateY(0px)" : "unset",
-						transition: (general_addToCartBtn?.position === "bottom" || general_addToCartBtn?.position === 'icon') ? "all 0.3s ease-in-out" : "unset",
-						marginBottom: priceMarginBottom_mobile_new ?? undefined,
+					".wcb-products__product-price": resolveSpacing(
+						"marginBottom",
+						style_price?.marginBottom
+					),
+					".wcb-products__product-price, .wcb-products__product-price .woocommerce-Price-amount, .wcb-products__product-price del, .wcb-products__product-price ins": {
 						color: style_price?.textColor,
 					},
-					".added_to_cart": {
-						transform: (general_addToCartBtn?.position === "bottom") ? "translateY(92px)" : "unset",
-						opacity: 
-							(general_addToCartBtn?.position === "bottom") ? 0 : "unset",
-						transition: (general_addToCartBtn?.position === "bottom") ? "all 0.3s ease-in-out" : "unset",
-					},
-					":hover": {
-						".wcb-products__product-price": {
-							transform: general_addToCartBtn?.position === "bottom" ? `translateY(${general_addToCartBtn?.isShowQuantity ? -44 : -30}px)` : "unset",
-							transition: general_addToCartBtn?.position === "bottom" ? "all 0.3s ease-in-out" : "unset",
-						},
-						".wcb-products__product-add-to-cart": {
-							backgroundColor: general_addToCartBtn?.position === "bottom" ? "#fff" : "inherit",
-							"span": {
-								color: (style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color as any) || (general_addToCartBtn?.position === "inside image" ? "#2b2b2b" : undefined),
-							},
-							".wcb-products__add-to-cart-icon, .wcb-products__add-to-cart-label": {
-								transform: general_addToCartBtn?.position === "bottom" ? "translateY(-60px)" : "unset",
-								opacity: 
-									general_addToCartBtn?.position === "bottom" ? 1 : general_addToCartBtn?.position === "icon" ? 0 : "unset",
-								transition: general_addToCartBtn?.position === "bottom" ? "all 0.3s ease-in-out" : "unset",
-							},
-							".added_to_cart": {
-								transform: general_addToCartBtn?.position === "bottom" ? "translateY(60px)" : "unset",
-								opacity: 
-									general_addToCartBtn?.position === "bottom" ? 1 : "unset",
-								transition: general_addToCartBtn?.position === "bottom" ? "all 0.3s ease-in-out" : "unset",
-							},
-						},
-						".wcb-products__product-add-to-cart:hover": {
-							".add_to_cart_button span": {
-								color: (style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color as any) || (general_addToCartBtn?.position === "inside image" ? "#1346AF" : undefined),
-							},
-							".wcb-products__add-to-cart-icon svg path": {
-								fill: `${style_addToCardBtn?.colorAndBackgroundColor?.Hover?.color} !important` as any,
-							},
-						},
-						".wcb-products__add-to-cart-icon svg path": {
-							fill: `${style_addToCardBtn?.colorAndBackgroundColor?.Normal?.color} !important` as any,
-						}
-					},
 
-					".wcb-products__product-featured":
-						featuredImageMarginBottom_mobile_new ||
-						featuredImageMarginBottom_tablet_new ||
-						featuredImageMarginBottom_desktop_new
-							? {
-									marginBottom: featuredImageMarginBottom_mobile_new,
-									[`@media (min-width: ${media_tablet})`]:
-										featuredImageMarginBottom_tablet_new
-											? {
-													marginBottom: featuredImageMarginBottom_tablet_new,
-											  }
-											: undefined,
-									[`@media (min-width: ${media_desktop})`]:
-										featuredImageMarginBottom_desktop_new
-											? {
-													marginBottom: featuredImageMarginBottom_desktop_new,
-											  }
-											: undefined,
-							  }
-							: undefined,
+					".wcb-products__product-featured": resolveSpacing(
+						"marginBottom",
+						style_featuredImage?.marginBottom
+					),
 
 					".wcb-products__product-title": {
-						marginBottom: titleMarginBottom_mobile_new ?? undefined,
+						...resolveSpacing("marginBottom", style_title?.marginBottom),
 						color: style_title?.textColor,
 						a: {
 							color: style_title?.textColor,
 						},
 					},
 					".wcb-products__product-categories": {
-						marginBottom: categoryMarginBottom_mobile_new ?? undefined,
+						...resolveSpacing("marginBottom", style_category?.marginBottom),
 						color: style_category?.textColor,
 						a: {
 							color: style_category?.textColor,
 						},
 					},
+					".wcb-products__product-content": {
+						minHeight: style_layout?.contentEqualHeight
+							? `${style_layout?.contentMinHeight || 160}px`
+							: undefined,
+					},
 					".wcb-products__product-salebadge": {
-						marginBottom: saleBadgeMarginBottom_mobile_new ?? undefined,
+						...(!isBadgeInsideImage
+							? resolveSpacing("marginBottom", style_saleBadge?.marginBottom)
+							: {}),
 						".wcb-products__product-onsale": {
 							color: style_saleBadge?.textColor,
 							backgroundColor: style_saleBadge?.backgroundColor,
-							...getBadgeShapeStyles(style_saleBadge?.shape || "round"),
+							...getBadgeShapeStyles(style_saleBadge?.shape || "round", {
+								borderRadius: style_saleBadge?.borderRadius,
+								isSquare: style_saleBadge?.isSquare,
+								size: style_saleBadge?.size,
+							}),
 						},
 					},
 					".wcb-products__product-outofstock-badge": {
-						marginBottom: outofstockBadgeMarginBottom_mobile_new ?? undefined,
+						...(!isBadgeInsideImage
+							? resolveSpacing("marginBottom", style_outOfStock?.marginBottom)
+							: {}),
 						".wcb-products__product-on-outofstock": {
 							color: style_outOfStock?.textColor,
 							backgroundColor: style_outOfStock?.backgroundColor,
-							...getBadgeShapeStyles(style_outOfStock?.shape || "round"),
+							...getBadgeShapeStyles(style_outOfStock?.shape || "round", {
+								borderRadius: style_outOfStock?.borderRadius,
+								isSquare: style_outOfStock?.isSquare,
+								size: style_outOfStock?.size,
+							}),
 						},
 					},
 					// Alignment for the rating stars row.
@@ -728,10 +485,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 							: style_layout?.textAlignment === "right" ? "flex-end"
 							: "center",
 					},
-					".wcb-products__product-rating": {
-						marginBottom: ratingMarginBottom_mobile_new ?? undefined,
-						color: style_rating?.color,
-					},
 					// Alignment for the quantity counter wrapper.
 					// Moved from PHP inline style to CSS class to prevent inline override.
 					".wcb-products__quantity-add-to-cart": {
@@ -739,125 +492,30 @@ const GlobalCss: FC<Props> = (attrs) => {
 							: style_layout?.textAlignment === "right" ? "flex-end"
 							: "center",
 					},
-					[`@media (min-width: ${media_tablet})`]:
-						titleMarginBottom_tablet_new ||
-						saleBadgeMarginBottom_tablet_new ||
-						priceMarginBottom_tablet_new ||
-						ratingMarginBottom_tablet_new ||
-						outofstockBadgeMarginBottom_tablet_new
-							? {
-									".wcb-products__product-title": titleMarginBottom_tablet_new
-										? {
-												marginBottom: titleMarginBottom_tablet_new,
-										  }
-										: undefined,
-									".wcb-products__product-categories":
-										categoryMarginBottom_tablet_new
-											? {
-													marginBottom: categoryMarginBottom_tablet_new,
-											  }
-											: undefined,
-									".wcb-products__product-salebadge":
-										saleBadgeMarginBottom_tablet_new
-											? {
-													marginBottom: saleBadgeMarginBottom_tablet_new,
-											  }
-											: undefined,
-									".wcb-products__product-outofstock-badge":
-										outofstockBadgeMarginBottom_tablet_new
-											? {
-													marginBottom: outofstockBadgeMarginBottom_tablet_new,
-											  }
-											: undefined,
-									".wcb-products__product-price": priceMarginBottom_tablet_new
-										? {
-												marginBottom: priceMarginBottom_tablet_new,
-										  }
-										: undefined,
-									".wcb-products__product-rating": ratingMarginBottom_tablet_new
-										? {
-												marginBottom: ratingMarginBottom_tablet_new,
-										  }
-										: undefined,
-							  }
-							: undefined,
-					[`@media (min-width: ${media_desktop})`]:
-						titleMarginBottom_desktop_new ||
-						saleBadgeMarginBottom_desktop_new ||
-						priceMarginBottom_desktop_new ||
-						ratingMarginBottom_desktop_new ||
-						outofstockBadgeMarginBottom_desktop_new
-							? {
-									".wcb-products__product-title": titleMarginBottom_desktop_new
-										? {
-												marginBottom: titleMarginBottom_desktop_new,
-										  }
-										: undefined,
-									".wcb-products__product-categories":
-										categoryMarginBottom_desktop_new
-											? {
-													marginBottom: categoryMarginBottom_desktop_new,
-											  }
-											: undefined,
-									".wcb-products__product-salebadge":
-										saleBadgeMarginBottom_desktop_new
-											? {
-													marginBottom: saleBadgeMarginBottom_desktop_new,
-											  }
-											: undefined,
-									".wcb-products__product-outofstock-badge":
-										outofstockBadgeMarginBottom_desktop_new
-											? {
-													marginBottom: outofstockBadgeMarginBottom_desktop_new,
-											  }
-											: undefined,
-									".wcb-products__product-price": priceMarginBottom_desktop_new
-										? {
-												marginBottom: priceMarginBottom_desktop_new,
-										  }
-										: undefined,
-									".wcb-products__product-rating":
-										ratingMarginBottom_desktop_new
-											? {
-													marginBottom: ratingMarginBottom_desktop_new,
-											  }
-											: undefined,
-							  }
-							: undefined,
 				},
 			} as CSSObject,
 			getBorderStyles({
-				// className: `${POST_CARD_CLASS} .wcb-products__product-image`,
 				className: `${WRAP_CLASSNAME} .wcb-products__product-image-link`,
 				border: style_featuredImage?.border,
 				isWithRadius: true,
 			}),
+			...(style_featuredImage?.border?.hoverColor
+				? [
+						{
+							[`${POST_CARD_CLASS}:hover .wcb-products__product-image-link`]: {
+								borderColor: style_featuredImage.border.hoverColor,
+							},
+						},
+				  ]
+				: []),
 		];
 	};
 
-	const getPostCardStyles_AddToCart = (position: string): CSSObject => {
+	const getPostCardStyles_AddToCart = (): CSSObject => {
 		const { backgroundColor, color } =
 			style_addToCardBtn?.colorAndBackgroundColor?.Normal ?? {};
 		const { backgroundColor: backgroundColor_h, color: color_h } =
 			style_addToCardBtn?.colorAndBackgroundColor?.Hover ?? {};
-		const {
-			value_mobile: marginBottom_mobile,
-			value_tablet: marginBottom_tablet,
-			value_desktop: marginBottom_desktop,
-		} = getCssProperyHasResponsive<string>({
-			cssProperty: style_addToCardBtn?.marginBottom || { Desktop: "1rem" },
-		});
-
-		//
-		const {
-			mobile_v: marginBottom_mobile_new,
-			tablet_v: marginBottom_tablet_new,
-			desktop_v: marginBottom_desktop_new,
-		} = checkResponsiveValueForOptimizeCSS({
-			mobile_v: marginBottom_mobile,
-			tablet_v: marginBottom_tablet,
-			desktop_v: marginBottom_desktop,
-		});
 		// Maps textAlignment setting to CSS align-items value for flex column containers.
 		// Replaces the old inline style approach (align-items set directly in PHP render)
 		// to avoid inline style overriding this CSS class rule.
@@ -870,68 +528,51 @@ const GlobalCss: FC<Props> = (attrs) => {
 		return {
 			[ADD_TO_CART_BTN_BG]: {
 				alignItems: textAlignToAlignItems(style_layout?.textAlignment),
-				":hover span": {
-					color: color_h ? color_h : "white",
-				}
-			},
-			[ADD_TO_CART_BTN]: {
-				display: (position === "icon" || position === "bottom") ? "none" : "block",
-				color: color ? color : (position === "inside image" ? "#2b2b2b" : undefined),
-				backgroundColor: (position === "bottom visible" || position === "inside image")  ? backgroundColor : "#fff",
-				marginBottom: marginBottom_mobile_new ?? undefined,
-				":hover": {
-					color: color_h ? `${color_h} !important` : (position === "inside image" ? "#1346AF !important" : undefined),
-					backgroundColor: (position === "bottom visible" || position === "inside image" || position === "icon") ? backgroundColor_h : "#fff !important",
-				},
-				[`@media (min-width: ${media_tablet})`]: marginBottom_tablet_new
+				// Editor links have pointer-events: none, so trigger hover on the button container too
+				...(color_h || backgroundColor_h
 					? {
-							marginBottom: marginBottom_tablet_new,
-					  }
-					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginBottom_desktop_new
-					? {
-							marginBottom: marginBottom_desktop_new,
-					  }
-					: undefined,
-				// textTransform: "uppercase",
-				// fontWeight: 600,
-			},
-			// Style layout 2 - Add to cart button at bottom
-			...(position === "bottom"
-				? {
-						[ADD_TO_CART_VIEW_CARD_BTN]: {
-							position: "relative",
-							top: "-112px !important",
-							backgroundColor: "unset",
-							color: "#2b2b2b !important",
-							":hover": {
-								backgroundColor: "unset",
-								color: "#1346AF !important",
+							"&:hover": {
+								a: {
+									color: color_h || undefined,
+									backgroundColor: backgroundColor_h || undefined,
+								},
+								span: {
+									color: color_h || undefined,
+								},
 								"svg path": {
-									fill: "#1346AF !important",
+									fill: color_h || undefined,
 								},
 							},
-						},
-				  }
-				: {}),
-			[ADD_TO_CART_BTN_ICON]: {
-				color,
-				backgroundColor,
-				marginBottom: marginBottom_mobile_new ?? undefined,
-				":hover": {
-					color: color_h,
-					backgroundColor: backgroundColor_h,
+					  }
+					: {}),
+			},
+			[ADD_TO_CART_BTN]: {
+				color: color || undefined,
+				backgroundColor: backgroundColor || undefined,
+				...resolveSpacing(
+					"marginBottom",
+					style_addToCardBtn?.marginBottom || { Desktop: "1rem" }
+				),
+				".wcb-products__add-to-cart-icon": {
+					display: general_addToCartBtn?.isShowIcon === false ? "none" : undefined,
+					...(color
+						? {
+								"svg path": {
+									fill: color,
+								},
+						  }
+						: {}),
 				},
-				[`@media (min-width: ${media_tablet})`]: marginBottom_tablet_new
-					? {
-							marginBottom: marginBottom_tablet_new,
-					  }
-					: undefined,
-				[`@media (min-width: ${media_desktop})`]: marginBottom_desktop_new
-					? {
-							marginBottom: marginBottom_desktop_new,
-					  }
-					: undefined,
+				"&:hover": {
+					color: color_h || undefined,
+					backgroundColor: backgroundColor_h || undefined,
+					span: {
+						color: color_h || undefined,
+					},
+					"svg path": {
+						fill: color_h || undefined,
+					},
+				},
 			},
 		};
 	};
@@ -950,6 +591,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={getTypographyStyles({
 						className: `${POST_CARD_CLASS} .wcb-products__product-title, ${POST_CARD_CLASS} .wcb-products__product-title a`,
 						typography: style_title?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -958,8 +600,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content?.isShowCategory && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-categories",
+						className: `${WRAP_CLASSNAME} .wcb-products__product-categories, ${WRAP_CLASSNAME} .wcb-products__product-categories a`,
 						typography: style_category?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -973,8 +616,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 			{general_content?.isShowPrice && (
 				<Global
 					styles={getTypographyStyles({
-						className: WRAP_CLASSNAME + " .wcb-products__product-price",
+						className: PRICE_TEXT_CLASS,
 						typography: style_price?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -985,6 +629,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-onsale",
 						typography: style_saleBadge?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -995,6 +640,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 					styles={getTypographyStyles({
 						className: WRAP_CLASSNAME + " .wcb-products__product-on-outofstock",
 						typography: style_outOfStock?.typography,
+						deviceType: previewDeviceType,
 					})}
 				/>
 			)}
@@ -1038,27 +684,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 			{/* ADD TO CART BUTTON */}
 			{general_addToCartBtn?.isShowButton ? (
-				<>
-					{(general_addToCartBtn?.position === "bottom" ||
-					general_addToCartBtn?.position === "bottom visible" ||
-					general_addToCartBtn?.position === "inside image" ||
-					general_addToCartBtn?.position === "icon") ? (
-						<Global styles={getPostCardStyles_AddToCart(general_addToCartBtn?.position)} />
-					) : null}
-
-					<Global
-						styles={getTypographyStyles({
-							className: ADD_TO_CART_BTN,
-							typography: style_addToCardBtn?.typography,
-						})}
-					/>
-					<Global
-						styles={getBorderStyles({
-							className: ADD_TO_CART_BTN,
-							border: style_addToCardBtn?.border,
-							isWithRadius: true,
-						})}
-					/>
+				general_addToCartBtn?.position === "icon" ? (
 					<Global
 						styles={getBorderStyles({
 							className: `${POST_CARD_CLASS} .wcb-products__product--btnIconAddToCart--item`,
@@ -1066,24 +692,45 @@ const GlobalCss: FC<Props> = (attrs) => {
 							isWithRadius: true,
 						})}
 					/>
-					<Global
-						styles={getPaddingMarginStyles({
-							className: ADD_TO_CART_BTN,
-							padding: style_addToCardBtn?.padding,
-						})}
-					/>
-				</>
+				) : (
+					<>
+						{(general_addToCartBtn?.position === "bottom" ||
+						general_addToCartBtn?.position === "bottom visible" ||
+						general_addToCartBtn?.position === "inside image") ? (
+							<Global styles={getPostCardStyles_AddToCart()} />
+						) : null}
+
+						<Global
+							styles={getTypographyStyles({
+								className: ADD_TO_CART_BTN,
+								typography: style_addToCardBtn?.typography,
+								deviceType: previewDeviceType,
+							})}
+						/>
+						<Global
+							styles={getBorderStyles({
+								className: ADD_TO_CART_BTN,
+								border: style_addToCardBtn?.border,
+								isWithRadius: true,
+							})}
+						/>
+						<Global
+							styles={getPaddingMarginStyles({
+								className: ADD_TO_CART_BTN,
+								padding: style_addToCardBtn?.padding,
+							})}
+						/>
+					</>
+				)
 			) : null}
 
 			{/* Product image settings */}
 			{
-				general_featuredImage?.hoverType !== "none" && (
-					<Global 
+				general_featuredImage?.equal_height_flag && (general_featuredImage?.image_height ?? 300) > 0 && (
+					<Global
 						styles={{
-							[`${PRODUCT_IMAGE_CLASS}`]: {
-								":hover": {
-									transition: `all 0.3s ease-in-out`,
-								}
+							[`${PRODUCT_IMAGE_CLASS} img`]: {
+								height: `${general_featuredImage.image_height ?? 300}px`,
 							},
 						}}
 					/>

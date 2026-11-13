@@ -22,6 +22,10 @@ export interface WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK {
 	marginBottom: HasResponsive<string>;
 	position: "top-left" | "top-right" | "none";
 	shape?: "round" | "square" | string;
+	borderRadius?: number;
+	isSquare?: boolean;
+	size?: number;
+	text?: string;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK =
@@ -48,6 +52,7 @@ interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK;
 	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK) => void;
+	showMarginBottom?: boolean;
 }
 
 const WcbProductsPanel_StyleOutOfStock: FC<Props> = ({
@@ -56,6 +61,7 @@ const WcbProductsPanel_StyleOutOfStock: FC<Props> = ({
 	initialOpen,
 	onToggle,
 	opened,
+	showMarginBottom = true,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	const { typography, textColor, marginBottom, backgroundColor } = panelData;
@@ -106,22 +112,24 @@ const WcbProductsPanel_StyleOutOfStock: FC<Props> = ({
 						color={backgroundColor}
 					/>
 
-					<MyUnitControl
-						onChange={(value) => {
-							setAttr__({
-								...panelData,
-								marginBottom: {
-									...marginBottom,
-									[deviceType]: value,
-								},
-							});
-						}}
-						value={MARGIN_BOTTOM || ""}
-						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "wcb")}
-						hasResponsive
-						className="flex-col space-y-2"
-					/>
+					{showMarginBottom && (
+						<MyUnitControl
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									marginBottom: {
+										...marginBottom,
+										[deviceType]: value,
+									},
+								});
+							}}
+							value={MARGIN_BOTTOM || ""}
+							units={MY_GAP_UNITS}
+							label={__("Margin bottom", "wcb")}
+							hasResponsive
+							className="flex-col space-y-2"
+						/>
+					)}
 				</MyDisclosure>
 			</div>
 		</PanelBody>

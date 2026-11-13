@@ -118,7 +118,7 @@ $attributes = array(
 			'isShowFeaturedImage'   => true,
 			'featuredImageSize'     => 'large',
 			'featuredImagePosition' => 'top',
-			'linkCompleteBox'       => false,
+			'linkCompleteBox'       => true,
 			'hoverType'             => 'none',
 		),
 	),

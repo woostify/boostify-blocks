@@ -114,14 +114,15 @@ const getPaddingMarginStyles = ({ className, padding, margin }: Params) => {
 		mLeft?: string | number | null
 	): string[] => {
 		const rules: string[] = [];
-		if (pTop) rules.push(`padding-top: ${pTop} !important;`);
-		if (pRight) rules.push(`padding-right: ${pRight} !important;`);
-		if (pBottom) rules.push(`padding-bottom: ${pBottom} !important;`);
-		if (pLeft) rules.push(`padding-left: ${pLeft} !important;`);
-		if (mTop) rules.push(`margin-top: ${mTop} !important;`);
-		if (mRight) rules.push(`margin-right: ${mRight};`);
-		if (mBottom) rules.push(`margin-bottom: ${mBottom} !important;`);
-		if (mLeft) rules.push(`margin-left: ${mLeft};`);
+		const hasVal = (val?: string | number | null) => val !== undefined && val !== null && val !== "";
+		if (hasVal(pTop)) rules.push(`padding-top: ${pTop} !important;`);
+		if (hasVal(pRight)) rules.push(`padding-right: ${pRight} !important;`);
+		if (hasVal(pBottom)) rules.push(`padding-bottom: ${pBottom} !important;`);
+		if (hasVal(pLeft)) rules.push(`padding-left: ${pLeft} !important;`);
+		if (hasVal(mTop)) rules.push(`margin-top: ${mTop} !important;`);
+		if (hasVal(mRight)) rules.push(`margin-right: ${mRight};`);
+		if (hasVal(mBottom)) rules.push(`margin-bottom: ${mBottom} !important;`);
+		if (hasVal(mLeft)) rules.push(`margin-left: ${mLeft};`);
 		return rules;
 	};
 

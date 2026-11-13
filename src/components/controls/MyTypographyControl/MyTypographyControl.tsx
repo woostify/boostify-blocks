@@ -176,41 +176,45 @@ const MyTypographyControl: FC<Props> = ({
 
 	const renderLineHeight = () => {
 		return (
-			<div className="flex justify-between space-x-3 items-center">
+			<div className="flex justify-between items-center" style={{ gap: "8px" }}>
 				<MyLabelControl
 					hasResponsive
-					className="flex-shrink-0"
+					className="flex-1 mb-0"
 					children={__("Line height", "boostify-blocks")}
 				/>
-				<NumberControl
-					onChange={handleChangeLineHeight}
-					value={LINE_HEIGHT}
-					step={0.1}
-					min={0}
-					max={100}
-					placeholder={__("1.5", "boostify-blocks")}
-				/>
+				<div style={{ width: "104px", minWidth: "104px", flexShrink: 0 }}>
+					<NumberControl
+						onChange={handleChangeLineHeight}
+						value={LINE_HEIGHT}
+						step={0.1}
+						min={0}
+						max={100}
+						placeholder={__("1.5", "boostify-blocks")}
+					/>
+				</div>
 			</div>
 		);
 	};
 
 	const renderLetterSpacing = () => {
 		return (
-			<div className="flex justify-between space-x-3 items-center">
+			<div className="flex justify-between items-center" style={{ gap: "8px" }}>
 				<MyLabelControl
 					hasResponsive
-					className="flex-shrink-0"
+					className="flex-1 mb-0"
 					children={__("Letter spacing", "boostify-blocks")}
 				/>
-				<UnitControl
-					onChange={handleChangeLetterSpacing}
-					value={LETTER_SPACING}
-					units={[
-						{ value: "px", label: "px", default: 0 },
-						{ value: "%", label: "%", default: 0 },
-						{ value: "em", label: "em", default: 0 },
-					]}
-				/>
+				<div style={{ width: "104px", minWidth: "104px", flexShrink: 0 }}>
+					<UnitControl
+						onChange={handleChangeLetterSpacing}
+						value={LETTER_SPACING}
+						units={[
+							{ value: "px", label: "px", default: 0 },
+							{ value: "%", label: "%", default: 0 },
+							{ value: "em", label: "em", default: 0 },
+						]}
+					/>
+				</div>
 			</div>
 		);
 	};

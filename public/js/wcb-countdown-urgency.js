@@ -1,7 +1,7 @@
 /**
- * Countdown Urgency
+ * Countdown Urgency for Boostify Blocks & Woostify Pro
  *
- * @package Woostify Pro
+ * @package Boostify_Blocks
  */
 
 'use strict';
@@ -9,7 +9,7 @@
 // Sub.
 var sub = function( n ) {
 	return ( n < 10 ) ? '0' + n : n;
-}
+};
 
 // Countdown timer.
 var woostifyCountdownUrgency = function() {
@@ -18,25 +18,33 @@ var woostifyCountdownUrgency = function() {
 		return;
 	}
 
-	for ( var i = 0, j = selector.length; i < j; i ++ ) {
-		let element = selector[i];
-		if ( element.classList.contains( 'active' ) ) {
-			continue;
-		}
+	for ( var i = 0, j = selector.length; i < j; i++ ) {
+		( function( element ) {
+			if ( element.classList.contains( 'active' ) ) {
+				return;
+			}
 
-		let now         = new Date().getTime(),
-			duration    = element.getAttribute( 'data-duration' ),
-			timeUp      = element.getAttribute( 'data-time-up' ),
-			deadline    = new Date( now + parseInt( duration ) ).getTime(),
-			content     = element.querySelector( '.woostify-countdown-urgency-timer' ),
-			daysHtml    = element.querySelector( '[data-time=days]' ),
-			hoursHtml   = element.querySelector( '[data-time=hours]' ),
-			minutesHtml = element.querySelector( '[data-time=minutes]' ),
-			secondsHtml = element.querySelector( '[data-time=seconds]' );
+			var durationAttr = element.getAttribute( 'data-duration' );
+			if ( ! durationAttr || isNaN( parseInt( durationAttr ) ) ) {
+				return;
+			}
+
+			var now         = new Date().getTime(),
+				duration    = parseInt( durationAttr ),
+				timeUp      = element.getAttribute( 'data-time-up' ) === '1',
+				deadline    = new Date( now + duration ).getTime(),
+				daysHtml    = element.querySelector( '[data-time=days]' ),
+				hoursHtml   = element.querySelector( '[data-time=hours]' ),
+				minutesHtml = element.querySelector( '[data-time=minutes]' ),
+				secondsHtml = element.querySelector( '[data-time=seconds]' );
+
+			if ( ! daysHtml || ! hoursHtml || ! minutesHtml || ! secondsHtml ) {
+				return;
+			}
 
 			element.classList.add( 'active' );
 
-			setInterval(
+			var timer = setInterval(
 				function() {
 					var nows    = new Date().getTime(),
 						live    = deadline - nows + 1000,
@@ -48,12 +56,11 @@ var woostifyCountdownUrgency = function() {
 						seconds = parseInt( ( live % 60000 ) / 1000 );
 
 					if ( live < 0 ) {
-						clearInterval();
+						clearInterval( timer );
 
 						if ( timeUp ) {
 							element.remove();
 						}
-
 						return;
 					}
 
@@ -64,19 +71,33 @@ var woostifyCountdownUrgency = function() {
 				},
 				1000
 			);
+		} )( selector[i] );
 	}
+};
+
+window.woostifyCountdownUrgency = woostifyCountdownUrgency;
+
+if ( document.readyState === 'loading' ) {
+	document.addEventListener( 'DOMContentLoaded', function() {
+		setTimeout( woostifyCountdownUrgency, 100 );
+	} );
+} else {
+	setTimeout( woostifyCountdownUrgency, 100 );
 }
 
-document.addEventListener(
-	'DOMContentLoaded',
-	function() {
-		window.onload = function() {
-			setTimeout(
-				function() {
-					woostifyCountdownUrgency();
-				},
-				100
-			);
-		}
+window.addEventListener( 'load', function() {
+	setTimeout( woostifyCountdownUrgency, 100 );
+} );
+
+if ( window.MutationObserver ) {
+	var countdownObserver = new MutationObserver( function() {
+		woostifyCountdownUrgency();
+	} );
+	if ( document.body ) {
+		countdownObserver.observe( document.body, { childList: true, subtree: true } );
+	} else {
+		document.addEventListener( 'DOMContentLoaded', function() {
+			countdownObserver.observe( document.body, { childList: true, subtree: true } );
+		} );
 	}
-);
+}

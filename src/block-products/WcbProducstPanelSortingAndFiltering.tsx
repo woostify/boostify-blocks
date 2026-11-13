@@ -33,6 +33,8 @@ export type ProductOrderBy =
 export interface WCB_PRODUCTS_PANEL_SORTINGANDFILTERING {
 	emptyMessage: string;
 	numberOfItems: number;
+	isNumberOfItemsEdited?: boolean;
+	numberOfItemsFromCustomizer?: number;
 	isOnSale: boolean;
 	stockStatus: string[];
 	categories: string[];
@@ -286,6 +288,7 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 					setAttr__({
 						...panelData,
 						numberOfItems,
+						isNumberOfItemsEdited: true,
 					});
 				}}
 				min={1}
