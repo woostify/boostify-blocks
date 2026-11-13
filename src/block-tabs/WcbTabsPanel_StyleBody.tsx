@@ -120,7 +120,7 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 		const tabName = tab.name as TabHere;
 		if (tabName === "Normal") {
 			return (
-				<div className="space-y-4">
+				<div key="normal" className="space-y-4">
 					<MyColorPicker
 						label={__("Color", "boostify-blocks")}
 						onChange={(value) => {
@@ -140,7 +140,7 @@ const WcbTabsPanel_StyleBody: FC<Props> = ({
 		}
 		if (tabName === "Hover") {
 			return (
-				<div className="space-y-4">
+				<div key="hover" className="space-y-4">
 					<MyColorPicker
 						label={__("Color", "boostify-blocks")}
 						onChange={(value) => {

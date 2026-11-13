@@ -150,7 +150,7 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 		const tabName = tab.name as TabHere;
 		if (tabName === "Normal") {
 			return (
-				<div className="space-y-4">
+				<div key="normal" className="space-y-4">
 					<MyColorPicker
 						label={__("Color", "boostify-blocks")}
 						onChange={(value) => {
@@ -170,7 +170,7 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 		}
 		if (tabName === "Active") {
 			return (
-				<div className="space-y-4">
+				<div key="active" className="space-y-4">
 					<MyColorPicker
 						label={__("Color", "boostify-blocks")}
 						onChange={(value) => {
@@ -196,6 +196,7 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 		if (tabName === "Normal") {
 			return (
 				<MyBorderControl
+					key="normal"
 					borderControl={border}
 					setAttrs__border={(value) => {
 						setAttr__({ ...panelData, border: value });
@@ -206,6 +207,7 @@ const WcbTabsPanel_StyleTitle: FC<Props> = ({
 		if (tabName === "Active") {
 			return (
 				<MyBorderControl
+					key="active"
 					borderControl={borderActive}
 					setAttrs__border={(value) => {
 						setAttr__({ ...panelData, borderActive: value });

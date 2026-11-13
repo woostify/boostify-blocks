@@ -27,7 +27,7 @@ import converUniqueIdToAnphaKey from "../utils/converUniqueIdToAnphaKey";
 import WcbTabsPanelTabTitle from "./WcbTabsPanelTabTitle";
 import { createBlock } from "@wordpress/blocks";
 import { BlockTabTitleItem } from "./types";
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowDownIcon, ArrowUpIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import WcbTabsPanel_StyleBody, {
     WCB_TABS_BODY_SOLID_PRESET,
     WCB_TABS_PANEL_STYLE_BODY_DEMO,
@@ -78,7 +78,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
         },
         [clientId]
     );
-    const { insertBlock, insertBlocks, removeBlock, removeBlocks } = useDispatch(blockEditorStore);
+    const { insertBlock, insertBlocks, removeBlock, removeBlocks, moveBlockToPosition } = useDispatch(blockEditorStore);
     const registry = useRegistry();
 
     const DEFAULT_TAB_CONTENT =
@@ -400,54 +400,177 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
         </button>
     );
 
+    const remapIndexAfterMove = (currentIdx: number, fromIndex: number, toIndex: number): number => {
+        if (currentIdx === fromIndex) return toIndex;
+        if (fromIndex < toIndex && currentIdx > fromIndex && currentIdx <= toIndex) {
+            return currentIdx - 1;
+        }
+        if (fromIndex > toIndex && currentIdx >= toIndex && currentIdx < fromIndex) {
+            return currentIdx + 1;
+        }
+        return currentIdx;
+    };
+
+    const handleMoveTab = (fromIndex: number, toIndex: number) => {
+        if (toIndex < 0 || toIndex >= titles.length || fromIndex === toIndex) return;
+
+        const nextTitles = [...titles];
+        const [movedItem] = nextTitles.splice(fromIndex, 1);
+        nextTitles.splice(toIndex, 0, movedItem);
+        const reindexedTitles = nextTitles.map((t, i) => ({ ...t, dataTabIndex: i }));
+
+        const nextActiveIndex = remapIndexAfterMove(activeTabIndex, fromIndex, toIndex);
+        const targetClientId = childInnerBlocks?.[fromIndex]?.clientId;
+
+        const initMatch = general_tabTitle.initOpenTab?.match(/^tab(\d+)$/);
+        const initIdx = initMatch ? parseInt(initMatch[1], 10) - 1 : -1;
+        const nextInitIdx = initIdx >= 0 ? remapIndexAfterMove(initIdx, fromIndex, toIndex) : -1;
+        const nextInitOpenTab =
+            initIdx >= 0 && nextInitIdx !== initIdx ? `tab${nextInitIdx + 1}` : undefined;
+
+        const applyMove = () => {
+            if (targetClientId) {
+                (moveBlockToPosition as any)(targetClientId, clientId, clientId, toIndex);
+            }
+            setAttributes({
+                titles: reindexedTitles,
+                activeTabIndex: nextActiveIndex,
+                ...(nextInitOpenTab !== undefined
+                    ? {
+                          general_tabTitle: {
+                              ...general_tabTitle,
+                              initOpenTab: nextInitOpenTab,
+                          },
+                      }
+                    : {}),
+            });
+        };
+
+        if (typeof (registry as any)?.batch === "function") {
+            (registry as any).batch(applyMove);
+        } else {
+            applyMove();
+        }
+    };
+
     const renderRemoveBtn = (item: BlockTabTitleItem, index: number) => {
         if (titles.length <= 1) return null;
+        const isFirst = index === 0;
+        const isLast = index === titles.length - 1;
         return (
-            <button
-                type="button"
-                className="absolute bottom-full left-1/2 -translate-x-1/2 hidden group-hover:flex flex-shrink-0 items-center justify-center rounded-md h-8 w-8 bg-red-50 hover:bg-red-100 text-red-600"
-                title={__("Remove", "boostify-blocks")}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    const newTitles = titles
-                        .filter((j) => j.id !== item.id)
-                        .map((t, i) => ({ ...t, dataTabIndex: i }));
-                    const nextIndex =
-                        activeTabIndex === index
-                            ? 0
-                            : activeTabIndex > index
-                            ? activeTabIndex - 1
-                            : Math.min(activeTabIndex, Math.max(0, newTitles.length - 1));
-                    const targetClientId = childInnerBlocks?.[index]?.clientId;
-                    const initMatch = general_tabTitle.initOpenTab?.match(/^tab(\d+)$/);
-                    const initTabNum = initMatch ? parseInt(initMatch[1], 10) : 0;
-                    const shouldResetInitOpen = initTabNum > newTitles.length;
-                    const applyRemove = () => {
-                        if (targetClientId) {
-                            removeBlock(targetClientId, false);
-                        }
-                        setAttributes({
-                            titles: newTitles,
-                            activeTabIndex: nextIndex,
-                            ...(shouldResetInitOpen
-                                ? {
-                                      general_tabTitle: {
-                                          ...general_tabTitle,
-                                          initOpenTab: "",
-                                      },
-                                  }
-                                : {}),
-                        });
-                    };
-                    if (typeof (registry as any)?.batch === "function") {
-                        (registry as any).batch(applyRemove);
-                    } else {
-                        applyRemove();
-                    }
+            <div
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 z-10 hidden group-hover:flex group-focus-within:flex items-center gap-1 rounded-full px-1 py-0.5"
+                style={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #d1d5db",
+                    boxShadow: "0 2px 6px rgba(15, 23, 42, 0.14)",
                 }}
             >
-                <XMarkIcon className="w-5 h-5" />
-            </button>
+                <button
+                    type="button"
+                    disabled={isFirst}
+                    className="flex flex-shrink-0 items-center justify-center rounded-full h-5 w-5 transition-colors"
+                    style={{
+                        backgroundColor: isFirst ? "transparent" : "#f1f5f9",
+                        color: isFirst ? "#cbd5e1" : "#1e293b",
+                        cursor: isFirst ? "not-allowed" : "pointer",
+                        border: "none",
+                        padding: 0,
+                    }}
+                    title={__("Move tab up", "boostify-blocks")}
+                    aria-label={__("Move tab up", "boostify-blocks")}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isFirst) {
+                            handleMoveTab(index, index - 1);
+                        }
+                    }}
+                >
+                    <ArrowUpIcon className="w-3.5 h-3.5" />
+                </button>
+                <button
+                    type="button"
+                    disabled={isLast}
+                    className="flex flex-shrink-0 items-center justify-center rounded-full h-5 w-5 transition-colors"
+                    style={{
+                        backgroundColor: isLast ? "transparent" : "#f1f5f9",
+                        color: isLast ? "#cbd5e1" : "#1e293b",
+                        cursor: isLast ? "not-allowed" : "pointer",
+                        border: "none",
+                        padding: 0,
+                    }}
+                    title={__("Move tab down", "boostify-blocks")}
+                    aria-label={__("Move tab down", "boostify-blocks")}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isLast) {
+                            handleMoveTab(index, index + 1);
+                        }
+                    }}
+                >
+                    <ArrowDownIcon className="w-3.5 h-3.5" />
+                </button>
+                <button
+                    type="button"
+                    className="flex flex-shrink-0 items-center justify-center rounded-full h-5 w-5 transition-colors"
+                    style={{
+                        backgroundColor: "#ef4444",
+                        color: "#ffffff",
+                        cursor: "pointer",
+                        border: "none",
+                        padding: 0,
+                    }}
+                    title={__("Remove tab", "boostify-blocks")}
+                    aria-label={__("Remove tab", "boostify-blocks")}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        const newTitles = titles
+                            .filter((j) => j.id !== item.id)
+                            .map((t, i) => ({ ...t, dataTabIndex: i }));
+                        const nextIndex =
+                            activeTabIndex === index
+                                ? 0
+                                : activeTabIndex > index
+                                ? activeTabIndex - 1
+                                : Math.min(activeTabIndex, Math.max(0, newTitles.length - 1));
+                        const targetClientId = childInnerBlocks?.[index]?.clientId;
+                        const initMatch = general_tabTitle.initOpenTab?.match(/^tab(\d+)$/);
+                        const initTabIdx = initMatch ? parseInt(initMatch[1], 10) - 1 : -1;
+                        let nextInitOpenTab: string | undefined;
+                        if (initTabIdx >= 0) {
+                            if (initTabIdx === index) {
+                                nextInitOpenTab = "";
+                            } else if (initTabIdx > index) {
+                                nextInitOpenTab = `tab${initTabIdx}`;
+                            }
+                        }
+                        const applyRemove = () => {
+                            if (targetClientId) {
+                                removeBlock(targetClientId, false);
+                            }
+                            setAttributes({
+                                titles: newTitles,
+                                activeTabIndex: nextIndex,
+                                ...(nextInitOpenTab !== undefined
+                                    ? {
+                                          general_tabTitle: {
+                                              ...general_tabTitle,
+                                              initOpenTab: nextInitOpenTab,
+                                          },
+                                      }
+                                    : {}),
+                            });
+                        };
+                        if (typeof (registry as any)?.batch === "function") {
+                            (registry as any).batch(applyRemove);
+                        } else {
+                            applyRemove();
+                        }
+                    }}
+                >
+                    <XMarkIcon className="w-3.5 h-3.5" />
+                </button>
+            </div>
         );
     };
 
