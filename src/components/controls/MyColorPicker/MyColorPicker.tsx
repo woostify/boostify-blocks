@@ -25,7 +25,7 @@ const MyColorPicker: FC<Props> = ({
 	const [colorState, setColorState] = useState("");
 
 	useEffect(() => {
-		color && setColorState(color);
+		setColorState(color || "");
 	}, [color]);
 
 	const handleUpdateColor = (c: string) => {

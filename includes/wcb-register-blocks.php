@@ -412,6 +412,7 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
         register_block_type(
             BOOSTIFY_BLOCKS_BUILD_PATH . '/block-tab-child',
             [
+                "render_callback"     => "boostify_blocks_block_tab_child_render_callback",
                 "view_script_handles" => []
             ]
         );

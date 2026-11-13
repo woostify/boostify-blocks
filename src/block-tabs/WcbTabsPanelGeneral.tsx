@@ -1,30 +1,20 @@
-import { PanelBody /*RangeControl, ToggleControl*/ } from "@wordpress/components";
+import { PanelBody } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import React, { FC } from "react";
-import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
-import MyHeadingTagControl from "../components/controls/MyHeadingTagControl/MyHeadingTagControl";
-// import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
-// import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
 import MyTextAlignControl, { TextAlignment } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
-// import useGetDeviceType from "../hooks/useGetDeviceType";
-// import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import MySelect from "../components/controls/MySelect";
 import { MySelectOption } from "../types";
 
 export interface WCB_TAGS_PANEL_GENERAL {
     layout: "accordion" | "grid";
     style: "horizontalStyle1" | "horizontalStyle2" | "verticalStyle1" | "verticalStyle2";
-    headingTag: keyof HTMLElementTagNameMap;
-    // columns: HasResponsive<number>;
     textAlignment: TextAlignment;
 }
 
 export const WCB_TAGS_PANEL_GENERAL_DEMO: WCB_TAGS_PANEL_GENERAL = {
     layout: "accordion",
     style: "horizontalStyle1",
-    headingTag: "div",
-    // columns: { Desktop: 2 },
     textAlignment: "left",
 };
 
@@ -40,16 +30,11 @@ const WcbTabsPanelGeneral: FC<Props> = ({
     onToggle,
     opened,
 }) => {
-    // const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
     const {
         textAlignment,
-        // columns,
-        headingTag,
         style,
         layout,
     } = panelData;
-
-    // const { currentDeviceValue: COLUMNS } = getValueFromAttrsResponsives(columns, deviceType);
 
     const PLANS_DEMO: MyRadioItem<WCB_TAGS_PANEL_GENERAL["layout"]>[] = [
         { icon: "Accordion", name: "accordion" },
@@ -87,22 +72,18 @@ const WcbTabsPanelGeneral: FC<Props> = ({
                 <MyRadioGroup
                     hasResponsive={false}
                     label={__("Layout", "boostify-blocks")}
-                    onChange={(value) => setAttr__({ ...panelData, layout: value as WCB_TAGS_PANEL_GENERAL["layout"] })}
+                    onChange={(value) => {
+                        const nextLayout = value as WCB_TAGS_PANEL_GENERAL["layout"];
+                        let nextStyle = style;
+                        if (nextLayout === "grid" && style.startsWith("horizontal")) {
+                            nextStyle = style === "horizontalStyle2" ? "verticalStyle2" : "verticalStyle1";
+                        } else if (nextLayout === "accordion" && style.startsWith("vertical")) {
+                            nextStyle = style === "verticalStyle2" ? "horizontalStyle2" : "horizontalStyle1";
+                        }
+                        setAttr__({ ...panelData, layout: nextLayout, style: nextStyle });
+                    }}
                     value={layout}
                     plans={PLANS_DEMO}
-                />
-                {/* {layout === "grid" && (
-                    <RangeControl
-                        label={<MyLabelControl hasResponsive>{__("Columns", "boostify-blocks")}</MyLabelControl>}
-                        value={COLUMNS || 2}
-                        onChange={(value) => setAttr__({ ...panelData, columns: { ...columns, [deviceType]: value } })}
-                        min={1}
-                        max={6}
-                    />
-                )} */}
-                <MyHeadingTagControl
-                    tag={headingTag}
-                    onChange={(value) => setAttr__({ ...panelData, headingTag: value })}
                 />
                 <MyTextAlignControl
                     textAlignment={textAlignment}

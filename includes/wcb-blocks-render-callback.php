@@ -2,9 +2,111 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-//============================================= block 1 ===============================================================
+//============================================= block tabs & tab-child ===============================================================
+function &boostify_blocks_tabs_render_stack()
+{
+    static $stack = array();
+    return $stack;
+}
+
+add_filter('pre_render_block', function ($pre_render, $parsed_block) {
+    if (null !== $pre_render || empty($parsed_block['blockName']) || 'boostify-blocks/tabs' !== $parsed_block['blockName']) {
+        return $pre_render;
+    }
+
+    $attrs        = is_array($parsed_block['attrs'] ?? null) ? $parsed_block['attrs'] : array();
+    $titles       = is_array($attrs['titles'] ?? null) ? $attrs['titles'] : array();
+    $titles_count = !empty($titles) ? count($titles) : 3;
+    $active_index = 0;
+
+    $init_open = $attrs['general_tabTitle']['initOpenTab'] ?? '';
+    if (is_string($init_open) && preg_match('/^tab(\d+)$/', $init_open, $matches)) {
+        $parsed_tab = (int) $matches[1] - 1;
+        if ($parsed_tab >= 0 && $parsed_tab < $titles_count) {
+            $active_index = $parsed_tab;
+        }
+    }
+
+    $stack   = &boostify_blocks_tabs_render_stack();
+    $stack[] = array(
+        'unique_id'    => isset($attrs['uniqueId']) ? (string) $attrs['uniqueId'] : '',
+        'active_index' => $active_index,
+        'next_index'   => 0,
+    );
+
+    return $pre_render;
+}, 99, 2);
+
+function boostify_blocks_block_tab_child_render_callback($attributes, $content)
+{
+    $stack = &boostify_blocks_tabs_render_stack();
+    if (empty($stack)) {
+        return $content;
+    }
+
+    $top_idx      = count($stack) - 1;
+    $tab_index    = $stack[$top_idx]['next_index']++;
+    $active_index = $stack[$top_idx]['active_index'];
+    $parent_uid   = $stack[$top_idx]['unique_id'];
+
+    if (class_exists('WP_HTML_Tag_Processor')) {
+        $tags = new WP_HTML_Tag_Processor($content);
+        if ($tags->next_tag(array('class_name' => 'wcb-tab-child__wrap'))) {
+            $tags->set_attribute('role', 'tabpanel');
+            if ('' !== $parent_uid) {
+                $tags->set_attribute('id', 'tabpanel-' . $parent_uid . '-' . $tab_index);
+                $tags->set_attribute('aria-labelledby', 'tab-' . $parent_uid . '-' . $tab_index);
+            }
+            $tags->set_attribute('data-wp-context', wp_json_encode(array('tabIndex' => $tab_index)));
+            $tags->set_attribute('data-wp-watch', 'callbacks.syncActiveTab');
+            $tags->set_attribute('data-wp-bind--hidden', '!context.isActiveTab');
+            if ($tab_index !== $active_index) {
+                $tags->set_attribute('hidden', true);
+            } else {
+                $tags->remove_attribute('hidden');
+            }
+            $content = $tags->get_updated_html();
+        }
+    }
+
+    return $content;
+}
+
 function boostify_blocks_block_tabs_render_callback($attributes, $content)
 {
+    $stack = &boostify_blocks_tabs_render_stack();
+    if (!empty($stack)) {
+        array_pop($stack);
+    }
+
+    $gg                   = is_array($attributes['general_general'] ?? null) ? $attributes['general_general'] : array();
+    $layout               = $gg['layout'] ?? '';
+    $style                = $gg['style'] ?? '';
+    $is_vertical_layout   = ('grid' === $layout || 'verticalStyle1' === $style || 'verticalStyle2' === $style);
+    $is_vertical_style2   = ($is_vertical_layout && 'verticalStyle2' === $style);
+    $is_horizontal_style2 = (!$is_vertical_layout && 'horizontalStyle2' === $style);
+
+    $layout_classes = array();
+    if ($is_vertical_layout) {
+        $layout_classes[] = 'wcb-tabs--vertical';
+    }
+    if ($is_vertical_style2) {
+        $layout_classes[] = 'wcb-tabs--verticalStyle2';
+    }
+    if ($is_horizontal_style2) {
+        $layout_classes[] = 'wcb-tabs--horizontalStyle2';
+    }
+
+    if (!empty($layout_classes) && class_exists('WP_HTML_Tag_Processor')) {
+        $tags = new WP_HTML_Tag_Processor($content);
+        if ($tags->next_tag(array('class_name' => 'wcb-tabs__wrap'))) {
+            foreach ($layout_classes as $layout_class) {
+                $tags->add_class($layout_class);
+            }
+            $content = $tags->get_updated_html();
+        }
+    }
+
     boostify_blocks_enqueue_script_block_commoncss_frontend_styles();
     return $content;
 }
