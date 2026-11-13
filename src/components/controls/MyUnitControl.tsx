@@ -33,12 +33,20 @@ const MyUnitControl: FC<Props> = ({
 		{ value: "%", label: "%", default: 10 },
 	],
 }) => {
+	const isCol = className.includes("flex-col");
+	const containerStyle: React.CSSProperties = isCol
+		? { display: "flex", flexDirection: "column", gap: "8px" }
+		: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" };
+
 	return (
-		<div className={`flex items-center justify-center space-x-2`}>
-			<MyLabelControl className="flex-[2.2]" hasResponsive={hasResponsive}>
+		<div className={className} style={containerStyle}>
+			<MyLabelControl
+				className={isCol ? "mb-0" : "mb-0 flex-1"}
+				hasResponsive={hasResponsive}
+			>
 				{label}
 			</MyLabelControl>
-			<div className="flex-1">
+			<div style={isCol ? { width: "100%" } : { width: "108px", minWidth: "108px", flexShrink: 0 }}>
 				<UnitControl
 					onChange={onChange}
 					value={value}

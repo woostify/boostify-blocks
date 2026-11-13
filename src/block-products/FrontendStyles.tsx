@@ -117,14 +117,14 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 	 * @param buttonEl HTMLButtonElement
 	 * @returns boolean
 	 */
-	const checkIsLoadingAddToCart = (buttonEl: HTMLElement): boolean => {
+	const checkIsLoadingAddToCart = (buttonEl: HTMLElement | null): boolean => {
 		if (!buttonEl) return false;
 
-		const label = buttonEl.querySelector(".wcb-products__add-to-cart-label");
-		const text = label?.innerText?.trim();
-		
-		return text === "Add to cart";
-	}
+		return (
+			buttonEl.classList.contains("ajax_add_to_cart") &&
+			!buttonEl.classList.contains("added")
+		);
+	};
 
 	/**
 	 * Check button add to cart has class ajax_add_to_cart
@@ -280,8 +280,8 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 			prev?.classList.toggle("-disabled", sliderMultiElement.scrollLeft === 0);
 			next?.classList.toggle(
 				"-disabled",
-				sliderMultiElement.scrollLeft + sliderMultiElement.offsetWidth ===
-					sliderMultiElement.scrollWidth
+				sliderMultiElement.scrollLeft + sliderMultiElement.offsetWidth >=
+					sliderMultiElement.scrollWidth - 1
 			);
 			arrows?.classList.toggle(
 				"-hidden",

@@ -88,7 +88,7 @@ const WcbProductsPanelPagination: FC<Props> = ({
 						if (isNaN(value) || value < 0) {
 							return;
 						}
-						setAttr__({ ...panelData, pageLimit: Number(value || 10) });
+						setAttr__({ ...panelData, pageLimit: Number(value) });
 					}}
 				/>
 

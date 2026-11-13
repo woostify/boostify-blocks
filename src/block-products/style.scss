@@ -1250,10 +1250,18 @@ body:not(.wp-admin) {
 
 		.-next {
 			@apply -right-4 left-auto;
+
+			@media (max-width: 1023px) {
+				right: 0.25rem;
+			}
 		}
 
 		.-prev {
 			@apply -left-4 right-auto;
+
+			@media (max-width: 1023px) {
+				left: 0.25rem;
+			}
 		}
 	}
 

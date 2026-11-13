@@ -90,7 +90,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
         }
         if ( ! $block_overrides ) {
             $attributes['style_border']['hoverColor'] = '';
-            $attributes['style_border']['radius']     = '0';
+            $attributes['style_border']['radius']     = [ 'Desktop' => '0', 'Tablet' => '0', 'Mobile' => '0' ];
         }
     }
 
@@ -159,7 +159,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
         }
         if ( ! $block_overrides ) {
             $attributes['style_featuredImage']['border']['hoverColor'] = '';
-            $attributes['style_featuredImage']['border']['radius']     = '0';
+            $attributes['style_featuredImage']['border']['radius']     = [ 'Desktop' => '0', 'Tablet' => '0', 'Mobile' => '0' ];
         }
     }
 
@@ -234,6 +234,20 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 'letterSpacing'  => [],
             ];
 
+        $has_block_font_sizes = $block_overrides && (
+            ! empty( $existing_sizes['Desktop'] ) ||
+            ! empty( $existing_sizes['Tablet'] ) ||
+            ! empty( $existing_sizes['Mobile'] )
+        );
+
+        $resolved_font_sizes = $has_block_font_sizes
+            ? $existing_sizes
+            : [
+                'Desktop' => $pick( $format_px( $design_sizes['desktop'] ?? null ), $existing_sizes['Desktop'] ?? null ),
+                'Tablet'  => $pick( $format_px( $design_sizes['tablet'] ?? null ), $existing_sizes['Tablet'] ?? null ),
+                'Mobile'  => $pick( $format_px( $design_sizes['mobile'] ?? null ), $existing_sizes['Mobile'] ?? null ),
+            ];
+
         return array_merge(
             $base_style,
             [
@@ -241,11 +255,7 @@ function boostify_blocks_block_products_apply_theme_defaults($attributes, $block
                 'typography' => array_merge(
                     $base_typo,
                     [
-                        'fontSizes' => [
-                            'Desktop' => $pick( $format_px( $design_sizes['desktop'] ?? null ), $existing_sizes['Desktop'] ?? null ),
-                            'Tablet'  => $pick( $format_px( $design_sizes['tablet'] ?? null ), $existing_sizes['Tablet'] ?? null ),
-                            'Mobile'  => $pick( $format_px( $design_sizes['mobile'] ?? null ), $existing_sizes['Mobile'] ?? null ),
-                        ],
+                        'fontSizes' => $resolved_font_sizes,
                     ]
                 ),
             ]
@@ -730,22 +740,25 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $preorderBadge = $data->preorder_badge ? : "";
 
     // wishlist button
-    global $wpdb;
-
     $product_id = $product->get_id();
-    $variation_id = $product->is_type('variation') ? $product->get_id() : 0;
+    $wishlist_active_class = '';
+    if ( ( $btnWishListTopRight || $btnWishListBottomRight ) && ( defined( 'TINVWL_FVERSION' ) || class_exists( 'TInvWL' ) ) ) {
+        global $wpdb;
 
-    $table = $wpdb->prefix . 'tinvwl_items';
+        $variation_id = $product->is_type('variation') ? $product_id : 0;
 
-    $is_in_wishlist = (bool) $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT COUNT(*) FROM $table WHERE product_id = %d AND variation_id = %d",
-            $product_id,
-            $variation_id
-        )
-    );
+        $table = $wpdb->prefix . 'tinvwl_items';
 
-    $wishlist_active_class = $is_in_wishlist ? ' is-in-wishlist' : '';
+        $is_in_wishlist = (bool) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM $table WHERE product_id = %d AND variation_id = %d",
+                $product_id,
+                $variation_id
+            )
+        );
+
+        $wishlist_active_class = $is_in_wishlist ? ' is-in-wishlist' : '';
+    }
 
     $classes .= $btnWishListTopRight ? " wcb-products__product--wishlistTopRight" : "";
     $classes .= $btnWishListBottomRight ? " wcb-products__product--wishlistBottomRight" : "";
@@ -828,12 +841,24 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         $quantity_interactivity_attrs = " data-wp-interactive=\"boostify-blocks/product-quantity\" data-wp-context='" . esc_attr( $quantity_context ) . "' data-wp-watch=\"callbacks.syncQuantityJqueryData\"";
     }
 
-    $item_html = "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\"{$quantity_interactivity_attrs}>
-                <div class=\"wcb-products__product-featured \">
-                    <a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
+    $show_featured_image = boostify_blocks_is_enabled($attributes['general_featuredImage']['isShowFeaturedImage'] ?? "");
+    $link_featured_image = boostify_blocks_is_enabled($attributes['general_featuredImage']['linkCompleteBox'] ?? true);
+    $featured_image_link_html = '';
+    if ($show_featured_image) {
+        $featured_image_link_html = $link_featured_image
+            ? "<a href=\"{$escaped_permalink}\" class=\"{$escaped_feat_classes}\">
                         {$data->image}
                         {$isSwapHover}
-                    </a>
+                    </a>"
+            : "<div class=\"{$escaped_feat_classes}\">
+                        {$data->image}
+                        {$isSwapHover}
+                    </div>";
+    }
+    $featured_inner_html = $featured_image_link_html . $topRightIconsHtml . $bottomRightIconHtml . $btnQuickViewBottomImageHtml . $btn1 . $countdownHtml . $saleOutOfStock . $saleBadge1;
+    $featured_wrapper_html = '' !== trim($featured_inner_html)
+        ? "<div class=\"wcb-products__product-featured \">
+                    {$featured_image_link_html}
                     {$topRightIconsHtml}
                     {$bottomRightIconHtml}
                     {$btnQuickViewBottomImageHtml}
@@ -841,7 +866,11 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$countdownHtml}
                     {$saleOutOfStock}
                     {$saleBadge1}
-                </div>
+                </div>"
+        : '';
+
+    $item_html = "<div class=\"scroll-snap-slide {$escaped_classes}\" data-index=\"{$escaped_index}\"{$quantity_interactivity_attrs}>
+                {$featured_wrapper_html}
                 <div class=\"wcb-products__product-content\">
                     {$data->categories}
                     {$data->title}

@@ -18,7 +18,7 @@ export const WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO: WCB_PRODUCTS_PANEL_FEATURED
 		isShowFeaturedImage: true,
 		featuredImageSize: "large",
 		featuredImagePosition: "top",
-		linkCompleteBox: false,
+		linkCompleteBox: true,
 		hoverType: "none",
 	};
 

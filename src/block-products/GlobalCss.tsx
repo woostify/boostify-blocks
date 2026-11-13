@@ -109,21 +109,26 @@ const buildListLayoutStyles = (
 	rowGap: string | null | undefined,
 	peek: string | null | undefined,
 	isSnap: boolean
-): CSSObject => ({
-	rowGap: rowGap ?? undefined,
-	columnGap: colGap ?? undefined,
-	...(isSnap
-		? {
-				"> div": {
-					flexBasis: `calc((100% - (${
-						Number(cols) - 1
-					} * ${colGap})) / ${Number(cols)} - ${peek})`,
-				},
-		  }
-		: {
-				gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-		  }),
-});
+): CSSObject => {
+	const safeCols = Math.max(1, Number(cols) || 1);
+	const safeColGap = colGap && String(colGap).trim() !== "" ? colGap : "0px";
+	const safePeek = peek && String(peek).trim() !== "" ? peek : "0px";
+	return {
+		rowGap: rowGap ?? undefined,
+		columnGap: colGap ?? undefined,
+		...(isSnap
+			? {
+					"> div": {
+						flexBasis: `calc((100% - (${
+							safeCols - 1
+						} * ${safeColGap})) / ${safeCols} - ${safePeek})`,
+					},
+			  }
+			: {
+					gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+			  }),
+	};
+};
 
 interface Props extends Required<WcbAttrsForSave> {
 	previewDeviceType?: PreviewDeviceType;

@@ -94,7 +94,7 @@ const MyDimensionsUnitControl: FC<Props> = ({
 	label,
 	values = {},
 	onChange,
-	min = -99999,
+	min = 0,
 	allowReset = true,
 }) => {
 	styles.useInjectStyles();
@@ -113,14 +113,24 @@ const MyDimensionsUnitControl: FC<Props> = ({
 	const allValue = getAllValue(merged);
 	const isMixed = isValuesDefined(merged) && isMixedValues(merged);
 
+	const clampToMin = (value: string): string => {
+		const raw = value ?? "";
+		if (min < 0 || !raw.trim()) return raw;
+		const { num, unit } = parseValue(raw);
+		if (!Number.isNaN(num) && num < min) {
+			return `${min}${unit}`;
+		}
+		return raw;
+	};
+
 	const handleAllChange = (value: string) => {
-		const v = value ?? "";
+		const v = clampToMin(value);
 		onChange({ top: v, right: v, bottom: v, left: v });
 		setIsDirty(true);
 	};
 
 	const handleSideChange = (side: Side, value: string) => {
-		onChange({ ...merged, [side]: value ?? "" });
+		onChange({ ...merged, [side]: clampToMin(value) });
 		setIsDirty(true);
 	};
 
