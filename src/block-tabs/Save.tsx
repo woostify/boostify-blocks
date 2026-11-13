@@ -10,8 +10,7 @@ export interface WcbAttrsForSave extends Omit<WcbAttrs, "general_preset"> {}
 
 export const resolveInitialActiveTab = (
     titlesLength: number,
-    initOpenTab?: string,
-    activeTabIndex = 0
+    initOpenTab?: string
 ): number => {
     const match = initOpenTab?.match(/^tab(\d+)$/);
     if (match) {
@@ -19,9 +18,6 @@ export const resolveInitialActiveTab = (
         if (parsed >= 0 && parsed < titlesLength) {
             return parsed;
         }
-    }
-    if (activeTabIndex >= 0 && activeTabIndex < titlesLength) {
-        return activeTabIndex;
     }
     return 0;
 };
@@ -46,8 +42,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 
     const initialActiveTab = resolveInitialActiveTab(
         titles.length,
-        general_tabTitle?.initOpenTab,
-        activeTabIndex
+        general_tabTitle?.initOpenTab
     );
 
     const newAttrForSave: WcbAttrsForSave = {

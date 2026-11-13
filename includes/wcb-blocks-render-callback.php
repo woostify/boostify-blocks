@@ -17,7 +17,7 @@ add_filter('pre_render_block', function ($pre_render, $parsed_block) {
     $attrs        = is_array($parsed_block['attrs'] ?? null) ? $parsed_block['attrs'] : array();
     $titles       = is_array($attrs['titles'] ?? null) ? $attrs['titles'] : array();
     $titles_count = !empty($titles) ? count($titles) : 3;
-    $active_index = isset($attrs['activeTabIndex']) ? (int) $attrs['activeTabIndex'] : 0;
+    $active_index = 0;
 
     $init_open = $attrs['general_tabTitle']['initOpenTab'] ?? '';
     if (is_string($init_open) && preg_match('/^tab(\d+)$/', $init_open, $matches)) {
@@ -25,10 +25,6 @@ add_filter('pre_render_block', function ($pre_render, $parsed_block) {
         if ($parsed_tab >= 0 && $parsed_tab < $titles_count) {
             $active_index = $parsed_tab;
         }
-    }
-
-    if ($active_index < 0 || $active_index >= $titles_count) {
-        $active_index = 0;
     }
 
     $stack   = &boostify_blocks_tabs_render_stack();
