@@ -599,6 +599,9 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 			$t_c = $normalize_corners( $t_raw );
 			$m_c = $normalize_corners( $m_raw );
 
+			$t_is_custom_obj = is_array( $t_raw ) && ! empty( $t_raw );
+			$m_is_custom_obj = is_array( $m_raw ) && ! empty( $m_raw );
+
 			$corner_props = array(
 				'topLeft'     => 'border-top-left-radius',
 				'topRight'    => 'border-top-right-radius',
@@ -610,6 +613,15 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 				$d_v = $d_c[ $ckey ];
 				$t_v = $t_c[ $ckey ];
 				$m_v = $m_c[ $ckey ];
+
+				// If a device explicitly uses a custom corner object and cleared one corner
+				// (leaving '' instead of '0px'), normalize to '0' to match Editor mobile-first CSS.
+				if ( $t_is_custom_obj && '' === $t_v && '' !== $d_v && null !== $d_v ) {
+					$t_v = '0';
+				}
+				if ( $m_is_custom_obj && '' === $m_v && '' !== $t_v && null !== $t_v ) {
+					$m_v = '0';
+				}
 
 				if ( '' !== $d_v && null !== $d_v && ( ! $skip_zero || ( '0' !== (string) $d_v && 0 !== $d_v ) ) ) {
 					$css['desktop'][ $selector ][ $css_prop ] = self::get_css_value( $d_v );
