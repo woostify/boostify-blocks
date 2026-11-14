@@ -98,9 +98,12 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 				return (
 					<>
 						<WcbSlidersPanel_StyleContent
-							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleContent")}
-							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent"}
-							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleContent" || true}
+							onToggle={() => childPanelInfo.handleTogglePanel("General", "_StyleContent", true)}
+							initialOpen={
+								childPanelInfo.tabGeneralIsPanelOpen === "_StyleContent" ||
+								childPanelInfo.tabGeneralIsPanelOpen === "first"
+							}
+							opened={childPanelInfo.tabGeneralIsPanelOpen === "_StyleContent" || undefined}
 							setAttr__={(data) => {
 								setAttributes({ style_content: data });
 
@@ -113,9 +116,9 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 						/>
 
 						<WcbSliderButtonPanelPreset
-							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleButtonPreset")}
-							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleButtonPreset"}
-							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleButtonPreset" || undefined}
+							onToggle={() => childPanelInfo.handleTogglePanel("General", "_StyleButtonPreset")}
+							initialOpen={childPanelInfo.tabGeneralIsPanelOpen === "_StyleButtonPreset"}
+							opened={childPanelInfo.tabGeneralIsPanelOpen === "_StyleButtonPreset" || undefined}
 							setAttr__={(data) => {
 								// Update button preset
 								setAttributes({ style_buttonPreset: data });
@@ -152,9 +155,9 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 						/>
 
 						<WcbSliderLayoutPanelPreset
-							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleLayoutPreset")}
-							initialOpen={childPanelInfo.tabStylesIsPanelOpen === "_StyleLayoutPreset"}
-							opened={childPanelInfo.tabStylesIsPanelOpen === "_StyleLayoutPreset" || undefined}
+							onToggle={() => childPanelInfo.handleTogglePanel("General", "_StyleLayoutPreset")}
+							initialOpen={childPanelInfo.tabGeneralIsPanelOpen === "_StyleLayoutPreset"}
+							opened={childPanelInfo.tabGeneralIsPanelOpen === "_StyleLayoutPreset" || undefined}
 							setAttr__={(data) => {
 								switch (data.preset) {
 									case "wcb-layout-1":
@@ -229,7 +232,7 @@ const Edit: FC<EditProps<WcbAttrs> & { index?: number }> = memo((props) => {
 							panelData={style_backgroundAndBorder || WCB_SLIDER_PANEL_STYLE_BACKGROUND_BORDER_DEMO}
 						/>
 						<WcbSlidersPanel_StyleName
-							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleName", undefined)}
+							onToggle={() => childPanelInfo.handleTogglePanel("Styles", "_StyleName", true)}
 							initialOpen={
 								childPanelInfo.tabStylesIsPanelOpen === "_StyleName" ||
 								childPanelInfo.tabStylesIsPanelOpen === "first"

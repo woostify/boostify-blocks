@@ -427,12 +427,7 @@ const WcbSliderPanelCallToActionButton: FC<Props> = ({
 			title={__("Call To Action", "wcb")}
 		>
 			<div className={"space-y-5"}>
-				<PanelBody
-					initialOpen={initialOpen}
-					onToggle={onToggle}
-					opened={opened}
-					title={__("Text", "wcb")}
-				>
+				<PanelBody initialOpen={false} title={__("Text", "wcb")}>
 					<div className={"space-y-4"}>
 						<MyTypographyControl
 							typographyControl={typographyText}
@@ -463,12 +458,7 @@ const WcbSliderPanelCallToActionButton: FC<Props> = ({
 						</MyDisclosure>
 					</div>
 				</PanelBody>
-				<PanelBody
-						initialOpen={initialOpen}
-						onToggle={onToggle}
-						opened={opened}
-						title={__("Background", "wcb")}
-					>
+				<PanelBody initialOpen={false} title={__("Background", "wcb")}>
 					<TabPanel
 						className={`wcb-bodyControls__panel `}
 						activeClass="active-tab"
@@ -498,12 +488,7 @@ const WcbSliderPanelCallToActionButton: FC<Props> = ({
 						}}
 					</TabPanel>
 				</PanelBody>
-				<PanelBody
-					initialOpen={initialOpen}
-					onToggle={onToggle}
-					opened={opened}
-					title={__("Border", "wcb")}
-				>
+				<PanelBody initialOpen={false} title={__("Border", "wcb")}>
 					<MyBorderControl
 						borderControl={{
 							mainSettings: mainSettings,
@@ -520,12 +505,7 @@ const WcbSliderPanelCallToActionButton: FC<Props> = ({
 						}}
 					/>
 				</PanelBody>
-				<PanelBody
-					initialOpen={initialOpen}
-						onToggle={onToggle}
-						opened={opened}
-						title={__("Dimension", "wcb")}
-					>
+				<PanelBody initialOpen={false} title={__("Dimension", "wcb")}>
 						<div className="space-y-5">
 							<MyDimensionsNoGapControl
 								dimensionControl={panelData}

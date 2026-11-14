@@ -70,6 +70,10 @@
 		align-items: center;
 	}
 
+	.swiper-autoheight > .swiper-wrapper {
+		align-items: flex-start;
+	}
+
 	.wcb-slider__wrap-items {
 		position: relative;
 		width: 100%;
