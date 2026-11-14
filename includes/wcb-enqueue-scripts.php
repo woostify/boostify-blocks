@@ -30,7 +30,7 @@ function boostify_blocks_my_scripts_method()
     wp_localize_script(
         'jquery',
         'boostify_blocks_global_variables',
-        get_option('boostify_blocks_settings_options')
+        function_exists('boostify_blocks_get_public_settings_for_js') ? boostify_blocks_get_public_settings_for_js() : array()
     );
 
     // TODO: Consider conditionally enqueuing only when the testimonials block is used.
@@ -238,7 +238,7 @@ function boostify_blocks_my_enqueue_scripts_for_admin_editor($hook)
     wp_localize_script(
         'jquery',
         'boostify_blocks_global_variables',
-        get_option('boostify_blocks_settings_options')
+        function_exists('boostify_blocks_get_public_settings_for_js') ? boostify_blocks_get_public_settings_for_js() : array()
     );
     wp_localize_script(
         'jquery',
@@ -404,13 +404,34 @@ function boostify_blocks_enqueue_script_to_setting_page()
     if (
         !empty($currentScrren->id) && strpos($currentScrren->id, 'boostify-blocks-settings') !== false
     ) {
-        wp_register_style('boostify-blocks-settings-page', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/style-index.css');
-        wp_enqueue_style('boostify-blocks-settings-page');
-        //
-        wp_enqueue_style('boostify-blocks-dashboard-tailwind',plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/dashboard-tailwind.css', [], BOOSTIFY_BLOCKS_VERSION);
+        wp_enqueue_style('boostify-blocks-lineicons-3.0');
+        wp_enqueue_style(
+            'boostify-blocks-dashboard-tailwind',
+            plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'public/css/dashboard-tailwind.css',
+            [],
+            BOOSTIFY_BLOCKS_VERSION
+        );
         wp_add_inline_script('boostify-blocks-dashboard-app-tailwind', 'tailwind.config = { important: true }', 'after');
-        //
-        wp_enqueue_script('boostify-blocks-dashboard-app', plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js', ['wp-blocks', 'wp-element', 'jquery'], BOOSTIFY_BLOCKS_VERSION, true);
+
+        $dashboard_css_path = BOOSTIFY_BLOCKS_PATH . 'build/____dashboard/style-index.css';
+        $dashboard_css_ver  = file_exists( $dashboard_css_path ) ? filemtime( $dashboard_css_path ) : BOOSTIFY_BLOCKS_VERSION;
+        wp_register_style(
+            'boostify-blocks-settings-page',
+            plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/style-index.css',
+            ['boostify-blocks-dashboard-tailwind'],
+            $dashboard_css_ver
+        );
+        wp_enqueue_style('boostify-blocks-settings-page');
+
+        $dashboard_js_path = BOOSTIFY_BLOCKS_PATH . 'build/____dashboard/index.js';
+        $dashboard_js_ver  = file_exists( $dashboard_js_path ) ? filemtime( $dashboard_js_path ) : BOOSTIFY_BLOCKS_VERSION;
+        wp_enqueue_script(
+            'boostify-blocks-dashboard-app',
+            plugin_dir_url(BOOSTIFY_BLOCKS_FILE) . 'build/____dashboard/index.js',
+            ['wp-blocks', 'wp-element', 'jquery'],
+            $dashboard_js_ver,
+            true
+        );
 
         wp_localize_script(
             'boostify-blocks-dashboard-app',
@@ -418,11 +439,14 @@ function boostify_blocks_enqueue_script_to_setting_page()
             boostify_blocks_get_layout_global_settings()
         );
         // 1 - JS Global -> Follow by typeof window.boostify_blocks_global_variables
-        $settings_options = get_option('boostify_blocks_settings_options');
-        if ( is_array( $settings_options ) && ! empty( $settings_options['site_visibility_page'] ) ) {
-            $v_page_id = absint( $settings_options['site_visibility_page'] );
-            $v_page_title = get_the_title( $v_page_id );
-            $settings_options['site_visibility_page_title'] = $v_page_title ? $v_page_title : sprintf( esc_html__( '#%d (Untitled)', 'boostify-blocks' ), $v_page_id );
+        if ( current_user_can( 'manage_options' ) ) {
+            $settings_options = function_exists( 'boostify_blocks_get_admin_settings_for_js' )
+                ? boostify_blocks_get_admin_settings_for_js()
+                : array();
+        } else {
+            $settings_options = function_exists( 'boostify_blocks_get_public_settings_for_js' )
+                ? boostify_blocks_get_public_settings_for_js()
+                : array();
         }
         wp_localize_script(
             'boostify-blocks-dashboard-app',

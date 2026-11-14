@@ -3,22 +3,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-
+require_once __DIR__ . '/dashboard/wcb-dashboard-ajax-helpers.php';
+require_once __DIR__ . '/dashboard/wcb-remote-demos-service.php';
+require_once __DIR__ . '/dashboard/wcb-demo-preview-renderer.php';
 
 add_action('wp_ajax_boostify_blocks_dashboard_blocks_disable_enable', 'boostify_blocks_ajax_dashboard_blocks_disable_enable');
 function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 {
-    // Verify nonce for security
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'boostifyblocks_dashboard_settings_nonce')) {
-        wp_send_json_error(array('message' => 'Invalid nonce'), 403);
-        wp_die();
-    }
-
-    // Check user capability
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => 'Permission denied'), 403);
-        wp_die();
-    }
+    boostify_blocks_verify_dashboard_ajax_request();
 
     // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized below with boostify_blocks_sanitize_array
     $blocksStatus = isset($_POST['blocksStatus']) ? boostify_blocks_sanitize_array(wp_unslash($_POST['blocksStatus'])) : array();
@@ -28,7 +20,17 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
         $boostify_block_status_init = boostify_blocks_get_block_name_enable_init();
     }
 
-    $newBlocksStatus = array_merge($boostify_block_status_init, $blocksStatus);
+    $sanitized_status = array();
+    if ( is_array( $blocksStatus ) ) {
+        foreach ( $blocksStatus as $block_name => $status ) {
+            if ( ! empty( $boostify_block_status_init ) && ! array_key_exists( $block_name, $boostify_block_status_init ) ) {
+                continue;
+            }
+            $sanitized_status[ sanitize_text_field( (string) $block_name ) ] = ( 'disabled' === $status ) ? 'disabled' : 'enabled';
+        }
+    }
+
+    $newBlocksStatus = array_merge($boostify_block_status_init, $sanitized_status);
 
     update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
 
@@ -40,10 +42,10 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
     }
 
     $array_result = array(
-        'data' => $newBlocksStatus,
-        'message' => 'your message'
+        'success' => true,
+        'data'    => $newBlocksStatus,
+        'message' => esc_html__( 'Blocks settings saved successfully.', 'boostify-blocks' ),
     );
-    //
     wp_send_json($array_result);
     wp_die();
 }
@@ -52,41 +54,104 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
 add_action('wp_ajax_boostify_blocks_dashboard_update_settings', 'boostify_blocks_ajax_dashboard_update_settings');
 function boostify_blocks_ajax_dashboard_update_settings()
 {
-    // Verify nonce for security
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'boostifyblocks_dashboard_settings_nonce')) {
-        wp_send_json_error(array('message' => 'Invalid nonce'), 403);
-        wp_die();
-    }
-
-    // Check user capability
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => 'Permission denied'), 403);
-        wp_die();
-    }
+    boostify_blocks_verify_dashboard_ajax_request();
 
     // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized below with boostify_blocks_sanitize_array
     $postedSettings = isset($_POST['settings']) ? boostify_blocks_sanitize_array(wp_unslash($_POST['settings'])) : array();
-    
+
     $defaultSettings = array();
     if (function_exists('boostify_blocks_get_default_blocks_settings')) {
         $defaultSettings = boostify_blocks_get_default_blocks_settings();
     }
 
-    // VALIDATE: Only allow keys that exist in default settings
+    $boolean_keys = array(
+        'enableTemplatesButton',
+        'enableCopyPasteStyles',
+        'enableCustomCss',
+        'enableFileGeneration',
+        'loadGoogleFontsLocally',
+        'preloadLocalFonts',
+        'allowOnlySelectedFonts',
+        'buttonInheritFromTheme',
+        'enableDisplayConditions',
+    );
+    $dimension_keys = array(
+        'defaultContentWidth',
+        'containerPadding',
+        'containerElementsGap',
+        'blocksEditorSpacing',
+        'media_tablet',
+        'media_desktop',
+    );
+
+    // VALIDATE: Only allow keys that exist in default settings and normalize types safely.
     $validSettings = array();
-    foreach ($postedSettings as $key => $value) {
-        if (array_key_exists($key, $defaultSettings)) {
-            $validSettings[$key] = $value;
+    if ( is_array( $postedSettings ) ) {
+        foreach ( $postedSettings as $key => $value ) {
+            if ( ! array_key_exists( $key, $defaultSettings ) ) {
+                continue;
+            }
+            if ( in_array( $key, $boolean_keys, true ) ) {
+                $is_truthy = ( true === $value || 'true' === $value || '1' === (string) $value );
+                $validSettings[ $key ] = $is_truthy ? 'true' : 'false';
+                continue;
+            }
+            if ( in_array( $key, $dimension_keys, true ) ) {
+                $raw_dim = trim( (string) $value );
+                if ( '' === $raw_dim ) {
+                    $validSettings[ $key ] = ( 'defaultContentWidth' === $key ) ? '' : ( $defaultSettings[ $key ] ?? '0px' );
+                } elseif ( preg_match( '/^\d+(?:\.\d+)?$/', $raw_dim ) ) {
+                    $validSettings[ $key ] = $raw_dim . 'px';
+                } elseif ( preg_match( '/^\d+(?:\.\d+)?(?:px|rem|em|vw|vh|%)$/i', $raw_dim ) ) {
+                    $validSettings[ $key ] = strtolower( $raw_dim );
+                } else {
+                    $validSettings[ $key ] = $defaultSettings[ $key ] ?? '0px';
+                }
+                continue;
+            }
+            $validSettings[ $key ] = $value;
         }
     }
 
     $old_settings = get_option( 'boostify_blocks_settings_options', [] );
-    $settings = array_merge($defaultSettings, $validSettings);
+    if ( ! is_array( $old_settings ) ) {
+        $old_settings = [];
+    }
+    $settings = array_merge( $defaultSettings, $old_settings, $validSettings );
 
-    if ( ! empty( $settings['site_visibility_page'] ) ) {
-        $v_page_id = absint( $settings['site_visibility_page'] );
-        $v_page_title = get_the_title( $v_page_id );
-        $settings['site_visibility_page_title'] = $v_page_title ? $v_page_title : sprintf( esc_html__( '#%d (Untitled)', 'boostify-blocks' ), $v_page_id );
+    // Normalize dependent font settings.
+    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+        $settings['preloadLocalFonts'] = 'false';
+    }
+    if ( is_array( $settings['selectedFonts'] ?? '' ) ) {
+        $fonts_arr = $settings['selectedFonts'];
+    } else {
+        $fonts_arr = explode( ',', (string) ( $settings['selectedFonts'] ?? '' ) );
+    }
+    $clean_fonts = array_values( array_unique( array_filter( array_map( function ( $font_name ) {
+        return sanitize_text_field( trim( (string) $font_name ) );
+    }, $fonts_arr ), 'strlen' ) ) );
+    $settings['selectedFonts'] = implode( ',', $clean_fonts );
+
+    // Validate Site Visibility settings and avoid stale page titles.
+    $allowed_visibility_modes = array( 'disabled', 'comingsoon', 'maintenance' );
+    $visibility_mode = isset( $settings['site_visibility_mode'] ) ? sanitize_text_field( (string) $settings['site_visibility_mode'] ) : 'disabled';
+    $settings['site_visibility_mode'] = in_array( $visibility_mode, $allowed_visibility_modes, true ) ? $visibility_mode : 'disabled';
+
+    $v_page_id = ! empty( $settings['site_visibility_page'] ) ? absint( $settings['site_visibility_page'] ) : 0;
+    if ( $v_page_id > 0 ) {
+        $v_post = get_post( $v_page_id );
+        if ( $v_post instanceof WP_Post && 'page' === $v_post->post_type && 'trash' !== $v_post->post_status ) {
+            $v_page_title = get_the_title( $v_page_id );
+            $settings['site_visibility_page']       = (string) $v_page_id;
+            $settings['site_visibility_page_title'] = $v_page_title ? $v_page_title : sprintf( esc_html__( '#%d (Untitled)', 'boostify-blocks' ), $v_page_id );
+        } else {
+            $settings['site_visibility_page']       = '';
+            $settings['site_visibility_page_title'] = '';
+        }
+    } else {
+        $settings['site_visibility_page']       = '';
+        $settings['site_visibility_page_title'] = '';
     }
 
     update_option('boostify_blocks_settings_options', $settings);
@@ -104,10 +169,10 @@ function boostify_blocks_ajax_dashboard_update_settings()
     }
 
     $array_result = array(
-        'data' => $settings,
-        'message' => 'your message'
+        'success' => true,
+        'data'    => $settings,
+        'message' => esc_html__( 'Settings saved successfully.', 'boostify-blocks' ),
     );
-    //
     wp_send_json($array_result);
     wp_die();
 }
@@ -118,15 +183,7 @@ function boostify_blocks_ajax_dashboard_update_settings()
 add_action('wp_ajax_boostify_blocks_search_pages', 'boostify_blocks_ajax_search_pages');
 function boostify_blocks_ajax_search_pages()
 {
-    // Verify nonce for security
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'boostifyblocks_dashboard_settings_nonce')) {
-        wp_send_json_error(array('message' => esc_html__('Invalid nonce', 'boostify-blocks')), 403);
-    }
-
-    // Check user capability
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => esc_html__('Permission denied', 'boostify-blocks')), 403);
-    }
+    boostify_blocks_verify_dashboard_ajax_request();
 
     $keyword = isset($_POST['keyword']) ? sanitize_text_field(wp_unslash($_POST['keyword'])) : '';
 
@@ -182,4 +239,69 @@ function boostify_blocks_ajax_search_pages()
     }
 
     wp_send_json_success($results);
+}
+
+/**
+ * AJAX handler for subscribing to Boostify Pro waitlist.
+ */
+add_action('wp_ajax_boostify_blocks_waitlist_subscribe', 'boostify_blocks_ajax_waitlist_subscribe');
+function boostify_blocks_ajax_waitlist_subscribe()
+{
+    boostify_blocks_verify_dashboard_ajax_request();
+
+    // Honeypot check
+    if (!empty($_POST['website'])) {
+        wp_send_json_success(array('message' => esc_html__('Subscription received.', 'boostify-blocks')));
+    }
+
+    $email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+    if (empty($email) || !is_email($email)) {
+        wp_send_json_error(array('message' => esc_html__('Please enter a valid email address.', 'boostify-blocks')), 400);
+    }
+
+    $block_context = isset($_POST['block']) ? sanitize_text_field(wp_unslash($_POST['block'])) : '';
+
+    $user_id = get_current_user_id();
+    $rate_key = 'boostify_blocks_waitlist_limit_' . $user_id;
+    if (get_transient($rate_key)) {
+        wp_send_json_error(array('message' => esc_html__('Too many requests. Please wait a minute before trying again.', 'boostify-blocks')), 429);
+    }
+
+    $webhook_url = defined('BOOSTIFY_BLOCKS_WAITLIST_WEBHOOK')
+        ? BOOSTIFY_BLOCKS_WAITLIST_WEBHOOK
+        : 'https://woostify.com/?fluentcrm=1&route=contact&hash=dbdb3c05-0599-4095-8980-e1e830f4b169';
+    $webhook_url = apply_filters('boostify_blocks_waitlist_webhook_url', $webhook_url);
+
+    $source = !empty($block_context)
+        ? 'boostify-blocks-pro-waitlist:' . sanitize_key($block_context)
+        : 'boostify-blocks-pro-waitlist';
+
+    $response = wp_remote_post(
+        $webhook_url,
+        array(
+            'timeout' => 15,
+            'body'    => array(
+                'email'  => $email,
+                'source' => $source,
+            ),
+        )
+    );
+
+    if (is_wp_error($response)) {
+        wp_send_json_error(array('message' => esc_html__('Unable to connect to the waitlist service. Please try again later.', 'boostify-blocks')), 500);
+    }
+
+    $code = wp_remote_retrieve_response_code($response);
+    if ($code < 200 || $code >= 300) {
+        wp_send_json_error(array('message' => esc_html__('Failed to subscribe. Please try again later.', 'boostify-blocks')), 502);
+    }
+
+    // Set rate limit transient and mark user as subscribed after successful submission
+    set_transient($rate_key, 1, MINUTE_IN_SECONDS);
+    update_user_meta($user_id, 'boostify_blocks_waitlist_subscribed', 1);
+    update_user_meta($user_id, 'boostify_blocks_waitlist_email', $email);
+
+    wp_send_json_success(array(
+        'message' => esc_html__('Thank you! You have been added to the waitlist.', 'boostify-blocks'),
+    ));
 }
