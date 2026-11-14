@@ -20,6 +20,7 @@ export function useRemoteDemos() {
 			const res = await postAjax<{
 				demos?: RemoteDemosMap;
 				partial?: boolean;
+				stale?: boolean;
 				remoteError?: boolean;
 			}>({
 				action: "boostify_blocks_get_block_demos",
@@ -43,10 +44,15 @@ export function useRemoteDemos() {
 			if (res?.data?.remoteError) {
 				if (forceRefresh) {
 					toast.error(
-						__(
-							"Could not reach the demo library. Keeping available previews.",
-							"boostify-blocks"
-						)
+						res?.data?.stale
+							? __(
+									"Could not refresh from demo site. Showing cached previews.",
+									"boostify-blocks"
+							  )
+							: __(
+									"Could not reach the demo library. Keeping available previews.",
+									"boostify-blocks"
+							  )
 					);
 				}
 			} else if (forceRefresh) {

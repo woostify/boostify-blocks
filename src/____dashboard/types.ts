@@ -3,7 +3,6 @@ import "jquery";
 import { Wcb_theme_layout_global_settings } from "../types";
 
 declare global {
-	var ajaxurl: string;
 	interface Window {
 		boostify_blocks_frontend_ajax_object?: {
 			ajaxurl: string;

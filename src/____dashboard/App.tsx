@@ -251,6 +251,7 @@ const App: FC<DashboardProps> = ({
 			{currentPath === "settings" && (
 				<SettingsPage
 					settings={settingsManager.settings}
+					dirtyKeys={settingsManager.dirtyKeys}
 					onUpdateSetting={settingsManager.updateSetting}
 					themeLayoutGlobal={boostify_blocks_layout_global_settings}
 					showSample={boostify_blocks_meta?.showSample ?? true}

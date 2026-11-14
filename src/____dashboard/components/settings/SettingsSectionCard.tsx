@@ -21,6 +21,7 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 	settings,
 	onUpdateSetting,
 	themeLayoutGlobal,
+	zIndex,
 }) => {
 	const [visibleSecrets, setVisibleSecrets] = useState<Record<string, boolean>>({});
 
@@ -43,12 +44,7 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 						key={field.key}
 						className="bb-settings-row"
 					>
-						<AssetGenerationControl
-							enableFileGeneration={settings.enableFileGeneration === "true"}
-							onToggleFileGeneration={(enabled) =>
-								onUpdateSetting("enableFileGeneration", enabled ? "true" : "false")
-							}
-						/>
+						<AssetGenerationControl />
 					</div>
 				);
 			}
@@ -79,11 +75,19 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 				);
 			}
 
-			if (field.customComponent === "SiteVisibilityControl") {
+			if (
+				field.customComponent === "SiteVisibilityControl" ||
+				field.customComponent === "SiteVisibilityComingSoon" ||
+				field.customComponent === "SiteVisibilityMaintenance"
+			) {
+				const showComingSoon = field.customComponent !== "SiteVisibilityMaintenance";
+				const showMaintenance = field.customComponent !== "SiteVisibilityComingSoon";
 				return (
 					<SettingsPageSiteVisibility
 						key={field.key}
 						allSettings={settings as any}
+						showComingSoon={showComingSoon}
+						showMaintenance={showMaintenance}
 						onChange={(newSettings) => {
 							Object.entries(newSettings).forEach(([k, v]) => {
 								if (settings[k] !== v) {
@@ -120,11 +124,17 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 								{field.desc}
 							</div>
 						)}
+						{!isDepSatisfied && field.disabledHint && (
+							<div className="bb-settings-hint">
+								{field.disabledHint}
+							</div>
+						)}
 					</div>
 
 					<button
 						type="button"
 						role="switch"
+						aria-label={field.label}
 						aria-checked={isChecked}
 						disabled={!isDepSatisfied}
 						onClick={() => {
@@ -176,9 +186,10 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 						)}
 					</div>
 
-					<div className="bb-number-input-wrap">
+					<label className="bb-number-input-wrap">
 						<input
 							type="number"
+							min={0}
 							value={numValue}
 							placeholder={fallbackPlaceholder}
 							onChange={(e) => {
@@ -190,12 +201,15 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 								const parsed = parseInt(raw, 10);
 								if (isNaN(parsed)) {
 									onUpdateSetting(field.key, "");
-								} else if (field.unit) {
-									onUpdateSetting(field.key, `${parsed}${field.unit}`);
+									return;
+								}
+								const safeVal = Math.max(0, parsed);
+								if (field.unit) {
+									onUpdateSetting(field.key, `${safeVal}${field.unit}`);
 								} else if (typeof rawValue === "string" && rawValue.endsWith("px")) {
-									onUpdateSetting(field.key, `${parsed}px`);
+									onUpdateSetting(field.key, `${safeVal}px`);
 								} else {
-									onUpdateSetting(field.key, parsed);
+									onUpdateSetting(field.key, safeVal);
 								}
 							}}
 							onBlur={() => {
@@ -218,7 +232,7 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 								{field.unit}
 							</span>
 						)}
-					</div>
+					</label>
 				</div>
 			);
 		}
@@ -248,6 +262,8 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 							type={isSecret && !isVisible ? "password" : "text"}
 							value={rawValue}
 							placeholder={field.placeholder || ""}
+							autoComplete="off"
+							spellCheck={false}
 							onChange={(e) => onUpdateSetting(field.key, e.target.value)}
 							className={`bb-text-input ${isSecret ? "is-secret" : ""}`}
 						/>
@@ -255,9 +271,19 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 							<button
 								type="button"
 								onClick={() => toggleSecretVisibility(field.key)}
+								aria-label={
+									isVisible
+										? __( "Hide key", "boostify-blocks" )
+										: __( "Show key", "boostify-blocks" )
+								}
+								title={
+									isVisible
+										? __( "Hide key", "boostify-blocks" )
+										: __( "Show key", "boostify-blocks" )
+								}
 								className="bb-secret-toggle"
 							>
-								<DynamicIcon name="visibility" size={16} />
+								<DynamicIcon name={isVisible ? "visibility_off" : "visibility"} size={17} />
 							</button>
 						)}
 					</div>
@@ -268,18 +294,61 @@ const SettingsSectionCard: FC<SettingsSectionCardProps> = ({
 		return null;
 	};
 
+	const renderFields = () => {
+		const hasComingSoon = section.fields.some(
+			(f) => f.customComponent === "SiteVisibilityComingSoon"
+		);
+		const hasMaintenance = section.fields.some(
+			(f) => f.customComponent === "SiteVisibilityMaintenance"
+		);
+		let visibilityRendered = false;
+
+		return section.fields.map((field, idx) => {
+			if (
+				field.customComponent === "SiteVisibilityComingSoon" ||
+				field.customComponent === "SiteVisibilityMaintenance"
+			) {
+				if (visibilityRendered) {
+					return null;
+				}
+				visibilityRendered = true;
+				return (
+					<SettingsPageSiteVisibility
+						key="site-visibility-group"
+						allSettings={settings as any}
+						showComingSoon={hasComingSoon}
+						showMaintenance={hasMaintenance}
+						onChange={(newSettings) => {
+							Object.entries(newSettings).forEach(([k, v]) => {
+								if (settings[k] !== v) {
+									onUpdateSetting(k, v);
+								}
+							});
+						}}
+					/>
+				);
+			}
+			return renderField(field, idx === 0);
+		});
+	};
+
 	return (
-		<section className="bb-settings-section">
+		<section
+			className="bb-settings-section"
+			style={zIndex !== undefined ? { zIndex } : undefined}
+		>
 			{/* Section Header */}
-			<div className="bb-section-header">
-				<h2 className="bb-section-title">
-					{section.title}
-				</h2>
-			</div>
+			{section.title && (
+				<div className="bb-section-header">
+					<h3 className="bb-section-title">
+						{section.title}
+					</h3>
+				</div>
+			)}
 
 			{/* Section Card */}
 			<div className="bb-settings-card">
-				{section.fields.map((field, idx) => renderField(field, idx === 0))}
+				{renderFields()}
 			</div>
 		</section>
 	);

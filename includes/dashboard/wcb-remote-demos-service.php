@@ -351,6 +351,16 @@ function boostify_blocks_fetch_remote_block_demos()
             ),
         );
 
+        $encoded_payload = wp_json_encode( $payload );
+        if ( false === $encoded_payload ) {
+            return array(
+                'ok'           => false,
+                'demos'        => array(),
+                'partial'      => false,
+                'totalFetched' => 0,
+            );
+        }
+
         $response = wp_remote_post(
             $graphql_url,
             array(
@@ -359,7 +369,7 @@ function boostify_blocks_fetch_remote_block_demos()
                     'Content-Type' => 'application/json',
                     'Accept'       => 'application/json',
                 ),
-                'body'    => wp_json_encode( $payload ),
+                'body'    => $encoded_payload,
             )
         );
 
@@ -376,7 +386,13 @@ function boostify_blocks_fetch_remote_block_demos()
         $decoded = $page_failed ? null : json_decode( wp_remote_retrieve_body( $response ), true );
         unset( $response );
 
-        if ( $page_failed || ! is_array( $decoded ) || ! isset( $decoded['data']['wcbBlocks']['edges'] ) || ! is_array( $decoded['data']['wcbBlocks']['edges'] ) ) {
+        $has_valid_edges = ! $page_failed
+            && JSON_ERROR_NONE === json_last_error()
+            && is_array( $decoded )
+            && isset( $decoded['data']['wcbBlocks']['edges'] )
+            && is_array( $decoded['data']['wcbBlocks']['edges'] );
+
+        if ( ! $has_valid_edges ) {
             if ( $pages_loaded > 0 ) {
                 // Keep partial pages already loaded instead of discarding everything.
                 $partial = true;
@@ -432,11 +448,12 @@ function boostify_blocks_fetch_remote_block_demos()
  * Shared cache/backoff resolver for remote block demo patterns.
  *
  * @param bool $force_refresh Skip transient & backoff caches when true.
- * @return array{demos:array,cached:bool,partial:bool,remoteError:bool,backoff:bool,totalFetched:int}
+ * @return array{demos:array,cached:bool,stale:bool,partial:bool,remoteError:bool,backoff:bool,totalFetched:int}
  */
 function boostify_blocks_resolve_remote_demos_cache( $force_refresh = false )
 {
     $transient_key = 'boostify_blocks_remote_demos_v2';
+    $backup_key    = 'boostify_blocks_remote_demos_backup_v2';
     $backoff_key   = 'boostify_blocks_remote_demos_backoff_v2';
 
     if ( ! $force_refresh ) {
@@ -445,6 +462,7 @@ function boostify_blocks_resolve_remote_demos_cache( $force_refresh = false )
             return array(
                 'demos'        => $cached,
                 'cached'       => true,
+                'stale'        => false,
                 'partial'      => false,
                 'remoteError'  => false,
                 'backoff'      => false,
@@ -453,9 +471,12 @@ function boostify_blocks_resolve_remote_demos_cache( $force_refresh = false )
         }
 
         if ( get_transient( $backoff_key ) ) {
+            $backup = get_transient( $backup_key );
+            $has_backup = is_array( $backup ) && ! empty( $backup );
             return array(
-                'demos'        => array(),
-                'cached'       => false,
+                'demos'        => $has_backup ? $backup : array(),
+                'cached'       => $has_backup,
+                'stale'        => $has_backup,
                 'partial'      => false,
                 'remoteError'  => true,
                 'backoff'      => true,
@@ -470,10 +491,14 @@ function boostify_blocks_resolve_remote_demos_cache( $force_refresh = false )
         $is_partial = ! empty( $result['partial'] );
         $ttl        = $is_partial ? 30 * MINUTE_IN_SECONDS : 12 * HOUR_IN_SECONDS;
         set_transient( $transient_key, $result['demos'], $ttl );
+        if ( ! $is_partial && ! empty( $result['demos'] ) ) {
+            set_transient( $backup_key, $result['demos'], 30 * DAY_IN_SECONDS );
+        }
 
         return array(
             'demos'        => $result['demos'],
             'cached'       => false,
+            'stale'        => false,
             'partial'      => $is_partial,
             'remoteError'  => false,
             'backoff'      => false,
@@ -484,10 +509,15 @@ function boostify_blocks_resolve_remote_demos_cache( $force_refresh = false )
     // Short negative backoff prevents repeated hangs when remote host is down.
     set_transient( $backoff_key, 1, 2 * MINUTE_IN_SECONDS );
     $stale_cached = get_transient( $transient_key );
+    if ( ! is_array( $stale_cached ) || empty( $stale_cached ) ) {
+        $stale_cached = get_transient( $backup_key );
+    }
+    $has_stale = is_array( $stale_cached ) && ! empty( $stale_cached );
 
     return array(
-        'demos'        => is_array( $stale_cached ) ? $stale_cached : array(),
-        'cached'       => false,
+        'demos'        => $has_stale ? $stale_cached : array(),
+        'cached'       => $has_stale,
+        'stale'        => $has_stale,
         'partial'      => false,
         'remoteError'  => true,
         'backoff'      => false,
@@ -514,6 +544,9 @@ function boostify_blocks_ajax_get_block_demos()
 
     if ( ! empty( $resolved['remoteError'] ) ) {
         $payload['remoteError'] = true;
+        if ( ! empty( $resolved['stale'] ) ) {
+            $payload['stale'] = true;
+        }
         if ( ! empty( $resolved['backoff'] ) ) {
             $payload['backoff'] = true;
         }

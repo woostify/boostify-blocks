@@ -20,7 +20,17 @@ function boostify_blocks_ajax_dashboard_blocks_disable_enable()
         $boostify_block_status_init = boostify_blocks_get_block_name_enable_init();
     }
 
-    $newBlocksStatus = array_merge($boostify_block_status_init, $blocksStatus);
+    $sanitized_status = array();
+    if ( is_array( $blocksStatus ) ) {
+        foreach ( $blocksStatus as $block_name => $status ) {
+            if ( ! empty( $boostify_block_status_init ) && ! array_key_exists( $block_name, $boostify_block_status_init ) ) {
+                continue;
+            }
+            $sanitized_status[ sanitize_text_field( (string) $block_name ) ] = ( 'disabled' === $status ) ? 'disabled' : 'enabled';
+        }
+    }
+
+    $newBlocksStatus = array_merge($boostify_block_status_init, $sanitized_status);
 
     update_option('boostify_blocks_enable_disable_options', $newBlocksStatus);
 
@@ -54,11 +64,52 @@ function boostify_blocks_ajax_dashboard_update_settings()
         $defaultSettings = boostify_blocks_get_default_blocks_settings();
     }
 
-    // VALIDATE: Only allow keys that exist in default settings
+    $boolean_keys = array(
+        'enableTemplatesButton',
+        'enableCopyPasteStyles',
+        'enableCustomCss',
+        'enableFileGeneration',
+        'loadGoogleFontsLocally',
+        'preloadLocalFonts',
+        'allowOnlySelectedFonts',
+        'buttonInheritFromTheme',
+        'enableDisplayConditions',
+    );
+    $dimension_keys = array(
+        'defaultContentWidth',
+        'containerPadding',
+        'containerElementsGap',
+        'blocksEditorSpacing',
+        'media_tablet',
+        'media_desktop',
+    );
+
+    // VALIDATE: Only allow keys that exist in default settings and normalize types safely.
     $validSettings = array();
-    foreach ($postedSettings as $key => $value) {
-        if (array_key_exists($key, $defaultSettings)) {
-            $validSettings[$key] = $value;
+    if ( is_array( $postedSettings ) ) {
+        foreach ( $postedSettings as $key => $value ) {
+            if ( ! array_key_exists( $key, $defaultSettings ) ) {
+                continue;
+            }
+            if ( in_array( $key, $boolean_keys, true ) ) {
+                $is_truthy = ( true === $value || 'true' === $value || '1' === (string) $value );
+                $validSettings[ $key ] = $is_truthy ? 'true' : 'false';
+                continue;
+            }
+            if ( in_array( $key, $dimension_keys, true ) ) {
+                $raw_dim = trim( (string) $value );
+                if ( '' === $raw_dim ) {
+                    $validSettings[ $key ] = ( 'defaultContentWidth' === $key ) ? '' : ( $defaultSettings[ $key ] ?? '0px' );
+                } elseif ( preg_match( '/^\d+(?:\.\d+)?$/', $raw_dim ) ) {
+                    $validSettings[ $key ] = $raw_dim . 'px';
+                } elseif ( preg_match( '/^\d+(?:\.\d+)?(?:px|rem|em|vw|vh|%)$/i', $raw_dim ) ) {
+                    $validSettings[ $key ] = strtolower( $raw_dim );
+                } else {
+                    $validSettings[ $key ] = $defaultSettings[ $key ] ?? '0px';
+                }
+                continue;
+            }
+            $validSettings[ $key ] = $value;
         }
     }
 
@@ -68,10 +119,39 @@ function boostify_blocks_ajax_dashboard_update_settings()
     }
     $settings = array_merge( $defaultSettings, $old_settings, $validSettings );
 
-    if ( ! empty( $settings['site_visibility_page'] ) ) {
-        $v_page_id = absint( $settings['site_visibility_page'] );
-        $v_page_title = get_the_title( $v_page_id );
-        $settings['site_visibility_page_title'] = $v_page_title ? $v_page_title : sprintf( esc_html__( '#%d (Untitled)', 'boostify-blocks' ), $v_page_id );
+    // Normalize dependent font settings.
+    if ( ( $settings['loadGoogleFontsLocally'] ?? 'false' ) !== 'true' ) {
+        $settings['preloadLocalFonts'] = 'false';
+    }
+    if ( is_array( $settings['selectedFonts'] ?? '' ) ) {
+        $fonts_arr = $settings['selectedFonts'];
+    } else {
+        $fonts_arr = explode( ',', (string) ( $settings['selectedFonts'] ?? '' ) );
+    }
+    $clean_fonts = array_values( array_unique( array_filter( array_map( function ( $font_name ) {
+        return sanitize_text_field( trim( (string) $font_name ) );
+    }, $fonts_arr ), 'strlen' ) ) );
+    $settings['selectedFonts'] = implode( ',', $clean_fonts );
+
+    // Validate Site Visibility settings and avoid stale page titles.
+    $allowed_visibility_modes = array( 'disabled', 'comingsoon', 'maintenance' );
+    $visibility_mode = isset( $settings['site_visibility_mode'] ) ? sanitize_text_field( (string) $settings['site_visibility_mode'] ) : 'disabled';
+    $settings['site_visibility_mode'] = in_array( $visibility_mode, $allowed_visibility_modes, true ) ? $visibility_mode : 'disabled';
+
+    $v_page_id = ! empty( $settings['site_visibility_page'] ) ? absint( $settings['site_visibility_page'] ) : 0;
+    if ( $v_page_id > 0 ) {
+        $v_post = get_post( $v_page_id );
+        if ( $v_post instanceof WP_Post && 'page' === $v_post->post_type && 'trash' !== $v_post->post_status ) {
+            $v_page_title = get_the_title( $v_page_id );
+            $settings['site_visibility_page']       = (string) $v_page_id;
+            $settings['site_visibility_page_title'] = $v_page_title ? $v_page_title : sprintf( esc_html__( '#%d (Untitled)', 'boostify-blocks' ), $v_page_id );
+        } else {
+            $settings['site_visibility_page']       = '';
+            $settings['site_visibility_page_title'] = '';
+        }
+    } else {
+        $settings['site_visibility_page']       = '';
+        $settings['site_visibility_page_title'] = '';
     }
 
     update_option('boostify_blocks_settings_options', $settings);

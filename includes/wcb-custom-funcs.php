@@ -242,3 +242,58 @@ function boostify_blocks_get_changelog( $limit = 0 ) {
     return $limit ? array_slice( $cached, 0, $limit ) : $cached;
 }
 
+/**
+ * Return plugin settings safe to expose to frontend scripts, block editors, and preview iframes.
+ * Strips admin-only secrets and site visibility configuration keys.
+ *
+ * @return array
+ */
+function boostify_blocks_get_public_settings_for_js()
+{
+    $defaults = function_exists( 'boostify_blocks_get_default_blocks_settings' )
+        ? boostify_blocks_get_default_blocks_settings()
+        : array();
+    $saved = get_option( 'boostify_blocks_settings_options', array() );
+    $settings = is_array( $saved ) ? array_merge( $defaults, $saved ) : $defaults;
+
+    $sensitive_keys = array(
+        'reCAPTCHA_v3_secret_key',
+        'reCAPTCHA_v2_secret_key',
+        'site_visibility_mode',
+        'site_visibility_page',
+        'site_visibility_page_title',
+        'site_visibility_template',
+    );
+
+    foreach ( $sensitive_keys as $key ) {
+        unset( $settings[ $key ] );
+    }
+
+    return $settings;
+}
+
+/**
+ * Return full merged plugin settings for admin dashboard views, including resolved
+ * site visibility page title.
+ *
+ * @return array
+ */
+function boostify_blocks_get_admin_settings_for_js()
+{
+    $defaults = function_exists( 'boostify_blocks_get_default_blocks_settings' )
+        ? boostify_blocks_get_default_blocks_settings()
+        : array();
+    $saved    = get_option( 'boostify_blocks_settings_options', array() );
+    $settings = is_array( $saved ) ? array_merge( $defaults, $saved ) : $defaults;
+
+    if ( ! empty( $settings['site_visibility_page'] ) ) {
+        $v_page_id    = absint( $settings['site_visibility_page'] );
+        $v_page_title = get_the_title( $v_page_id );
+        $settings['site_visibility_page_title'] = $v_page_title
+            ? $v_page_title
+            : sprintf( __( '#%d (Untitled)', 'boostify-blocks' ), $v_page_id );
+    }
+
+    return $settings;
+}
+

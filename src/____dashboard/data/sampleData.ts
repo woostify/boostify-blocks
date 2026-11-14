@@ -4,20 +4,6 @@
 
 import { UnifiedBlockItem } from "../types";
 
-export interface SampleSettingItem {
-	id: string;
-	key: string;
-	label: string;
-	desc: string;
-	section: "editor" | "performance" | "integrations";
-	type: "toggle" | "text";
-	defaultValue: any;
-	placeholder?: string;
-	disabled: boolean;
-	badge: string;
-	source: "sample";
-}
-
 export const SAMPLE_PRO_BLOCKS: UnifiedBlockItem[] = [
 	{
 		id: "sample-popup",
@@ -66,45 +52,5 @@ export const SAMPLE_PRO_BLOCKS: UnifiedBlockItem[] = [
 		isPro: true,
 		source: "sample",
 		demoUrl: "#",
-	},
-];
-
-export const SAMPLE_SETTINGS: SampleSettingItem[] = [
-	{
-		id: "sample-catFirst",
-		key: "sample_catFirst",
-		label: "Show Boostify category first",
-		desc: "Move Boostify Blocks to the top of the Gutenberg block inserter.",
-		section: "editor",
-		type: "toggle",
-		defaultValue: "false",
-		disabled: true,
-		badge: "Coming soon",
-		source: "sample",
-	},
-	{
-		id: "sample-assets",
-		key: "sample_assets",
-		label: "Load assets only where needed",
-		desc: "Dynamically load CSS and JavaScript only on pages where Boostify blocks are present.",
-		section: "performance",
-		type: "toggle",
-		defaultValue: "false",
-		disabled: true,
-		badge: "Coming soon",
-		source: "sample",
-	},
-	{
-		id: "sample-mapsKey",
-		key: "sample_mapsKey",
-		label: "Google Maps API key",
-		desc: "Enter your Google Maps JavaScript API key for advanced map rendering and custom pin styles.",
-		section: "integrations",
-		type: "text",
-		defaultValue: "",
-		placeholder: "AIzaSy...",
-		disabled: true,
-		badge: "Coming soon",
-		source: "sample",
 	},
 ];

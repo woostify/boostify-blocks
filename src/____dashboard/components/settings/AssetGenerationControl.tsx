@@ -5,12 +5,7 @@ import DynamicIcon from "../common/DynamicIcon";
 import toast from "react-hot-toast";
 import { postAjax } from "../../utils/ajax";
 
-interface AssetGenerationControlProps {
-	enableFileGeneration?: boolean;
-	onToggleFileGeneration?: (enabled: boolean) => void;
-}
-
-const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
+const AssetGenerationControl: FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -59,9 +54,9 @@ const AssetGenerationControl: FC<AssetGenerationControlProps> = () => {
 					type="button"
 					onClick={() => setIsModalOpen(true)}
 					disabled={isLoading}
-					className="bb-btn-outline"
+					className="bb-btn-outline bb-regen-btn"
 				>
-					<DynamicIcon name="speed" size={16} />
+					<DynamicIcon name="autorenew" size={17} />
 					{__( "Regenerate Assets", "boostify-blocks" )}
 				</button>
 			</div>

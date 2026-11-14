@@ -145,7 +145,61 @@ function boostify_blocks_normalize_preview_vh_units( $css_text )
 }
 
 /**
- * Normalize inline style vh units and force eager image loading inside preview HTML.
+ * Allowlist-sanitize preview iframes so trusted HTTPS embeds (e.g. Google Maps) render
+ * inside the preview modal while blocking srcdoc, dangerous schemes, and untrusted origins.
+ *
+ * @param string $iframe_html Raw <iframe ...>...</iframe> markup.
+ * @return string Sanitized <iframe> markup or empty string if disallowed.
+ */
+function boostify_blocks_sanitize_preview_iframe( $iframe_html )
+{
+    if ( ! preg_match( '/^<iframe\b([^>]*)>/is', $iframe_html, $tag_match ) ) {
+        return '';
+    }
+
+    $attrs = $tag_match[1];
+    if ( ! preg_match( '/\bsrc\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s>]+))/is', $attrs, $src_match ) ) {
+        return '';
+    }
+
+    $raw_src = '' !== $src_match[1] ? $src_match[1] : ( isset( $src_match[2] ) && '' !== $src_match[2] ? $src_match[2] : ( $src_match[3] ?? '' ) );
+    $decoded_src = trim( html_entity_decode( $raw_src, ENT_QUOTES, 'UTF-8' ) );
+    $decoded_src = preg_replace( '/[\x00-\x20]+/', '', $decoded_src );
+    $parts = wp_parse_url( $decoded_src );
+
+    if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
+        return '';
+    }
+    if ( 'https' !== strtolower( $parts['scheme'] ) ) {
+        return '';
+    }
+
+    $host = strtolower( $parts['host'] );
+    $path = isset( $parts['path'] ) ? strtolower( $parts['path'] ) : '/';
+
+    $is_google_maps =
+        1 === preg_match( '/^(?:www\.)?maps\.google\.[a-z.]{2,}$/', $host ) ||
+        ( 1 === preg_match( '/^(?:[a-z0-9-]+\.)?google\.[a-z.]{2,}$/', $host ) && 0 === strpos( $path, '/maps' ) );
+
+    $is_trusted_embed =
+        $is_google_maps ||
+        in_array( $host, array( 'www.youtube.com', 'youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com', 'www.openstreetmap.org', 'openstreetmap.org' ), true );
+
+    if ( ! $is_trusted_embed ) {
+        return '';
+    }
+
+    // Remove srcdoc and inline event handlers so trusted src cannot be shadowed.
+    $clean_attrs = preg_replace( '/\bsrcdoc\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/is', '', $attrs );
+    $clean_attrs = preg_replace( '/(?<=[\s\/])on[a-z0-9_-]+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/is', '', $clean_attrs );
+    $clean_attrs = preg_replace( '/(\bloading=)(["\'])lazy\2/i', '$1$2eager$2', $clean_attrs );
+
+    return '<iframe' . rtrim( $clean_attrs, " \t\n\r/" ) . '></iframe>';
+}
+
+/**
+ * Normalize preview HTML: strip active XSS vectors, preserve allowlisted map/video embeds,
+ * force eager loading on images/iframes, and normalize viewport units.
  *
  * @param string $rendered_html Rendered block HTML from do_blocks().
  * @return string Normalized preview HTML.
@@ -156,12 +210,52 @@ function boostify_blocks_prepare_preview_rendered_html( $rendered_html )
         return '';
     }
 
-    // Load images eagerly inside preview so height measures accurately right away.
-    $html = preg_replace(
-        '/(<img\b[^>]*\bloading=)(["\'])lazy\2/i',
-        '$1$2eager$2',
-        $rendered_html
+    $html = $rendered_html;
+
+    // Strip active script/object payloads from remote pattern HTML because the preview
+    // iframe uses allow-same-origin for ResizeObserver measurement. Trusted block view
+    // scripts are appended afterward via boostify_blocks_collect_preview_assets().
+    if ( false !== stripos( $html, '<script' ) || false !== stripos( $html, '<object' ) || false !== stripos( $html, '<embed' ) || false !== stripos( $html, '<base' ) ) {
+        $html = preg_replace( '#<(script|object|embed)\b[^>]*>.*?</\1>#is', '', $html );
+        $html = preg_replace( '#<(script|object|embed|base)\b[^>]*/?>#is', '', $html );
+    }
+
+    if ( false !== stripos( $html, '<iframe' ) ) {
+        $html = preg_replace_callback(
+            '#<iframe\b[^>]*>(?:.*?</iframe>)?#is',
+            function ( $match ) {
+                return boostify_blocks_sanitize_preview_iframe( $match[0] );
+            },
+            $html
+        );
+    }
+
+    if ( false !== stripos( $html, '<meta' ) ) {
+        $html = preg_replace( '#<meta\b[^>]*http-equiv\s*=\s*(["\']?)\s*refresh\s*\1[^>]*>#is', '', $html );
+    }
+
+    $html = preg_replace( '/(?<=[\s\/])on[a-z0-9_-]+\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)/is', '', $html );
+    $html = preg_replace_callback(
+        '/\b(href|src|action|formaction|xlink:href|poster)\s*=\s*(["\'])(.*?)\2/is',
+        function ( $m ) {
+            $url = html_entity_decode( trim( $m[3] ), ENT_QUOTES, 'UTF-8' );
+            $url_no_ctrl = preg_replace( '/[\x00-\x20]+/', '', $url );
+            if ( preg_match( '/^(?:javascript|vbscript|data\s*:\s*text\/html):/i', $url_no_ctrl ) || preg_match( '/^data\s*:\s*text\/html/i', $url_no_ctrl ) ) {
+                return $m[1] . '=' . $m[2] . '#' . $m[2];
+            }
+            return $m[0];
+        },
+        $html
     );
+
+    // Load images eagerly inside preview so height measures accurately right away.
+    if ( false !== stripos( $html, 'loading=' ) ) {
+        $html = preg_replace(
+            '/(<img\b[^>]*\bloading=)(["\'])lazy\2/i',
+            '$1$2eager$2',
+            $html
+        );
+    }
 
     if ( false !== stripos( $html, 'style=' ) && false !== stripos( $html, 'vh' ) ) {
         $html = preg_replace_callback(
@@ -358,7 +452,10 @@ function boostify_blocks_collect_preview_assets( array $blocks, array $used_bloc
     if ( function_exists( 'boostify_blocks_get_theme_defaults_data' ) ) {
         $globals_js .= 'window.BOOSTIFY_BLOCKS_THEME_DEFAULTS=' . wp_json_encode( boostify_blocks_get_theme_defaults_data() ) . ';';
     }
-    $globals_js .= 'window.boostify_blocks_global_variables=' . wp_json_encode( get_option( 'boostify_blocks_settings_options', array() ) ) . ';';
+    $public_settings = function_exists( 'boostify_blocks_get_public_settings_for_js' )
+        ? boostify_blocks_get_public_settings_for_js()
+        : array();
+    $globals_js .= 'window.boostify_blocks_global_variables=' . wp_json_encode( $public_settings ) . ';';
     $globals_js .= 'window.boostify_blocks_ajax_object={ajaxurl:"",nonce:""};';
     $footer_html .= '<script>' . $globals_js . '</script>' . "\n";
 

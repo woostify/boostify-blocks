@@ -10,6 +10,8 @@ import { postAjax } from "../utils/ajax";
 interface Props {
 	allSettings: typeof window.boostify_blocks_global_variables;
 	onChange: (data: typeof window.boostify_blocks_global_variables) => void;
+	showComingSoon?: boolean;
+	showMaintenance?: boolean;
 }
 
 interface PageOption {
@@ -19,7 +21,12 @@ interface PageOption {
 	view_url?: string;
 }
 
-const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
+const SettingsPageSiteVisibility: FC<Props> = ({
+	allSettings,
+	onChange,
+	showComingSoon = true,
+	showMaintenance = true,
+}) => {
 	const [pages, setPages] = useState<PageOption[]>([]);
 	const [isLoadingPages, setIsLoadingPages] = useState(false);
 	const [isOpenDropdown, setIsOpenDropdown] = useState(false);
@@ -37,6 +44,28 @@ const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 		}
 		return null;
 	});
+
+	// Keep local page info synchronized if settings are discarded or changed externally
+	useEffect(() => {
+		if (!currentPageId) {
+			setSelectedPageInfo(null);
+			return;
+		}
+		if (selectedPageInfo && String(selectedPageInfo.value) === currentPageId) {
+			return;
+		}
+		const matched = pages.find((p) => String(p.value) === currentPageId);
+		if (matched) {
+			setSelectedPageInfo(matched);
+		} else if (allSettings?.site_visibility_page_title) {
+			setSelectedPageInfo({
+				value: currentPageId,
+				label: allSettings.site_visibility_page_title,
+			});
+		} else {
+			setSelectedPageInfo(null);
+		}
+	}, [currentPageId, allSettings?.site_visibility_page_title, pages, selectedPageInfo]);
 
 	const dropdownRef = useRef<HTMLDivElement>(null);
 	const searchInputRef = useRef<HTMLInputElement>(null);
@@ -141,18 +170,30 @@ const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 		});
 	};
 
-	const selectedPageLabel =
-		selectedPageInfo?.label ||
-		pages.find((p) => String(p.value) === String(currentPageId))?.label ||
-		allSettings?.site_visibility_page_title ||
-		"";
+	const selectedPageLabel = currentPageId
+		? (selectedPageInfo && String(selectedPageInfo.value) === currentPageId
+				? selectedPageInfo.label
+				: "") ||
+		  pages.find((p) => String(p.value) === currentPageId)?.label ||
+		  allSettings?.site_visibility_page_title ||
+		  ""
+		: "";
 
 	const renderSelectComponent = () => {
 		return (
-			<div ref={dropdownRef} className="bb-visibility-select-wrap">
+			<div
+				ref={dropdownRef}
+				className="bb-visibility-select-wrap"
+				onKeyDown={(e) => {
+					if (e.key === "Escape") {
+						setIsOpenDropdown(false);
+					}
+				}}
+			>
 				{/* Selector trigger button */}
 				<button
 					type="button"
+					aria-expanded={isOpenDropdown}
 					onClick={() => {
 						const nextState = !isOpenDropdown;
 						setIsOpenDropdown(nextState);
@@ -233,56 +274,62 @@ const SettingsPageSiteVisibility: FC<Props> = ({ allSettings, onChange }) => {
 	return (
 		<>
 			{/* Coming Soon Mode */}
-			<div className="bb-settings-row">
-				<div className="bb-settings-col-text">
-					<div className="bb-settings-label">
-						{__("Enable Coming Soon Mode", "boostify-blocks")}
+			{showComingSoon && (
+				<div className="bb-settings-row">
+					<div className="bb-settings-col-text">
+						<div className="bb-settings-label">
+							{__("Enable Coming Soon Mode", "boostify-blocks")}
+						</div>
+						<div className="bb-settings-desc">
+							{__(
+								"Is your website still in the making and not yet ready for other people to see? When the site is ready to be indexed, the 'Coming Soon' page returns an HTTP 200 status code.",
+								"boostify-blocks"
+							)}
+						</div>
+						{enableComingSoonModeStatus && renderSelectComponent()}
 					</div>
-					<div className="bb-settings-desc">
-						{__(
-							"Is your website still in the making and not yet ready for other people to see? When the site is ready to be indexed, the 'Coming Soon' page returns an HTTP 200 status code.",
-							"boostify-blocks"
-						)}
-					</div>
-					{enableComingSoonModeStatus && renderSelectComponent()}
-				</div>
 
-				<button
-					type="button"
-					role="switch"
-					aria-checked={enableComingSoonModeStatus}
-					onClick={() => updateVisibilityMode("comingsoon")}
-					className="bb-switch"
-				>
-					<span className="bb-switch-thumb" />
-				</button>
-			</div>
+					<button
+						type="button"
+						role="switch"
+						aria-label={__("Enable Coming Soon Mode", "boostify-blocks")}
+						aria-checked={enableComingSoonModeStatus}
+						onClick={() => updateVisibilityMode("comingsoon")}
+						className="bb-switch"
+					>
+						<span className="bb-switch-thumb" />
+					</button>
+				</div>
+			)}
 
 			{/* Maintenance Mode */}
-			<div className="bb-settings-row">
-				<div className="bb-settings-col-text">
-					<div className="bb-settings-label">
-						{__("Enable Maintenance Mode", "boostify-blocks")}
+			{showMaintenance && (
+				<div className="bb-settings-row">
+					<div className="bb-settings-col-text">
+						<div className="bb-settings-label">
+							{__("Enable Maintenance Mode", "boostify-blocks")}
+						</div>
+						<div className="bb-settings-desc">
+							{__(
+								"Maintenance Mode returns an HTTP 503 status code, signaling to search engines to revisit the website shortly. However, it's advisable not to utilize this mode for extended periods, ideally limiting its use to a few days.",
+								"boostify-blocks"
+							)}
+						</div>
+						{enableMaintenanceModeStatus && renderSelectComponent()}
 					</div>
-					<div className="bb-settings-desc">
-						{__(
-							"Maintenance Mode returns an HTTP 503 status code, signaling to search engines to revisit the website shortly. However, it's advisable not to utilize this mode for extended periods, ideally limiting its use to a few days.",
-							"boostify-blocks"
-						)}
-					</div>
-					{enableMaintenanceModeStatus && renderSelectComponent()}
-				</div>
 
-				<button
-					type="button"
-					role="switch"
-					aria-checked={enableMaintenanceModeStatus}
-					onClick={() => updateVisibilityMode("maintenance")}
-					className="bb-switch"
-				>
-					<span className="bb-switch-thumb" />
-				</button>
-			</div>
+					<button
+						type="button"
+						role="switch"
+						aria-label={__("Enable Maintenance Mode", "boostify-blocks")}
+						aria-checked={enableMaintenanceModeStatus}
+						onClick={() => updateVisibilityMode("maintenance")}
+						className="bb-switch"
+					>
+						<span className="bb-switch-thumb" />
+					</button>
+				</div>
+			)}
 		</>
 	);
 };
