@@ -222,6 +222,26 @@
 			@apply select-none;
 		}
 	}
+
+	// Suppress third-party Spectra responsive control indicators on Boostify's own Inspector controls
+	.spectra-responsive-icons {
+		display: none !important;
+	}
+
+	.components-panel__body.spectra-enhanced-panel,
+	.spectra-enhanced-panel .spectra-enhanced-control {
+		.components-base-control__label,
+		.components-input-control__label,
+		.spacing-sizes-control__label,
+		.components-toggle-control__label,
+		label {
+			&::after {
+				content: none !important;
+				display: none !important;
+				background-image: none !important;
+			}
+		}
+	}
 }
 
 /*  */

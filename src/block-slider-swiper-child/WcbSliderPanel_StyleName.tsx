@@ -92,6 +92,7 @@ const WcbSlidersPanel_StyleName: FC<Props> = ({
 						});
 					}}
 					value={currentMarginBottom || ""}
+					minCustomValue={-200}
 					label={__("Margin bottom", "wcb")}
 				/>
 			</div>

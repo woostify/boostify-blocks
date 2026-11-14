@@ -101,7 +101,7 @@ const WcbTestimonialsPanel_StyleImage: FC<Props> = ({
 							},
 						});
 					}}
-					value={currentImageSize || "2rem"}
+					value={currentImageSize || "3.5rem"}
 					hasResponsive
 					label={__("Image size", "boostify-blocks")}
 				/>

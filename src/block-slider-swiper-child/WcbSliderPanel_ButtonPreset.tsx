@@ -36,8 +36,8 @@ export const WCB_SLIDER_BUTTON_PANEL_PRESET_DEMO: WCB_SLIDER_BUTTON_PANEL_PRESET
 	preset: "wcb-button-1",
 	enableIcon: false,
 	icon: {
-		iconName: "lni-arrow-right",
 		...DEFAULT_MY_ICON,
+		iconName: "lni-arrow-right",
 	},
 	link: "",
 	openInNewWindow: false,
@@ -61,13 +61,11 @@ const WcbSliderButtonPanelPreset: FC<Props> = ({
 	const { enableIcon, icon, openInNewWindow, link, iconPosition, iconSpacing } = panelData;
 
 	const setPreset = (preset: WCB_SLIDER_BUTTON_PANEL_PRESET["preset"]) => {
-		if (preset === "wcb-button-4" || preset === "wcb-button-8") {
-			setAttr__({
-				...panelData,
-				enableIcon: true,
-			});
-		}
-		setAttr__({ ...panelData, preset });
+		setAttr__({
+			...panelData,
+			preset,
+			...(preset === "wcb-button-4" || preset === "wcb-button-8" ? { enableIcon: true } : {}),
+		});
 	};
 
 	const ICON_POSITION_DEMO: Option<WCB_SLIDER_BUTTON_PANEL_PRESET["iconPosition"]>[] = [

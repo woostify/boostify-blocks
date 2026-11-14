@@ -379,6 +379,8 @@ const WcbSliderPanelImage: FC<Props> = ({
 									setAttrs__dimensions={(data) => {
 										setAttr__({ ...panelData, iconDimensions: data });
 									}}
+									paddingMin={0}
+									marginMin={-99999}
 								/>
 							</MyDisclosure>
 						</div>

@@ -112,8 +112,6 @@ $attributes = array(
 				'hoverColor'   => '#6b7280',
 				'radius'       => array(
 					'Desktop' => '99px',
-					'Tablet'  => '0',
-					'Mobile'  => '0',
 				),
 			),
 			'arrowDistance'   => array( 'Desktop' => '0px' ),
@@ -158,8 +156,6 @@ $attributes = array(
 				'hoverColor'   => '',
 				'radius'       => array(
 					'Desktop' => '0',
-					'Tablet'  => '0',
-					'Mobile'  => '0',
 				),
 			),
 		),

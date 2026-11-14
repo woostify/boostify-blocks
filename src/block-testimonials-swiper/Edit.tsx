@@ -23,6 +23,7 @@ import WcbTestimonialsPanel_StyleImage from "./WcbTestimonialsPanel_StyleImage";
 import WcbTestimonialsPanel_StyleRating from "./WcbTestimonialsPanel_StyleRating";
 import WcbTestimonialsPanel_StyleArrowDots from "./WcbTestimonialsPanel_StyleArrowDots";
 import WcbTestimonialsPanel_StyleBackground from "./WcbTestimonialsPanel_StyleBackground";
+import WcbTestimonialsPanel_StyleSpacing from "./WcbTestimonialsPanel_StyleSpacing";
 import WcbTestimonialsPanel_StyleDimension from "./WcbTestimonialsPanel_StyleDimension";
 import getImageUrlBySize from "../utils/getImageUrlBySize";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
@@ -417,6 +418,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								setAttributes({ style_arrowAndDots: data });
 							}}
 							panelData={style_arrowAndDots}
+							showArrowsDots={general_carousel?.showArrowsDots}
 						/>
 						<WcbTestimonialsPanel_StyleBackground
 							onToggle={() => handleTogglePanel("Styles", "_StyleBackground")}
@@ -427,6 +429,19 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								setAttributes({ style_backgroundAndBorder: data });
 							}}
 							panelData={style_backgroundAndBorder}
+						/>
+						<WcbTestimonialsPanel_StyleSpacing
+							onToggle={() => handleTogglePanel("Styles", "_StyleSpacing")}
+							initialOpen={tabStylesIsPanelOpen === "_StyleSpacing"}
+							opened={tabStylesIsPanelOpen === "_StyleSpacing" || undefined}
+							generalData={general_general}
+							setGeneralAttr__={(data) => {
+								setAttributes({ general_general: data });
+							}}
+							dimensionData={style_dimension}
+							setDimensionAttr__={(data) => {
+								setAttributes({ style_dimension: data });
+							}}
 						/>
 						<WcbTestimonialsPanel_StyleDimension
 							onToggle={() => handleTogglePanel("Styles", "_StyleDimension")}
