@@ -5,6 +5,7 @@
 		justify-content: center;
 		bottom: auto !important;
 		line-height: 0;
+		z-index: 10;
 	}
 
 	.swiper-pagination-bullet {
@@ -67,6 +68,10 @@
 		min-width: 0px;
 		display: flex !important;
 		align-items: center;
+	}
+
+	.swiper-autoheight > .swiper-wrapper {
+		align-items: flex-start;
 	}
 
 	.wcb-slider__wrap-items {
