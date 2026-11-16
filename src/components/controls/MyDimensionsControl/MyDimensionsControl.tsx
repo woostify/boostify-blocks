@@ -142,6 +142,7 @@ const MyDimensionsControl: FC<Props> = ({
 				}
 				values={margin || {}}
 				onChange={handleChangeMargin}
+				min={-99999}
 			/>
 		</div>
 	);

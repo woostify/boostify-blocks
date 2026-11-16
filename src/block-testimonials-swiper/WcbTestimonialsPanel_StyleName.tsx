@@ -93,6 +93,7 @@ const WcbTestimonialsPanel_StyleName: FC<Props> = ({
 						});
 					}}
 					value={currentMarginBottom || ""}
+					minCustomValue={-200}
 					label={__("Margin bottom", "boostify-blocks")}
 				/>
 			</div>
