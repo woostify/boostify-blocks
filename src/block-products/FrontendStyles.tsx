@@ -91,7 +91,7 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 					break;
 			}
 
-			// 2. Show view cart trong cùng block
+			// 2. Show view cart within the same block
 			const parent = btnLayoutInsiteImage.closest(
 				`.${dataUniqueid} .wcb-products__product-add-to-cart`
 			) as HTMLElement | null;
@@ -195,7 +195,7 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 				}
 				
 				if (btnLayoutBottomVisible) {
-					// 2. Show view cart trong cùng block
+					// 2. Show view cart within the same block
 					const parent = btnLayoutBottomVisible.closest(
 						`.${dataUniqueid} .wcb-products__product-add-to-cart`
 					) as HTMLElement | null;
@@ -208,7 +208,7 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 				}
 
 				if (btnLayoutTopRightIcon) {
-					// 2. Show view cart trong cùng block
+					// 2. Show view cart within the same block
 					const parent = btnLayoutTopRightIcon.closest(
 						`.${dataUniqueid} .wcb-products__product--topRight`
 					) as HTMLElement | null;

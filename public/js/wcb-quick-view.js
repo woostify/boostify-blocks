@@ -22,7 +22,7 @@ jQuery(document).on(
     const $form     = $select.closest('form.variations_form');
 
     if (attribute && value) {
-        // Trigger lại Woo logic nếu cần
+        // Re-trigger WooCommerce logic if needed
         $form.trigger('check_variations');
         $form.trigger('woocommerce_variation_select_change');
 
