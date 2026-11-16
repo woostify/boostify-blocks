@@ -9,9 +9,15 @@ interface Params {
 	padding?: HasResponsive<DimensionSettings>;
 	margin?: HasResponsive<DimensionSettings>;
 	className: string;
+	importantHorizontalMargin?: boolean;
 }
 
-const getPaddingMarginStyles = ({ className, padding, margin }: Params) => {
+const getPaddingMarginStyles = ({
+	className,
+	padding,
+	margin,
+	importantHorizontalMargin = false,
+}: Params) => {
 	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
 	const {
@@ -115,14 +121,15 @@ const getPaddingMarginStyles = ({ className, padding, margin }: Params) => {
 	): string[] => {
 		const rules: string[] = [];
 		const hasVal = (val?: string | number | null) => val !== undefined && val !== null && val !== "";
+		const horizontalMarginSuffix = importantHorizontalMargin ? " !important" : "";
 		if (hasVal(pTop)) rules.push(`padding-top: ${pTop} !important;`);
 		if (hasVal(pRight)) rules.push(`padding-right: ${pRight} !important;`);
 		if (hasVal(pBottom)) rules.push(`padding-bottom: ${pBottom} !important;`);
 		if (hasVal(pLeft)) rules.push(`padding-left: ${pLeft} !important;`);
 		if (hasVal(mTop)) rules.push(`margin-top: ${mTop} !important;`);
-		if (hasVal(mRight)) rules.push(`margin-right: ${mRight};`);
+		if (hasVal(mRight)) rules.push(`margin-right: ${mRight}${horizontalMarginSuffix};`);
 		if (hasVal(mBottom)) rules.push(`margin-bottom: ${mBottom} !important;`);
-		if (hasVal(mLeft)) rules.push(`margin-left: ${mLeft};`);
+		if (hasVal(mLeft)) rules.push(`margin-left: ${mLeft}${horizontalMarginSuffix};`);
 		return rules;
 	};
 

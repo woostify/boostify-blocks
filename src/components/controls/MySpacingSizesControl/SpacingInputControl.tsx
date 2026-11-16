@@ -61,22 +61,23 @@ const SpacingInputControl: FC<SpacingInputControlProps> = ({
 
 	const placeholder = value && !Number.isNaN(parseFloat(value)) ? `${parseFloat(value)}` : "";
 
+	const unitSettings =
+		customUnitsValueSettings[
+			selectedUnit as keyof typeof customUnitsValueSettings
+		] ?? customUnitsValueSettings.px;
+	const rangeMin =
+		minCustomValue < 0
+			? Math.max(minCustomValue, -unitSettings.max)
+			: minCustomValue;
+
 	return (
 		<div className={`${className} flex items-center`} style={{ gap: "8px" }}>
 			<div style={{ flex: "1 1 0%", minWidth: 0 }}>
 				<RangeControl
 					value={customRangeValue}
-					min={minCustomValue}
-					max={
-						customUnitsValueSettings[
-							selectedUnit as keyof typeof customUnitsValueSettings
-						].max
-					}
-					step={
-						customUnitsValueSettings[
-							selectedUnit as keyof typeof customUnitsValueSettings
-						].steps
-					}
+					min={rangeMin}
+					max={unitSettings.max}
+					step={unitSettings.steps}
 					// @ts-ignore
 					withInputField={false}
 					onChange={handleCustomValueSliderChange}

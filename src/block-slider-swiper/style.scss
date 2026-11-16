@@ -4,8 +4,3 @@
     margin-top: 1px;
     margin-bottom: 1px;
 }
-
-// Do not css border child item when selected parent
-.block-editor-block-list__layout .is-selected.wp-block-wcb-slider {
-    box-shadow: none;
-}
