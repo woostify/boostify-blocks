@@ -109,9 +109,26 @@ const GlobalCss: FC<Props> = (attrs) => {
 			return `${responsiveValue} !important`;
 		};
 
-		const cWidthDesktop_new_child = (cWidthDesktop_new ?? cWidthTablet_new ?? cWidthMobile_new) ?? undefined;
-		const cWidthTablet_new_child = (cWidthTablet_new ?? cWidthMobile_new) ?? undefined;
-		const cWidthMobile_new_child = getResponsiveWidthValue(cWidthMobile_new);
+		// Negative left/right margins pull a column out of its slot. Grow the column
+		// by the same amount (like Spectra's `width: stretch`) so the total space it
+		// takes in the row is unchanged and sibling columns don't shift.
+		const withNegativeMargin = (
+			width?: string | number | null,
+			marginValue?: { left?: string; right?: string } | null
+		) => {
+			if (width === undefined || width === null || width === "") {
+				return undefined;
+			}
+			const offsets = [marginValue?.left, marginValue?.right]
+				.map((v) => (typeof v === "string" ? v.trim() : ""))
+				.filter((v) => v.startsWith("-") && parseFloat(v) !== 0)
+				.map((v) => v.slice(1));
+			return offsets.length ? `calc(${width} + ${offsets.join(" + ")})` : width;
+		};
+
+		const cWidthDesktop_new_child = withNegativeMargin(cWidthDesktop_new ?? cWidthTablet_new ?? cWidthMobile_new, margin_Desktop);
+		const cWidthTablet_new_child = withNegativeMargin(cWidthTablet_new ?? cWidthMobile_new, margin_Tablet);
+		const cWidthMobile_new_child = withNegativeMargin(cWidthMobile_new, margin_Mobile);
 
 		return [
 			{
@@ -152,15 +169,16 @@ const GlobalCss: FC<Props> = (attrs) => {
 					},
 					"&.is_wcb_container_child": {
 						width: cWidthMobile_new_child,
-						maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new),
+						maxWidth: getResponsiveMaxWidthValue(cWidthMobile_new_child),
 					},
 					[`@media (min-width: ${media_tablet})`]: {
 						maxWidth: getResponsiveMaxWidthValue(cWidthTablet_new),
 						// width: cWidthTablet_new,
 						minHeight: (minHeightTablet_new ?? minHeightMobile_new) ?? undefined,
 						"&.is_wcb_container_child": {
-							// If tablet is optimized away (null) but equals mobile, use mobile value							
+							// If tablet is optimized away (null) but equals mobile, use mobile value
 							width: cWidthTablet_new_child,
+							maxWidth: getResponsiveMaxWidthValue(cWidthTablet_new_child),
 						},
 					},
 					[`@media (min-width: ${media_desktop})`]: {
@@ -171,6 +189,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							// If desktop is optimized away (null) but equals mobile, use mobile value
 							// This prevents old tablet values from interfering when user changes desktop
 							width: cWidthDesktop_new_child,
+							maxWidth: getResponsiveMaxWidthValue(cWidthDesktop_new_child),
 						},
 					},
 				},

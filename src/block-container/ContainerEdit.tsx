@@ -16,7 +16,7 @@ import HOCInspectorControls, {
 } from "../components/HOCInspectorControls";
 import MyBorderControl from "../components/controls/MyBorderControl/MyBorderControl";
 import MyBoxShadowControl from "../components/controls/MyBoxShadowControl/MyBoxShadowControl";
-import MyDimensionsControl from "../components/controls/MyDimensionsControl/MyDimensionsControl";
+import ContainerDimensionsControl from "./ContainerDimensionsControl";
 import MyContainerControl, {
 	CONTAINER_CONTROL_DEMO,
 } from "./MyContainerControl";
@@ -182,7 +182,7 @@ const ContainerEdit: FC<ContainerEditProps<BlockWCBContainerAttrs>> = (
 				opened={tabStylesIsPanelOpen === "Dimension" || undefined}
 				title={__("Dimension", "boostify-blocks")}
 			>
-				<MyDimensionsControl
+				<ContainerDimensionsControl
 					dimensionControl={attributes.styles_dimensions}
 					setAttrs__dimensions={(data) =>
 						setAttributes({ styles_dimensions: data })
