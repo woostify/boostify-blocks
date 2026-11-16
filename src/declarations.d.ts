@@ -17,4 +17,8 @@ interface Window {
 		homeUrl: string;
 		nonce: string;
 	};
+	boostify_blocks_urls?: {
+		website_url: string;
+		docs_url: string;
+	};
 }
