@@ -4,7 +4,6 @@ import React, { FC, CSSProperties } from "react";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
 import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
 import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
-import MySpacingSizesControl from "../components/controls/MySpacingSizesControl/MySpacingSizesControl";
 import MyTextAlignControl, {
 	TextAlignment,
 } from "../components/controls/MyTextAlignControl/MyTextAlignControl";
@@ -41,15 +40,11 @@ const WcbTestimonialsPanelGeneral: FC<Props> = ({
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 
-	const { textAlignment, columns, numberofTestimonials, colGap } = panelData;
+	const { textAlignment, columns, numberofTestimonials } = panelData;
 	const { currentDeviceValue: currentTextAlignment } =
 		getValueFromAttrsResponsives(textAlignment, deviceType);
 	const { currentDeviceValue: currentColumns } = getValueFromAttrsResponsives(
 		columns,
-		deviceType
-	);
-	const { currentDeviceValue: currentColGap } = getValueFromAttrsResponsives(
-		colGap,
 		deviceType
 	);
 	//
@@ -100,21 +95,6 @@ const WcbTestimonialsPanelGeneral: FC<Props> = ({
 					}}
 					min={1}
 					max={numberofTestimonials}
-				/>
-
-				<MySpacingSizesControl
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							colGap: {
-								...colGap,
-								[deviceType]: value,
-							},
-						});
-					}}
-					value={currentColGap || "0"}
-					label={"Gap"}
-					hasResponsive
 				/>
 
 				<MyTextAlignControl

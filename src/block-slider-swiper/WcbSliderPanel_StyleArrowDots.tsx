@@ -46,11 +46,13 @@ interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_SLIDER_PANEL_STYLE_ARROW_DOTS;
 	setAttr__: (data: WCB_SLIDER_PANEL_STYLE_ARROW_DOTS) => void;
+	showArrowsDots?: "Dot" | "Arrow" | "Both";
 }
 
 const WcbSlidersPanel_StyleArrowDots: FC<Props> = ({
 	panelData = WCB_SLIDER_PANEL_STYLE_ARROW_DOTS_DEMO,
 	setAttr__,
+	showArrowsDots = "Both",
 	initialOpen,
 	onToggle,
 	opened,
@@ -59,6 +61,8 @@ const WcbSlidersPanel_StyleArrowDots: FC<Props> = ({
 	const { arrowSize, border, arrowDistance, dotsMarginTop, color, backgroundColor } = panelData;
 	const { currentDeviceValue: currentDotsMarginTop } =
 		getValueFromAttrsResponsives(dotsMarginTop, deviceType);
+	const showArrows = showArrowsDots !== "Dot";
+	const showDots = showArrowsDots !== "Arrow";
 	//
 	return (
 		<PanelBody
@@ -68,59 +72,65 @@ const WcbSlidersPanel_StyleArrowDots: FC<Props> = ({
 			title={__("Arrow & Dots", "wcb")}
 		>
 			<div className="space-y-5">
-				<MyDisclosure defaultOpen label="Arrow settings">
+				{showArrows && (
+					<>
+						<MyDisclosure defaultOpen label="Arrow settings">
+							<MySpacingSizesControl
+								onChange={(value) => {
+									setAttr__({
+										...panelData,
+										arrowSize: value,
+									});
+								}}
+								value={arrowSize || "1.25rem"}
+								hasResponsive={false}
+								label={__("Arrow size", "wcb")}
+							/>
+
+							<MyBorderControl
+								borderControl={border}
+								setAttrs__border={(border: MyBorderControlData) => {
+									setAttr__({
+										...panelData,
+										border,
+									});
+								}}
+							/>
+						</MyDisclosure>
+
+						<MySpacingSizesControl
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									arrowDistance: {
+										...arrowDistance,
+										[deviceType]: value,
+									},
+								});
+							}}
+							minCustomValue={-100}
+							value={getValueFromAttrsResponsives(arrowDistance, deviceType).currentDeviceValue || "0px"}
+							label={__("Arrow Distance from Edges", "wcb")}
+						/>
+					</>
+				)}
+
+				{showDots && (
 					<MySpacingSizesControl
 						onChange={(value) => {
 							setAttr__({
 								...panelData,
-								arrowSize: value,
+								dotsMarginTop: {
+									...dotsMarginTop,
+									[deviceType]: value,
+								},
 							});
 						}}
-						value={arrowSize || "2rem"}
-						hasResponsive={false}
-						label={__("Arrow size", "wcb")}
+						minCustomValue={-200}
+						value={currentDotsMarginTop || "0px"}
+						label={__("Dots Margin top", "wcb")}
 					/>
-
-					<MyBorderControl
-						borderControl={border}
-						setAttrs__border={(border: MyBorderControlData) => {
-							setAttr__({
-								...panelData,
-								border,
-							});
-						}}
-					/>
-				</MyDisclosure>
-
-				<MySpacingSizesControl
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							arrowDistance: {
-								...arrowDistance,
-								[deviceType]: value,
-							},
-						});
-					}}
-					minCustomValue={-100}
-					value={getValueFromAttrsResponsives(arrowDistance, deviceType).currentDeviceValue || "2rem"}
-					label={__("Arrow Distance from Edges", "wcb")}
-				/>
-
-				<MySpacingSizesControl
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							dotsMarginTop: {
-								...dotsMarginTop,
-								[deviceType]: value,
-							},
-						});
-					}}
-					minCustomValue={-200}
-					value={currentDotsMarginTop || "2rem"}
-					label={__("Dots Margin top", "wcb")}
-				/>
+				)}
 
 				<MyColorPicker
 					label={__("Color", "wcb")}
@@ -133,16 +143,18 @@ const WcbSlidersPanel_StyleArrowDots: FC<Props> = ({
 					color={color}
 				/>
 
-				<MyColorPicker
-					label={__("Background Color", "wcb")}
-					onChange={(value) => {
-						setAttr__({
-							...panelData,
-							backgroundColor: value,
-						});
-					}}
-					color={backgroundColor}
-				/>
+				{showArrows && (
+					<MyColorPicker
+						label={__("Background Color", "wcb")}
+						onChange={(value) => {
+							setAttr__({
+								...panelData,
+								backgroundColor: value,
+							});
+						}}
+						color={backgroundColor}
+					/>
+				)}
 			</div>
 		</PanelBody>
 	);

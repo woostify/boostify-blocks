@@ -15,7 +15,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 		uniqueId,
 		// ATTRS OF BLOCK
 		general_general,
-		general_carousel,
 		style_arrowAndDots,
 		style_backgroundAndBorder,
 		style_dimension,
@@ -34,23 +33,19 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const SWIPER_DOTS = `${WRAP_CLASSNAME} .swiper-pagination`;
 	const SWIPER_BULLET = `${WRAP_CLASSNAME} .swiper-pagination-bullet`;
 	const SWIPER_BULLET_ACTIVE = `${WRAP_CLASSNAME} .swiper-pagination-bullet-active`;
-	const WRAP_ITEMS = `${WRAP_CLASSNAME} .wcb-slider__wrap-items`;
 
-	// Dots are absolutely positioned at the bottom of .wcb-slider__wrap-items,
-	// so they overlap the slide content. Reserve room below the slides:
-	// dots offset + dot height (8px) + 10px gap to the content.
-	const showDots = general_carousel?.showArrowsDots !== "Arrow";
-	const DOTS_GAP = "10px";
-	const DOT_SIZE = "8px";
-
-	const getWrapItemsPaddingBottom = () => {
+	// Dots use position: relative + margin-top so positive offsets push them
+	// below the slides. When margin-top is negative enough to pull the 8px dots
+	// inside the slides, margin-bottom compensates so the container height does
+	// not shrink below .swiper-wrapper and get clipped by .swiper overflow: hidden.
+	const getDotsMarginBottom = () => {
 		const d = style_arrowAndDots.dotsMarginTop?.Desktop ?? "0px";
 		const t = style_arrowAndDots.dotsMarginTop?.Tablet ?? d;
 		const m = style_arrowAndDots.dotsMarginTop?.Mobile ?? t;
 		return {
-			Desktop: `calc(${d} + ${DOT_SIZE} + ${DOTS_GAP})`,
-			Tablet: `calc(${t} + ${DOT_SIZE} + ${DOTS_GAP})`,
-			Mobile: `calc(${m} + ${DOT_SIZE} + ${DOTS_GAP})`,
+			Desktop: `max(0px, calc(-1 * (${d} + 8px)))`,
+			Tablet: `max(0px, calc(-1 * (${t} + 8px)))`,
+			Mobile: `max(0px, calc(-1 * (${m} + 8px)))`,
 		};
 	};
 
@@ -85,6 +80,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						className: `${ITEM_CLASSNAME}`,
 						padding: style_dimension.padding,
 						margin: style_dimension.margin,
+						importantHorizontalMargin: true,
 					}),
 					getStyleBackground({
 						className: ITEM_CLASSNAME,
@@ -117,7 +113,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 								width: style_arrowAndDots.arrowSize,
 								height: style_arrowAndDots.arrowSize,
 								color: style_arrowAndDots.color,
-								background: style_arrowAndDots.backgroundColor,
 							},
 						},
 					},
@@ -136,15 +131,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 					getStyleObjectFromResponsiveAttr({
 						className: SWIPER_DOTS,
 						value: style_arrowAndDots.dotsMarginTop,
-						prefix: "bottom",
+						prefix: "marginTop",
 					}),
-					showDots
-						? getStyleObjectFromResponsiveAttr({
-							className: WRAP_ITEMS,
-							value: getWrapItemsPaddingBottom(),
-							prefix: "paddingBottom",
-						})
-						: null,
+					getStyleObjectFromResponsiveAttr({
+						className: SWIPER_DOTS,
+						value: getDotsMarginBottom(),
+						prefix: "marginBottom",
+					}),
 					getStyleObjectFromResponsiveAttr({
 						className: SWIPER_PREV,
 						value: style_arrowAndDots.arrowDistance,

@@ -75,6 +75,7 @@ const WcbTestimonialsPanel_StyleRating: FC<Props> = ({
 					}}
 					value={MARGIN_BOTTOM || ""}
 					units={MY_GAP_UNITS}
+					minCustomValue={-200}
 					label={__("Margin bottom", "boostify-blocks")}
 					hasResponsive
 				/>

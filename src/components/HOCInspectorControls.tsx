@@ -200,19 +200,17 @@ const HOCInspectorControls: FC<Props> = ({
 		);
 	};
 
-	const renderContent2 = () => {
-		!!uniqueId &&
-			setTimeout(() => {
-				handleTooglePanelAdvanceDefaultWp();
-			}, 100);
-
-		return null;
-	};
+	useEffect(() => {
+		if (!uniqueId) return;
+		const t = setTimeout(() => {
+			handleTooglePanelAdvanceDefaultWp();
+		}, 100);
+		return () => clearTimeout(t);
+	}, [uniqueId]);
 
 	return (
 		<InspectorControls>
 			{renderContent()}
-			{renderContent2()}
 		</InspectorControls>
 	);
 };
