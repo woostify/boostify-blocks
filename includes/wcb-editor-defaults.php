@@ -9,6 +9,29 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 			? woostify_options( false )
 			: ( get_option( 'woostify_setting' ) ?: array() );
 
+		$theme_color = ! empty( $woostify['theme_color'] ) ? $woostify['theme_color'] : '';
+		if ( empty( $theme_color ) && function_exists( 'wp_get_global_settings' ) ) {
+			$theme_palette = wp_get_global_settings( array( 'color', 'palette', 'theme' ) );
+			if ( is_array( $theme_palette ) ) {
+				foreach ( $theme_palette as $palette_item ) {
+					if (
+						isset( $palette_item['slug'] ) &&
+						in_array( $palette_item['slug'], array( 'primary', 'woostify-primary', 'accent' ), true ) &&
+						! empty( $palette_item['color'] )
+					) {
+						$theme_color = $palette_item['color'];
+						break;
+					}
+				}
+				if ( empty( $theme_color ) && ! empty( $theme_palette[0]['color'] ) ) {
+					$theme_color = $theme_palette[0]['color'];
+				}
+			}
+		}
+		if ( empty( $theme_color ) ) {
+			$theme_color = '#1346af';
+		}
+
 		$woostify_pro = ( class_exists( 'Woostify_Pro' ) && method_exists( 'Woostify_Pro', 'get_instance' ) )
 			? Woostify_Pro::get_instance()->woostify_pro_options()
 			: ( get_option( 'woostify_pro_options' ) ?: array() );
@@ -42,7 +65,6 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		$btn_hover_text_color = $non_empty( $woostify['button_hover_text_color'] ?? '', '#ffffff' );
 		$btn_hover_bg_color   = $non_empty( $woostify['button_hover_background_color'] ?? '', '#3a3a3a' );
 		$btn_radius           = (int) $non_empty( $woostify['buttons_border_radius'] ?? '', 50 );
-		$theme_color          = $non_empty( $woostify['theme_color'] ?? '', '#1346af' );
 		$accent_color         = $non_empty( $woostify['accent_color'] ?? '', '#2b2b2b' );
 		$link_hover_color     = $non_empty( $woostify['link_hover_color'] ?? '', $theme_color );
 		$text_color           = $non_empty( $woostify['text_color'] ?? '', '#474747' );
@@ -152,6 +174,7 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		$out_text             = $non_empty( $woostify['shop_page_out_of_stock_text'] ?? null, 'Out Of Stock' );
 
 		return array(
+			'theme_color'                  => $theme_color,
 			'catalog_mode'                 => $catalog_mode,
 			'countdown_urgency'            => array(
 				'active'               => $countdown_urgency_active,

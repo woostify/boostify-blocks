@@ -1,10 +1,9 @@
 import React, { FC } from "react";
-import { Global, CSSObject } from "@emotion/react";
+import { Global } from "@emotion/react";
 import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives";
 import getBorderStyles from "../utils/getBorderStyles";
 import getBackgroundColorGradientStyles from "../utils/getBackgroundColorGradientStyles";
-import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { WcbAttrsForSave } from "./Save";
 import getStyleObjectFromResponsiveAttr from "../utils/getStyleObjectFromResponsiveAttr";
 import getTypographyStyles from "../utils/getTypographyStyles";
@@ -40,7 +39,6 @@ const GlobalCss: FC<Props> = (attrs) => {
         advance_motionEffect,
         general_general,
     } = attrs;
-    const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
 
     if (!uniqueId) return null;
 
@@ -48,7 +46,6 @@ const GlobalCss: FC<Props> = (attrs) => {
     const TITLE_WRAP_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__titles`;
     const TITLE_CHILD_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner`;
     const TITLE_CHILD_CLASSNAME_ACTIVE = `${WRAP_CLASSNAME} .wcb-tabs__title_inner.is-active`;
-    const TITLE_CHILD_BUTTON_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title_inner_btn`;
     const TITLE_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tabs__title`;
     const TITLE_CLASSNAME_ACTIVE = `${TITLE_CHILD_CLASSNAME_ACTIVE} .wcb-tabs__title`;
     const BODY_CLASSNAME = `${WRAP_CLASSNAME} .wcb-tab-child__wrap`;
@@ -66,8 +63,20 @@ const GlobalCss: FC<Props> = (attrs) => {
         Mobile: iconMob !== null && iconMob !== undefined ? `${iconMob}px` : undefined,
     };
 
+    const isVerticalLayout =
+        general_general?.layout === "grid" ||
+        general_general?.style === "verticalStyle1" ||
+        general_general?.style === "verticalStyle2";
+    const isVerticalStyle2 = isVerticalLayout && general_general?.style === "verticalStyle2";
+    const isHorizontalStyle2 =
+        !isVerticalLayout && general_general?.style === "horizontalStyle2";
+
+    const tabAlign = getFlexAlignment(general_tabTitle?.tabAlignment || "left");
+    const textAlign = getFlexAlignment(general_tabTitle?.textAlignment || "left");
+
     return (
         <>
+            {/* Inner container dynamic alignment & legacy container gaps */}
             <Global
                 styles={[
                     getStyleObjectFromResponsiveAttr({ className: INNER_CLASSNAME, value: style_container?.colunmGap, prefix: "columnGap" }),
@@ -76,135 +85,44 @@ const GlobalCss: FC<Props> = (attrs) => {
                 ]}
             />
 
-            {(general_general?.layout === "grid" ||
-                general_general?.style === "verticalStyle1" ||
-                general_general?.style === "verticalStyle2") && (
-                <Global
-                    styles={[
-                        {
-                            [INNER_CLASSNAME]: {
-                                display: "grid",
-                                gridTemplateColumns: "1fr 3fr",
-                                gap: "1rem",
-                            },
-                        },
-                        {
-                            [TITLE_WRAP_CLASSNAME]: {
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: getFlexAlignment(general_tabTitle?.tabAlignment || "left"),
-                            },
-                        },
-                        getStyleObjectFromResponsiveAttr({
-                            className: TITLE_WRAP_CLASSNAME,
-                            value: style_title?.rowGap,
-                            prefix: "gap",
-                        }),
-                        {
-                            [TITLE_CHILD_CLASSNAME]: {
-                                display: "flex",
-                                flexDirection: "row",
-                                width: "100%",
-                                padding: "0.5rem",
-                                boxSizing: "border-box",
-                                justifyContent: getFlexAlignment(general_tabTitle?.textAlignment || "left"),
-                            },
-                        },
-                        getStyleObjectFromResponsiveAttr({
-                            className: TITLE_CHILD_CLASSNAME,
-                            value: style_icon?.colGap,
-                            prefix: "gap",
-                        }),
-                        {
-                            [BODY_CLASSNAME]: {
-                                margin: "0px",
-                                padding: "1rem",
-                                boxSizing: "border-box",
-                            },
-                        },
-                        {
-                            [TITLE_CHILD_BUTTON_CLASSNAME]: {
-                                padding: "0.6rem",
-                            },
-                        },
-                    ]}
-                />
-            )}
-
-            {(general_general?.layout === "accordion" ||
-                general_general?.style === "horizontalStyle1") && (
-                <Global
-                    styles={[
-                        {
-                            [TITLE_WRAP_CLASSNAME]: {
-                                display: "flex",
-                                flexDirection: "row",
-                                gap: "0.5rem",
-                                justifyContent: getFlexAlignment(general_tabTitle?.tabAlignment || "left"),
-                            },
-                            [TITLE_CHILD_CLASSNAME]: {
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: getFlexAlignment(general_tabTitle?.textAlignment || "left"),
-                            },
-                        },
-                        getStyleObjectFromResponsiveAttr({
-                            className: TITLE_CHILD_CLASSNAME,
-                            value: style_icon?.colGap,
-                            prefix: "gap",
-                        }),
-                    ]}
-                />
-            )}
-
-            {general_general?.style === "horizontalStyle2" && (
-                <Global
-                    styles={[
-                        {
-                            [TITLE_WRAP_CLASSNAME]: {
-                                display: "flex",
-                                flexDirection: "row",
-                                gap: "0.5rem",
-                                justifyContent: getFlexAlignment(general_tabTitle?.tabAlignment || "left"),
-                                borderBottom: "2px solid #d1d5db",
-                                marginBottom: "0",
-                                background: "#fff",
-                            },
-                            [TITLE_CHILD_CLASSNAME]: {
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: getFlexAlignment(general_tabTitle?.textAlignment || "left"),
-                                background: "none",
-                                border: "none",
-                                borderRadius: "0",
-                                marginBottom: "-2px",
-                                zIndex: 1,
-                            },
-                            [TITLE_CHILD_CLASSNAME_ACTIVE]: {
-                                background: style_title?.backgroundColorActive || "#fff",
-                                border: "none",
-                                borderTop: "2px solid #d1d5db",
-                                borderRight: "2px solid #d1d5db",
-                                borderLeft: "2px solid #d1d5db",
-                                borderRadius: "0",
-                                marginBottom: "-2px",
-                                zIndex: 2,
-                            },
-                            [BODY_CLASSNAME]: {
-                                border: "1px solid #d1d5db",
-                                borderTop: "none",
-                                marginTop: "0",
-                                padding: "2rem",
-                            },
-                        },
-                    ]}
-                />
-            )}
-
+            {/* Dynamic alignment & spacing for Tab Titles / Icon */}
             <Global
                 styles={[
-                    getBackgroundColorGradientStyles({ className: BODY_CLASSNAME, background: style_container?.background }),
-                    getBorderStyles({ border: style_container?.border, className: BODY_CLASSNAME, isWithRadius: true }),
+                    {
+                        ...(!isVerticalLayout
+                            ? {
+                                  [TITLE_WRAP_CLASSNAME]: {
+                                      justifyContent: tabAlign,
+                                  },
+                              }
+                            : {}),
+                        [TITLE_CHILD_CLASSNAME]: {
+                            justifyContent: textAlign,
+                        },
+                        [`${TITLE_CHILD_CLASSNAME}--icon-top`]: {
+                            alignItems: textAlign,
+                        },
+                        [`${TITLE_CHILD_CLASSNAME}--icon-bottom`]: {
+                            alignItems: textAlign,
+                        },
+                    },
+                    getStyleObjectFromResponsiveAttr({
+                        className: TITLE_CHILD_CLASSNAME,
+                        value: style_icon?.colGap,
+                        prefix: "gap",
+                    }),
+                ]}
+            />
+
+            {/* Dynamic user Styles: Legacy container, Title, Body */}
+            <Global
+                styles={[
+                    ...(style_container?.background
+                        ? [getBackgroundColorGradientStyles({ className: BODY_CLASSNAME, background: style_container.background })]
+                        : []),
+                    ...(style_container?.border
+                        ? [getBorderStyles({ border: style_container.border, className: BODY_CLASSNAME, isWithRadius: true })]
+                        : []),
                     getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title?.colunmGap, prefix: "columnGap" }),
                     getStyleObjectFromResponsiveAttr({ className: TITLE_WRAP_CLASSNAME, value: style_title?.rowGap, prefix: "rowGap" }),
                     getTypographyStyles({ className: TITLE_CLASSNAME, typography: style_title?.typography }),
@@ -242,6 +160,8 @@ const GlobalCss: FC<Props> = (attrs) => {
                     },
                 ]}
             />
+
+            {/* Dynamic Icon Size & Colors */}
             <Global
                 styles={[
                     getStyleObjectFromResponsiveAttr({
@@ -257,19 +177,8 @@ const GlobalCss: FC<Props> = (attrs) => {
                     },
                 ]}
             />
-            {/* Icon position flex direction */}
-            <Global
-                styles={[
-                    {
-                        [`${TITLE_CHILD_CLASSNAME}--icon-top`]: {
-                            flexDirection: "column",
-                        },
-                        [`${TITLE_CHILD_CLASSNAME}--icon-bottom`]: {
-                            flexDirection: "column",
-                        },
-                    },
-                ]}
-            />
+
+            {/* Dimension & Advance */}
             <Global
                 styles={getPaddingMarginStyles({
                     className: WRAP_CLASSNAME,
@@ -285,22 +194,26 @@ const GlobalCss: FC<Props> = (attrs) => {
                     className: WRAP_CLASSNAME,
                 })}
             />
-            {/* BORDER TITLE */}
-            <Global
-                styles={[
-                    getBorderStyles({
-                        className: TITLE_CHILD_CLASSNAME,
-                        border: style_title?.border,
-                        isWithRadius: true,
-                    }),
-                    getBorderStyles({
-                        className: TITLE_CHILD_CLASSNAME_ACTIVE,
-                        border: style_title?.borderActive,
-                        isWithRadius: true,
-                    }),
-                ]}
-            />
-            {/* BORDER BODY */}
+
+            {/* Title Border (non-folder-tab styles only) */}
+            {!isHorizontalStyle2 && !isVerticalStyle2 && (
+                <Global
+                    styles={[
+                        getBorderStyles({
+                            className: TITLE_CHILD_CLASSNAME,
+                            border: style_title?.border,
+                            isWithRadius: true,
+                        }),
+                        getBorderStyles({
+                            className: TITLE_CHILD_CLASSNAME_ACTIVE,
+                            border: style_title?.borderActive,
+                            isWithRadius: true,
+                        }),
+                    ]}
+                />
+            )}
+
+            {/* Body Border */}
             <Global
                 styles={[
                     getBorderStyles({
