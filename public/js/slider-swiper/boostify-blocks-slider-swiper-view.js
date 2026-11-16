@@ -46,16 +46,19 @@ function equalizeItemHeights( wrap ) {
 	if ( ! items.length ) return;
 
 	items.forEach( ( el ) => {
-		el.style.height = 'auto';
+		el.style.height = '';
+		el.style.minHeight = '';
 	} );
 
 	let maxHeight = 0;
 	items.forEach( ( el ) => {
 		maxHeight = Math.max( maxHeight, el.offsetHeight || 0 );
 	} );
-	items.forEach( ( el ) => {
-		el.style.height = `${ maxHeight }px`;
-	} );
+	if ( maxHeight > 0 ) {
+		items.forEach( ( el ) => {
+			el.style.minHeight = `${ maxHeight }px`;
+		} );
+	}
 }
 
 function parseGapToPx( gapVal ) {

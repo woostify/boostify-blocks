@@ -10,9 +10,11 @@ import MyColorPicker from "../MyColorPicker/MyColorPicker";
 import MyLabelControl from "../MyLabelControl/MyLabelControl";
 import { ResponsiveDevices } from "../MyResponsiveToggle/MyResponsiveToggle";
 import useGetDeviceType from "../../../hooks/useGetDeviceType";
+import getValueFromAttrsResponsives from "../../../utils/getValueFromAttrsResponsives";
 import {
 	BorderMainSettings,
 	BorderRadiusSettings,
+	DEFAULT_BORDER_RADIUS,
 	MyBorderControlData,
 	MY_BORDER_CONTROL_DEMO,
 } from "./types";
@@ -50,37 +52,42 @@ const MyBorderControl: FC<Props> = ({
 	};
 
 	const handleChangeBorderRadius = (newRadius: BorderRadiusSettings) => {
-		// If Desktop and Tablet/Mobile are default or all 3 devices are the same then set for all 3 devices
-		const allEqual =
-			radiusProps.Desktop === radiusProps.Tablet &&
-			radiusProps.Desktop === radiusProps.Mobile;
-		if (
-			deviceType === "Desktop" &&
-			(
-				(radiusProps.Tablet === undefined || radiusProps.Tablet === "0") &&
-				(radiusProps.Mobile === undefined || radiusProps.Mobile === "0")
-			|| allEqual)
-		) {
+		// Clean up untouched legacy { Desktop: "0", Tablet: "0", Mobile: "0" }
+		// defaults when editing Desktop so Tablet/Mobile cascade from Desktop
+		// without locking Mobile when Tablet is customized later.
+		const isUntouchedLegacyZero =
+			radiusProps?.Desktop === "0" &&
+			radiusProps?.Tablet === "0" &&
+			radiusProps?.Mobile === "0";
+
+		if (deviceType === "Desktop") {
+			const nextDesktop =
+				newRadius === undefined ? DEFAULT_BORDER_RADIUS : newRadius;
 			setAttrs__border({
 				...borderControl,
-				radius: {
-					Desktop: newRadius,
-					Tablet: newRadius,
-					Mobile: newRadius,
-				},
+				radius: isUntouchedLegacyZero
+					? { Desktop: nextDesktop }
+					: { ...radiusProps, Desktop: nextDesktop },
 			});
-		} else {
-			// Otherwise, just update the current device type
-			setAttrs__border({
-				...borderControl,
-				radius: { ...radiusProps, [deviceType]: newRadius },
-			});
+			return;
 		}
+
+		// Tablet / Mobile: only update the active device; clearing reverts it to cascade.
+		const nextRadius = { ...radiusProps };
+		if (newRadius === undefined) {
+			delete nextRadius[deviceType];
+		} else {
+			nextRadius[deviceType] = newRadius;
+		}
+		setAttrs__border({
+			...borderControl,
+			radius: nextRadius,
+		});
 	};
 
-	//
 	const RADIUS: BorderRadiusSettings =
-		radiusProps[deviceType] || radiusProps.Tablet || radiusProps.Desktop;
+		getValueFromAttrsResponsives(radiusProps, deviceType)
+			.currentDeviceValue ?? DEFAULT_BORDER_RADIUS;
 
 	return (
 		<div className={className}>
@@ -110,6 +117,7 @@ const MyBorderControl: FC<Props> = ({
 					{__("Border radius", "boostify-blocks")}
 				</MyLabelControl>
 				<BorderRadiusControl
+					key={deviceType}
 					values={RADIUS}
 					onChange={(value: any) => {
 						handleChangeBorderRadius(value);

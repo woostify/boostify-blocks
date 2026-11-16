@@ -15,12 +15,16 @@ interface Props {
 	className?: string;
 	dimensionControl: MyDimensionsNoGapControlData;
 	setAttrs__dimensions: (data: MyDimensionsNoGapControlData) => void;
+	paddingMin?: number;
+	marginMin?: number;
 }
 
 const MyDimensionsNoGapControl: FC<Props> = ({
 	className = "space-y-5",
 	dimensionControl = MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
 	setAttrs__dimensions,
+	paddingMin = 0,
+	marginMin = -99999,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	//
@@ -68,6 +72,7 @@ const MyDimensionsNoGapControl: FC<Props> = ({
 				}
 				values={padding || {}}
 				onChange={handleChangePadding}
+				min={paddingMin}
 			/>
 			<MyDimensionsBoxControl
 				label={
@@ -77,6 +82,7 @@ const MyDimensionsNoGapControl: FC<Props> = ({
 				}
 				values={margin || {}}
 				onChange={handleChangeMargin}
+				min={marginMin}
 			/>
 		</div>
 	);
