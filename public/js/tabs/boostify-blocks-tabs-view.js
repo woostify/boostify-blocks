@@ -12,7 +12,7 @@
  * @package Boostify Blocks
  */
 
-import { store, getContext } from '@wordpress/interactivity';
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
 const NAMESPACE = 'boostify-blocks/tabs';
 
@@ -21,7 +21,23 @@ store(NAMESPACE, {
 		switchTab: () => {
 			const context = getContext();
 			const parentContext = getContext(NAMESPACE);
+			const { ref } = getElement();
 			parentContext.activeTab = context.tabIndex;
+
+			// Re-measure hidden child blocks (Swiper carousels, product sliders, etc.)
+			// once the newly active tabpanel is unhidden on the next animation frame.
+			const tabsWrap = ref?.closest?.('.wcb-tabs__wrap');
+			const raf = window.requestAnimationFrame || ((fn) => setTimeout(fn, 16));
+			raf(() => {
+				if (tabsWrap) {
+					tabsWrap.querySelectorAll('.swiper').forEach((swiperEl) => {
+						if (swiperEl.swiper && typeof swiperEl.swiper.update === 'function') {
+							swiperEl.swiper.update();
+						}
+					});
+				}
+				window.dispatchEvent(new Event('resize'));
+			});
 		},
 	},
 	callbacks: {

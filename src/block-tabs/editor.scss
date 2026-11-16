@@ -1,0 +1,14 @@
+.wcb-tabs--vertical .wcb-tabs__title_inner_btn {
+	padding: 0.6rem;
+}
+
+.wcb-tabs--verticalStyle2 {
+	.block-editor-inner-blocks,
+	.block-editor-block-list__layout {
+		height: 100%;
+	}
+
+	.block-editor-block-list__layout > .wcb-tab-child__wrap {
+		min-height: 100%;
+	}
+}

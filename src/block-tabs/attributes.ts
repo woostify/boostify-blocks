@@ -37,18 +37,27 @@ import {
 	WCB_TABS_PANEL_STYLE_BODY,
 	WCB_TABS_PANEL_STYLE_BODY_DEMO,
 } from "./WcbTabsPanel_StyleBody";
+import { BackgroundNoImageControlData } from "../components/controls/MyBackgroundControl/MyBackgroundNoImageControl";
+import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
+import { MyBorderControlData } from "../components/controls/MyBorderControl/types";
 import {
     WCB_TAGS_PANEL_GENERAL,
 	WCB_TAGS_PANEL_GENERAL_DEMO
 } from "./WcbTabsPanelGeneral";
 import {
-	WCB_TABS_PANEL_STYLE_CONTAINER,
-	WCB_TABS_PANEL_STYLE_CONTAINER_DEMO,
-} from "./WcbTabsPanel_StyleContainer";
-import {
 	WCB_TABS_PANEL_STYLE_DIMENSION,
 	WCB_TABS_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbTabsPanel_StyleDimension";
+
+// Legacy attribute type preserved for backward compatibility with previously saved blocks.
+export interface WCB_TABS_PANEL_STYLE_CONTAINER {
+	background?: BackgroundNoImageControlData;
+	border?: MyBorderControlData;
+	rowGap?: HasResponsive<string>;
+	colunmGap?: HasResponsive<string>;
+}
+
+export const WCB_TABS_PANEL_STYLE_CONTAINER_DEMO: WCB_TABS_PANEL_STYLE_CONTAINER = {};
 
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;

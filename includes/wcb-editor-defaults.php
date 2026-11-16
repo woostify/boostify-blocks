@@ -7,6 +7,30 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 	function boostify_blocks_get_theme_defaults_data() {
 		$woostify = get_option('woostify_setting') ?: [];
 		$woostify_pro = get_option('woostify_pro_options') ?: [];
+		$theme_options = function_exists( 'woostify_options' ) ? woostify_options( false ) : $woostify;
+
+		$theme_color = ! empty( $theme_options['theme_color'] ) ? $theme_options['theme_color'] : '';
+		if ( empty( $theme_color ) && function_exists( 'wp_get_global_settings' ) ) {
+			$theme_palette = wp_get_global_settings( array( 'color', 'palette', 'theme' ) );
+			if ( is_array( $theme_palette ) ) {
+				foreach ( $theme_palette as $palette_item ) {
+					if (
+						isset( $palette_item['slug'] ) &&
+						in_array( $palette_item['slug'], array( 'primary', 'woostify-primary', 'accent' ), true ) &&
+						! empty( $palette_item['color'] )
+					) {
+						$theme_color = $palette_item['color'];
+						break;
+					}
+				}
+				if ( empty( $theme_color ) && ! empty( $theme_palette[0]['color'] ) ) {
+					$theme_color = $theme_palette[0]['color'];
+				}
+			}
+		}
+		if ( empty( $theme_color ) ) {
+			$theme_color = '#1346af';
+		}
 
 		// Check if Woostify Pro is active
 		$woostify_pro_active = defined( 'WOOSTIFY_PRO_VERSION' ) || in_array( 'woostify-pro/woostify-pro.php', get_option( 'active_plugins', array() ), true ) || in_array( 'woostify-pro-dev/woostify-pro.php', get_option( 'active_plugins', array() ), true );
@@ -46,6 +70,7 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		$out_color_default    = $product_label_active ? get_option( 'woostify_product_label_out_of_stock_text_color', '#ffffff' ) : ( $woostify['shop_page_out_of_stock_color'] ?? '#ffffff' );
 
 		return [
+			'theme_color' => $theme_color,
 			'countdown_urgency' => [
 				'active'               => $countdown_urgency_active,
 				'style'                => get_option('woostify_countdown_urgency_style', 'default'),

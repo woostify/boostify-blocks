@@ -32,10 +32,8 @@ registerBlockType(metadata.name, {
 	save,
 	attributes,
 	example: convertObjectAttrToPreview(attributes),
-	// deprecated: deprecated,
+	deprecated: deprecated,
 	providesContext: {
-		"boostify-blocks/faq_general": "general_general",
-		"boostify-blocks/faq_icon": "general_icon",
 		"boostify-blocks/tabs/activeTabIndex": "activeTabIndex",
 		"boostify-blocks/tabs/tabContents": "tabContents",
 	},
