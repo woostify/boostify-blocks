@@ -36,6 +36,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_category,
 		style_countdownUrgency,
 		style_dimension,
+		style_arrowAndDots,
 	} = attributes;
 	//
 
@@ -120,6 +121,7 @@ export default function save({ attributes }: { attributes: WcbAttrs }) {
 		style_wishlistBtn: style_wishlistBtn ? ensureObjectStructure(style_wishlistBtn) : undefined,
 		style_countdownUrgency: style_countdownUrgency ? ensureObjectStructure(style_countdownUrgency) : undefined,
 		style_dimension: style_dimension ? ensureObjectStructure(style_dimension) : undefined,
+		style_arrowAndDots: style_arrowAndDots ? ensureObjectStructure(style_arrowAndDots) : undefined,
 	};
 	//
 	const blockProps = useBlockProps.save({

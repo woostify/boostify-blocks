@@ -12,6 +12,7 @@ import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
 // @ts-ignore
 import "./editor.scss";
+import { useProductsCarouselEditor } from "./carouselUtils";
 import {
 	Dropdown,
 	ToolbarButton,
@@ -76,6 +77,9 @@ import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock
 import WcbProductsPanel_StyleDimension, {
 	WCB_PRODUCTS_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbProductsPanel_StyleDimension";
+import WcbTestimonialsPanel_StyleArrowDots, {
+	WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
+} from "../block-testimonials-swiper/WcbTestimonialsPanel_StyleArrowDots";
 import { getThemeDefaults } from "../utils/themeDefaults";
 import {
 	applyThemeDefaultsToBlockAttributes,
@@ -128,6 +132,7 @@ const Edit: FC<Props> = (props) => {
 		style_quickViewBtn,
 		style_countdownUrgency,
 		style_dimension,
+		style_arrowAndDots,
 		advance_motionEffect,
 		style_category,
 	} = attributes;
@@ -490,7 +495,7 @@ const Edit: FC<Props> = (props) => {
 							)
 						}
 
-						{general_pagination && (
+						{!isCarouselMode && general_pagination && (
 							<WcbProductsPanelPagination
 								onToggle={() => handleTogglePanel("General", "Pagination")}
 								initialOpen={tabGeneralIsPanelOpen === "Pagination"}
@@ -526,6 +531,31 @@ const Edit: FC<Props> = (props) => {
 												setAttributes({ style_layout: data });
 											}}
 											panelData={style_layout}
+										/>
+									)}
+									{isCarouselMode && (carouselIsShowArrow || carouselIsShowDots) && (
+										<WcbTestimonialsPanel_StyleArrowDots
+											onToggle={() =>
+												handleTogglePanel("Styles", "_StyleArrowDots")
+											}
+											initialOpen={tabStylesIsPanelOpen === "_StyleArrowDots"}
+											opened={
+												tabStylesIsPanelOpen === "_StyleArrowDots" || undefined
+											}
+											setAttr__={(data) => {
+												setAttributes({ style_arrowAndDots: data });
+											}}
+											panelData={
+												style_arrowAndDots ||
+												WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO
+											}
+											showArrowsDots={
+												carouselIsShowArrow && carouselIsShowDots
+													? "Both"
+													: carouselIsShowArrow
+													? "Arrow"
+													: "Dot"
+											}
 										/>
 									)}
 									{general_featuredImage?.isShowFeaturedImage && style_featuredImage && (
@@ -643,9 +673,13 @@ const Edit: FC<Props> = (props) => {
 										/>
 									)}
 
-									{general_pagination?.isShowPagination && style_pagination && (
-										<WcbProductsPanel_StylePagination
-											onToggle={() => handleTogglePanel("Styles", "_StylePagination")}
+									{!isCarouselMode &&
+										general_pagination?.isShowPagination &&
+										style_pagination && (
+											<WcbProductsPanel_StylePagination
+												onToggle={() =>
+													handleTogglePanel("Styles", "_StylePagination")
+												}
 											initialOpen={tabStylesIsPanelOpen === "_StylePagination"}
 											opened={
 												tabStylesIsPanelOpen === "_StylePagination" || undefined
@@ -785,53 +819,57 @@ const Edit: FC<Props> = (props) => {
 								/>
 							)}
 						</BaseControl>
-						<BaseControl id="3">
-							{general_pagination && (
-								<ToggleControl
-									label={__("Show pagination", "wcb")}
-									onChange={(checked) =>
-										setAttributes({
-											general_pagination: {
-												...general_pagination,
-												isShowPagination: checked,
-											},
-										})
-									}
-									checked={isShowPagination}
-								/>
-							)}
-						</BaseControl>
-						{isShowPagination && (
-							<BaseControl
-								id="4"
-								help={__(
-									"Limit the pages you want to show, even if the query has more results. To show all pages use 0 (zero).",
-									"wcb"
+						{!isCarouselMode && (
+							<>
+								<BaseControl id="3">
+									{general_pagination && (
+										<ToggleControl
+											label={__("Show pagination", "wcb")}
+											onChange={(checked) =>
+												setAttributes({
+													general_pagination: {
+														...general_pagination,
+														isShowPagination: checked,
+													},
+												})
+											}
+											checked={isShowPagination}
+										/>
+									)}
+								</BaseControl>
+								{isShowPagination && (
+									<BaseControl
+										id="4"
+										help={__(
+											"Limit the pages you want to show, even if the query has more results. To show all pages use 0 (zero).",
+											"wcb"
+										)}
+									>
+										<NumberControl
+											id={"maxPageInputId"}
+											__unstableInputWidth="60px"
+											label={__("Max page to show")}
+											labelPosition="edge"
+											min={0}
+											onChange={(value: any) => {
+												if (isNaN(value) || value < 0) {
+													return;
+												}
+												setAttributes({
+													general_pagination: {
+														...general_pagination,
+														pageLimit: value,
+														isShowPagination: true,
+													},
+												});
+											}}
+											step="1"
+											value={maxPageShow}
+											isDragEnabled={false}
+										/>
+									</BaseControl>
 								)}
-							>
-								<NumberControl
-									id={"maxPageInputId"}
-									__unstableInputWidth="60px"
-									label={__("Max page to show")}
-									labelPosition="edge"
-									min={0}
-									onChange={(value: any) => {
-										if (isNaN(value) || value < 0) {
-											return;
-										}
-										setAttributes({
-											general_pagination: {
-												...general_pagination,
-												pageLimit: value,
-												isShowPagination: true,
-											},
-										});
-									}}
-									step="1"
-									value={maxPageShow}
-									isDragEnabled={false}
-								/>
-							</BaseControl>
+							</>
 						)}
 					</>
 				)}
@@ -866,6 +904,7 @@ const Edit: FC<Props> = (props) => {
 			advance_motionEffect,
 			style_category,
 			style_dimension,
+			style_arrowAndDots,
 		};
 		return cs;
 	}, [
@@ -894,6 +933,7 @@ const Edit: FC<Props> = (props) => {
 		advance_motionEffect,
 		style_category,
 		style_dimension,
+		style_arrowAndDots,
 	]);
 
 	const effectiveAttrs = useMemo(() => {
@@ -924,6 +964,7 @@ const Edit: FC<Props> = (props) => {
 			style_quickViewBtn: effectiveAttrs.style_quickViewBtn,
 			style_countdownUrgency: effectiveAttrs.style_countdownUrgency,
 			style_dimension: effectiveAttrs.style_dimension,
+			style_arrowAndDots: effectiveAttrs.style_arrowAndDots,
 			style_category: effectiveAttrs.style_category,
 			advance_responsiveCondition: effectiveAttrs.advance_responsiveCondition,
 			advance_zIndex: effectiveAttrs.advance_zIndex,
@@ -963,12 +1004,30 @@ const Edit: FC<Props> = (props) => {
 			? colGapTab
 			: colGapDesk;
 
+	const {
+		setSsrContainerEl,
+		isCarouselMode,
+		carouselIsShowArrow,
+		carouselIsShowDots,
+	} = useProductsCarouselEditor({
+		styleLayout: effectiveAttrs.style_layout,
+		activeCol,
+		activeColGap,
+	});
+
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps.className
-					} wcb-block-products-editor-swithToScrollSnapX__${effectiveAttrs.style_layout?.swithToScrollSnapX ? effectiveAttrs.style_layout.swithToScrollSnapX.toString() : "None"}`}
+				className={`${wrapBlockProps.className} ${
+					isCarouselMode
+						? "wcb-block-products-editor-layout__carousel"
+						: `wcb-block-products-editor-swithToScrollSnapX__${
+								effectiveAttrs.style_layout?.swithToScrollSnapX
+									? effectiveAttrs.style_layout.swithToScrollSnapX.toString()
+									: "None"
+						  }`
+				}`}
 				style={{
 					...wrapBlockProps.style,
 					"--wcb-editor-col": activeCol,
@@ -1008,15 +1067,17 @@ const Edit: FC<Props> = (props) => {
 					)}
 
 				{/* CHILD CONTENT  */}
-				{uniqueId && !!style_layout && !!style_price && (
-					<ServerSideRender
-						block="boostify-blocks/products"
-						attributes={WcbAttrsForServerSide}
-						EmptyResponsePlaceholder={EmptyPlaceholder}
-						LoadLoadingResponsePlaceholder={LoadingPlaceholder}
-						httpMethod="POST"
-					/>
-				)}
+				<div ref={setSsrContainerEl}>
+					{uniqueId && !!style_layout && !!style_price && (
+						<ServerSideRender
+							block="boostify-blocks/products"
+							attributes={WcbAttrsForServerSide}
+							EmptyResponsePlaceholder={EmptyPlaceholder}
+							LoadLoadingResponsePlaceholder={LoadingPlaceholder}
+							httpMethod="POST"
+						/>
+					)}
+				</div>
 			</div>
 		</MyCacheProvider>
 	);

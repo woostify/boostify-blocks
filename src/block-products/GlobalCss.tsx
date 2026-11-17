@@ -12,6 +12,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 import checkResponsiveValueForOptimizeCSS from "../utils/checkResponsiveValueForOptimizeCSS";
 import { getThemeDefaults } from "../utils/themeDefaults";
 import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
+import { WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO } from "../block-testimonials-swiper/WcbTestimonialsPanel_StyleArrowDots";
 
 const getBadgeShapeStyles = (
 	shape?: string,
@@ -160,6 +161,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 		style_wishlistBtn,
 		style_quickViewBtn,
 		style_dimension,
+		style_arrowAndDots,
 		//
 		advance_responsiveCondition,
 		advance_zIndex,
@@ -205,6 +207,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	const WRAP_CLASSNAME = `.${uniqueId}[data-uniqueid=${uniqueId}]`;
 	const LIST_CLASS = `${WRAP_CLASSNAME} .wcb-products__list`;
+	const CAROUSEL_CLASS = `${WRAP_CLASSNAME} .wcb-products__carousel`;
+	const CAROUSEL_PREV = `${CAROUSEL_CLASS} .swiper-button-prev`;
+	const CAROUSEL_NEXT = `${CAROUSEL_CLASS} .swiper-button-next`;
+	const CAROUSEL_ARROW = `${CAROUSEL_PREV}, ${CAROUSEL_NEXT}`;
+	const CAROUSEL_ARROW_SVG = `${CAROUSEL_PREV} svg, ${CAROUSEL_NEXT} svg`;
+	const CAROUSEL_DOTS = `${CAROUSEL_CLASS} .swiper-pagination`;
+	const CAROUSEL_BULLET_ACTIVE = `${CAROUSEL_CLASS} .swiper-pagination-bullet-active`;
 	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .wcb-products__product`;
 	const PRICE_TEXT_CLASS = `${POST_CARD_CLASS} .wcb-products__product-price, ${POST_CARD_CLASS} .wcb-products__product-price .woocommerce-Price-amount, ${POST_CARD_CLASS} .wcb-products__product-price del, ${POST_CARD_CLASS} .wcb-products__product-price ins`;
 	const ADD_TO_CART_BTN_BG = `${POST_CARD_CLASS} .wcb-products__product-add-to-cart`;
@@ -247,12 +256,59 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_Tablet: colunmGap_tablet,
 		} = getValueFromAttrsResponsives(style_layout?.colunmGap);
 
-		const { numberOfColumn, swithToScrollSnapX, peekAfter } = style_layout ?? {};
+		const { numberOfColumn, swithToScrollSnapX, peekAfter, layoutType } =
+			style_layout ?? {};
 		const {
 			value_Desktop: numberOfColumn_desktop,
 			value_Tablet: numberOfColumn_tablet,
 			value_Mobile: numberOfColumn_mobile,
 		} = getValueFromAttrsResponsives(numberOfColumn);
+
+		// In Carousel mode, let Swiper control active slides via inline styles once initialized,
+		// and provide exact responsive column width before `.swiper-initialized` so editor SSR never flashes 1 column.
+		if (layoutType === "carousel") {
+			const buildCarouselFallback = (
+				cols: string | number | null | undefined,
+				colGap: string | null | undefined
+			): CSSObject => {
+				const safeCols = Math.max(1, Number(cols) || 1);
+				const safeGap =
+					colGap && String(colGap).trim() !== "" ? colGap : "24px";
+				return {
+					"> div": {
+						width: `calc((100% - (${safeCols - 1} * ${safeGap})) / ${safeCols})`,
+						marginRight: safeGap,
+						flexShrink: 0,
+					},
+				};
+			};
+
+			const preInitListSel = `${WRAP_CLASSNAME} .wcb-products__carousel:not(.swiper-initialized) .wcb-products__list`;
+			const carouselFallbackStyles: CSSObject = previewDeviceType
+				? {
+						[preInitListSel]:
+							previewDeviceType === "Mobile"
+								? buildCarouselFallback(numberOfColumn_mobile, colunmGap_mobile)
+								: previewDeviceType === "Tablet"
+								? buildCarouselFallback(numberOfColumn_tablet, colunmGap_tablet)
+								: buildCarouselFallback(numberOfColumn_desktop, colunmGap_desktop),
+				  }
+				: {
+						[preInitListSel]: {
+							...buildCarouselFallback(numberOfColumn_mobile, colunmGap_mobile),
+							[`@media (min-width: ${media_tablet})`]: buildCarouselFallback(
+								numberOfColumn_tablet,
+								colunmGap_tablet
+							),
+							[`@media (min-width: ${media_desktop})`]: buildCarouselFallback(
+								numberOfColumn_desktop,
+								colunmGap_desktop
+							),
+						},
+				  };
+
+			return <Global styles={carouselFallbackStyles} />;
+		}
 
 		const {
 			value_Desktop: peekAfter_desktop,
@@ -736,6 +792,44 @@ const GlobalCss: FC<Props> = (attrs) => {
 					/>
 				)
 			}
+
+			{/* CAROUSEL ARROW & DOTS */}
+			{style_layout?.layoutType === "carousel" && (() => {
+				const effectiveArrowDots =
+					style_arrowAndDots || WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO;
+				return (
+					<>
+						<Global
+							styles={getBorderStyles({
+								className: CAROUSEL_ARROW,
+								border: effectiveArrowDots.border,
+								isWithRadius: true,
+							})}
+						/>
+						<Global
+							styles={[
+								{
+									[CAROUSEL_ARROW]: {
+										color: effectiveArrowDots.color,
+										backgroundColor: effectiveArrowDots.backgroundColor,
+									},
+									[CAROUSEL_ARROW_SVG]: {
+										width: effectiveArrowDots.arrowSize,
+										height: effectiveArrowDots.arrowSize,
+										color: effectiveArrowDots.color,
+									},
+									[CAROUSEL_BULLET_ACTIVE]: {
+										backgroundColor: effectiveArrowDots.color,
+									},
+									[CAROUSEL_PREV]: resolveSpacing("left", effectiveArrowDots.arrowDistance),
+									[CAROUSEL_NEXT]: resolveSpacing("right", effectiveArrowDots.arrowDistance),
+									[CAROUSEL_DOTS]: resolveSpacing("marginTop", effectiveArrowDots.dotsMarginTop),
+								},
+							]}
+						/>
+					</>
+				);
+			})()}
 
 			{/* DIMENSION */}
 			<Global

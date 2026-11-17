@@ -98,6 +98,9 @@ import {
 	WCB_PRODUCTS_PANEL_STYLE_DIMENSION,
 	WCB_PRODUCTS_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbProductsPanel_StyleDimension";
+import {
+	WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS,
+} from "../block-testimonials-swiper/WcbTestimonialsPanel_StyleArrowDots";
 
 export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	uniqueId: string;
@@ -125,6 +128,7 @@ export interface WcbAttrs extends WcbAttrsCommonFromWp {
 	style_quickViewBtn?: WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON;
 	style_countdownUrgency?: WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY;
 	style_dimension?: WCB_PRODUCTS_PANEL_STYLE_DIMENSION;
+	style_arrowAndDots?: WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS;
 	//
 	advance_responsiveCondition?: MyResponsiveConditionControlData;
 	advance_zIndex?: MyZIndexControlData;
@@ -222,6 +226,9 @@ const blokc1Attrs: AttrsGenericType<WcbAttrs> = {
 	style_dimension: {
 		type: "object",
 		// default: WCB_PRODUCTS_PANEL_STYLE_DIMENSION_DEMO,
+	},
+	style_arrowAndDots: {
+		type: "object",
 	},
 
 	// ADVANCE
