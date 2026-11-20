@@ -98,6 +98,8 @@ export function useProductsCarouselEditor({
 		let mountedCarouselEl: HTMLElement | null = null;
 		let rafId: number | null = null;
 		let rafWin: Window | null = null;
+		let postInitRafId: number | null = null;
+		let postInitRafWin: Window | null = null;
 
 		const scheduleRaf = (win: Window, fn: () => void) => {
 			if (rafId !== null) {
@@ -165,6 +167,8 @@ export function useProductsCarouselEditor({
 					modules: [Navigation, Pagination, Autoplay],
 					observer: true,
 					observeParents: true,
+					allowTouchMove: false,
+					simulateTouch: false,
 					loop: carouselLoop,
 					speed: carouselSpeed,
 					autoplay: carouselIsAutoPlay
@@ -190,8 +194,20 @@ export function useProductsCarouselEditor({
 				console.error("Products Swiper editor init failed:", error);
 			}
 
-			ownerWin.requestAnimationFrame(() => {
-				if (swiperInstance && !swiperInstance.destroyed) {
+			if (postInitRafId !== null) {
+				(postInitRafWin || ownerWin).cancelAnimationFrame(postInitRafId);
+				postInitRafId = null;
+				postInitRafWin = null;
+			}
+			postInitRafWin = ownerWin;
+			postInitRafId = ownerWin.requestAnimationFrame(() => {
+				postInitRafId = null;
+				postInitRafWin = null;
+				if (
+					swiperInstance &&
+					!swiperInstance.destroyed &&
+					carouselEl.isConnected
+				) {
 					swiperInstance.update();
 					if (
 						carouselIsShowDots &&
@@ -232,6 +248,9 @@ export function useProductsCarouselEditor({
 		return () => {
 			if (rafId !== null) {
 				(rafWin || window).cancelAnimationFrame(rafId);
+			}
+			if (postInitRafId !== null) {
+				(postInitRafWin || window).cancelAnimationFrame(postInitRafId);
 			}
 			resizeObserver?.disconnect();
 			observer.disconnect();

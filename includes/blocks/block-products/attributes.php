@@ -215,6 +215,14 @@ $attributes = array(
 				'Mobile'  => '2rem',
 			),
 			'swithToScrollSnapX' => 'None',
+			'layoutType'         => 'grid',
+			'isShowArrow'        => true,
+			'isShowDots'         => true,
+			'isAutoPlay'         => false,
+			'autoplaySpeed'      => 3000,
+			'hoverpause'         => true,
+			'loop'               => false,
+			'animationDuration'  => 500,
 			'isEqualHeight'      => true,
 		),
 	),
@@ -455,6 +463,29 @@ $attributes = array(
 					'bottom' => '',
 				),
 			),
+		),
+	),
+
+	// =========================================================================
+	// style_arrowAndDots — Carousel Arrow & Dots
+	// =========================================================================
+	'style_arrowAndDots' => array(
+		'type'    => 'object',
+		'default' => array(
+			'arrowSize'       => '1.25rem',
+			'border'          => array(
+				'mainSettings' => array(
+					'style' => 'solid',
+					'width' => '1px',
+					'color' => '#d1d5db',
+				),
+				'hoverColor' => '#6b7280',
+				'radius'     => array( 'Desktop' => '99px' ),
+			),
+			'arrowDistance'   => array( 'Desktop' => '0px' ),
+			'dotsMarginTop'   => array( 'Desktop' => '8px' ),
+			'color'           => '#374151',
+			'backgroundColor' => '#fff',
 		),
 	),
 );

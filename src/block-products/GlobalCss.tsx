@@ -214,6 +214,10 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const CAROUSEL_ARROW_SVG = `${CAROUSEL_PREV} svg, ${CAROUSEL_NEXT} svg`;
 	const CAROUSEL_DOTS = `${CAROUSEL_CLASS} .swiper-pagination`;
 	const CAROUSEL_BULLET_ACTIVE = `${CAROUSEL_CLASS} .swiper-pagination-bullet-active`;
+	const SNAP_PREV = `${WRAP_CLASSNAME} .indicators.-multi .p-arrow.-prev`;
+	const SNAP_NEXT = `${WRAP_CLASSNAME} .indicators.-multi .p-arrow.-next`;
+	const SNAP_ARROW = `${SNAP_PREV}, ${SNAP_NEXT}`;
+	const SNAP_ARROW_SVG = `${SNAP_PREV} svg, ${SNAP_NEXT} svg`;
 	const POST_CARD_CLASS = `${WRAP_CLASSNAME} .wcb-products__product`;
 	const PRICE_TEXT_CLASS = `${POST_CARD_CLASS} .wcb-products__product-price, ${POST_CARD_CLASS} .wcb-products__product-price .woocommerce-Price-amount, ${POST_CARD_CLASS} .wcb-products__product-price del, ${POST_CARD_CLASS} .wcb-products__product-price ins`;
 	const ADD_TO_CART_BTN_BG = `${POST_CARD_CLASS} .wcb-products__product-add-to-cart`;
@@ -793,15 +797,23 @@ const GlobalCss: FC<Props> = (attrs) => {
 				)
 			}
 
-			{/* CAROUSEL ARROW & DOTS */}
-			{style_layout?.layoutType === "carousel" && (() => {
+			{/* CAROUSEL / SCROLL-SNAP ARROW & DOTS */}
+			{(style_layout?.layoutType === "carousel" ||
+				(style_layout?.layoutType !== "carousel" &&
+					style_layout?.swithToScrollSnapX &&
+					style_layout.swithToScrollSnapX !== "None")) && (() => {
+				const isCarousel = style_layout?.layoutType === "carousel";
 				const effectiveArrowDots =
 					style_arrowAndDots || WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO;
+				const arrowPrevSel = isCarousel ? CAROUSEL_PREV : SNAP_PREV;
+				const arrowNextSel = isCarousel ? CAROUSEL_NEXT : SNAP_NEXT;
+				const arrowSel = isCarousel ? CAROUSEL_ARROW : SNAP_ARROW;
+				const arrowSvgSel = isCarousel ? CAROUSEL_ARROW_SVG : SNAP_ARROW_SVG;
 				return (
 					<>
 						<Global
 							styles={getBorderStyles({
-								className: CAROUSEL_ARROW,
+								className: arrowSel,
 								border: effectiveArrowDots.border,
 								isWithRadius: true,
 							})}
@@ -809,21 +821,34 @@ const GlobalCss: FC<Props> = (attrs) => {
 						<Global
 							styles={[
 								{
-									[CAROUSEL_ARROW]: {
+									[arrowSel]: {
 										color: effectiveArrowDots.color,
 										backgroundColor: effectiveArrowDots.backgroundColor,
 									},
-									[CAROUSEL_ARROW_SVG]: {
+									[arrowSvgSel]: {
 										width: effectiveArrowDots.arrowSize,
 										height: effectiveArrowDots.arrowSize,
 										color: effectiveArrowDots.color,
 									},
-									[CAROUSEL_BULLET_ACTIVE]: {
-										backgroundColor: effectiveArrowDots.color,
-									},
-									[CAROUSEL_PREV]: resolveSpacing("left", effectiveArrowDots.arrowDistance),
-									[CAROUSEL_NEXT]: resolveSpacing("right", effectiveArrowDots.arrowDistance),
-									[CAROUSEL_DOTS]: resolveSpacing("marginTop", effectiveArrowDots.dotsMarginTop),
+									...(isCarousel
+										? {
+												[CAROUSEL_BULLET_ACTIVE]: {
+													backgroundColor: effectiveArrowDots.color,
+												},
+												[CAROUSEL_DOTS]: resolveSpacing(
+													"marginTop",
+													effectiveArrowDots.dotsMarginTop
+												),
+										  }
+										: {}),
+									[arrowPrevSel]: resolveSpacing(
+										"left",
+										effectiveArrowDots.arrowDistance
+									),
+									[arrowNextSel]: resolveSpacing(
+										"right",
+										effectiveArrowDots.arrowDistance
+									),
 								},
 							]}
 						/>

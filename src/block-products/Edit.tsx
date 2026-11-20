@@ -533,7 +533,17 @@ const Edit: FC<Props> = (props) => {
 											panelData={style_layout}
 										/>
 									)}
-									{isCarouselMode && (carouselIsShowArrow || carouselIsShowDots) && (
+									{(
+										(isCarouselMode &&
+											(carouselIsShowArrow || carouselIsShowDots)) ||
+										(!isCarouselMode &&
+											Boolean(
+												effectiveAttrs.style_layout?.swithToScrollSnapX
+											) &&
+											effectiveAttrs.style_layout?.swithToScrollSnapX !==
+												"None" &&
+											carouselIsShowArrow)
+									) && (
 										<WcbTestimonialsPanel_StyleArrowDots
 											onToggle={() =>
 												handleTogglePanel("Styles", "_StyleArrowDots")
@@ -550,7 +560,9 @@ const Edit: FC<Props> = (props) => {
 												WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO
 											}
 											showArrowsDots={
-												carouselIsShowArrow && carouselIsShowDots
+												!isCarouselMode
+													? "Arrow"
+													: carouselIsShowArrow && carouselIsShowDots
 													? "Both"
 													: carouselIsShowArrow
 													? "Arrow"

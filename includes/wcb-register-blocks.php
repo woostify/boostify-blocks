@@ -128,6 +128,9 @@ if (!function_exists("boostify_blocks_create_blocks_gutenberg_init")) {
                         'style_dimension' => array(
                             'type'      => 'object',
                         ),
+                        'style_arrowAndDots' => array(
+                            'type'      => 'object',
+                        ),
                         'advance_responsiveCondition' => array(
                             'type'      => 'object',
                         ),

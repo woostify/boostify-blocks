@@ -73,7 +73,9 @@ $pag_active        = $pag_wrap_sel . ' .page-numbers.current';
 // 1. Products List Layout: Grid vs Carousel (Scroll Snap Slider)
 // Static display/overflow/scroll-snap/indicator rules live in src/block-products/style.scss
 // via .swithToScrollSnapX--{None|Desktop|Tablet|Mobile}. Only dynamic gaps, columns, and flex-basis are emitted here.
-$switch_snap     = $sl['swithToScrollSnapX'] ?? 'None';
+$layout_type     = $sl['layoutType'] ?? 'grid';
+$is_carousel     = ( 'carousel' === $layout_type );
+$switch_snap     = $is_carousel ? 'None' : ( $sl['swithToScrollSnapX'] ?? 'None' );
 $is_snap_desktop = ( 'Desktop' === $switch_snap );
 $is_snap_tablet  = ( $is_snap_desktop || 'Tablet' === $switch_snap );
 $is_snap_mobile  = ( $is_snap_tablet  || 'Mobile' === $switch_snap );
@@ -128,41 +130,43 @@ $pk_t_fmt = $wcb_format_unit( $pk_t, $pk_d_fmt );
 $pk_m_fmt = $wcb_format_unit( $pk_m, $pk_t_fmt );
 
 // --- Desktop (Base CSS) ---
-$css['desktop'][ $list_sel ]['row-gap']    = $rg_d_fmt;
-$css['desktop'][ $list_sel ]['column-gap'] = $cg_d_fmt;
-if ( $is_snap_desktop ) {
-	$nc_d_num = max( 1, intval( $nc_d ) );
-	$css['desktop'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_d_num - 1 ) . " * {$cg_d_fmt})) / {$nc_d_num} - {$pk_d_fmt})";
-} else {
-	$css['desktop'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_d}, minmax(0, 1fr))";
-}
+if ( ! $is_carousel ) {
+	$css['desktop'][ $list_sel ]['row-gap']    = $rg_d_fmt;
+	$css['desktop'][ $list_sel ]['column-gap'] = $cg_d_fmt;
+	if ( $is_snap_desktop ) {
+		$nc_d_num = max( 1, intval( $nc_d ) );
+		$css['desktop'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_d_num - 1 ) . " * {$cg_d_fmt})) / {$nc_d_num} - {$pk_d_fmt})";
+	} else {
+		$css['desktop'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_d}, minmax(0, 1fr))";
+	}
 
-// --- Tablet (Media Query) ---
-if ( $rg_t_fmt !== $rg_d_fmt ) {
-	$css['tablet'][ $list_sel ]['row-gap'] = $rg_t_fmt;
-}
-if ( $cg_t_fmt !== $cg_d_fmt ) {
-	$css['tablet'][ $list_sel ]['column-gap'] = $cg_t_fmt;
-}
-if ( $is_snap_tablet ) {
-	$nc_t_num = max( 1, intval( $nc_t ) );
-	$css['tablet'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_t_num - 1 ) . " * {$cg_t_fmt})) / {$nc_t_num} - {$pk_t_fmt})";
-} elseif ( $nc_t !== $nc_d || $is_snap_desktop ) {
-	$css['tablet'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_t}, minmax(0, 1fr))";
-}
+	// --- Tablet (Media Query) ---
+	if ( $rg_t_fmt !== $rg_d_fmt ) {
+		$css['tablet'][ $list_sel ]['row-gap'] = $rg_t_fmt;
+	}
+	if ( $cg_t_fmt !== $cg_d_fmt ) {
+		$css['tablet'][ $list_sel ]['column-gap'] = $cg_t_fmt;
+	}
+	if ( $is_snap_tablet ) {
+		$nc_t_num = max( 1, intval( $nc_t ) );
+		$css['tablet'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_t_num - 1 ) . " * {$cg_t_fmt})) / {$nc_t_num} - {$pk_t_fmt})";
+	} elseif ( $nc_t !== $nc_d || $is_snap_desktop ) {
+		$css['tablet'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_t}, minmax(0, 1fr))";
+	}
 
-// --- Mobile (Media Query) ---
-if ( $rg_m_fmt !== $rg_t_fmt || $rg_m_fmt !== $rg_d_fmt ) {
-	$css['mobile'][ $list_sel ]['row-gap'] = $rg_m_fmt;
-}
-if ( $cg_m_fmt !== $cg_t_fmt || $cg_m_fmt !== $cg_d_fmt ) {
-	$css['mobile'][ $list_sel ]['column-gap'] = $cg_m_fmt;
-}
-if ( $is_snap_mobile ) {
-	$nc_m_num = max( 1, intval( $nc_m ) );
-	$css['mobile'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_m_num - 1 ) . " * {$cg_m_fmt})) / {$nc_m_num} - {$pk_m_fmt})";
-} elseif ( $nc_m !== $nc_t || $nc_m !== $nc_d || $is_snap_tablet ) {
-	$css['mobile'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_m}, minmax(0, 1fr))";
+	// --- Mobile (Media Query) ---
+	if ( $rg_m_fmt !== $rg_t_fmt || $rg_m_fmt !== $rg_d_fmt ) {
+		$css['mobile'][ $list_sel ]['row-gap'] = $rg_m_fmt;
+	}
+	if ( $cg_m_fmt !== $cg_t_fmt || $cg_m_fmt !== $cg_d_fmt ) {
+		$css['mobile'][ $list_sel ]['column-gap'] = $cg_m_fmt;
+	}
+	if ( $is_snap_mobile ) {
+		$nc_m_num = max( 1, intval( $nc_m ) );
+		$css['mobile'][ $item_sel ]['flex-basis'] = "calc((100% - (" . ( $nc_m_num - 1 ) . " * {$cg_m_fmt})) / {$nc_m_num} - {$pk_m_fmt})";
+	} elseif ( $nc_m !== $nc_t || $nc_m !== $nc_d || $is_snap_tablet ) {
+		$css['mobile'][ $list_sel ]['grid-template-columns'] = "repeat({$nc_m}, minmax(0, 1fr))";
+	}
 }
 
 // 2. Product Card Base
@@ -471,6 +475,47 @@ if ( ! $qv_enabled ) {
 	}
 	if ( ! empty( $sq['hover_text_color'] ) ) {
 		WCB_Block_Helper::add_responsive_css( $css, $qv_btn_hover_sel, 'color', $sq['hover_text_color'] );
+	}
+}
+
+// 15. Carousel / Scroll-Snap Arrow & Dots
+if ( ( $is_carousel || 'None' !== $switch_snap ) && ! empty( $attr['style_arrowAndDots'] ) && is_array( $attr['style_arrowAndDots'] ) ) {
+	$sad           = $attr['style_arrowAndDots'];
+	$carousel_sel  = $wrap_sel . ' .wcb-products__carousel';
+	$prev_sel      = $is_carousel
+		? $carousel_sel . ' .swiper-button-prev'
+		: $wrap_sel . ' .indicators.-multi .p-arrow.-prev';
+	$next_sel      = $is_carousel
+		? $carousel_sel . ' .swiper-button-next'
+		: $wrap_sel . ' .indicators.-multi .p-arrow.-next';
+	$arrow_sel     = $prev_sel . ', ' . $next_sel;
+	$arrow_svg_sel = $prev_sel . ' svg, ' . $next_sel . ' svg';
+
+	if ( ! empty( $sad['border'] ) ) {
+		WCB_Block_Helper::add_border_css( $css, $arrow_sel, $sad['border'], true, true, true );
+	}
+	if ( ! empty( $sad['color'] ) ) {
+		$css['desktop'][ $arrow_sel ]['color']     = $sad['color'];
+		$css['desktop'][ $arrow_svg_sel ]['color'] = $sad['color'];
+		if ( $is_carousel ) {
+			$bullet_active_sel                                         = $carousel_sel . ' .swiper-pagination-bullet-active';
+			$css['desktop'][ $bullet_active_sel ]['background-color'] = $sad['color'];
+		}
+	}
+	if ( ! empty( $sad['backgroundColor'] ) ) {
+		$css['desktop'][ $arrow_sel ]['background-color'] = $sad['backgroundColor'];
+	}
+	if ( ! empty( $sad['arrowSize'] ) ) {
+		$css['desktop'][ $arrow_svg_sel ]['width']  = $sad['arrowSize'];
+		$css['desktop'][ $arrow_svg_sel ]['height'] = $sad['arrowSize'];
+	}
+	if ( ! empty( $sad['arrowDistance'] ) ) {
+		WCB_Block_Helper::add_responsive_css( $css, $prev_sel, 'left', $sad['arrowDistance'] );
+		WCB_Block_Helper::add_responsive_css( $css, $next_sel, 'right', $sad['arrowDistance'] );
+	}
+	if ( $is_carousel && ! empty( $sad['dotsMarginTop'] ) ) {
+		$dots_sel = $carousel_sel . ' .swiper-pagination';
+		WCB_Block_Helper::add_responsive_css( $css, $dots_sel, 'margin-top', $sad['dotsMarginTop'] );
 	}
 }
 

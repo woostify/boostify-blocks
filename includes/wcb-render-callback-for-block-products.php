@@ -516,8 +516,99 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
             // do_action('woocommerce_before_shop_loop');
             // woocommerce_product_loop_start();
             $layoutAttrs        = $attributes['style_layout'] ?? [];
+            $layoutType         = !empty($layoutAttrs['layoutType']) ? $layoutAttrs['layoutType'] : 'grid';
             $swithToScrollSnapX = !empty($layoutAttrs['swithToScrollSnapX']) ? $layoutAttrs['swithToScrollSnapX'] : 'None';
+            $isShowArrow        = isset($layoutAttrs['isShowArrow']) ? boostify_blocks_is_enabled($layoutAttrs['isShowArrow']) : true;
+            $isShowDots         = isset($layoutAttrs['isShowDots']) ? boostify_blocks_is_enabled($layoutAttrs['isShowDots']) : true;
+
+            if ('carousel' === $layoutType) :
+                if ( ! is_admin() ) {
+                    wp_enqueue_style( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.css', array(), BOOSTIFY_BLOCKS_VERSION );
+                    wp_enqueue_script( 'boostify-blocks-swiper', plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/swiper/swiper-bundle.min.js', array(), BOOSTIFY_BLOCKS_VERSION, true );
+                }
+                $num_col = $layoutAttrs['numberOfColumn'] ?? array( 'Desktop' => 3, 'Tablet' => 2, 'Mobile' => 2 );
+                $col_d   = is_array( $num_col ) ? max( 1, (int) ( $num_col['Desktop'] ?? 3 ) ) : max( 1, (int) $num_col );
+                $col_t   = is_array( $num_col ) ? max( 1, (int) ( $num_col['Tablet'] ?? $col_d ) ) : $col_d;
+                $col_m   = is_array( $num_col ) ? max( 1, (int) ( $num_col['Mobile'] ?? $col_t ) ) : $col_t;
+
+                $col_gap = $layoutAttrs['colunmGap'] ?? array();
+                $format_gap = static function( $val, $fallback = '1.5rem' ) {
+                    if ( empty( $val ) && '0' !== (string) $val && 0 !== $val ) {
+                        return $fallback;
+                    }
+                    $str = trim( (string) $val );
+                    return is_numeric( $str ) ? $str . 'px' : $str;
+                };
+                $cg_d    = $format_gap( is_array( $col_gap ) ? ( $col_gap['Desktop'] ?? '' ) : $col_gap, '1.5rem' );
+                $cg_t    = $format_gap( is_array( $col_gap ) ? ( $col_gap['Tablet'] ?? '' ) : '', $cg_d );
+                $cg_m    = $format_gap( is_array( $col_gap ) ? ( $col_gap['Mobile'] ?? '' ) : '', $cg_t );
+
+                $carousel_css_vars = sprintf(
+                    '--wcb-c-cols:%d;--wcb-c-cols-t:%d;--wcb-c-cols-d:%d;--wcb-c-gap:%s;--wcb-c-gap-t:%s;--wcb-c-gap-d:%s;',
+                    $col_m,
+                    $col_t,
+                    $col_d,
+                    esc_attr( $cg_m ),
+                    esc_attr( $cg_t ),
+                    esc_attr( $cg_d )
+                );
+
+                $swiper_config = array(
+                    'columns'           => array(
+                        'Desktop' => $col_d,
+                        'Tablet'  => $col_t,
+                        'Mobile'  => $col_m,
+                    ),
+                    'spaceBetween'      => array(
+                        'Desktop' => $cg_d,
+                        'Tablet'  => $cg_t,
+                        'Mobile'  => $cg_m,
+                    ),
+                    'isShowArrow'       => $isShowArrow,
+                    'isShowDots'        => $isShowDots,
+                    'isAutoPlay'        => ! empty( $layoutAttrs['isAutoPlay'] ),
+                    'autoplaySpeed'     => (int) ( $layoutAttrs['autoplaySpeed'] ?? 3000 ),
+                    'hoverpause'        => isset( $layoutAttrs['hoverpause'] ) ? (bool) $layoutAttrs['hoverpause'] : true,
+                    'loop'              => ! empty( $layoutAttrs['loop'] ),
+                    'animationDuration' => (int) ( $layoutAttrs['animationDuration'] ?? 500 ),
+                );
         ?>
+            <div
+                class="swiper wcb-products__carousel"
+                style="<?php echo esc_attr( $carousel_css_vars ); ?>"
+                data-wp-interactive="boostify-blocks/products-carousel"
+                data-wp-context="<?php echo esc_attr( wp_json_encode( $swiper_config ) ); ?>"
+                data-wp-init="callbacks.initSwiper"
+            >
+                <div class="swiper-wrapper wcb-products__list">
+                    <?php
+                    while ($loop->have_posts()) :
+                        $loop->the_post();
+
+                        global $product;
+                        if (!empty($product)) {
+                            echo boostify_blocks_block_products_render_product($product, $attributes, $loop->current_post);
+                        }
+                    endwhile;
+                    ?>
+                </div>
+                <?php if ($isShowArrow) : ?>
+                    <div class="swiper-button-prev">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                        </svg>
+                    </div>
+                    <div class="swiper-button-next">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                    </div>
+                <?php endif; ?>
+                <?php if ($isShowDots) : ?>
+                    <div class="swiper-pagination"></div>
+                <?php endif; ?>
+            </div>
+        <?php else : ?>
             <div class="scroll-snap-slider -multi wcb-products__list swithToScrollSnapX--<?php echo esc_attr($swithToScrollSnapX); ?>">
                 <?php
                 while ($loop->have_posts()) :
@@ -532,6 +623,7 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
 
 
             </div>
+            <?php if ($isShowArrow) : ?>
             <div class="indicators -multi">
                 <button type="button" class="p-arrow -prev -multi">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -547,6 +639,8 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
 
                 </button>
             </div>
+            <?php endif; ?>
+        <?php endif; ?>
 
             <?php
             // woocommerce_product_loop_end();
@@ -558,7 +652,7 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
             do_action('woocommerce_no_products_found');
         endif; ?>
 
-        <?php if (boostify_blocks_is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
+        <?php if ('carousel' !== $layoutType && boostify_blocks_is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
             <div class="wcb-products__pagination">
                 <?php boostify_blocks_pagination_bar($loop, $attributes['general_pagination']); ?>
             </div>
@@ -718,6 +812,9 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     }
     if ( isset( $attributes['style_layout']['isEqualHeight'] ) && false === $attributes['style_layout']['isEqualHeight'] ) {
         $classes .= " wcb-products__product--no-equal-height";
+    }
+    if ( ( $attributes['style_layout']['layoutType'] ?? 'grid' ) === 'carousel' ) {
+        $classes .= " swiper-slide";
     }
 
     // quick view position

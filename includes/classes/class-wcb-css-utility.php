@@ -16,6 +16,73 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WCB_CSS_Utility {
 
 	/**
+	 * Append a pseudo-class or suffix (e.g. ':hover') to every top-level selector in a comma-separated list.
+	 *
+	 * @param string $selector CSS selector string (single or comma-separated).
+	 * @param string $suffix   Suffix to append (e.g. ':hover').
+	 * @return string Selector string with suffix applied to each item.
+	 */
+	public static function append_selector_suffix( $selector, $suffix = ':hover' ) {
+		if ( '' === $selector || '' === $suffix ) {
+			return $selector;
+		}
+		if ( false === strpos( $selector, ',' ) ) {
+			return $selector . $suffix;
+		}
+
+		$parts   = array();
+		$current = '';
+		$paren   = 0;
+		$bracket = 0;
+		$quote   = '';
+		$len     = strlen( $selector );
+
+		for ( $i = 0; $i < $len; $i++ ) {
+			$ch = $selector[ $i ];
+			if ( '' !== $quote ) {
+				$current .= $ch;
+				if ( '\\' === $ch && $i + 1 < $len ) {
+					$current .= $selector[ ++$i ];
+				} elseif ( $ch === $quote ) {
+					$quote = '';
+				}
+				continue;
+			}
+			if ( '"' === $ch || "'" === $ch ) {
+				$quote    = $ch;
+				$current .= $ch;
+			} elseif ( '(' === $ch ) {
+				++$paren;
+				$current .= $ch;
+			} elseif ( ')' === $ch && $paren > 0 ) {
+				--$paren;
+				$current .= $ch;
+			} elseif ( '[' === $ch ) {
+				++$bracket;
+				$current .= $ch;
+			} elseif ( ']' === $ch && $bracket > 0 ) {
+				--$bracket;
+				$current .= $ch;
+			} elseif ( ',' === $ch && 0 === $paren && 0 === $bracket ) {
+				$trimmed = trim( $current );
+				if ( '' !== $trimmed ) {
+					$parts[] = $trimmed . $suffix;
+				}
+				$current = '';
+			} else {
+				$current .= $ch;
+			}
+		}
+
+		$trimmed = trim( $current );
+		if ( '' !== $trimmed ) {
+			$parts[] = $trimmed . $suffix;
+		}
+
+		return implode( ', ', $parts );
+	}
+
+	/**
 	 * Generate CSS from selectors array.
 	 *
 	 * @param array  $selectors Array of selectors with their properties.
@@ -503,7 +570,7 @@ class WCB_CSS_Utility {
 				$result[ $selector ] = $css;
 			}
 			if ( ! empty( $hover_color ) ) {
-				$result[ $selector . ':hover' ]['border-color'] = $hover_color;
+				$result[ self::append_selector_suffix( $selector, ':hover' ) ]['border-color'] = $hover_color;
 			}
 		}
 
@@ -758,7 +825,7 @@ class WCB_CSS_Utility {
 		if ( ! empty( $hover ) ) {
 			$hov = $build_shadow( $hover );
 			if ( $hov ) {
-				$result[ $selector . ':hover' ]['box-shadow'] = $hov;
+				$result[ self::append_selector_suffix( $selector, ':hover' ) ]['box-shadow'] = $hov;
 			}
 		}
 

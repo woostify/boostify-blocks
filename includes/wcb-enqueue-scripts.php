@@ -151,6 +151,13 @@ function boostify_blocks_my_scripts_method()
         array( '@wordpress/interactivity' )
     );
 
+    wp_enqueue_script_module(
+        'boostify-blocks-products-carousel-view',
+        plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/products-carousel/boostify-blocks-products-carousel-view.js',
+        array( '@wordpress/interactivity' ),
+        BOOSTIFY_BLOCKS_VERSION
+    );
+
     if ( class_exists( 'WC_AJAX' ) ) {
         wp_localize_script(
             'boostify-blocks-buynow',
