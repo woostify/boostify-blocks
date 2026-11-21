@@ -141,7 +141,7 @@ function boostify_blocks_pagination_bar($the_query, $attrPagination)
     $total         = !$max_page || $max_page > $the_query->max_num_pages ? $the_query->max_num_pages : $max_page;
 
     $big = 999999999; // need an unlikely integer
-    $current_page = max(1, get_query_var('paged'));
+    $current_page = max(1, (int) (get_query_var('paged') ?: get_query_var('page')));
     $pagination_links = paginate_links(array(
         'base' => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
         'format' => '?paged=%#%',

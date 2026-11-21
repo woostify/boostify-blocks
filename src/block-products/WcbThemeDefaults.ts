@@ -1,21 +1,23 @@
-import { WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO } from "../block-products/WcbProductsPanel_StyleLayout";
+import { WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO, WCB_PRODUCTS_PANEL_STYLE_LAYOUT } from "../block-products/WcbProductsPanel_StyleLayout";
 import { MY_BORDER_CONTROL_DEMO } from "../components/controls/MyBorderControl/types";
 import { getThemeDefaults } from "../utils/themeDefaults";
 import { WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO } from "./WcbProducstPanelSortingAndFiltering";
-import { WCB_PRODUCTS_PANEL_COTENT_DEMO } from "./WcbProductsPanelContent";
+import { WCB_PRODUCTS_PANEL_COTENT_DEMO, WCB_PRODUCTS_PANEL_COTENT } from "./WcbProductsPanelContent";
 import { WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO } from "./WcbProductsPanelFeaturedImage";
 import { WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO } from "./WcbProductsPanel_StyleFeaturedImage";
-import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO } from "./WcbProductsPanel_StyleSaleBadge";
+import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO, WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE } from "./WcbProductsPanel_StyleSaleBadge";
 import { WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO } from "./WcbProductsPanel_StyleTitle";
 import { WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO } from "./WcbProductsPanel_StylePrice";
 import { WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO } from "./WcbProductsPanel_StyleAddToCartBtn";
-import { WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO } from "./WcbProductsPanelButton";
-import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO } from "./WcbProductsPanel_StyleOutOfStock";
-import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK } from "./WcbProductsPanel_StyleOutOfStock";
-import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE } from "./WcbProductsPanel_StyleSaleBadge";
+import { WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO, WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN } from "./WcbProductsPanelButton";
+import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO, WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK } from "./WcbProductsPanel_StyleOutOfStock";
 import { WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO } from "./WcbProductsPanel_StyleWishListButton";
 import { WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO } from "./WcbProductsPanel_StyleQuickViewButton";
 import { WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO } from "./WcbProductsPanel_StyleCountdownUrgency";
+import { WcbAttrs } from "./attributes";
+
+const toBool = (v: unknown, def: boolean): boolean =>
+    v === undefined ? def : v === true || v === '1' || v === 1;
 
 /**
  * Builds style_layout with theme numberOfColumn and textAlignment.
@@ -34,6 +36,9 @@ export function buildStyleLayoutDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANE
             theme.product_per_row?.mobile ??
             WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.numberOfColumn.Mobile,
     };
+    const equalFlag = theme.shop_archive_product_content?.equal_flag;
+    const isContentEqual = toBool(equalFlag, false);
+
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO,
         numberOfColumn,
@@ -42,6 +47,8 @@ export function buildStyleLayoutDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANE
         textAlignment:
             theme.shop_archive_product_content?.align ??
             WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO.textAlignment,
+        contentEqualHeight: isContentEqual,
+        contentMinHeight: theme.shop_archive_product_content?.min_height ?? 160,
     };
 }
 
@@ -73,11 +80,14 @@ export function buildSortingAndFilteringDefault(
     _attr?: Partial<typeof WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO>
 ) {
     const theme = getThemeDefaults();
+    const perPage =
+        theme.product_per_page ||
+        WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO.numberOfItems;
     return {
         ...WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO,
-        numberOfItems:
-            theme.product_per_page ||
-            WCB_PRODUCTS_PANEL_SORTINGANDFILTERING_DEMO.numberOfItems,
+        numberOfItems: perPage,
+        numberOfItemsFromCustomizer: theme.product_per_page,
+        isNumberOfItemsEdited: false,
     };
 }
 
@@ -88,14 +98,22 @@ export function buildSortingAndFilteringDefault(
 export function buildGeneralContractDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_COTENT_DEMO>) {
     const theme = getThemeDefaults();
     const content = theme.shop_archive_product_content;
-    const toBool = (v: any, def: boolean): boolean =>
-        v === undefined ? def : v === true || v === '1' || v === 1;
+    const saleTag = theme.shop_archive_sale_tag;
+    const outOfStock = theme.shop_archive_out_of_stock;
+
+    const isShowSale = saleTag?.position !== 'none';
+    const isShowOut = outOfStock?.position !== 'none';
+    const salePercent = saleTag?.sale_percent !== undefined ? Boolean(saleTag.sale_percent) : false;
+
     return {
         ...WCB_PRODUCTS_PANEL_COTENT_DEMO,
         isShowTitle: toBool(content?.title_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowTitle),
-        isShowCategory: toBool(content?.category_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowCategory),
+        isShowCategory: toBool(content?.category_flag, false),
         isShowRating: toBool(content?.rating_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowRating),
         isShowPrice: toBool(content?.price_flag, WCB_PRODUCTS_PANEL_COTENT_DEMO.isShowPrice),
+        isShowSaleBadge: isShowSale,
+        showSaleBadgeDiscoutPercent: salePercent,
+        isShowOutOfStock: isShowOut,
     };
 }
 
@@ -111,6 +129,8 @@ export function buildGeneralFeaturedImageDefault(_attr?: Partial<typeof WCB_PROD
         hoverType:
             content?.hover ??
             WCB_PRODUCTS_PANEL_FEATURED_IMAGE_DEMO.hoverType,
+        equal_height_flag: Boolean(content?.equal_height_flag),
+        image_height: content?.image_height ?? 300,
     };
 }
 
@@ -152,7 +172,11 @@ export function buildStyleSaleBadgeDefault(_attr?: Partial<typeof WCB_PRODUCTS_P
         WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO.position;
 
     const convertedPosition: WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE["position"] =
-        rawPosition === "left" ? "top-left" : "top-right";
+        rawPosition === "left" || rawPosition === "top-left"
+            ? "top-left"
+            : rawPosition === "none"
+            ? "none"
+            : "top-right";
 
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO,
@@ -163,6 +187,11 @@ export function buildStyleSaleBadgeDefault(_attr?: Partial<typeof WCB_PRODUCTS_P
             saleTag?.text_color ??
             WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO.textColor,
         position: convertedPosition,
+        shape: saleTag?.shape ?? WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO.shape,
+        borderRadius: saleTag?.border_radius ?? 0,
+        isSquare: saleTag?.is_square ?? false,
+        size: saleTag?.size ?? 40,
+        text: saleTag?.text ?? "Sale!",
     };
 }
 
@@ -179,9 +208,9 @@ export function buildStyleOutOfStockDefault(_attr?: Partial<typeof WCB_PRODUCTS_
         WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.position;
 
     const convertedPosition: WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK["position"] =
-        rawPosition === "left"
+        rawPosition === "left" || rawPosition === "top-left"
             ? "top-left"
-            : rawPosition === "right"
+            : rawPosition === "right" || rawPosition === "top-right"
             ? "top-right"
             : "none";
 
@@ -194,6 +223,35 @@ export function buildStyleOutOfStockDefault(_attr?: Partial<typeof WCB_PRODUCTS_
             outOfStock?.text_color ??
             WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.textColor,
         position: convertedPosition,
+        shape: outOfStock?.shape ?? WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO.shape,
+        borderRadius: outOfStock?.border_radius ?? 0,
+        isSquare: outOfStock?.is_square ?? false,
+        size: outOfStock?.size ?? 40,
+        text: outOfStock?.text ?? "Out Of Stock",
+    };
+}
+
+const formatPxSize = (val: unknown, fallback: string): string =>
+    val != null && String(val).trim() !== "" ? `${val}px` : fallback;
+
+function buildTextStyleDefault<
+    T extends typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO | typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO
+>(
+    demo: T,
+    color: string | undefined,
+    sizes: { desktop?: unknown; tablet?: unknown; mobile?: unknown } | undefined
+): T {
+    return {
+        ...demo,
+        textColor: color ?? demo.textColor,
+        typography: {
+            ...demo.typography,
+            fontSizes: {
+                Desktop: formatPxSize(sizes?.desktop, demo.typography.fontSizes.Desktop ?? ""),
+                Tablet: formatPxSize(sizes?.tablet, demo.typography.fontSizes.Tablet ?? ""),
+                Mobile: formatPxSize(sizes?.mobile, demo.typography.fontSizes.Mobile ?? ""),
+            },
+        },
     };
 }
 
@@ -202,28 +260,12 @@ export function buildStyleOutOfStockDefault(_attr?: Partial<typeof WCB_PRODUCTS_
  * Customizer attributes use the theme value; all others use demo defaults.
  */
 export function buildStyleTitleDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO>) {
-    const theme = getThemeDefaults();
-    const general = theme.shop_archive_general_design;
-    return {
-        ...WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO,
-        textColor:
-            general?.title_color ??
-            WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.textColor,
-        typography: {
-            ...WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography,
-            fontSizes: {
-                Desktop:
-                    (general?.title_font_size != null ? `${general.title_font_size.desktop}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Desktop,
-                Tablet:
-                    (general?.title_font_size != null ? `${general.title_font_size.tablet}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Tablet,
-                Mobile:
-                    (general?.title_font_size != null ? `${general.title_font_size.mobile}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO.typography.fontSizes.Mobile,
-            },
-        },
-    };
+    const general = getThemeDefaults().shop_archive_general_design;
+    return buildTextStyleDefault(
+        WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO,
+        general?.title_color,
+        general?.title_font_size
+    );
 }
 
 /**
@@ -231,69 +273,59 @@ export function buildStyleTitleDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL
  * Customizer attributes use the theme value; all others use demo defaults.
  */
 export function buildStylePriceDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO>) {
-    const theme = getThemeDefaults();
-    const general = theme.shop_archive_general_design;
-    return {
-        ...WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
-        textColor:
-            general?.price_color ??
-            WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.textColor,
-        typography: {
-            ...WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography,
-            fontSizes: {
-                Desktop:
-                    (general?.price_font_size != null ? `${general.price_font_size.desktop}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Desktop,
-                Tablet:
-                    (general?.price_font_size != null ? `${general.price_font_size.tablet}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Tablet,
-                Mobile:
-                    (general?.price_font_size != null ? `${general.price_font_size.mobile}px` : undefined) ??
-                    WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO.typography.fontSizes.Mobile,
-            },
-        },
-    };
+    const general = getThemeDefaults().shop_archive_general_design;
+    return buildTextStyleDefault(
+        WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO,
+        general?.price_color,
+        general?.price_font_size
+    );
 }
+
+export const normalizeAddToCartPosition = (p?: string): WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN['position'] => {
+    if (p === 'bottom-visible' || p === 'bottom visible') return 'bottom visible';
+    if (p === 'image' || p === 'inside image') return 'inside image';
+    if (p === 'icon') return 'icon';
+    if (p === 'none') return 'none';
+    if (p === 'bottom') return 'bottom';
+    return 'bottom';
+};
 
 /**
  * Builds style_addToCartBtn with theme styles.
  * Customizer attributes use the theme value; all others use demo defaults.
  */
-export function buildStyleAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO>) {
+export function buildStyleAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO>, currentPos?: string) {
     const theme = getThemeDefaults();
     const addToCartBtn = theme.shop_archive_add_to_cart_btn;
+    const pos = currentPos || addToCartBtn?.position || 'bottom';
+    const normalizedPos = normalizeAddToCartPosition(pos);
+    const posStyle = addToCartBtn?.by_position?.[normalizedPos] || addToCartBtn?.by_position?.[pos];
+
+    const isIconPos = normalizedPos === 'icon';
+    const textColor = posStyle?.text_color ?? (isIconPos ? '#2b2b2b' : addToCartBtn?.text_color ?? WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Normal?.color);
+    const bgColor = posStyle?.bg_color ?? (isIconPos ? '#ffffff' : addToCartBtn?.bg_color ?? WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Normal?.backgroundColor);
+    const hoverTextColor = posStyle?.hover_text_color ?? (isIconPos ? '#ffffff' : addToCartBtn?.hover_text_color ?? WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Hover?.color);
+    const hoverBgColor = posStyle?.hover_bg_color ?? (isIconPos ? '#e33333' : addToCartBtn?.hover_bg_color ?? WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Hover?.backgroundColor);
+    const radiusVal = posStyle?.border_radius !== undefined ? posStyle.border_radius : (isIconPos ? 0 : addToCartBtn?.border_radius);
+
     return {
         ...WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO,
         colorAndBackgroundColor: {
             ...WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor,
             Normal: {
-                color:
-                    addToCartBtn?.text_color ??
-                    WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Normal?.color,
-                backgroundColor:
-                    addToCartBtn?.bg_color ??
-                    WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Normal?.backgroundColor,
+                color: textColor,
+                backgroundColor: bgColor,
             },
             Hover: {
-                color:
-                    addToCartBtn?.hover_text_color ??
-                    WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Hover?.color,
-                backgroundColor:
-                    addToCartBtn?.hover_bg_color ??
-                    WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.colorAndBackgroundColor?.Hover?.backgroundColor,
+                color: hoverTextColor,
+                backgroundColor: hoverBgColor,
             },
         },
         border: {
             ...WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border,
             radius: (() => {
-                // Store as a uniform 4-corner object so BorderRadiusControl displays all corners correctly.
-                // A plain string like "10px" can be misinterpreted by the control as only the topLeft value.
-                const radiusPx = addToCartBtn?.border_radius != null && addToCartBtn.border_radius > 0
-                    ? `${addToCartBtn.border_radius}px`
-                    : undefined;
-                const uniformRadius = radiusPx
-                    ? { topLeft: radiusPx, topRight: radiusPx, bottomRight: radiusPx, bottomLeft: radiusPx }
-                    : WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO.border.radius.Desktop;
+                const radiusPx = radiusVal != null && radiusVal > 0 ? `${radiusVal}px` : "0px";
+                const uniformRadius = { topLeft: radiusPx, topRight: radiusPx, bottomRight: radiusPx, bottomLeft: radiusPx };
                 return { Desktop: uniformRadius, Tablet: uniformRadius, Mobile: uniformRadius };
             })(),
         },
@@ -307,21 +339,21 @@ export function buildStyleAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCT
 export function buildGeneralAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO>) {
     const theme = getThemeDefaults();
     const addToCartBtn = theme.shop_archive_add_to_cart_btn;
+    const isCatalog = Boolean(theme.catalog_mode);
+
+    const isShowQty = isCatalog
+        ? false
+        : toBool(theme.shop_archive_product_content?.quantity_flag, false);
+
+    const isShowBtn = isCatalog
+        ? false
+        : (addToCartBtn?.position === 'none' ? false : true);
+
     return {
         ...WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
-        isShowButton:
-            addToCartBtn?.position === 'none' ? false :
-            WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowButton,
-        position:
-            addToCartBtn?.position === 'bottom-visible' ? 'bottom visible' :
-            addToCartBtn?.position === 'image' ? 'inside image' :
-            addToCartBtn?.position === 'icon' ? 'icon' :
-            addToCartBtn?.position === 'bottom' ? 'bottom' :
-            addToCartBtn?.position ??
-            WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.position,
-        isShowQuantity:
-            addToCartBtn?.position === 'none' ? false :
-            WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO.isShowQuantity,
+        isShowButton: isShowBtn,
+        position: normalizeAddToCartPosition(addToCartBtn?.position),
+        isShowQuantity: isShowQty,
         isShowIcon:
             addToCartBtn?.show_icon !== undefined
                 ? addToCartBtn.show_icon
@@ -347,6 +379,18 @@ export function buildStyleWishlistButtonDefault(_attr?: Partial<typeof WCB_PRODU
         wishlist_plugin_active:
             wishlistBtn?.wishlist_plugin_active ??
             WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.wishlist_plugin_active,
+        color:
+            wishlistBtn?.color ??
+            WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.color,
+        backgroundColor:
+            wishlistBtn?.bg_color ??
+            WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.backgroundColor,
+        hoverColor:
+            wishlistBtn?.hover_color ??
+            WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.hoverColor,
+        hoverBackgroundColor:
+            wishlistBtn?.hover_bg_color ??
+            WCB_PRODUCTS_PANEL_STYLE_WISHLIST_BUTTON_DEMO.hoverBackgroundColor,
     };
 }
 
@@ -366,8 +410,9 @@ export function buildStyleQuickViewButtonDefault(_attr?: Partial<typeof WCB_PROD
             quickViewBtn?.position ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.position,
         show_icon:
-            quickViewBtn?.show_icon ??
-            WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.show_icon,
+            quickViewBtn?.show_icon !== undefined
+                ? (Boolean(quickViewBtn.show_icon) && String(quickViewBtn.show_icon) !== "0" && String(quickViewBtn.show_icon) !== "false")
+                : (_attr?.show_icon ?? WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.show_icon),
         bg_color:
             quickViewBtn?.bg_color ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.bg_color,
@@ -381,8 +426,9 @@ export function buildStyleQuickViewButtonDefault(_attr?: Partial<typeof WCB_PROD
             quickViewBtn?.hover_text_color ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.hover_text_color,
         border_radius:
-            quickViewBtn?.border_radius ??
-            WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.border_radius,
+            quickViewBtn?.border_radius !== undefined && quickViewBtn.border_radius !== ''
+                ? (typeof quickViewBtn.border_radius === 'string' ? parseInt(quickViewBtn.border_radius, 10) || 0 : Number(quickViewBtn.border_radius))
+                : (_attr?.border_radius ?? WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.border_radius),
         woostify_pro_active:
             quickViewBtn?.woostify_pro_active ??
             WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO.woostify_pro_active,
@@ -446,5 +492,198 @@ export function buildStyleCountdownUrgencyDefault(_attr?: Partial<typeof WCB_PRO
         hideAfterTimeUp:
             cu?.hide_after_time_up ??
             WCB_PRODUCTS_PANEL_STYLE_COUNTDOWN_URGENCY_DEMO.hideAfterTimeUp,
+    };
+}
+
+/**
+ * Applies Woostify theme and Pro options to block attributes based on priority rules:
+ * - Priority 1 (Default / isCustomizerGeneralLayout === false): Theme Customizer & Pro settings strictly apply.
+ * - Priority 2 (Block override / isCustomizerGeneralLayout === true): Block settings take priority; unconfigured fall back to theme.
+ * - Column count override: If isNumberOfColumnEdited === true, user-selected column count takes priority regardless.
+ */
+export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
+    const isOverride = Boolean(attrs.general_layout?.isCustomizerGeneralLayout);
+    const theme = getThemeDefaults();
+
+    // 1. Style Layout
+    const baseLayout = attrs.style_layout || buildStyleLayoutDefault();
+    const isColEdited = Boolean(baseLayout.isNumberOfColumnEdited);
+    const themeCol = theme.product_per_row;
+    const effectiveNumCol = isColEdited
+        ? {
+              Desktop: baseLayout.numberOfColumn.Desktop ?? themeCol?.desktop ?? 3,
+              Tablet: baseLayout.numberOfColumn.Tablet ?? themeCol?.tablet ?? 2,
+              Mobile: baseLayout.numberOfColumn.Mobile ?? themeCol?.mobile ?? 1,
+          }
+        : {
+              Desktop: themeCol?.desktop ?? baseLayout.numberOfColumn.Desktop ?? 3,
+              Tablet: themeCol?.tablet ?? baseLayout.numberOfColumn.Tablet ?? 2,
+              Mobile: themeCol?.mobile ?? baseLayout.numberOfColumn.Mobile ?? 1,
+          };
+
+    const equalFlag = theme.shop_archive_product_content?.equal_flag;
+    const themeEqual = toBool(equalFlag, false);
+    const themeMinHeight = theme.shop_archive_product_content?.min_height ?? 160;
+
+    const effectiveLayout: WCB_PRODUCTS_PANEL_STYLE_LAYOUT = {
+        ...baseLayout,
+        numberOfColumn: effectiveNumCol,
+        textAlignment: isOverride
+            ? (baseLayout.textAlignment ?? theme.shop_archive_product_content?.align ?? 'center')
+            : (theme.shop_archive_product_content?.align ?? baseLayout.textAlignment ?? 'center'),
+        contentEqualHeight: isOverride
+            ? (baseLayout.contentEqualHeight !== undefined ? baseLayout.contentEqualHeight : themeEqual)
+            : themeEqual,
+        contentMinHeight: isOverride
+            ? (baseLayout.contentMinHeight ?? themeMinHeight)
+            : themeMinHeight,
+    };
+
+    // 2. Sorting & Filtering
+    const baseSort = attrs.general_sortingAndFiltering || buildSortingAndFilteringDefault();
+    const isItemsEdited = Boolean(baseSort.isNumberOfItemsEdited);
+    const effectiveSort = {
+        ...baseSort,
+        numberOfItems:
+            isItemsEdited || isOverride
+                ? (baseSort.numberOfItems || theme.product_per_page || 12)
+                : (theme.product_per_page || baseSort.numberOfItems || 12),
+    };
+
+    // 3. Content flags
+    const baseContent = attrs.general_content || buildGeneralContractDefault();
+    const themeContent = theme.shop_archive_product_content;
+    const themeSaleTag = theme.shop_archive_sale_tag;
+    const themeOut = theme.shop_archive_out_of_stock;
+
+    const effectiveContent: WCB_PRODUCTS_PANEL_COTENT = isOverride
+        ? {
+              ...baseContent,
+              isShowTitle: baseContent.isShowTitle !== undefined ? baseContent.isShowTitle : toBool(themeContent?.title_flag, true),
+              isShowCategory: baseContent.isShowCategory !== undefined ? baseContent.isShowCategory : toBool(themeContent?.category_flag, false),
+              isShowRating: baseContent.isShowRating !== undefined ? baseContent.isShowRating : toBool(themeContent?.rating_flag, true),
+              isShowPrice: baseContent.isShowPrice !== undefined ? baseContent.isShowPrice : toBool(themeContent?.price_flag, true),
+              isShowSaleBadge: baseContent.isShowSaleBadge !== undefined ? baseContent.isShowSaleBadge : (themeSaleTag?.position !== 'none'),
+              showSaleBadgeDiscoutPercent: baseContent.showSaleBadgeDiscoutPercent !== undefined ? baseContent.showSaleBadgeDiscoutPercent : Boolean(themeSaleTag?.sale_percent),
+              isShowOutOfStock: baseContent.isShowOutOfStock !== undefined ? baseContent.isShowOutOfStock : (themeOut?.position !== 'none'),
+          }
+        : {
+              ...baseContent,
+              isShowTitle: toBool(themeContent?.title_flag, true),
+              isShowCategory: toBool(themeContent?.category_flag, false),
+              isShowRating: toBool(themeContent?.rating_flag, true),
+              isShowPrice: toBool(themeContent?.price_flag, true),
+              isShowSaleBadge: themeSaleTag?.position !== 'none',
+              showSaleBadgeDiscoutPercent: Boolean(themeSaleTag?.sale_percent),
+              isShowOutOfStock: themeOut?.position !== 'none',
+              saleBadgePosition: 'Inside image' as const,
+          };
+
+    // 4. Featured Image
+    const baseFeatured = attrs.general_featuredImage || buildGeneralFeaturedImageDefault();
+    const effectiveFeatured = {
+        ...baseFeatured,
+        hoverType: isOverride
+            ? (baseFeatured.hoverType || theme.shop_archive_product_image?.hover || 'swap')
+            : (theme.shop_archive_product_image?.hover || baseFeatured.hoverType || 'swap'),
+        equal_height_flag: Boolean(theme.shop_archive_product_image?.equal_height_flag),
+        image_height: theme.shop_archive_product_image?.image_height ?? 300,
+    };
+
+    // 5. Add to Cart Button
+    const baseAddToCart = attrs.general_addToCartBtn || buildGeneralAddToCartBtnDefault();
+    const themeAddToCart = theme.shop_archive_add_to_cart_btn;
+    const isCatalog = Boolean(theme.catalog_mode);
+
+    const mappedThemePos = normalizeAddToCartPosition(themeAddToCart?.position);
+
+    const effectiveAddToCartBtn: WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN = isOverride
+        ? {
+              ...baseAddToCart,
+              isShowButton: isCatalog ? false : (baseAddToCart.isShowButton !== undefined ? baseAddToCart.isShowButton : (themeAddToCart?.position !== 'none')),
+              position: baseAddToCart.position ? normalizeAddToCartPosition(baseAddToCart.position) : mappedThemePos,
+              isShowQuantity: isCatalog ? false : (baseAddToCart.isShowQuantity !== undefined ? baseAddToCart.isShowQuantity : toBool(themeContent?.quantity_flag, false)),
+              isShowIcon: baseAddToCart.isShowIcon !== undefined ? baseAddToCart.isShowIcon : (themeAddToCart?.show_icon ?? true),
+          }
+        : {
+              ...baseAddToCart,
+              isShowButton: isCatalog ? false : (themeAddToCart?.position !== 'none'),
+              position: isCatalog ? 'none' : mappedThemePos,
+              isShowQuantity: isCatalog ? false : toBool(themeContent?.quantity_flag, false),
+              isShowIcon: themeAddToCart?.show_icon ?? true,
+          };
+
+    // 6. Style Add to Cart Button
+    const defaultStyleAddToCart = buildStyleAddToCartBtnDefault(undefined, effectiveAddToCartBtn.position);
+    const baseStyleAddToCart = attrs.style_addToCardBtn;
+    const effectiveStyleAddToCart = isOverride
+        ? {
+              ...defaultStyleAddToCart,
+              ...(baseStyleAddToCart || {}),
+              colorAndBackgroundColor: {
+                  ...defaultStyleAddToCart.colorAndBackgroundColor,
+                  ...(baseStyleAddToCart?.colorAndBackgroundColor || {}),
+                  Normal: {
+                      ...defaultStyleAddToCart.colorAndBackgroundColor?.Normal,
+                      ...(baseStyleAddToCart?.colorAndBackgroundColor?.Normal || {}),
+                  },
+                  Hover: {
+                      ...defaultStyleAddToCart.colorAndBackgroundColor?.Hover,
+                      ...(baseStyleAddToCart?.colorAndBackgroundColor?.Hover || {}),
+                  },
+              },
+          }
+        : defaultStyleAddToCart;
+
+    // 7. Style Sale Badge & Out of Stock
+    const effectiveSaleBadge = isOverride
+        ? (attrs.style_saleBadge || buildStyleSaleBadgeDefault())
+        : buildStyleSaleBadgeDefault();
+
+    const effectiveOutOfStock = isOverride
+        ? (attrs.style_outOfStock || buildStyleOutOfStockDefault())
+        : buildStyleOutOfStockDefault();
+
+    // 8. Style Title & Price
+    const effectiveTitle = isOverride
+        ? (attrs.style_title || buildStyleTitleDefault())
+        : buildStyleTitleDefault();
+
+    const effectivePrice = isOverride
+        ? (attrs.style_price || buildStylePriceDefault())
+        : buildStylePriceDefault();
+
+    // 9. Style Border & Featured Image Border
+    const effectiveBorder = isOverride
+        ? (attrs.style_border || buildStyleBorderDefault())
+        : buildStyleBorderDefault();
+
+    const effectiveFeaturedImageStyle = isOverride
+        ? (attrs.style_featuredImage || buildStyleFeaturedImageDefault())
+        : buildStyleFeaturedImageDefault();
+
+    // 10. Wishlist, Quick View, Countdown Urgency
+    const effectiveWishlist = buildStyleWishlistButtonDefault(attrs.style_wishlistBtn);
+    const effectiveQuickView = buildStyleQuickViewButtonDefault(attrs.style_quickViewBtn);
+    const effectiveCountdown = buildStyleCountdownUrgencyDefault(attrs.style_countdownUrgency);
+
+    return {
+        ...attrs,
+        general_layout: attrs.general_layout,
+        style_layout: effectiveLayout,
+        general_sortingAndFiltering: effectiveSort,
+        general_content: effectiveContent,
+        general_featuredImage: effectiveFeatured,
+        general_addToCartBtn: effectiveAddToCartBtn,
+        style_addToCardBtn: effectiveStyleAddToCart,
+        style_saleBadge: effectiveSaleBadge,
+        style_outOfStock: effectiveOutOfStock,
+        style_title: effectiveTitle,
+        style_price: effectivePrice,
+        style_border: effectiveBorder,
+        style_featuredImage: effectiveFeaturedImageStyle,
+        style_wishlistBtn: effectiveWishlist,
+        style_quickViewBtn: effectiveQuickView,
+        style_countdownUrgency: effectiveCountdown,
     };
 }
