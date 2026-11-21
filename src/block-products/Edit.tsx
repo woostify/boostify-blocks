@@ -633,7 +633,9 @@ const Edit: FC<Props> = (props) => {
 												onToggle={() => handleTogglePanel("Styles", "_StyleOutOfStock")}
 												initialOpen={tabStylesIsPanelOpen === "_StyleOutOfStock"}
 												opened={tabStylesIsPanelOpen === "_StyleOutOfStock" || undefined}
-												showMarginBottom={showBadgeMarginBottom}
+												showMarginBottom={
+													!(effectiveAttrs.general_featuredImage?.isShowFeaturedImage ?? true)
+												}
 												//
 												setAttr__={(data) => {
 													setAttributes({ style_outOfStock: data });
@@ -676,6 +678,9 @@ const Edit: FC<Props> = (props) => {
 											initialOpen={tabStylesIsPanelOpen === "_StyleAddToCartBtn"}
 											opened={
 												tabStylesIsPanelOpen === "_StyleAddToCartBtn" || undefined
+											}
+											isIconPosition={
+												effectiveAttrs.general_addToCartBtn?.position === "icon"
 											}
 											//
 											setAttr__={(data) => {
@@ -808,10 +813,11 @@ const Edit: FC<Props> = (props) => {
 									__unstableInputWidth="60px"
 									label={__("Column in Desktop")}
 									labelPosition="edge"
-									min={0}
-									max={100}
+									min={1}
+									max={6}
 									onChange={(value: any) => {
-										if (isNaN(value) || value < 0 || value > 100) {
+										const num = Number(value);
+										if (isNaN(num) || num < 1 || num > 6) {
 											return;
 										}
 										setAttributes({
@@ -819,7 +825,7 @@ const Edit: FC<Props> = (props) => {
 												...style_layout,
 												numberOfColumn: {
 													...style_layout.numberOfColumn,
-													Desktop: Number(value || 1),
+													Desktop: num,
 												},
 												isNumberOfColumnEdited: true,
 											},

@@ -193,10 +193,10 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 				/>
 
 				{layoutType === "grid" ? (
-					<MyDisclosure label="Swith to scroll-snap-x" defaultOpen>
+					<MyDisclosure label={__("Switch to scroll-snap-x", "boostify-blocks")} defaultOpen>
 						<div>
 							<MyRadioGroup
-								label="Swith to scroll-snap-x"
+								label={__("Switch to scroll-snap-x", "boostify-blocks")}
 								onChange={(selected) =>
 									setAttr__({
 										...panelData,
@@ -329,6 +329,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 						});
 					}}
 					paddingLabel={__("Padding content", "boostify-blocks")}
+					showRowGap={layoutType !== "carousel"}
 				/>
 
 				<ToggleControl

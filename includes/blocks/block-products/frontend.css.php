@@ -290,10 +290,12 @@ if ( ! empty( $ss['backgroundColor'] ) ) {
 if ( ! empty( $ss['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $sale_badge_sel, 'color', $ss['textColor'] );
 }
+$show_featured_image = function_exists( 'boostify_blocks_is_enabled' )
+	? boostify_blocks_is_enabled( $attr['general_featuredImage']['isShowFeaturedImage'] ?? true )
+	: ! empty( $attr['general_featuredImage']['isShowFeaturedImage'] ?? true );
+
 $sale_inside_image = ( ( $attr['general_content']['saleBadgePosition'] ?? 'Inside image' ) === 'Inside image' )
-	&& ( function_exists( 'boostify_blocks_is_enabled' )
-		? boostify_blocks_is_enabled( $attr['general_featuredImage']['isShowFeaturedImage'] ?? true )
-		: ! empty( $attr['general_featuredImage']['isShowFeaturedImage'] ?? true ) );
+	&& $show_featured_image;
 
 if ( ! empty( $ss['marginBottom'] ) && ! $sale_inside_image ) {
 	WCB_Block_Helper::add_responsive_css( $css, $sale_sel, 'margin-bottom', $ss['marginBottom'] );
@@ -315,7 +317,7 @@ if ( ! empty( $so['backgroundColor'] ) ) {
 if ( ! empty( $so['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $out_of_stock_bdg, 'color', $so['textColor'] );
 }
-if ( ! empty( $so['marginBottom'] ) && ! $sale_inside_image ) {
+if ( ! empty( $so['marginBottom'] ) && ! $show_featured_image ) {
 	WCB_Block_Helper::add_responsive_css( $css, $out_of_stock_sel, 'margin-bottom', $so['marginBottom'] );
 }
 

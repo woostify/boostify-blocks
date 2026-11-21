@@ -1,13 +1,10 @@
 import { PanelBody, ToggleControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import React, { FC, CSSProperties } from "react";
+import React, { FC } from "react";
 import MyDisclosure from "../components/controls/MyDisclosure";
 import MyHeadingTagControl from "../components/controls/MyHeadingTagControl/MyHeadingTagControl";
 import { HtmlTagsType } from "../types";
-// @ts-ignore
-import { __experimentalInputControl as InputControl } from "@wordpress/components";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
-import MySelect from "../components/controls/MySelect";
 
 export interface WCB_PRODUCTS_PANEL_COTENT {
 	// isShowAddToCartBtn: boolean;
@@ -64,11 +61,9 @@ const WcbProductsPanelContent: FC<Props> = ({
 	const {
 		isShowTitle,
 		titleHtmlTag,
-		taxonomyStyle,
 		showSaleBadgeDiscoutPercent,
 		isShowPrice,
 		isShowRating,
-		isShowSKU,
 		isShowSaleBadge,
 		isShowOutOfStock,
 		saleBadgePosition,
@@ -106,26 +101,6 @@ const WcbProductsPanelContent: FC<Props> = ({
 					plans={SALE_POSITION_OPTIONS}
 					hasResponsive={false}
 				/>
-
-				{/* <MyRadioGroup
-					label="Style"
-					labelClassName=""
-					className="flex items-center justify-between space-x-3"
-					contentClassName="flex-shrink-0 flex-1"
-					onChange={(selected) =>
-						setAttr__({
-							...panelData,
-							taxonomyStyle: selected as any,
-						})
-					}
-					value={taxonomyStyle}
-					plans={[
-						// "Normal" | "Highlighted"
-						{ name: "Normal", icon: "Normal" },
-						{ name: "Highlighted", icon: "Highlighted" },
-					]}
-					hasResponsive={false}
-				/> */}
 			</MyDisclosure>
 		);
 	};
@@ -197,14 +172,6 @@ const WcbProductsPanelContent: FC<Props> = ({
 					}
 					checked={isShowRating}
 				/>
-
-				{/* <ToggleControl
-					label={__("Add to Cart button", "boostify-blocks")}
-					onChange={(checked) =>
-						setAttr__({ ...panelData, isShowAddToCartBtn: checked })
-					}
-					checked={isShowAddToCartBtn}
-				/> */}
 			</div>
 		</PanelBody>
 	);

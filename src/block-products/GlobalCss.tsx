@@ -525,7 +525,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 					},
 					".wcb-products__product-outofstock-badge": {
-						...(!isBadgeInsideImage
+						...(general_featuredImage?.isShowFeaturedImage === false
 							? resolveSpacing("marginBottom", style_outOfStock?.marginBottom)
 							: {}),
 						".wcb-products__product-on-outofstock": {

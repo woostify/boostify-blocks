@@ -463,11 +463,6 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
     ob_start();
     $loop = new WP_Query( $args );
 
-
-    if (!$loop->have_posts()) {
-        return '';
-    }
-
 ?>
 
     <?php
@@ -513,8 +508,6 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
         <?php
         if ($loop->have_posts()) :
 
-            // do_action('woocommerce_before_shop_loop');
-            // woocommerce_product_loop_start();
             $layoutAttrs        = $attributes['style_layout'] ?? [];
             $layoutType         = !empty($layoutAttrs['layoutType']) ? $layoutAttrs['layoutType'] : 'grid';
             $swithToScrollSnapX = !empty($layoutAttrs['swithToScrollSnapX']) ? $layoutAttrs['swithToScrollSnapX'] : 'None';
@@ -642,21 +635,24 @@ function boostify_blocks_block_products_render_callback($attributes, $content)
             <?php endif; ?>
         <?php endif; ?>
 
-            <?php
-            // woocommerce_product_loop_end();
-            // do_action('woocommerce_after_shop_loop');
-            ?>
-        <?php
-        else :
-            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
-            do_action('woocommerce_no_products_found');
-        endif; ?>
-
         <?php if ('carousel' !== $layoutType && boostify_blocks_is_enabled($attributes['general_pagination']['isShowPagination'] ?? "false")) : ?>
             <div class="wcb-products__pagination">
                 <?php boostify_blocks_pagination_bar($loop, $attributes['general_pagination']); ?>
             </div>
         <?php endif; ?>
+
+        <?php
+        else :
+            $empty_message = trim((string) ($sortingAndFilteringAttrs['emptyMessage'] ?? ''));
+            if ('' !== $empty_message) :
+                ?>
+                <p class="wcb-products__emptyMessage"><?php echo esc_html($empty_message); ?></p>
+                <?php
+            else :
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook.
+                do_action('woocommerce_no_products_found');
+            endif;
+        endif; ?>
 
         <?php wp_reset_postdata(); ?>
     </div>
@@ -707,8 +703,11 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
         $data->badge = boostify_blocks_block_products_get_sale_badge_html($product, $attributes['general_content']['showSaleBadgeDiscoutPercent'] ?? false, $attributes);
     }
     
-    // Quantity input
-    $has_quantity = boostify_blocks_block_products_has_quantity_feature($attributes);
+    // Quantity input (only for purchasable in-stock/backorderable simple products)
+    $has_quantity = boostify_blocks_block_products_has_quantity_feature($attributes)
+        && $product->is_type('simple')
+        && $product->is_purchasable()
+        && ($product->is_in_stock() || $product->backorders_allowed());
     if ($has_quantity) {
         $data->quantity_input = boostify_blocks_block_products_get_product_quantity();
     }
@@ -933,7 +932,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
     $escaped_feat_classes = esc_attr($featuredClasses);
 
     $quantity_interactivity_attrs = '';
-    if ( boostify_blocks_block_products_has_quantity_feature( $attributes ) ) {
+    if ( $has_quantity ) {
         $quantity_context = wp_json_encode( array( 'quantity' => 1 ) );
         $quantity_interactivity_attrs = " data-wp-interactive=\"boostify-blocks/product-quantity\" data-wp-context='" . esc_attr( $quantity_context ) . "' data-wp-watch=\"callbacks.syncQuantityJqueryData\"";
     }
@@ -952,7 +951,9 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                         {$isSwapHover}
                     </div>";
     }
-    $featured_inner_html = $featured_image_link_html . $topRightIconsHtml . $bottomRightIconHtml . $btnQuickViewBottomImageHtml . $btn1 . $countdownHtml . $saleOutOfStock . $saleBadge1;
+    $out_of_stock_on_image   = $show_featured_image ? $saleOutOfStock : '';
+    $out_of_stock_in_content = $show_featured_image ? '' : $saleOutOfStock;
+    $featured_inner_html = $featured_image_link_html . $topRightIconsHtml . $bottomRightIconHtml . $btnQuickViewBottomImageHtml . $btn1 . $countdownHtml . $out_of_stock_on_image . $saleBadge1;
     $featured_wrapper_html = '' !== trim($featured_inner_html)
         ? "<div class=\"wcb-products__product-featured \">
                     {$featured_image_link_html}
@@ -961,7 +962,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$btnQuickViewBottomImageHtml}
                     {$btn1}
                     {$countdownHtml}
-                    {$saleOutOfStock}
+                    {$out_of_stock_on_image}
                     {$saleBadge1}
                 </div>"
         : '';
@@ -972,6 +973,7 @@ function boostify_blocks_block_products_render_product($product, $attributes, $i
                     {$data->categories}
                     {$data->title}
                     {$preorderBadge}
+                    {$out_of_stock_in_content}
                     {$saleBadge2}
                     {$data->rating}
                     " . ($data->price_button_group ?? ($data->price . $data->quantity_input . $btn2)) . "
@@ -1596,7 +1598,7 @@ if (!function_exists("boostify_blocks_block_products_parse_query_args")) :
     function boostify_blocks_block_products_parse_query_args($filtersAttrs)
     {
         $postsPerPage = $filtersAttrs["numberOfItems"] ?? 9;
-        $paged = get_query_var('paged') ? get_query_var('paged') : 1;
+        $paged = max(1, (int) (get_query_var('paged') ?: get_query_var('page')));
         // $offset = ($paged - 1) * $postsPerPage;
 
         // Store the original meta query.
@@ -1858,14 +1860,15 @@ if (!function_exists("boostify_blocks_block_products_set_stock_status_query_args
     function boostify_blocks_block_products_set_stock_status_query_args(&$query_args, $attributes, $meta_query)
     {
         $stock_statuses = array_keys(wc_get_product_stock_status_options());
+        $selected       = array_values(array_intersect(array_map('sanitize_key', (array) ($attributes['stockStatus'] ?? array())), $stock_statuses));
 
         // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-        if (!empty($attributes['stockStatus']) && $stock_statuses !== $attributes['stockStatus']) {
+        if (!empty($selected) && count($selected) < count($stock_statuses)) {
             // Reset meta_query then update with our stock status.
             $query_args['meta_query']   = $meta_query;
             $query_args['meta_query'][] = array(
                 'key'     => '_stock_status',
-                'value'   => array_merge([''], $attributes['stockStatus']),
+                'value'   => $selected,
                 'compare' => 'IN',
             );
         } else {

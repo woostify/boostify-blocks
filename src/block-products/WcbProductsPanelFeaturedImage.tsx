@@ -1,6 +1,6 @@
 import { PanelBody, ToggleControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import React, { FC, CSSProperties } from "react";
+import React, { FC } from "react";
 import MyRadioGroup, { MyRadioItem } from "../components/controls/MyRadioGroup";
 
 export interface WCB_PRODUCTS_PANEL_FEATURED_IMAGE {
@@ -37,18 +37,9 @@ const WcbProductsPanelFeaturedImage: FC<Props> = ({
 }) => {
 	const {
 		isShowFeaturedImage,
-		featuredImageSize,
-		featuredImagePosition,
 		linkCompleteBox,
 		hoverType,
 	} = panelData;
-
-	const POSTION_PLANS: MyRadioItem<
-		WCB_PRODUCTS_PANEL_FEATURED_IMAGE["featuredImagePosition"]
-	>[] = [
-		{ name: "top", icon: "Top" },
-		{ name: "background", icon: "Background" },
-	];
 
 	const HOVER_PLANS: MyRadioItem<
 		NonNullable<WCB_PRODUCTS_PANEL_FEATURED_IMAGE["hoverType"]>
@@ -73,22 +64,6 @@ const WcbProductsPanelFeaturedImage: FC<Props> = ({
 					}
 					checked={isShowFeaturedImage}
 				/>
-
-				{/* {isShowFeaturedImage ? (
-					<MyRadioGroup
-						label="Position"
-						onChange={(selected) =>
-							setAttr__({
-								...panelData,
-								featuredImagePosition: selected as any,
-							})
-						}
-						value={featuredImagePosition}
-						plans={POSTION_PLANS}
-						hasResponsive={false}
-						isWrap
-					/>
-				) : null} */}
 
 				{isShowFeaturedImage ? (
 					<ToggleControl
