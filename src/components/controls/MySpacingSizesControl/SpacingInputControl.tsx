@@ -71,8 +71,8 @@ const SpacingInputControl: FC<SpacingInputControlProps> = ({
 			: minCustomValue;
 
 	return (
-		<div className={`${className} flex items-center space-x-2.5`}>
-			<div className="flex-[1.5]">
+		<div className={`${className} flex items-center`} style={{ gap: "8px" }}>
+			<div style={{ flex: "1 1 0%", minWidth: 0 }}>
 				<RangeControl
 					value={customRangeValue}
 					min={rangeMin}
@@ -84,7 +84,7 @@ const SpacingInputControl: FC<SpacingInputControlProps> = ({
 					className="m-0"
 				/>
 			</div>
-			<div className="flex-1">
+			<div style={{ width: "102px", minWidth: "102px", flexShrink: 0 }}>
 				<UnitControl
 					onChange={(newSize: string, ...props) => {
 						onChange(newSize);

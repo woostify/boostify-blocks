@@ -17,13 +17,181 @@ function boostify_blocks_fonts_upload_dir(): array {
 }
 
 /**
- * Returns true for system / generic font names that are not Google Fonts.
+ * Normalizes a font-family setting to its bare primary family name.
+ * Strips CSS quotes, comma-separated fallbacks, and `:weight` / `@axis` suffixes.
+ */
+function boostify_blocks_normalize_font_name( string $font ): string {
+    $font = trim( $font );
+    if ( '' === $font || 0 === stripos( $font, 'var(' ) ) {
+        return '';
+    }
+
+    $first = explode( ',', $font )[0];
+    $first = trim( $first, " \t\n\r\0\x0B\"'" );
+    $first = (string) preg_replace( '/[:\@].*$/', '', $first );
+
+    return trim( $first );
+}
+
+/**
+ * Returns true for system, CSS keyword, or generic font names that are not Google Fonts.
  */
 function boostify_blocks_is_system_font( string $font ): bool {
+    $normalized = boostify_blocks_normalize_font_name( $font );
+    if ( '' === $normalized ) {
+        return true;
+    }
+
     return (bool) preg_match(
-        '/^(arial|helvetica|times new roman|georgia|verdana|trebuchet ms|sans-serif|serif|monospace|serif-alt|cursive|fantasy|system-ui)$/i',
-        trim( $font )
+        '/^(arial|helvetica|helvetica neue|times new roman|times|georgia|verdana|trebuchet ms|courier new|courier|palatino|palatino linotype|garamond|tahoma|impact|comic sans ms|lucida sans unicode|lucida grande|lucida console|century gothic|book antiqua|segoe ui|sans-serif|serif|monospace|serif-alt|cursive|fantasy|system-ui|ui-sans-serif|ui-serif|ui-monospace|system stack|-apple-system|blinkmacsystemfont|default|inherit|initial|unset|revert|auto)$/i',
+        $normalized
     );
+}
+
+/**
+ * Loads the bundled Google Fonts metadata map lazily once per request.
+ *
+ * @return array<string, array{weights: string[], fallback: string}> Keyed by lowercase font name.
+ */
+function boostify_blocks_get_google_fonts_catalog(): array {
+    static $catalog = null;
+
+    if ( null !== $catalog ) {
+        return $catalog;
+    }
+
+    $catalog   = [];
+    $json_path = BOOSTIFY_BLOCKS_PATH . 'src/components/controls/WcbFontFamilyPicker/google-fonts.json';
+    if ( file_exists( $json_path ) ) {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+        $raw  = file_get_contents( $json_path );
+        $data = is_string( $raw ) ? json_decode( $raw, true ) : null;
+        if ( is_array( $data ) ) {
+            foreach ( $data as $family => $meta ) {
+                if ( ! is_string( $family ) || ! is_array( $meta ) ) {
+                    continue;
+                }
+                $catalog[ strtolower( $family ) ] = [
+                    'weights'  => isset( $meta['weight'] ) && is_array( $meta['weight'] ) ? $meta['weight'] : [],
+                    'fallback' => isset( $meta['fallback'] ) && is_string( $meta['fallback'] ) ? $meta['fallback'] : 'sans-serif',
+                ];
+            }
+        }
+    }
+
+    return $catalog;
+}
+
+/**
+ * Returns the CSS fallback category (e.g. 'serif', 'sans-serif') for a Google Font.
+ */
+function boostify_blocks_get_google_font_fallback( string $font_family ): string {
+    $name = strtolower( boostify_blocks_normalize_font_name( $font_family ) );
+    if ( '' !== $name ) {
+        $catalog = boostify_blocks_get_google_fonts_catalog();
+        if ( isset( $catalog[ $name ]['fallback'] ) && '' !== $catalog[ $name ]['fallback'] ) {
+            return $catalog[ $name ]['fallback'];
+        }
+    }
+
+    return 'sans-serif';
+}
+
+/**
+ * Returns normalized Google Font variant strings (e.g. '300', '400', '400italic')
+ * supported by the given font family, or an empty array if unknown.
+ *
+ * @return string[]
+ */
+function boostify_blocks_get_google_font_weights( string $font_family ): array {
+    $normalized = boostify_blocks_normalize_font_name( $font_family );
+    if ( '' === $normalized || boostify_blocks_is_system_font( $normalized ) ) {
+        return [];
+    }
+
+    $catalog     = boostify_blocks_get_google_fonts_catalog();
+    $raw_weights = $catalog[ strtolower( $normalized ) ]['weights'] ?? [];
+
+    if ( empty( $raw_weights ) && class_exists( 'Woostify_Fonts_Helpers' ) && method_exists( 'Woostify_Fonts_Helpers', 'woostify_get_all_google_fonts' ) ) {
+        $all_fonts   = Woostify_Fonts_Helpers::woostify_get_all_google_fonts();
+        $woostify_id = strtolower( str_replace( ' ', '_', $normalized ) );
+        if ( isset( $all_fonts[ $woostify_id ]['variants'] ) && is_array( $all_fonts[ $woostify_id ]['variants'] ) ) {
+            $raw_weights = $all_fonts[ $woostify_id ]['variants'];
+        }
+    }
+
+    $normalized_weights = [];
+    foreach ( $raw_weights as $variant ) {
+        $variant = trim( (string) $variant );
+        if ( 'regular' === $variant ) {
+            $variant = '400';
+        } elseif ( 'italic' === $variant ) {
+            $variant = '400italic';
+        }
+        if ( '' !== $variant ) {
+            $normalized_weights[] = $variant;
+        }
+    }
+
+    return array_values( array_unique( $normalized_weights ) );
+}
+
+/**
+ * Builds a valid Google Fonts stylesheet URL using only weights supported by the font.
+ * Omits weight axes when the font's weights are unknown so partial-weight fonts never 400.
+ */
+function boostify_blocks_build_google_font_url( string $font_family, bool $css2 = false ): string {
+    $normalized = boostify_blocks_normalize_font_name( $font_family );
+    if ( '' === $normalized || boostify_blocks_is_system_font( $normalized ) ) {
+        return '';
+    }
+
+    $weights = boostify_blocks_get_google_font_weights( $normalized );
+
+    if ( ! $css2 ) {
+        $family = urlencode( $normalized );
+        if ( ! empty( $weights ) ) {
+            $family .= ':' . implode( ',', $weights );
+        }
+        return 'https://fonts.googleapis.com/css?family=' . $family . '&display=swap';
+    }
+
+    $base_css2 = 'https://fonts.googleapis.com/css2?family=' . rawurlencode( $normalized );
+    if ( empty( $weights ) ) {
+        return $base_css2 . '&display=swap';
+    }
+
+    $normal = [];
+    $italic = [];
+    foreach ( $weights as $variant ) {
+        if ( preg_match( '/^(\d+)italic$/i', $variant, $m ) ) {
+            $italic[] = (int) $m[1];
+        } elseif ( preg_match( '/^(\d+)$/', $variant, $m ) ) {
+            $normal[] = (int) $m[1];
+        }
+    }
+
+    $normal = array_values( array_unique( $normal ) );
+    $italic = array_values( array_unique( $italic ) );
+    sort( $normal, SORT_NUMERIC );
+    sort( $italic, SORT_NUMERIC );
+
+    if ( empty( $italic ) ) {
+        if ( empty( $normal ) || [ 400 ] === $normal ) {
+            return $base_css2 . '&display=swap';
+        }
+        return $base_css2 . ':wght@' . implode( ';', $normal ) . '&display=swap';
+    }
+
+    $tuples = [];
+    foreach ( $normal as $wght ) {
+        $tuples[] = '0,' . $wght;
+    }
+    foreach ( $italic as $wght ) {
+        $tuples[] = '1,' . $wght;
+    }
+
+    return $base_css2 . ':ital,wght@' . implode( ';', $tuples ) . '&display=swap';
 }
 
 /**
@@ -67,7 +235,10 @@ function boostify_blocks_collect_post_fonts( string $post_content ): array {
 
     return array_values(
         array_unique(
-            array_filter( $fonts, fn( $f ) => ! boostify_blocks_is_system_font( $f ) )
+            array_filter(
+                array_map( 'boostify_blocks_normalize_font_name', $fonts ),
+                fn( $f ) => '' !== $f && ! boostify_blocks_is_system_font( $f )
+            )
         )
     );
 }
@@ -126,6 +297,11 @@ function boostify_blocks_write_file( string $path, string $content ): bool {
  * @return string|false  Local CSS URL on success, false on failure.
  */
 function boostify_blocks_download_google_font( string $font_family ) {
+    $font_family = boostify_blocks_normalize_font_name( $font_family );
+    if ( '' === $font_family || boostify_blocks_is_system_font( $font_family ) ) {
+        return false;
+    }
+
     $paths = boostify_blocks_fonts_upload_dir();
     wp_mkdir_p( $paths['dir'] );
 
@@ -144,28 +320,31 @@ function boostify_blocks_download_google_font( string $font_family ) {
         return $css_url;
     }
 
-    // Fetch the font CSS from Google Fonts API v2.
-    $api_url = 'https://fonts.googleapis.com/css2?family='
-        . rawurlencode( $font_family )
-        . ':ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap';
+    // Fetch the font CSS from Google Fonts API v2 using only supported weights.
+    $api_url      = boostify_blocks_build_google_font_url( $font_family, true );
+    $request_args = [
+        // Identify as a modern browser so Google returns woff2 URLs.
+        'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+        'timeout'    => 30,
+        'sslverify'  => true,
+    ];
 
-    $response = wp_remote_get(
-        $api_url,
-        [
-            // Identify as a modern browser so Google returns woff2 URLs.
-            'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
-            'timeout'    => 30,
-            'sslverify'  => true,
-        ]
-    );
-
+    $response = wp_remote_get( $api_url, $request_args );
     if ( is_wp_error( $response ) ) {
         return false;
     }
 
     $code = (int) wp_remote_retrieve_response_code( $response );
     if ( 200 !== $code ) {
-        return false;
+        // Retry once without weight axes in case remote API rejects a variant list.
+        $fallback_url = 'https://fonts.googleapis.com/css2?family=' . rawurlencode( $font_family ) . '&display=swap';
+        if ( $fallback_url === $api_url ) {
+            return false;
+        }
+        $response = wp_remote_get( $fallback_url, $request_args );
+        if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+            return false;
+        }
     }
 
     $css = wp_remote_retrieve_body( $response );
@@ -470,6 +649,47 @@ function boostify_blocks_enqueue_local_fonts( array $fonts ): void {
 }
 
 /**
+ * Enqueues a list of Google Fonts locally or from the Google Fonts CDN.
+ *
+ * @param string[] $fonts Font family names.
+ */
+function boostify_blocks_enqueue_font_list( array $fonts ): void {
+    $fonts = array_values(
+        array_unique(
+            array_filter(
+                array_map( 'boostify_blocks_normalize_font_name', $fonts ),
+                fn( $f ) => '' !== $f && ! boostify_blocks_is_system_font( $f )
+            )
+        )
+    );
+
+    if ( empty( $fonts ) ) {
+        return;
+    }
+
+    $settings     = get_option( 'boostify_blocks_settings_options', [] );
+    $load_locally = ( $settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
+
+    if ( $load_locally ) {
+        boostify_blocks_enqueue_local_fonts( $fonts );
+        return;
+    }
+
+    foreach ( $fonts as $font_family ) {
+        $url = boostify_blocks_build_google_font_url( $font_family, false );
+        if ( '' === $url ) {
+            continue;
+        }
+        wp_enqueue_style(
+            'boostify-google-font-' . sanitize_title( $font_family ),
+            $url,
+            [],
+            null
+        );
+    }
+}
+
+/**
  * Enqueue locally cached Google Font stylesheets on the frontend for fonts
  * found in block attributes (fontFamily), across every post rendered on the
  * current request (singular or archive).
@@ -482,36 +702,25 @@ function boostify_blocks_enqueue_local_google_fonts(): void {
         return;
     }
 
-    $settings     = get_option( 'boostify_blocks_settings_options', [] );
-    $load_locally = ( $settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
-
-    if ( $load_locally ) {
-        boostify_blocks_enqueue_local_fonts( $fonts );
-    } else {
-        foreach ( $fonts as $font_family ) {
-            if ( boostify_blocks_is_system_font( $font_family ) ) {
-                continue;
-            }
-            $slug   = sanitize_title( $font_family );
-            $family = str_replace( ' ', '+', $font_family );
-            wp_enqueue_style(
-                'boostify-google-font-' . $slug,
-                'https://fonts.googleapis.com/css?family=' . $family . ':100,200,300,400,500,600,700,800,900&display=swap',
-                [],
-                null
-            );
-        }
-    }
+    boostify_blocks_enqueue_font_list( $fonts );
 }
 add_action( 'wp_enqueue_scripts', 'boostify_blocks_enqueue_local_google_fonts' );
 
 /**
- * Mirrors boostify_blocks_enqueue_local_google_fonts() for the block editor,
- * so headings show the same font while editing as they do on the
- * frontend (the editor iframe copies stylesheets enqueued here).
+ * Mirrors boostify_blocks_enqueue_local_google_fonts() for the block editor.
+ * Hooked onto enqueue_block_assets (admin only) because WordPress core only
+ * copies styles from enqueue_block_assets into <iframe name="editor-canvas">.
  */
 function boostify_blocks_enqueue_local_google_fonts_editor(): void {
+    if ( ! is_admin() ) {
+        return;
+    }
+
     $post = get_post();
+    if ( ! $post instanceof WP_Post ) {
+        $post_id = absint( $_GET['post'] ?? 0 );
+        $post    = $post_id ? get_post( $post_id ) : null;
+    }
     if ( ! $post instanceof WP_Post ) {
         return;
     }
@@ -521,28 +730,9 @@ function boostify_blocks_enqueue_local_google_fonts_editor(): void {
         return;
     }
 
-    $settings     = get_option( 'boostify_blocks_settings_options', [] );
-    $load_locally = ( $settings['loadGoogleFontsLocally'] ?? 'false' ) === 'true';
-
-    if ( $load_locally ) {
-        boostify_blocks_enqueue_local_fonts( $fonts );
-    } else {
-        foreach ( $fonts as $font_family ) {
-            if ( boostify_blocks_is_system_font( $font_family ) ) {
-                continue;
-            }
-            $slug   = sanitize_title( $font_family );
-            $family = str_replace( ' ', '+', $font_family );
-            wp_enqueue_style(
-                'boostify-google-font-' . $slug,
-                'https://fonts.googleapis.com/css?family=' . $family . ':100,200,300,400,500,600,700,800,900&display=swap',
-                [],
-                null
-            );
-        }
-    }
+    boostify_blocks_enqueue_font_list( $fonts );
 }
-add_action( 'enqueue_block_editor_assets', 'boostify_blocks_enqueue_local_google_fonts_editor' );
+add_action( 'enqueue_block_assets', 'boostify_blocks_enqueue_local_google_fonts_editor' );
 
 /**
  * Output <link rel="preload"> tags for every woff2 file used on the current

@@ -32,6 +32,13 @@ const WcbProductsPanelButton: FC<Props> = ({
 	opened,
 }) => {
 	const { position, isShowButton, isShowQuantity } = panelData;
+	const rawPos = position as string;
+	const normalizedPosition =
+		rawPos === "bottom-visible"
+			? "bottom visible"
+			: rawPos === "image"
+			? "inside image"
+			: position;
 
 	const POSTION_PLANS: MyRadioItem<
 		WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN["position"]
@@ -67,12 +74,12 @@ const WcbProductsPanelButton: FC<Props> = ({
 									position: selected as any,
 								})
 							}
-							value={position}
+							value={normalizedPosition}
 							plans={POSTION_PLANS}
 							hasResponsive={false}
 							isWrap
 						/>
-						{position !== "icon" && (
+						{normalizedPosition !== "icon" && (
 							<ToggleControl
 								label={__("Show quantity counter", "boostify-blocks")}
 								onChange={(checked) =>

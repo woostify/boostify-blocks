@@ -10,9 +10,6 @@ import React, { FC } from "react";
 
 // @ts-ignore
 import { __experimentalInputControl as InputControl } from "@wordpress/components";
-import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
-import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
-import useGetDeviceType from "../hooks/useGetDeviceType";
 import { get_STOCK_STATUS_OPTIONS } from "./constants";
 import ProductCategoryControl from "./product-category-control";
 import ProductTagControl, { ProductTaxOperator } from "./product-tag-control";
@@ -33,6 +30,8 @@ export type ProductOrderBy =
 export interface WCB_PRODUCTS_PANEL_SORTINGANDFILTERING {
 	emptyMessage: string;
 	numberOfItems: number;
+	isNumberOfItemsEdited?: boolean;
+	numberOfItemsFromCustomizer?: number;
 	isOnSale: boolean;
 	stockStatus: string[];
 	categories: string[];
@@ -84,8 +83,6 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 	onToggle,
 	opened,
 }) => {
-	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-
 	const STOCK_STATUS_OPTIONS = get_STOCK_STATUS_OPTIONS() as Record<string, string>;
 
 	const renderSelectOrderBy = () => {
@@ -269,23 +266,22 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 					Object.values(STOCK_STATUS_OPTIONS).includes(value)
 				}
 				value={
-					panelData.stockStatus.map((key) => STOCK_STATUS_OPTIONS[key]) || []
+					(panelData.stockStatus || [])
+						.map((key) => STOCK_STATUS_OPTIONS[key])
+						.filter(Boolean)
 				}
 				__experimentalExpandOnFocus={true}
 			/>
 
 			{/*  */}
 			<RangeControl
-				label={
-					<MyLabelControl hasResponsive>
-						{__("Number of items", "boostify-blocks")}
-					</MyLabelControl>
-				}
+				label={__("Number of items", "boostify-blocks")}
 				value={panelData.numberOfItems}
 				onChange={(numberOfItems = 10) => {
 					setAttr__({
 						...panelData,
 						numberOfItems,
+						isNumberOfItemsEdited: true,
 					});
 				}}
 				min={1}

@@ -12,6 +12,7 @@ import { EditProps } from "../block-container/Edit";
 import GlobalCss from "./GlobalCss";
 // @ts-ignore
 import "./editor.scss";
+import { useProductsCarouselEditor } from "./carouselUtils";
 import {
 	Dropdown,
 	ToolbarButton,
@@ -76,8 +77,12 @@ import WcbProductsPanel_StyleOutOfStock from "./WcbProductsPanel_StyleOutOfStock
 import WcbProductsPanel_StyleDimension, {
 	WCB_PRODUCTS_PANEL_STYLE_DIMENSION_DEMO,
 } from "./WcbProductsPanel_StyleDimension";
+import WcbTestimonialsPanel_StyleArrowDots, {
+	WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO,
+} from "../block-testimonials-swiper/WcbTestimonialsPanel_StyleArrowDots";
 import { getThemeDefaults } from "../utils/themeDefaults";
 import {
+	applyThemeDefaultsToBlockAttributes,
 	buildStyleBorderDefault,
 	buildStyleLayoutDefault,
 	buildGeneralContractDefault,
@@ -93,12 +98,15 @@ import {
 	buildStyleWishlistButtonDefault,
 	buildStyleQuickViewButtonDefault,
 	buildStyleCountdownUrgencyDefault,
+	normalizeAddToCartPosition,
 } from "./WcbThemeDefaults";
+import useGetDeviceType from "../hooks/useGetDeviceType";
 
 interface Props extends EditProps<WcbAttrs> { }
 
 const Edit: FC<Props> = (props) => {
 	const { attributes, setAttributes, clientId } = props;
+	const deviceType = useGetDeviceType() || "Desktop";
 	const {
 		className,
 		advance_responsiveCondition,
@@ -124,6 +132,7 @@ const Edit: FC<Props> = (props) => {
 		style_quickViewBtn,
 		style_countdownUrgency,
 		style_dimension,
+		style_arrowAndDots,
 		advance_motionEffect,
 		style_category,
 	} = attributes;
@@ -179,7 +188,7 @@ const Edit: FC<Props> = (props) => {
 		setAttributes({ ...DEFAULT });
 	}, [style_layout]);
 
-	// When isCustomizerGeneralLayout switches from true → false, reset affected attributes to customizer defaults
+	// When isCustomizerGeneralLayout switches between true/false
 	const prevIsCustomizerGeneralLayout = useRef(general_layout?.isCustomizerGeneralLayout);
 	useEffect(() => {
 		const prev = prevIsCustomizerGeneralLayout.current;
@@ -187,6 +196,9 @@ const Edit: FC<Props> = (props) => {
 		prevIsCustomizerGeneralLayout.current = curr;
 
 		if (prev === true && curr === false) {
+			const theme = getThemeDefaults();
+			const curPos = theme.shop_archive_add_to_cart_btn?.position || 'bottom';
+			const normalizedPos = normalizeAddToCartPosition(curPos);
 			setAttributes({
 				general_content: buildGeneralContractDefault(undefined),
 				general_featuredImage: buildGeneralFeaturedImageDefault(undefined),
@@ -199,10 +211,46 @@ const Edit: FC<Props> = (props) => {
 				style_outOfStock: buildStyleOutOfStockDefault(undefined),
 				style_title: buildStyleTitleDefault(undefined),
 				style_price: buildStylePriceDefault(undefined),
-				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined),
+				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined, normalizedPos),
 				style_wishlistBtn: buildStyleWishlistButtonDefault(undefined),
 				style_quickViewBtn: buildStyleQuickViewButtonDefault(undefined),
 				style_countdownUrgency: buildStyleCountdownUrgencyDefault(undefined),
+			});
+		} else if (prev === false && curr === true) {
+			// When switching to block custom style, snapshot all current Customizer defaults into block attributes.
+			const synced = applyThemeDefaultsToBlockAttributes({
+				...attributes,
+				general_layout: {
+					...general_layout,
+					isCustomizerGeneralLayout: false,
+				},
+			});
+			setAttributes({
+				general_content: synced.general_content,
+				general_featuredImage: synced.general_featuredImage,
+				general_addToCartBtn: synced.general_addToCartBtn,
+				general_sortingAndFiltering: synced.general_sortingAndFiltering
+					? {
+							...synced.general_sortingAndFiltering,
+							isNumberOfItemsEdited: general_sortingAndFiltering?.isNumberOfItemsEdited,
+					  }
+					: general_sortingAndFiltering,
+				style_layout: synced.style_layout
+					? {
+							...synced.style_layout,
+							isNumberOfColumnEdited: style_layout?.isNumberOfColumnEdited,
+					  }
+					: style_layout,
+				style_border: synced.style_border,
+				style_featuredImage: synced.style_featuredImage,
+				style_saleBadge: synced.style_saleBadge,
+				style_outOfStock: synced.style_outOfStock,
+				style_title: synced.style_title,
+				style_price: synced.style_price,
+				style_addToCardBtn: synced.style_addToCardBtn,
+				style_wishlistBtn: synced.style_wishlistBtn,
+				style_quickViewBtn: synced.style_quickViewBtn,
+				style_countdownUrgency: synced.style_countdownUrgency,
 			});
 		}
 	}, [general_layout?.isCustomizerGeneralLayout]);
@@ -254,14 +302,17 @@ const Edit: FC<Props> = (props) => {
 	}, [style_countdownUrgency]);
 
 	useEffect(() => {
-		const currentQuickView = buildStyleQuickViewButtonDefault(
-			attributes.style_quickViewBtn as any
-		);
+		const currentQuickView = buildStyleQuickViewButtonDefault(undefined);
 		if (
 			!style_quickViewBtn ||
 			style_quickViewBtn.position !== currentQuickView.position ||
 			style_quickViewBtn.enabled !== currentQuickView.enabled ||
-			style_quickViewBtn.show_icon !== currentQuickView.show_icon
+			style_quickViewBtn.show_icon !== currentQuickView.show_icon ||
+			style_quickViewBtn.bg_color !== currentQuickView.bg_color ||
+			style_quickViewBtn.text_color !== currentQuickView.text_color ||
+			style_quickViewBtn.hover_bg_color !== currentQuickView.hover_bg_color ||
+			style_quickViewBtn.hover_text_color !== currentQuickView.hover_text_color ||
+			style_quickViewBtn.border_radius !== currentQuickView.border_radius
 		) {
 			setAttributes({
 				style_quickViewBtn: currentQuickView,
@@ -308,7 +359,35 @@ const Edit: FC<Props> = (props) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [!!style_layout]);
 
+	// Sync Customizer "Products Per Page" to block when not manually overridden by user.
+	useEffect(() => {
+		if (!general_sortingAndFiltering || general_sortingAndFiltering.isNumberOfItemsEdited) {
+			return;
+		}
+		const customizerPerPage = getThemeDefaults()?.product_per_page ?? null;
+		const stored = general_sortingAndFiltering.numberOfItemsFromCustomizer;
+		if (stored === undefined || customizerPerPage === null || stored === customizerPerPage) {
+			return;
+		}
+
+		setAttributes({
+			general_sortingAndFiltering: {
+				...general_sortingAndFiltering,
+				numberOfItems: customizerPerPage,
+				numberOfItemsFromCustomizer: customizerPerPage,
+			},
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [!!general_sortingAndFiltering]);
+
 	const renderTabBodyPanels = (tab: InspectorControlsTabs[number]) => {
+		// Inside-image badges use position: absolute, so margin-bottom only affects static placement.
+		const showBadgeMarginBottom = !(
+			(effectiveAttrs.general_featuredImage?.isShowFeaturedImage ?? true) &&
+			(effectiveAttrs.general_content?.saleBadgePosition ?? "Inside image") ===
+				"Inside image"
+		);
+
 		switch (tab.name) {
 			case "General":
 				return (
@@ -329,7 +408,7 @@ const Edit: FC<Props> = (props) => {
 								setAttr__={(data) => {
 									setAttributes({ general_sortingAndFiltering: data });
 								}}
-								panelData={general_sortingAndFiltering}
+								panelData={effectiveAttrs.general_sortingAndFiltering || general_sortingAndFiltering}
 							/>
 						)}
 						{
@@ -386,7 +465,28 @@ const Edit: FC<Props> = (props) => {
 											opened={tabGeneralIsPanelOpen === "Button" || undefined}
 											//
 											setAttr__={(data) => {
-												setAttributes({ general_addToCartBtn: data });
+												const isPosChanged = data.position !== general_addToCartBtn?.position;
+												if (isPosChanged) {
+													const posDefaults = buildStyleAddToCartBtnDefault(undefined, data.position);
+													setAttributes({
+														general_addToCartBtn: data,
+														style_addToCardBtn: {
+															...posDefaults,
+															...style_addToCardBtn,
+															typography: style_addToCardBtn?.typography ?? posDefaults.typography,
+															padding: style_addToCardBtn?.padding ?? posDefaults.padding,
+															marginBottom: style_addToCardBtn?.marginBottom ?? posDefaults.marginBottom,
+															colorAndBackgroundColor: posDefaults.colorAndBackgroundColor,
+															border: {
+																...(posDefaults.border || {}),
+																...(style_addToCardBtn?.border || {}),
+																radius: posDefaults.border?.radius ?? style_addToCardBtn?.border?.radius,
+															},
+														},
+													});
+												} else {
+													setAttributes({ general_addToCartBtn: data });
+												}
 											}}
 											panelData={general_addToCartBtn}
 										/>
@@ -395,7 +495,7 @@ const Edit: FC<Props> = (props) => {
 							)
 						}
 
-						{general_pagination && (
+						{!isCarouselMode && general_pagination && (
 							<WcbProductsPanelPagination
 								onToggle={() => handleTogglePanel("General", "Pagination")}
 								initialOpen={tabGeneralIsPanelOpen === "Pagination"}
@@ -431,6 +531,43 @@ const Edit: FC<Props> = (props) => {
 												setAttributes({ style_layout: data });
 											}}
 											panelData={style_layout}
+										/>
+									)}
+									{(
+										(isCarouselMode &&
+											(carouselIsShowArrow || carouselIsShowDots)) ||
+										(!isCarouselMode &&
+											Boolean(
+												effectiveAttrs.style_layout?.swithToScrollSnapX
+											) &&
+											effectiveAttrs.style_layout?.swithToScrollSnapX !==
+												"None" &&
+											carouselIsShowArrow)
+									) && (
+										<WcbTestimonialsPanel_StyleArrowDots
+											onToggle={() =>
+												handleTogglePanel("Styles", "_StyleArrowDots")
+											}
+											initialOpen={tabStylesIsPanelOpen === "_StyleArrowDots"}
+											opened={
+												tabStylesIsPanelOpen === "_StyleArrowDots" || undefined
+											}
+											setAttr__={(data) => {
+												setAttributes({ style_arrowAndDots: data });
+											}}
+											panelData={
+												style_arrowAndDots ||
+												WCB_TESTIMONIALS_PANEL_STYLE_ARROW_DOTS_DEMO
+											}
+											showArrowsDots={
+												!isCarouselMode
+													? "Arrow"
+													: carouselIsShowArrow && carouselIsShowDots
+													? "Both"
+													: carouselIsShowArrow
+													? "Arrow"
+													: "Dot"
+											}
 										/>
 									)}
 									{general_featuredImage?.isShowFeaturedImage && style_featuredImage && (
@@ -473,7 +610,7 @@ const Edit: FC<Props> = (props) => {
 											setAttr__={(data) => {
 												setAttributes({ style_title: data });
 											}}
-											panelData={style_title}
+											panelData={effectiveAttrs.style_title || style_title}
 										/>
 									)}
 
@@ -482,6 +619,7 @@ const Edit: FC<Props> = (props) => {
 											onToggle={() => handleTogglePanel("Styles", "_StyleSaleBadge")}
 											initialOpen={tabStylesIsPanelOpen === "_StyleSaleBadge"}
 											opened={tabStylesIsPanelOpen === "_StyleSaleBadge" || undefined}
+											showMarginBottom={showBadgeMarginBottom}
 											//
 											setAttr__={(data) => {
 												setAttributes({ style_saleBadge: data });
@@ -495,6 +633,9 @@ const Edit: FC<Props> = (props) => {
 												onToggle={() => handleTogglePanel("Styles", "_StyleOutOfStock")}
 												initialOpen={tabStylesIsPanelOpen === "_StyleOutOfStock"}
 												opened={tabStylesIsPanelOpen === "_StyleOutOfStock" || undefined}
+												showMarginBottom={
+													!(effectiveAttrs.general_featuredImage?.isShowFeaturedImage ?? true)
+												}
 												//
 												setAttr__={(data) => {
 													setAttributes({ style_outOfStock: data });
@@ -525,7 +666,7 @@ const Edit: FC<Props> = (props) => {
 											setAttr__={(data) => {
 												setAttributes({ style_price: data });
 											}}
-											panelData={style_price}
+											panelData={effectiveAttrs.style_price || style_price}
 										/>
 									)}
 
@@ -538,6 +679,9 @@ const Edit: FC<Props> = (props) => {
 											opened={
 												tabStylesIsPanelOpen === "_StyleAddToCartBtn" || undefined
 											}
+											isIconPosition={
+												effectiveAttrs.general_addToCartBtn?.position === "icon"
+											}
 											//
 											setAttr__={(data) => {
 												setAttributes({ style_addToCardBtn: data });
@@ -546,9 +690,13 @@ const Edit: FC<Props> = (props) => {
 										/>
 									)}
 
-									{general_pagination?.isShowPagination && style_pagination && (
-										<WcbProductsPanel_StylePagination
-											onToggle={() => handleTogglePanel("Styles", "_StylePagination")}
+									{!isCarouselMode &&
+										general_pagination?.isShowPagination &&
+										style_pagination && (
+											<WcbProductsPanel_StylePagination
+												onToggle={() =>
+													handleTogglePanel("Styles", "_StylePagination")
+												}
 											initialOpen={tabStylesIsPanelOpen === "_StylePagination"}
 											opened={
 												tabStylesIsPanelOpen === "_StylePagination" || undefined
@@ -616,7 +764,7 @@ const Edit: FC<Props> = (props) => {
 			return null;
 		}
 
-		const itemPerPage = general_sortingAndFiltering?.numberOfItems || 9;
+		const itemPerPage = effectiveAttrs.general_sortingAndFiltering?.numberOfItems || 9;
 		const columnDesktop = style_layout?.numberOfColumn.Desktop || 1;
 		const isShowPagination = general_pagination?.isShowPagination;
 		const maxPageShow = general_pagination?.pageLimit || 0;
@@ -649,6 +797,7 @@ const Edit: FC<Props> = (props) => {
 											general_sortingAndFiltering: {
 												...general_sortingAndFiltering,
 												numberOfItems: Number(value || 1),
+												isNumberOfItemsEdited: true,
 											},
 										});
 									}}
@@ -664,10 +813,11 @@ const Edit: FC<Props> = (props) => {
 									__unstableInputWidth="60px"
 									label={__("Column in Desktop")}
 									labelPosition="edge"
-									min={0}
-									max={100}
+									min={1}
+									max={6}
 									onChange={(value: any) => {
-										if (isNaN(value) || value < 0 || value > 100) {
+										const num = Number(value);
+										if (isNaN(num) || num < 1 || num > 6) {
 											return;
 										}
 										setAttributes({
@@ -675,7 +825,7 @@ const Edit: FC<Props> = (props) => {
 												...style_layout,
 												numberOfColumn: {
 													...style_layout.numberOfColumn,
-													Desktop: Number(value || 1),
+													Desktop: num,
 												},
 												isNumberOfColumnEdited: true,
 											},
@@ -687,53 +837,57 @@ const Edit: FC<Props> = (props) => {
 								/>
 							)}
 						</BaseControl>
-						<BaseControl id="3">
-							{general_pagination && (
-								<ToggleControl
-									label={__("Show pagination", "wcb")}
-									onChange={(checked) =>
-										setAttributes({
-											general_pagination: {
-												...general_pagination,
-												isShowPagination: checked,
-											},
-										})
-									}
-									checked={isShowPagination}
-								/>
-							)}
-						</BaseControl>
-						{isShowPagination && (
-							<BaseControl
-								id="4"
-								help={__(
-									"Limit the pages you want to show, even if the query has more results. To show all pages use 0 (zero).",
-									"wcb"
+						{!isCarouselMode && (
+							<>
+								<BaseControl id="3">
+									{general_pagination && (
+										<ToggleControl
+											label={__("Show pagination", "wcb")}
+											onChange={(checked) =>
+												setAttributes({
+													general_pagination: {
+														...general_pagination,
+														isShowPagination: checked,
+													},
+												})
+											}
+											checked={isShowPagination}
+										/>
+									)}
+								</BaseControl>
+								{isShowPagination && (
+									<BaseControl
+										id="4"
+										help={__(
+											"Limit the pages you want to show, even if the query has more results. To show all pages use 0 (zero).",
+											"wcb"
+										)}
+									>
+										<NumberControl
+											id={"maxPageInputId"}
+											__unstableInputWidth="60px"
+											label={__("Max page to show")}
+											labelPosition="edge"
+											min={0}
+											onChange={(value: any) => {
+												if (isNaN(value) || value < 0) {
+													return;
+												}
+												setAttributes({
+													general_pagination: {
+														...general_pagination,
+														pageLimit: value,
+														isShowPagination: true,
+													},
+												});
+											}}
+											step="1"
+											value={maxPageShow}
+											isDragEnabled={false}
+										/>
+									</BaseControl>
 								)}
-							>
-								<NumberControl
-									id={"maxPageInputId"}
-									__unstableInputWidth="60px"
-									label={__("Max page to show")}
-									labelPosition="edge"
-									min={0}
-									onChange={(value: any) => {
-										if (isNaN(value) || value < 0) {
-											return;
-										}
-										setAttributes({
-											general_pagination: {
-												...general_pagination,
-												pageLimit: value,
-												isShowPagination: true,
-											},
-										});
-									}}
-									step="1"
-									value={maxPageShow}
-									isDragEnabled={false}
-								/>
-							</BaseControl>
+							</>
 						)}
 					</>
 				)}
@@ -764,9 +918,11 @@ const Edit: FC<Props> = (props) => {
 			style_rating,
 			style_wishlistBtn,
 			style_quickViewBtn,
+			style_countdownUrgency,
 			advance_motionEffect,
 			style_category,
 			style_dimension,
+			style_arrowAndDots,
 		};
 		return cs;
 	}, [
@@ -791,66 +947,113 @@ const Edit: FC<Props> = (props) => {
 		style_rating,
 		style_wishlistBtn,
 		style_quickViewBtn,
+		style_countdownUrgency,
 		advance_motionEffect,
 		style_category,
 		style_dimension,
+		style_arrowAndDots,
 	]);
+
+	const effectiveAttrs = useMemo(() => {
+		return applyThemeDefaultsToBlockAttributes(attributes);
+	}, [attributes]);
 
 	const WcbAttrsForServerSide = useMemo(() => {
 		return {
 			className,
 			uniqueId,
-			general_sortingAndFiltering,
-			general_content,
-			general_layout,
-			general_featuredImage,
-			general_addToCartBtn,
-			general_pagination,
-			style_wishlistBtn,
-			style_quickViewBtn,
-			style_addToCardBtn,
+			general_sortingAndFiltering: effectiveAttrs.general_sortingAndFiltering,
+			general_content: effectiveAttrs.general_content,
+			general_layout: effectiveAttrs.general_layout,
+			general_featuredImage: effectiveAttrs.general_featuredImage,
+			general_addToCartBtn: effectiveAttrs.general_addToCartBtn,
+			general_pagination: effectiveAttrs.general_pagination,
+			style_title: effectiveAttrs.style_title,
+			style_featuredImage: effectiveAttrs.style_featuredImage,
+			style_layout: effectiveAttrs.style_layout,
+			style_addToCardBtn: effectiveAttrs.style_addToCardBtn,
+			style_pagination: effectiveAttrs.style_pagination,
+			style_saleBadge: effectiveAttrs.style_saleBadge,
+			style_outOfStock: effectiveAttrs.style_outOfStock,
+			style_border: effectiveAttrs.style_border,
+			style_price: effectiveAttrs.style_price,
+			style_rating: effectiveAttrs.style_rating,
+			style_wishlistBtn: effectiveAttrs.style_wishlistBtn,
+			style_quickViewBtn: effectiveAttrs.style_quickViewBtn,
+			style_countdownUrgency: effectiveAttrs.style_countdownUrgency,
+			style_dimension: effectiveAttrs.style_dimension,
+			style_arrowAndDots: effectiveAttrs.style_arrowAndDots,
+			style_category: effectiveAttrs.style_category,
+			advance_responsiveCondition: effectiveAttrs.advance_responsiveCondition,
+			advance_zIndex: effectiveAttrs.advance_zIndex,
+			advance_motionEffect: effectiveAttrs.advance_motionEffect,
 		};
-	}, [
-		uniqueId,
-		className,
-		general_sortingAndFiltering,
-		general_content,
-		general_layout,
-		general_featuredImage,
-		general_addToCartBtn,
-		general_pagination,
-		style_wishlistBtn,
-		style_quickViewBtn,
-		style_addToCardBtn,
-	]);
+	}, [effectiveAttrs, className, uniqueId]);
 
-	const WcbAttrsForSaveValue = WcbAttrsForSave();
-	const numCol = style_layout?.numberOfColumn;
+	const WcbAttrsForSaveValue = useMemo(() => {
+		return effectiveAttrs as WcbAttrsForSave;
+	}, [effectiveAttrs]);
+
+	const numCol = effectiveAttrs.style_layout?.numberOfColumn;
 	const colDesk = typeof numCol === "object" && numCol !== null ? (numCol.Desktop ?? 2) : (numCol ?? 2);
 	const colTab = typeof numCol === "object" && numCol !== null ? (numCol.Tablet ?? colDesk) : colDesk;
 	const colMob = typeof numCol === "object" && numCol !== null ? (numCol.Mobile ?? colTab) : colTab;
 
-	const rowGapDesk = style_layout?.rowGap?.Desktop ?? "1rem";
-	const rowGapTab = style_layout?.rowGap?.Tablet ?? rowGapDesk;
-	const rowGapMob = style_layout?.rowGap?.Mobile ?? rowGapTab;
+	const rowGapDesk = effectiveAttrs.style_layout?.rowGap?.Desktop ?? "1rem";
+	const rowGapTab = effectiveAttrs.style_layout?.rowGap?.Tablet ?? rowGapDesk;
+	const rowGapMob = effectiveAttrs.style_layout?.rowGap?.Mobile ?? rowGapTab;
 
-	const colGapDesk = style_layout?.colunmGap?.Desktop ?? "1rem";
-	const colGapTab = style_layout?.colunmGap?.Tablet ?? colGapDesk;
-	const colGapMob = style_layout?.colunmGap?.Mobile ?? colGapTab;
+	const colGapDesk = effectiveAttrs.style_layout?.colunmGap?.Desktop ?? "1rem";
+	const colGapTab = effectiveAttrs.style_layout?.colunmGap?.Tablet ?? colGapDesk;
+	const colGapMob = effectiveAttrs.style_layout?.colunmGap?.Mobile ?? colGapTab;
+
+	const activeCol =
+		deviceType === "Mobile" ? colMob : deviceType === "Tablet" ? colTab : colDesk;
+	const activeRowGap =
+		deviceType === "Mobile"
+			? rowGapMob
+			: deviceType === "Tablet"
+			? rowGapTab
+			: rowGapDesk;
+	const activeColGap =
+		deviceType === "Mobile"
+			? colGapMob
+			: deviceType === "Tablet"
+			? colGapTab
+			: colGapDesk;
+
+	const {
+		setSsrContainerEl,
+		isCarouselMode,
+		carouselIsShowArrow,
+		carouselIsShowDots,
+	} = useProductsCarouselEditor({
+		styleLayout: effectiveAttrs.style_layout,
+		activeCol,
+		activeColGap,
+	});
 
 	return (
 		<MyCacheProvider uniqueKey={clientId}>
 			<div
 				{...wrapBlockProps}
-				className={`${wrapBlockProps.className
-					} wcb-block-products-editor-swithToScrollSnapX__${style_layout?.swithToScrollSnapX ? style_layout.swithToScrollSnapX.toString() : "None"}`}
+				className={`${wrapBlockProps.className} ${
+					isCarouselMode
+						? "wcb-block-products-editor-layout__carousel"
+						: `wcb-block-products-editor-swithToScrollSnapX__${
+								effectiveAttrs.style_layout?.swithToScrollSnapX
+									? effectiveAttrs.style_layout.swithToScrollSnapX.toString()
+									: "None"
+						  }`
+				}`}
 				style={{
 					...wrapBlockProps.style,
+					"--wcb-editor-col": activeCol,
 					"--wcb-editor-col-mobile": colMob,
 					"--wcb-editor-col-tablet": colTab,
 					"--wcb-editor-col-desktop": colDesk,
-					"--wcb-editor-row-gap": rowGapDesk,
-					"--wcb-editor-col-gap": colGapDesk,
+					"--wcb-editor-row-gap": activeRowGap,
+					"--wcb-editor-col-gap": activeColGap,
 					"--wcb-editor-row-gap-mobile": rowGapMob,
 					"--wcb-editor-row-gap-tablet": rowGapTab,
 					"--wcb-editor-row-gap-desktop": rowGapDesk,
@@ -874,19 +1077,25 @@ const Edit: FC<Props> = (props) => {
 					!!style_price &&
 					!!advance_zIndex &&
 					!!advance_responsiveCondition &&
-					!!advance_motionEffect &&
-					<GlobalCss {...(WcbAttrsForSaveValue as Required<WcbAttrsForSave>)} />}
+					!!advance_motionEffect && (
+						<GlobalCss
+							{...(WcbAttrsForSaveValue as Required<WcbAttrsForSave>)}
+							previewDeviceType={deviceType}
+						/>
+					)}
 
 				{/* CHILD CONTENT  */}
-				{uniqueId && !!style_layout && !!style_price && (
-					<ServerSideRender
-						block="boostify-blocks/products"
-						attributes={WcbAttrsForServerSide}
-						EmptyResponsePlaceholder={EmptyPlaceholder}
-						LoadLoadingResponsePlaceholder={LoadingPlaceholder}
-						httpMethod="POST"
-					/>
-				)}
+				<div ref={setSsrContainerEl}>
+					{uniqueId && !!style_layout && !!style_price && (
+						<ServerSideRender
+							block="boostify-blocks/products"
+							attributes={WcbAttrsForServerSide}
+							EmptyResponsePlaceholder={EmptyPlaceholder}
+							LoadLoadingResponsePlaceholder={LoadingPlaceholder}
+							httpMethod="POST"
+						/>
+					)}
+				</div>
 			</div>
 		</MyCacheProvider>
 	);
