@@ -1,4 +1,4 @@
-import { Global, CSSObject } from "@emotion/react";
+import { Global } from "@emotion/react";
 import React, { FC } from "react";
 import { getAdvanveDivWrapStyles } from "../block-container/getAdvanveStyles";
 import getPaddingMarginStyles from "../utils/getPaddingMarginStyles";
@@ -67,32 +67,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 	const ITEM_TOP_ICON_WRAP = createRobustSelector('.wcb-top__icon-wrap');
 	const ITEM_TOP_ICON = createRobustSelector('.wcb-top__icon');
 
-	// ------------------- WRAP DIV
-	const getDivWrapStyles = (): CSSObject[] => {
-		return [
-			// Basic styling for the slider child item using robust selectors
-			{
-				[ITEM_CLASSNAME]: {
-					display: "flex",
-					flexDirection: "column",
-				},
-				[ITEM_CLASSNAME_INNER]: {
-					display: "flex",
-					flexDirection: "column",
-					width: "100%",
-				},
-				[CALL_TO_ACTION_INNER]: {
-					display: "inline-flex",
-					alignItems: "center",
-					justifyContent: "center",
-					width: "fit-content",
-					maxWidth: "100%",
-					boxSizing: "border-box",
-					cursor: "pointer",
-				},
-			},
-		];
-	};
+	const alignDesktop = style_content?.textAlignment?.Desktop;
+	const alignTablet = style_content?.textAlignment?.Tablet ?? alignDesktop;
+	const alignMobile = style_content?.textAlignment?.Mobile ?? alignTablet;
+	const mapTextAlign = (val?: string) =>
+		val === "left" ? "start" : val === "right" ? "end" : val === "center" ? "center" : undefined;
+	const mapFlexAlign = (val?: string) =>
+		val === "left" ? "flex-start" : val === "right" ? "flex-end" : val === "center" ? "center" : undefined;
 
 	if (!uniqueId) {
 		return null;
@@ -100,8 +81,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 	return (
 		<>
-			<Global styles={getDivWrapStyles()} />
-
 			{/* --------- ICON --------- */}
 			{style_image?.enableIcon ? (
 				<Global
@@ -150,11 +129,13 @@ const GlobalCss: FC<Props> = (attrs) => {
 							className: ITEM_NAME,
 							prefix: "marginBottom",
 						}),
-						{
-							[ITEM_NAME]: {
-								color: `${style_name.textColor} !important`,
-							},
-						},
+						style_name.textColor
+							? {
+								[ITEM_NAME]: {
+									color: `${style_name.textColor} !important`,
+								},
+							}
+							: null,
 					]}
 				/>
 			)}
@@ -173,44 +154,40 @@ const GlobalCss: FC<Props> = (attrs) => {
 							prefix: "marginBottom",
 						}),
 						{
-							[ITEM_CONTENT]: {
-								color: `${style_content.textColor} !important`,
-							},
-							// Mobile
-							[`@media (max-width: 767px)`]: {
-								[ITEM_CONTENT]: {
-									textAlign:
-										(style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
-											? "start"
-											: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
-											? "end"
-											: "center",
-								},
-							},
-
-							// Tablet
-							[`@media (min-width: 768px) and (max-width: 1023px)`]: {
-								[ITEM_CONTENT]: {
-									textAlign:
-										(style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
-											? "start"
-											: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
-											? "end"
-											: "center",
-								},
-							},
-
-							// Desktop
-							[`@media (min-width: 1024px)`]: {
-								[ITEM_CONTENT]: {
-									textAlign:
-										style_content?.textAlignment?.Desktop === "left"
-											? "start"
-											: style_content?.textAlignment?.Desktop === "right"
-											? "end"
-											: "center",
-								},
-							},
+							...(style_content.textColor
+								? {
+									[ITEM_CONTENT]: {
+										color: `${style_content.textColor} !important`,
+									},
+								}
+								: {}),
+							...(mapTextAlign(alignMobile)
+								? {
+									[`@media (max-width: 767px)`]: {
+										[ITEM_CONTENT]: {
+											textAlign: mapTextAlign(alignMobile),
+										},
+									},
+								}
+								: {}),
+							...(mapTextAlign(alignTablet)
+								? {
+									[`@media (min-width: 768px) and (max-width: 1023px)`]: {
+										[ITEM_CONTENT]: {
+											textAlign: mapTextAlign(alignTablet),
+										},
+									},
+								}
+								: {}),
+							...(mapTextAlign(alignDesktop)
+								? {
+									[`@media (min-width: 1024px)`]: {
+										[ITEM_CONTENT]: {
+											textAlign: mapTextAlign(alignDesktop),
+										},
+									},
+								}
+								: {}),
 						},
 					]}
 				/>
@@ -256,66 +233,36 @@ const GlobalCss: FC<Props> = (attrs) => {
 						},
 					},
 					{
-						// Mobile
-						[`@media (max-width: 767px)`]: {
-							[ITEM_CLASSNAME_INNER]: {
-								alignItems:
-									((style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
-									? "flex-start"
-									: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
-									? "flex-end"
-									: "center"),
-								textAlign:
-									((style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
-									? "start"
-									: (style_content?.textAlignment?.Mobile ?? style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
-									? "end"
-									: "center"),
-							},
-						},
-
-						// Tablet
-						[`@media (min-width: 768px) and (max-width: 1023px)`]: {
-							[ITEM_CLASSNAME_INNER]: {
-								alignItems:
-									((style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
-									? "flex-start"
-									: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
-									? "flex-end"
-									: "center"),
-								textAlign:
-									((style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "left"
-									? "start"
-									: (style_content?.textAlignment?.Tablet ?? style_content?.textAlignment?.Desktop) === "right"
-									? "end"
-									: "center"),
-							},
-						},
-
-						// Desktop
-						[`@media (min-width: 1024px)`]: {
-							[ITEM_CLASSNAME_INNER]: {
-								alignItems:
-									style_content?.textAlignment?.Desktop === "left"
-									? "flex-start"
-									: style_content?.textAlignment?.Desktop === "right"
-									? "flex-end"
-									: "center",
-								textAlign:
-									style_content?.textAlignment?.Desktop === "left"
-									? "start"
-									: style_content?.textAlignment?.Desktop === "right"
-									? "end"
-									: "center",
-							},
-						},
-					},
-					{
-						[CALL_TO_ACTION_INNER]: {
-							// backgroundColor: `${getButtonBackgroundFromPreset()} !important`,
-							// width: "10rem",
-							// height: "2.5rem",
-						},
+						...(mapTextAlign(alignMobile)
+							? {
+								[`@media (max-width: 767px)`]: {
+									[ITEM_CLASSNAME_INNER]: {
+										alignItems: mapFlexAlign(alignMobile),
+										textAlign: mapTextAlign(alignMobile),
+									},
+								},
+							}
+							: {}),
+						...(mapTextAlign(alignTablet)
+							? {
+								[`@media (min-width: 768px) and (max-width: 1023px)`]: {
+									[ITEM_CLASSNAME_INNER]: {
+										alignItems: mapFlexAlign(alignTablet),
+										textAlign: mapTextAlign(alignTablet),
+									},
+								},
+							}
+							: {}),
+						...(mapTextAlign(alignDesktop)
+							? {
+								[`@media (min-width: 1024px)`]: {
+									[ITEM_CLASSNAME_INNER]: {
+										alignItems: mapFlexAlign(alignDesktop),
+										textAlign: mapTextAlign(alignDesktop),
+									},
+								},
+							}
+							: {}),
 					},
 				]}
 			/>
@@ -409,6 +356,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 							className: createRobustSelector('.wcb-slider-child__item-inner'),
 							padding: style_dimension.padding,
 							margin: style_dimension.margin,
+							importantHorizontalMargin: true,
 						}),
 					]}
 				/>
@@ -422,19 +370,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global
 						styles={[
 							{
-								[createRobustSelector('.wcb-slider-child__content-image')]:
-									{
-										display: "flex",
-										flexDirection: "column",
-										alignItems: "center",
-								},
 								[createRobustSelector('.wcb-slider-child__image')]:
 									{
 										alignSelf: style_image.imageAlignSelf,
 										width: style_image.imageSize === "thumbnail" ? "100px" : "100%",
 										height: style_image.imageSize === "thumbnail" ? "100px" : "100%",
-										objectFit: "cover",
-										margin: "auto",
 									},
 							},
 						]}
@@ -447,19 +387,24 @@ const GlobalCss: FC<Props> = (attrs) => {
 					<Global
 						styles={[
 							{
-								[createRobustSelector('.wcb-slider-child__item-wrap-inner')]:
+								[createRobustSelector('.wcb-slider-child__item-wrap-inner > div')]:
 									{
 										display: "flex",
 										flexDirection: "row",
+										alignItems: "center",
 										gap: "10px",
+										width: "100%",
+									},
+
+								[createRobustSelector('.wcb-slider-child__content-image')]:
+									{
+										maxWidth: style_image.imageSize === "thumbnail" ? "100px" : "50%",
 									},
 
 								[createRobustSelector('.wcb-slider-child__image')]:
 									{
-										display: "block",
 										width: style_image.imageSize === "thumbnail" ? "100px" : "100%",
 										height: style_image.imageSize === "thumbnail" ? "100px" : "100%",
-										objectFit: "cover",
 									},
 							},
 						]}

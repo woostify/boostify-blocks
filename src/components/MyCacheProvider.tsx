@@ -1,49 +1,70 @@
 import React, { useRef, FC, ReactNode, memo, useState, useEffect } from "react";
-import useCreateCacheEmotion from "../hooks/useCreateCacheEmotion";
 import { CacheProvider } from "@emotion/react";
-import createCache, { EmotionCache } from '@emotion/cache';
-import { ResponsiveDevices } from "./controls/MyResponsiveToggle/MyResponsiveToggle";
-import useGetDeviceType from "../hooks/useGetDeviceType";
-import _ from "lodash";
+import createCache, { EmotionCache } from "@emotion/cache";
 
 interface Props {
 	children: ReactNode;
 	uniqueKey: string;
 }
 
+// Reuse one EmotionCache per (key, iframeHead) across all blocks in the canvas
+// so we never churn caches or re-inject duplicate <style> tags on DOM edits.
+const iframeCacheRegistry = new Map<string, WeakMap<HTMLHeadElement, EmotionCache>>();
+
+const getOrCreateIframeCache = (key: string, iframeHead: HTMLHeadElement): EmotionCache => {
+	let map = iframeCacheRegistry.get(key);
+	if (!map) {
+		map = new WeakMap<HTMLHeadElement, EmotionCache>();
+		iframeCacheRegistry.set(key, map);
+	}
+	let existing = map.get(iframeHead);
+	if (!existing) {
+		existing = createCache({ key, container: iframeHead });
+		map.set(iframeHead, existing);
+	}
+	return existing;
+};
+
 const useCreateEmotionCache = function (key = "wcb-custom-cache-key") {
-	const [cache, setCache] = useState<any>(null);
-	const useRefReact = useRef<HTMLDivElement>(null);
+	const [cache, setCache] = useState<EmotionCache | null>(null);
+	const currentIframeRef = useRef<HTMLIFrameElement | null>(null);
+	const currentHeadRef = useRef<HTMLHeadElement | null>(null);
 
 	useEffect(() => {
+		let cancelled = false;
 		let observer: MutationObserver | null = null;
+		let retryTimer: ReturnType<typeof setTimeout> | null = null;
 		let tries = 0;
 
-		const createIframeCache = (iframe: HTMLIFrameElement) => {
-			const iframeHead = iframe?.contentDocument?.head;
+		const attachIframeCache = (iframe: HTMLIFrameElement) => {
+			if (cancelled) return;
+			const iframeHead = iframe?.contentDocument?.head ?? null;
 			if (!iframeHead) return;
-
-			const newCache = createCache({
-				key,
-				container: iframeHead || useRefReact.current || undefined,
-			});
-			setCache(newCache);
+			if (currentIframeRef.current === iframe && currentHeadRef.current === iframeHead) {
+				return;
+			}
+			currentIframeRef.current = iframe;
+			currentHeadRef.current = iframeHead;
+			setCache(getOrCreateIframeCache(key, iframeHead));
 		};
 
 		const watchIframe = () => {
-			const iframe = document.querySelector('iframe[name="editor-canvas"]') as HTMLIFrameElement | null;
+			if (cancelled) return;
+			const iframe = document.querySelector(
+				'iframe[name="editor-canvas"]'
+			) as HTMLIFrameElement | null;
 			if (!iframe) {
 				if (tries < 20) {
 					tries++;
-					setTimeout(watchIframe, 150); // retry for up to ~3s
+					retryTimer = setTimeout(watchIframe, 150);
 				}
 				return;
 			}
 
 			if (iframe.contentDocument?.readyState === "complete") {
-				createIframeCache(iframe);
+				attachIframeCache(iframe);
 			} else {
-				iframe.addEventListener("load", () => createIframeCache(iframe), {
+				iframe.addEventListener("load", () => attachIframeCache(iframe), {
 					once: true,
 				});
 			}
@@ -52,48 +73,53 @@ const useCreateEmotionCache = function (key = "wcb-custom-cache-key") {
 		// Initial attach
 		watchIframe();
 
-		// Watch for iframe changes (device switch)
+		// Only re-query when the currently attached canvas iframe was detached or
+		// hasn't been found yet; avoids recreating the Emotion cache on every
+		// unrelated editor DOM mutation (e.g. slider drags in the sidebar).
 		observer = new MutationObserver(() => {
-			const iframe = document.querySelector('iframe[name="editor-canvas"]') as HTMLIFrameElement | null;
-			if (iframe && iframe !== (cache as any)?.container?.ownerDocument?.defaultView?.frameElement) {
+			if (
+				currentIframeRef.current?.isConnected &&
+				currentHeadRef.current?.isConnected
+			) {
+				return;
+			}
+			const iframe = document.querySelector(
+				'iframe[name="editor-canvas"]'
+			) as HTMLIFrameElement | null;
+			const nextHead = iframe?.contentDocument?.head ?? null;
+			if (
+				iframe &&
+				(iframe !== currentIframeRef.current || nextHead !== currentHeadRef.current)
+			) {
 				tries = 0;
+				if (retryTimer) {
+					clearTimeout(retryTimer);
+					retryTimer = null;
+				}
 				watchIframe();
 			}
 		});
 
 		observer.observe(document.body, { childList: true, subtree: true });
 
-		return () => observer?.disconnect();
-	}, []);
+		return () => {
+			cancelled = true;
+			if (retryTimer) clearTimeout(retryTimer);
+			observer?.disconnect();
+		};
+	}, [key]);
 
-	return { cache, useRefReact };
-}
+	return { cache };
+};
 
-const MyCacheProvider: FC<Props> = ({ children, uniqueKey = "uniqueid" }) => {
-	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
+const MyCacheProvider: FC<Props> = ({ children }) => {
+	const { cache } = useCreateEmotionCache("wcb-key-cache");
 
-	// if (deviceType === "Desktop") {
-	// 	return <>{children}</>;
-	// }
-
-	const KEY = uniqueKey
-		.replace(/[0-9]/g, "")
-		.replace(/ /g, "")
-		.toLocaleLowerCase();
-
-	const { myCache, ref } = useCreateCacheEmotion("wcb-key-cache");
-	const { cache, useRefReact } = useCreateEmotionCache("wcb-key-cache");
-	
 	if (!cache) {
 		return <>{children}</>;
 	}
 
-	return (
-		<CacheProvider value={cache}>
-			{/* <head hidden className="hidden" ref={ref}></head> */}
-			{children}
-		</CacheProvider>
-	);
+	return <CacheProvider value={cache}>{children}</CacheProvider>;
 };
 
 export default memo(MyCacheProvider);

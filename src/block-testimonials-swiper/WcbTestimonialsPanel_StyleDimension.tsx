@@ -5,10 +5,17 @@ import {
 	__experimentalBoxControl as BoxControl,
 } from "@wordpress/components";
 import React, { FC } from "react";
-import { MY_DIMENSIONS_NO_GAP_CONTROL_DEMO, MyDimensionsNoGapControlData } from "../components/controls/MyDimensionsControl/types";
+import { HasResponsive } from "../components/controls/MyBackgroundControl/types";
+import {
+	DimensionSettings,
+	MY_DIMENSIONS_NO_GAP_CONTROL_DEMO,
+	MyDimensionsNoGapControlData,
+} from "../components/controls/MyDimensionsControl/types";
 import MyDimensionsNoGapControl from "../components/controls/MyDimensionsControl/MyDimensionsNoGapControl";
 
-export interface WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION extends MyDimensionsNoGapControlData {}
+export interface WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION extends MyDimensionsNoGapControlData {
+	itemPadding?: HasResponsive<DimensionSettings>;
+}
 
 export const WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION_DEMO: WCB_TESTIMONIALS_PANEL_STYLE_DIMENSION =
 	{
@@ -57,6 +64,8 @@ const WcbTestimonialsPanel_StyleDimension: FC<Props> = ({
 				<MyDimensionsNoGapControl
 					dimensionControl={panelData}
 					setAttrs__dimensions={(data) => setAttr__({ ...panelData, ...data })}
+					paddingMin={0}
+					marginMin={-99999}
 				/>
 			</div>
 		</PanelBody>

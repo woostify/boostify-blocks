@@ -19,7 +19,7 @@ export const WCB_SLIDER_PANEL_CAROUSEL_DEMO: WCB_SLIDER_PANEL_CAROUSEL =
 		autoplaySpeed: 3000,
 		hoverpause: true,
 		isAutoPlay: false,
-		rewind: true,
+		rewind: false,
 		adaptiveHeight: true,
 		showArrowsDots: "Both",
 	};

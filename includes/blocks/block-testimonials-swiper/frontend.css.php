@@ -109,13 +109,14 @@ if ( ! empty( $sr['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $rating_sel, 'margin-bottom', $sr['marginBottom'] );
 }
 if ( ! empty( $sr['color'] ) ) {
-	WCB_Block_Helper::add_responsive_css( $css, $rating_sel, 'color', $sr['color'] );
 	WCB_Block_Helper::add_responsive_css( $css, $rating_sel . ' .active', 'color', $sr['color'] );
 }
 
 // 8. Background & Border.
 if ( ! empty( $sab['border'] ) ) {
-	WCB_Block_Helper::add_border_css( $css, $item_sel, $sab['border'], true );
+	// Same target as ITEM_BACKGROUND in GlobalCss.tsx - the element that
+	// carries the background, so the rounded corners are actually visible.
+	WCB_Block_Helper::add_border_css( $css, $item_bg_sel, $sab['border'], true );
 }
 if ( ! empty( $sab['background'] ) ) {
 	WCB_Block_Helper::add_background_css( $css, $item_bg_sel, $sab['background'] );
@@ -124,6 +125,18 @@ if ( ! empty( $sab['background'] ) ) {
 // 9. Dots margin top.
 if ( ! empty( $sa['dotsMarginTop'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'margin-top', $sa['dotsMarginTop'] );
+
+	$dots_map = is_array( $sa['dotsMarginTop'] ) ? $sa['dotsMarginTop'] : array( 'Desktop' => $sa['dotsMarginTop'] );
+	$d_dots   = $dots_map['Desktop'] ?? ( $dots_map['desktop'] ?? '8px' );
+	$t_dots   = $dots_map['Tablet'] ?? ( $dots_map['tablet'] ?? $d_dots );
+	$m_dots   = $dots_map['Mobile'] ?? ( $dots_map['mobile'] ?? $t_dots );
+
+	$margin_bottom_resp = array(
+		'Desktop' => 'max(0px, calc(-1 * (' . $d_dots . ' + 10px)))',
+		'Tablet'  => 'max(0px, calc(-1 * (' . $t_dots . ' + 10px)))',
+		'Mobile'  => 'max(0px, calc(-1 * (' . $m_dots . ' + 10px)))',
+	);
+	WCB_Block_Helper::add_responsive_css( $css, $swiper_dots, 'margin-bottom', $margin_bottom_resp );
 }
 
 // 10. Swiper Arrow & Dots.
@@ -149,7 +162,10 @@ if ( ! empty( $sa['arrowDistance'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $swiper_next, 'right', $sa['arrowDistance'] );
 }
 
-// 11. Dimensions - on the outer wrap, same target as the editor's GlobalCss.
+// 11. Dimensions - card inner padding on background container, outer wrap margin/padding on wrap.
+if ( ! empty( $sdm['itemPadding'] ) ) {
+	WCB_Block_Helper::add_dimension_css( $css, $item_bg_sel, 'padding', $sdm['itemPadding'] );
+}
 if ( ! empty( $sdm['padding'] ) ) {
 	WCB_Block_Helper::add_dimension_css( $css, $wrap_main_sel, 'padding', $sdm['padding'] );
 }

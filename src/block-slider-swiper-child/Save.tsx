@@ -300,6 +300,7 @@ export default function save({ attributes, context }: { attributes: WcbAttrs, co
 								}
 
 							</div>
+							{ style_image?.iconPosition === "right" && renderIconTop() }
 							{/* Image */}	
 							{
 								(style_image && 

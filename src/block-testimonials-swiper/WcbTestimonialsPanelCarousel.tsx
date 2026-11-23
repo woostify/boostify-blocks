@@ -18,8 +18,8 @@ export const WCB_TESTIMONIALS_PANEL_CAROUSEL_DEMO: WCB_TESTIMONIALS_PANEL_CAROUS
 		animationDuration: 500,
 		autoplaySpeed: 3000,
 		hoverpause: true,
-		isAutoPlay: true,
-		rewind: true,
+		isAutoPlay: false,
+		rewind: false,
 		adaptiveHeight: true,
 		showArrowsDots: "Both",
 	};

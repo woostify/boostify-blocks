@@ -94,7 +94,6 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 						</MyLabelControl>
 					}
 					values={currentPadding || {}}
-					min={0}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -104,6 +103,7 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 							},
 						});
 					}}
+					min={0}
 				/>
 
 				<MyDimensionsBoxControl
@@ -113,7 +113,6 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 						</MyLabelControl>
 					}
 					values={currentMargin || {}}
-					min={0}
 					onChange={(value) => {
 						setAttr__({
 							...panelData,
@@ -123,6 +122,7 @@ const WcbAccordionPanel_StyleDimension: FC<Props> = ({
 							},
 						});
 					}}
+					min={-99999}
 				/>
 
 				{containerData && setAttr__container && (

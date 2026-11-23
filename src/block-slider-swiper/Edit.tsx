@@ -268,7 +268,8 @@ function equalizeItemHeights(wrap: HTMLElement | null) {
 	if (!items.length) return;
 
 	items.forEach((el) => {
-		el.style.height = "auto";
+		el.style.height = "";
+		el.style.minHeight = "";
 	});
 
 	let maxHeight = 0;
@@ -277,7 +278,7 @@ function equalizeItemHeights(wrap: HTMLElement | null) {
 	});
 	if (maxHeight > 0) {
 		items.forEach((el) => {
-			el.style.height = `${maxHeight}px`;
+			el.style.minHeight = `${maxHeight}px`;
 		});
 	}
 }
@@ -631,6 +632,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 								setAttributes({ style_arrowAndDots: data });
 							}}
 							panelData={style_arrowAndDots}
+							showArrowsDots={general_carousel?.showArrowsDots}
 						/>
 						<WcbSlidersPanel_StyleDimension
 							onToggle={() =>
@@ -869,8 +871,10 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 			swiper.currentBreakpoint = undefined;
 			swiper.update();
-			if (swiper.updateAutoHeight) {
-				swiper.updateAutoHeight();
+			if (swiper.params.autoHeight && swiper.updateAutoHeight) {
+				swiper.updateAutoHeight(0);
+			} else if (!swiper.params.autoHeight && swiper.wrapperEl) {
+				swiper.wrapperEl.style.height = "";
 			}
 
 			if (swiper.pagination) {
@@ -944,10 +948,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	useEffect(() => {
 		const container = ref.current;
-		if (!container || typeof ResizeObserver === "undefined") return;
+		if (!container) return;
+		const RO =
+			(container.ownerDocument?.defaultView as any)?.ResizeObserver ||
+			(typeof ResizeObserver !== "undefined" ? ResizeObserver : null);
+		if (!RO) return;
 
 		let rafId: number | null = null;
-		const ro = new ResizeObserver(() => {
+		const ro = new RO(() => {
 			if (rafId) cancelAnimationFrame(rafId);
 			rafId = requestAnimationFrame(() => {
 				forceSliderRecalc();
@@ -974,7 +982,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			if (rafId) cancelAnimationFrame(rafId);
 			ro.disconnect();
 		};
-	}, [innerBlocks.length, forceSliderRecalc]);
+	}, [innerBlocks.length, deviceType, forceSliderRecalc]);
 
 	useEffect(() => {
 		const container = ref.current;
@@ -1005,9 +1013,31 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			forceSliderRecalc();
 		};
 
+		const iframeWin = ref.current?.ownerDocument?.defaultView;
 		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, [forceSliderRecalc]);
+		if (iframeWin && iframeWin !== window) {
+			iframeWin.addEventListener("resize", handleResize);
+		}
+		return () => {
+			window.removeEventListener("resize", handleResize);
+			if (iframeWin && iframeWin !== window) {
+				iframeWin.removeEventListener("resize", handleResize);
+			}
+		};
+	}, [deviceType, forceSliderRecalc]);
+
+	// Recalculate after switching Desktop/Tablet/Mobile preview (iframe CSS transition + Emotion GlobalCss updates)
+	useEffect(() => {
+		forceSliderRecalc();
+		const timers = [60, 200, 400].map((delay) =>
+			setTimeout(() => {
+				forceSliderRecalc();
+			}, delay)
+		);
+		return () => {
+			timers.forEach((t) => clearTimeout(t));
+		};
+	}, [deviceType, forceSliderRecalc]);
 
 	useEffect(() => {
 		forceSliderRecalc();
@@ -1019,6 +1049,14 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 	const showArrows = showArrowsDots !== "Dot";
 	const showDots = showArrowsDots !== "Arrow";
+
+	// Nothing to slide when every slide already fits (slides <= columns for
+	// the device being edited). The frontend relies on Swiper's watchOverflow
+	// adding .swiper-button-lock, but in the editor the arrows are rebound
+	// via refs after init (and re-inited by swiper/react on param changes),
+	// so Swiper often misses toggling that class - compute it here instead.
+	const isNoOverflow = innerBlocks.length <= activeCols;
+	const wrapItemsClassName = `wcb-slider__wrap-items${isNoOverflow ? " wcb-slider__wrap-items--no-overflow" : ""}`;
 
 	// Selector scope from parentCssClass (available right away from clientId)
 	const swiperSelectorScope = `.${parentCssClass}`;
@@ -1148,7 +1186,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 			observeParents: true,
 			observeSlideChildren: true,
 			loop: false, // Must be false in the editor to avoid cloned slides duplicating InspectorControls
-			rewind: !! rewind,
+			rewind: false,
 			speed: animationDuration || 500,
 			autoplay: false,
 			slidesPerView: activeCols || 1,
@@ -1239,7 +1277,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 
 		if (innerBlocks.length === 0) {
 			return (
-				<div className="wcb-slider__wrap-items">
+				<div className={wrapItemsClassName}>
 					<Swiper {...swiperCommonProps}>
 						<SwiperSlide>
 							<div {...innerBlocksProps} />
@@ -1251,7 +1289,7 @@ const Edit: FC<EditProps<WcbAttrs>> = (props) => {
 		}
 
 		return (
-			<div className="wcb-slider__wrap-items">
+			<div className={wrapItemsClassName}>
 				<Swiper {...swiperCommonProps}>
 					{innerBlocks.map((block: any, index: number) => {
 						const isChildSelected =
