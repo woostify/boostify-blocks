@@ -113,7 +113,7 @@ function boostify_blocks_get_default_blocks_settings()
 }
 
 // 
-function boostify_blocks_pagination_bar($the_query, $attrPagination)
+function boostify_blocks_pagination_bar($the_query, $attrPagination, $page_key = '', $page = null)
 {
     $nextPreIcons =  [
         "none" => 'None',
@@ -131,20 +131,33 @@ function boostify_blocks_pagination_bar($the_query, $attrPagination)
         $icon = "";
     }
 
-    $nextText =  $attrPagination['nextText'] ?? "";
-    $previousText =  $attrPagination['previousText'] ?? "";
+    $nextText = (string) ($attrPagination['nextText'] ?? '');
+    $previousText = (string) ($attrPagination['previousText'] ?? '');
 
-    $nextHtml = !empty($nextText) ? '<span>' . esc_html($nextText) . '</span>' . $icon : $icon;
-    $prevHtml = !empty($previousText) ?  $icon . ' <span>' . esc_html($previousText) . '</span>'  : $icon;
+    if ($page !== null) {
+        if (trim($nextText) === '') {
+            $nextText = __('Next products', 'boostify-blocks');
+            $next_class = $icon ? ' class="screen-reader-text"' : '';
+        }
+        if (trim($previousText) === '') {
+            $previousText = __('Previous products', 'boostify-blocks');
+            $prev_class = $icon ? ' class="screen-reader-text"' : '';
+        }
+    }
+    $nextHtml = $nextText !== '' ? '<span' . ($next_class ?? '') . '>' . esc_html($nextText) . '</span>' . $icon : $icon;
+    $prevHtml = $previousText !== '' ? $icon . ' <span' . ($prev_class ?? '') . '>' . esc_html($previousText) . '</span>' : $icon;
 
     $max_page = $attrPagination['pageLimit'] ?? 0;
     $total         = !$max_page || $max_page > $the_query->max_num_pages ? $the_query->max_num_pages : $max_page;
 
     $big = 999999999; // need an unlikely integer
-    $current_page = max(1, (int) (get_query_var('paged') ?: get_query_var('page')));
+    $base_url = $page_key
+        ? add_query_arg($page_key, $big)
+        : get_pagenum_link($big);
+    $current_page = $page ?? max(1, (int) (get_query_var('paged') ?: get_query_var('page')));
     $pagination_links = paginate_links(array(
-        'base' => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
-        'format' => '?paged=%#%',
+        'base' => str_replace($big, '%#%', esc_url_raw($base_url)),
+        'format' => $page_key ? '?' . $page_key . '=%#%' : '?paged=%#%',
         'current' => $current_page,
         'total' => $total,
         'next_text' => $nextHtml,

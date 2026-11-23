@@ -2,6 +2,7 @@ import { TextAlignment} from "../components/controls/MyTextAlignControl/MyTextAl
 
 export type ThemeDefaults = {
     catalog_mode?: boolean;
+    hide_out_of_stock_items?: boolean;
     theme_color?: string;
     product_per_row?: { desktop?: number; tablet?: number; mobile?: number };
     product_per_page?: number;
@@ -46,6 +47,8 @@ export type ThemeDefaults = {
         size?: number;
     };
     shop_archive_general_design?: {
+        category_color?: string;
+        link_hover_color?: string;
         title_color?: string;
         title_font_size?: {
             desktop?: number;

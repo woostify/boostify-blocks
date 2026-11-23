@@ -18,6 +18,7 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 export interface WCB_PRODUCTS_PANEL_STYLE_TITLE {
 	typography: MyTypographyControlData;
 	textColor: string;
+	hoverColor?: string;
 	marginBottom: HasResponsive<string>;
 }
 
@@ -31,11 +32,13 @@ export const WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO: WCB_PRODUCTS_PANEL_STYLE_TITLE
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_PRODUCTS_PANEL_STYLE_TITLE;
+	hoverColor?: string;
 	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_TITLE) => void;
 }
 
 const WcbProductsPanel_StyleTitle: FC<Props> = ({
 	panelData = WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO,
+	hoverColor,
 	setAttr__,
 	initialOpen,
 	onToggle,
@@ -76,6 +79,12 @@ const WcbProductsPanel_StyleTitle: FC<Props> = ({
 							});
 						}}
 						color={textColor}
+					/>
+
+					<MyColorPicker
+						label={__("Hover Color", "boostify-blocks")}
+						color={hoverColor || ""}
+						onChange={(color) => setAttr__({ ...panelData, hoverColor: color })}
 					/>
 
 					<MyUnitControl

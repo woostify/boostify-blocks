@@ -9,56 +9,9 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { patchSwiperMountForIframe } from "../utils/patchSwiperMount";
 import { WCB_PRODUCTS_PANEL_STYLE_LAYOUT } from "./WcbProductsPanel_StyleLayout";
+import { pauseCarouselOnHover, resolveCarouselGap } from "../../public/js/products-carousel/options.js";
 
 patchSwiperMountForIframe(Swiper);
-
-export interface ProductsSwiperConfig {
-	columns?: {
-		Desktop?: number;
-		Tablet?: number;
-		Mobile?: number;
-	};
-	spaceBetween?: {
-		Desktop?: string | number;
-		Tablet?: string | number;
-		Mobile?: string | number;
-	};
-	isShowArrow?: boolean;
-	isShowDots?: boolean;
-	isAutoPlay?: boolean;
-	autoplaySpeed?: number;
-	hoverpause?: boolean;
-	loop?: boolean;
-	animationDuration?: number;
-}
-
-/**
- * Convert a CSS length string (px, rem, em, numeric) to pixels for Swiper's spaceBetween option.
- */
-export function parseSpaceBetweenPx(
-	value?: string | number | null,
-	fallback = 24
-): number {
-	if (value === undefined || value === null || value === "") {
-		return fallback;
-	}
-	if (typeof value === "number") {
-		return Number.isFinite(value) ? value : fallback;
-	}
-	const trimmed = String(value).trim();
-	const parsed = parseFloat(trimmed);
-	if (!Number.isFinite(parsed)) {
-		return fallback;
-	}
-	if (trimmed.endsWith("rem") || trimmed.endsWith("em")) {
-		const rootFontSize =
-			typeof window !== "undefined" && typeof document !== "undefined"
-				? parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-				: 16;
-		return parsed * rootFontSize;
-	}
-	return parsed;
-}
 
 interface UseProductsCarouselEditorParams {
 	styleLayout?: WCB_PRODUCTS_PANEL_STYLE_LAYOUT;
@@ -114,10 +67,13 @@ export function useProductsCarouselEditor({
 		};
 
 		const initEditorSwiper = () => {
-			const carouselEl = ssrContainerEl.querySelector(
+			const carousel = ssrContainerEl.querySelector(
 				".wcb-products__carousel"
-			) as HTMLElement | null;
-			if (!carouselEl) {
+			);
+			const carouselEl = carousel?.querySelector<HTMLElement>(
+				":scope > .wcb-products__carousel-viewport"
+			);
+			if (!carousel || !carouselEl) {
 				return;
 			}
 			const ownerWin = carouselEl.ownerDocument?.defaultView || window;
@@ -126,12 +82,12 @@ export function useProductsCarouselEditor({
 				return;
 			}
 
-			const prevEl = carouselEl.querySelector(
-				".swiper-button-prev"
-			) as HTMLElement | null;
-			const nextEl = carouselEl.querySelector(
-				".swiper-button-next"
-			) as HTMLElement | null;
+			const prevEl = carousel.querySelector<HTMLElement>(
+				":scope > .swiper-button-prev"
+			);
+			const nextEl = carousel.querySelector<HTMLElement>(
+				":scope > .swiper-button-next"
+			);
 			const pagEl = carouselEl.querySelector(
 				".swiper-pagination"
 			) as HTMLElement | null;
@@ -174,13 +130,12 @@ export function useProductsCarouselEditor({
 					autoplay: carouselIsAutoPlay
 						? {
 								delay: carouselAutoplaySpeed,
-								pauseOnMouseEnter: carouselHoverpause,
 								stopOnLastSlide: !carouselLoop,
 						  }
 						: false,
 					slidesPerView: Math.max(1, Number(activeCol) || 1),
 					slidesPerGroup: 1,
-					spaceBetween: parseSpaceBetweenPx(activeColGap, 24),
+					spaceBetween: resolveCarouselGap(activeColGap, carouselEl),
 					navigation:
 						carouselIsShowArrow && prevEl && nextEl
 							? { prevEl, nextEl }
@@ -190,6 +145,9 @@ export function useProductsCarouselEditor({
 							? { el: pagEl, clickable: true }
 							: false,
 				});
+				if (carouselIsAutoPlay && carouselHoverpause) {
+					pauseCarouselOnHover(carousel, swiperInstance);
+				}
 			} catch (error) {
 				console.error("Products Swiper editor init failed:", error);
 			}

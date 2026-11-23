@@ -75,7 +75,7 @@ function boostify_blocks_my_scripts_method()
         'boostify-blocks-product-quantity-view',
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/product-quantity/wcb-product-quantity-view.js',
         array( '@wordpress/interactivity' ),
-        BOOSTIFY_BLOCKS_VERSION
+        (string) filemtime( BOOSTIFY_BLOCKS_PATH . 'public/js/product-quantity/wcb-product-quantity-view.js' )
     );
 
     wp_enqueue_script_module(
@@ -155,7 +155,7 @@ function boostify_blocks_my_scripts_method()
         'boostify-blocks-products-carousel-view',
         plugin_dir_url( BOOSTIFY_BLOCKS_FILE ) . 'public/js/products-carousel/boostify-blocks-products-carousel-view.js',
         array( '@wordpress/interactivity' ),
-        BOOSTIFY_BLOCKS_VERSION
+        (string) filemtime( BOOSTIFY_BLOCKS_PATH . 'public/js/products-carousel/boostify-blocks-products-carousel-view.js' )
     );
 
     if ( class_exists( 'WC_AJAX' ) ) {

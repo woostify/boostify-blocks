@@ -8,6 +8,7 @@ import { WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO } from "./WcbProductsPanel
 import { WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE_DEMO, WCB_PRODUCTS_PANEL_STYLE_SALE_BADGE } from "./WcbProductsPanel_StyleSaleBadge";
 import { WCB_PRODUCTS_PANEL_STYLE_TITLE_DEMO } from "./WcbProductsPanel_StyleTitle";
 import { WCB_PRODUCTS_PANEL_STYLE_PRICE_DEMO } from "./WcbProductsPanel_StylePrice";
+import { WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO } from "./WcbProductsPanel_StyleCategory";
 import { WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN_DEMO } from "./WcbProductsPanel_StyleAddToCartBtn";
 import { WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO, WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN } from "./WcbProductsPanelButton";
 import { WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK_DEMO, WCB_PRODUCTS_PANEL_STYLE_OUT_OF_STOCK } from "./WcbProductsPanel_StyleOutOfStock";
@@ -341,10 +342,6 @@ export function buildGeneralAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODU
     const addToCartBtn = theme.shop_archive_add_to_cart_btn;
     const isCatalog = Boolean(theme.catalog_mode);
 
-    const isShowQty = isCatalog
-        ? false
-        : toBool(theme.shop_archive_product_content?.quantity_flag, false);
-
     const isShowBtn = isCatalog
         ? false
         : (addToCartBtn?.position === 'none' ? false : true);
@@ -353,7 +350,6 @@ export function buildGeneralAddToCartBtnDefault(_attr?: Partial<typeof WCB_PRODU
         ...WCB_PRODUCTS_PANEL_ADD_TO_CART_BTN_DEMO,
         isShowButton: isShowBtn,
         position: normalizeAddToCartPosition(addToCartBtn?.position),
-        isShowQuantity: isShowQty,
         isShowIcon:
             addToCartBtn?.show_icon !== undefined
                 ? addToCartBtn.show_icon
@@ -594,6 +590,7 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
     const baseAddToCart = attrs.general_addToCartBtn || buildGeneralAddToCartBtnDefault();
     const themeAddToCart = theme.shop_archive_add_to_cart_btn;
     const isCatalog = Boolean(theme.catalog_mode);
+    const isShowQuantity = !isCatalog && toBool(themeContent?.quantity_flag, false);
 
     const mappedThemePos = normalizeAddToCartPosition(themeAddToCart?.position);
 
@@ -602,16 +599,19 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
               ...baseAddToCart,
               isShowButton: isCatalog ? false : (baseAddToCart.isShowButton !== undefined ? baseAddToCart.isShowButton : (themeAddToCart?.position !== 'none')),
               position: baseAddToCart.position ? normalizeAddToCartPosition(baseAddToCart.position) : mappedThemePos,
-              isShowQuantity: isCatalog ? false : (baseAddToCart.isShowQuantity !== undefined ? baseAddToCart.isShowQuantity : toBool(themeContent?.quantity_flag, false)),
+              isShowQuantity,
               isShowIcon: baseAddToCart.isShowIcon !== undefined ? baseAddToCart.isShowIcon : (themeAddToCart?.show_icon ?? true),
           }
         : {
               ...baseAddToCart,
               isShowButton: isCatalog ? false : (themeAddToCart?.position !== 'none'),
               position: isCatalog ? 'none' : mappedThemePos,
-              isShowQuantity: isCatalog ? false : toBool(themeContent?.quantity_flag, false),
+              isShowQuantity,
               isShowIcon: themeAddToCart?.show_icon ?? true,
           };
+    if (effectiveAddToCartBtn.position === 'inside image' && !effectiveFeatured.isShowFeaturedImage) {
+        effectiveAddToCartBtn.position = 'bottom visible';
+    }
 
     // 6. Style Add to Cart Button
     const defaultStyleAddToCart = buildStyleAddToCartBtnDefault(undefined, effectiveAddToCartBtn.position);
@@ -643,24 +643,46 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
     const effectiveOutOfStock = isOverride
         ? (attrs.style_outOfStock || buildStyleOutOfStockDefault())
         : buildStyleOutOfStockDefault();
+    const outOfStockPosition = effectiveOutOfStock.position;
 
-    // 8. Style Title & Price
-    const effectiveTitle = isOverride
-        ? (attrs.style_title || buildStyleTitleDefault())
-        : buildStyleTitleDefault();
+    // 8. Style Title, Price & Category
+    const themeDesign = theme.shop_archive_general_design;
+    const themeHoverColor = themeDesign?.link_hover_color;
+    const title = isOverride ? attrs.style_title : undefined;
+    const effectiveTitle = {
+        ...(title || buildStyleTitleDefault()),
+        hoverColor: title?.hoverColor || themeHoverColor,
+    };
 
     const effectivePrice = isOverride
         ? (attrs.style_price || buildStylePriceDefault())
         : buildStylePriceDefault();
+
+    const category = attrs.style_category;
+    const categoryColor = themeDesign?.category_color;
+    // Older blocks saved the default color even when it had never been selected.
+    const blockCategoryColor = category?.textColor === '#171717' && !category.isTextColorEdited
+        ? undefined
+        : category?.textColor;
+    const effectiveCategory = {
+        ...WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO,
+        ...category,
+        textColor: (isOverride && blockCategoryColor) || categoryColor || blockCategoryColor || '',
+        hoverColor: (isOverride && category?.hoverColor) || themeHoverColor,
+    };
 
     // 9. Style Border & Featured Image Border
     const effectiveBorder = isOverride
         ? (attrs.style_border || buildStyleBorderDefault())
         : buildStyleBorderDefault();
 
+    const defaultFeaturedImageStyle = buildStyleFeaturedImageDefault();
     const effectiveFeaturedImageStyle = isOverride
-        ? (attrs.style_featuredImage || buildStyleFeaturedImageDefault())
-        : buildStyleFeaturedImageDefault();
+        ? (attrs.style_featuredImage || defaultFeaturedImageStyle)
+        : {
+              ...defaultFeaturedImageStyle,
+              marginBottom: attrs.style_featuredImage?.marginBottom ?? defaultFeaturedImageStyle.marginBottom,
+          };
 
     // 10. Wishlist, Quick View, Countdown Urgency
     const effectiveWishlist = buildStyleWishlistButtonDefault(attrs.style_wishlistBtn);
@@ -677,9 +699,12 @@ export function applyThemeDefaultsToBlockAttributes(attrs: WcbAttrs): WcbAttrs {
         general_addToCartBtn: effectiveAddToCartBtn,
         style_addToCardBtn: effectiveStyleAddToCart,
         style_saleBadge: effectiveSaleBadge,
-        style_outOfStock: effectiveOutOfStock,
+        style_outOfStock: effectiveContent.isShowOutOfStock && (!outOfStockPosition || outOfStockPosition === 'none')
+            ? { ...effectiveOutOfStock, position: 'top-right' }
+            : effectiveOutOfStock,
         style_title: effectiveTitle,
         style_price: effectivePrice,
+        style_category: effectiveCategory,
         style_border: effectiveBorder,
         style_featuredImage: effectiveFeaturedImageStyle,
         style_wishlistBtn: effectiveWishlist,

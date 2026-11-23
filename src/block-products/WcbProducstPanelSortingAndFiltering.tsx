@@ -14,6 +14,8 @@ import { get_STOCK_STATUS_OPTIONS } from "./constants";
 import ProductCategoryControl from "./product-category-control";
 import ProductTagControl, { ProductTaxOperator } from "./product-tag-control";
 import MyDisclosure from "../components/controls/MyDisclosure";
+import HelpText from "../components/controls/HelpText";
+import { getThemeDefaults } from "../utils/themeDefaults";
 import ProductAttributeTermControl from "./product-attribute-term-control";
 
 export type ProductOrderBy =
@@ -272,6 +274,11 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 				}
 				__experimentalExpandOnFocus={true}
 			/>
+			{getThemeDefaults().hide_out_of_stock_items && panelData.stockStatus?.includes("outofstock") && (
+				<HelpText>
+					{__("WooCommerce is configured to hide out-of-stock products. They will be excluded from this block.", "boostify-blocks")}
+				</HelpText>
+			)}
 
 			{/*  */}
 			<RangeControl

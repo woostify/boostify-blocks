@@ -146,7 +146,6 @@ const GlobalCss: FC<Props> = (attrs) => {
 		general_content,
 		general_pagination,
 		general_featuredImage,
-		general_layout,
 		style_addToCardBtn,
 		style_featuredImage,
 		style_layout,
@@ -268,50 +267,39 @@ const GlobalCss: FC<Props> = (attrs) => {
 			value_Mobile: numberOfColumn_mobile,
 		} = getValueFromAttrsResponsives(numberOfColumn);
 
-		// In Carousel mode, let Swiper control active slides via inline styles once initialized,
-		// and provide exact responsive column width before `.swiper-initialized` so editor SSR never flashes 1 column.
 		if (layoutType === "carousel") {
-			const buildCarouselFallback = (
-				cols: string | number | null | undefined,
-				colGap: string | null | undefined
-			): CSSObject => {
-				const safeCols = Math.max(1, Number(cols) || 1);
-				const safeGap =
-					colGap && String(colGap).trim() !== "" ? colGap : "24px";
-				return {
-					"> div": {
-						width: `calc((100% - (${safeCols - 1} * ${safeGap})) / ${safeCols})`,
-						marginRight: safeGap,
-						flexShrink: 0,
-					},
-				};
-			};
-
-			const preInitListSel = `${WRAP_CLASSNAME} .wcb-products__carousel:not(.swiper-initialized) .wcb-products__list`;
-			const carouselFallbackStyles: CSSObject = previewDeviceType
-				? {
-						[preInitListSel]:
-							previewDeviceType === "Mobile"
-								? buildCarouselFallback(numberOfColumn_mobile, colunmGap_mobile)
-								: previewDeviceType === "Tablet"
-								? buildCarouselFallback(numberOfColumn_tablet, colunmGap_tablet)
-								: buildCarouselFallback(numberOfColumn_desktop, colunmGap_desktop),
-				  }
-				: {
+			// Static CSS handles viewport breakpoints. The editor can simulate a different device.
+			if (!previewDeviceType) {
+				return null;
+			}
+			const cols = pickDeviceValue(
+				previewDeviceType,
+				numberOfColumn_mobile,
+				numberOfColumn_tablet,
+				numberOfColumn_desktop
+			);
+			const colGap = pickDeviceValue(
+				previewDeviceType,
+				colunmGap_mobile,
+				colunmGap_tablet,
+				colunmGap_desktop
+			);
+			const gap = String(colGap ?? "").trim() || "24px";
+			const safeCols = Math.max(1, Number(cols) || 1);
+			const preInitListSel = `${CAROUSEL_CLASS} .wcb-products__carousel-viewport:not(.swiper-initialized) .wcb-products__list`;
+			return (
+				<Global
+					styles={{
 						[preInitListSel]: {
-							...buildCarouselFallback(numberOfColumn_mobile, colunmGap_mobile),
-							[`@media (min-width: ${media_tablet})`]: buildCarouselFallback(
-								numberOfColumn_tablet,
-								colunmGap_tablet
-							),
-							[`@media (min-width: ${media_desktop})`]: buildCarouselFallback(
-								numberOfColumn_desktop,
-								colunmGap_desktop
-							),
+							"> div": {
+								width: `calc((100% - (${safeCols - 1} * ${gap})) / ${safeCols})`,
+								marginRight: gap,
+								flexShrink: 0,
+							},
 						},
-				  };
-
-			return <Global styles={carouselFallbackStyles} />;
+					}}
+				/>
+			);
 		}
 
 		const {
@@ -496,6 +484,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						color: style_title?.textColor,
 						a: {
 							color: style_title?.textColor,
+							"&:is(:hover, :focus-visible)": {
+								color: style_title?.hoverColor,
+							},
 						},
 					},
 					".wcb-products__product-categories": {
@@ -503,6 +494,9 @@ const GlobalCss: FC<Props> = (attrs) => {
 						color: style_category?.textColor,
 						a: {
 							color: style_category?.textColor,
+							"&:is(:hover, :focus-visible)": {
+								color: style_category?.hoverColor,
+							},
 						},
 					},
 					".wcb-products__product-content": {
@@ -799,8 +793,7 @@ const GlobalCss: FC<Props> = (attrs) => {
 
 			{/* CAROUSEL / SCROLL-SNAP ARROW & DOTS */}
 			{(style_layout?.layoutType === "carousel" ||
-				(style_layout?.layoutType !== "carousel" &&
-					style_layout?.swithToScrollSnapX &&
+				(style_layout?.swithToScrollSnapX &&
 					style_layout.swithToScrollSnapX !== "None")) && (() => {
 				const isCarousel = style_layout?.layoutType === "carousel";
 				const effectiveArrowDots =
@@ -842,11 +835,11 @@ const GlobalCss: FC<Props> = (attrs) => {
 										  }
 										: {}),
 									[arrowPrevSel]: resolveSpacing(
-										"left",
+										isCarousel ? "insetInlineStart" : "left",
 										effectiveArrowDots.arrowDistance
 									),
 									[arrowNextSel]: resolveSpacing(
-										"right",
+										isCarousel ? "insetInlineEnd" : "right",
 										effectiveArrowDots.arrowDistance
 									),
 								},

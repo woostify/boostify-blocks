@@ -13,6 +13,16 @@ interface Props extends WcbAttrsForSave {}
  * @param props peoperties of the block
  */
 export function initCarouselForWcbProducts(div: Element, props: Props) {
+	const getAddToCartPosition = () => {
+		const blockPosition = props?.general_addToCartBtn?.position;
+		const position = props?.general_layout?.isCustomizerGeneralLayout && blockPosition
+			? blockPosition
+			: getThemeDefaults().shop_archive_add_to_cart_btn?.position || blockPosition;
+		return (position === "inside image" || position === "image") && props?.general_featuredImage?.isShowFeaturedImage === false
+			? "bottom visible"
+			: position;
+	};
+
 	// 1. Handle Wishlist Click
 	const handleWishlistClick = () => {
 		const dataUniqueid = div.getAttribute("data-uniqueid") || "";
@@ -57,14 +67,6 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 		(window as any).__wcbAddToCartLayout2Listeners.add(dataUniqueid);
 
 		document.addEventListener("click", (e) => {
-			const theme = getThemeDefaults();
-			const addToCartBtn = theme?.shop_archive_add_to_cart_btn;
-			const isOverride = !!props?.general_layout?.isCustomizerGeneralLayout;
-			const effectivePosition =
-				isOverride && props?.general_addToCartBtn?.position
-					? props.general_addToCartBtn.position
-					: (addToCartBtn?.position || props?.general_addToCartBtn?.position);
-
 			const target = e.target as HTMLElement;
 
 			// Find button add-to-cart depence on block
@@ -74,7 +76,7 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 
 			if (!btnLayoutInsiteImage) return;
 
-			switch (effectivePosition) {
+			switch (getAddToCartPosition()) {
 				case 'bottom-visible':
 				case 'bottom visible':
 					btnLayoutInsiteImage.classList.add("wcb-products__product-style-hidden-btn-add-to-cart");
@@ -149,18 +151,10 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 		(window as any).__wcbAddToCartIsLoadingListeners.add(dataUniqueid);
 
 		document.addEventListener("click", (e) => {
-			const theme = getThemeDefaults();
-			const addToCartBtn = theme?.shop_archive_add_to_cart_btn;
-			const isOverride = !!props?.general_layout?.isCustomizerGeneralLayout;
-			const effectivePosition =
-				isOverride && props?.general_addToCartBtn?.position
-					? props.general_addToCartBtn.position
-					: (addToCartBtn?.position || props?.general_addToCartBtn?.position);
 			const target = e.target as HTMLElement;
 
 			// Find button add-to-cart depence on block
 			const btnLayoutBottomVisible = target.closest(
-				// `.${dataUniqueid} .wcb-products__product-add-to-cart .add_to_cart_button`
 				`.${dataUniqueid} .wcb-products__product-add-to-cart .add_to_cart_button`
 			) as HTMLElement | null;
 
@@ -171,7 +165,7 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 			// 1. Add className loading
 			if (btnLayoutBottomVisible || btnLayoutTopRightIcon) {
 			
-				switch (effectivePosition) {
+				switch (getAddToCartPosition()) {
 					case 'bottom-visible':
 					case 'bottom visible':
 						if (checkIsLoadingAddToCart(btnLayoutBottomVisible)){
@@ -208,19 +202,6 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 						break;
 				}
 				
-				if (btnLayoutBottomVisible) {
-					// 2. Show view cart trong cùng block
-					const parent = btnLayoutBottomVisible.closest(
-						`.${dataUniqueid} .wcb-products__product-add-to-cart`
-					) as HTMLElement | null;
-					if (!parent) return;
-
-					const viewCart = parent.querySelector(".added_to_cart") as HTMLElement | null;
-					if (viewCart) {
-						viewCart.classList.add("visible");
-					}
-				}
-
 				if (btnLayoutTopRightIcon) {
 					// 2. Show view cart trong cùng block
 					const parent = btnLayoutTopRightIcon.closest(
@@ -299,6 +280,8 @@ export function initCarouselForWcbProducts(div: Element, props: Props) {
 				sliderMultiElement.scrollLeft + sliderMultiElement.offsetWidth >=
 					sliderMultiElement.scrollWidth - 1
 			);
+			if (prev instanceof HTMLButtonElement) prev.disabled = !canScroll || prev.classList.contains("-disabled");
+			if (next instanceof HTMLButtonElement) next.disabled = !canScroll || next.classList.contains("-disabled");
 			arrows?.classList.toggle("-hidden", !canScroll);
 		};
 

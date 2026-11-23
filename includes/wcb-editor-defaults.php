@@ -113,17 +113,13 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		$active_atc_styles  = $atc_by_position[ $normalized_pos_key ] ?? $atc_by_position['bottom visible'];
 
 		// Wishlist defaults (Woostify supports multiple plugins).
-		$wishlist_plugin_active  = defined( 'TINVWL_FVERSION' ) || class_exists( 'TInvWL_Public_Add_To_Wishlist' ) || class_exists( 'TInvWL_Plugin' );
+		$ti_wishlist_active      = defined( 'TINVWL_FVERSION' ) || class_exists( 'TInvWL_Public_Add_To_Wishlist' ) || class_exists( 'TInvWL_Plugin' );
+		$yith_wishlist_active    = defined( 'YITH_WCWL' ) || class_exists( 'YITH_WCWL' );
 		$wishlist_support_plugin = $woostify['shop_page_wishlist_support_plugin'] ?? null;
 		if ( ! $wishlist_support_plugin ) {
-			if ( $wishlist_plugin_active ) {
-				$wishlist_support_plugin = 'ti';
-			} elseif ( defined( 'YITH_WCWL' ) || class_exists( 'YITH_WCWL' ) ) {
-				$wishlist_support_plugin = 'yith';
-			} else {
-				$wishlist_support_plugin = 'ti';
-			}
+			$wishlist_support_plugin = ! $ti_wishlist_active && $yith_wishlist_active ? 'yith' : 'ti';
 		}
+		$wishlist_plugin_active = 'yith' === $wishlist_support_plugin ? $yith_wishlist_active : $ti_wishlist_active;
 
 		// Quick view defaults (Woostify Pro).
 		$quick_view_position = $non_empty( $woostify_pro['shop_page_quick_view_position'] ?? null, 'top-right' );
@@ -176,6 +172,7 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 		return array(
 			'theme_color'                  => $theme_color,
 			'catalog_mode'                 => $catalog_mode,
+			'hide_out_of_stock_items'      => 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ),
 			'countdown_urgency'            => array(
 				'active'               => $countdown_urgency_active,
 				'style'                => $non_empty( get_option( 'woostify_countdown_urgency_style', 'default' ), 'default' ),
@@ -245,6 +242,8 @@ if (!function_exists('boostify_blocks_get_theme_defaults_data')) {
 				'size'          => $out_size,
 			),
 			'shop_archive_general_design'  => array(
+				'category_color'   => $text_color,
+				'link_hover_color' => $link_hover_color,
 				'title_color'     => $non_empty( $woostify['shop_page_product_title_color'] ?? null, '#8f8f8f' ),
 				'title_font_size' => array(
 					'desktop' => (int) $non_empty( $woostify['shop_page_product_title_font_size'] ?? null, 14 ),

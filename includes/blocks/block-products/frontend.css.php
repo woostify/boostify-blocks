@@ -53,8 +53,8 @@ $list_sel          = $wrap_sel . ' .wcb-products__list';
 $product_sel       = $wrap_sel . ' .wcb-products__product';
 $title_sel         = $product_sel . ' .wcb-products__product-title';
 $title_a_sel       = $product_sel . ' .wcb-products__product-title a';
-$category_sel      = $wrap_sel . ' .wcb-products__product-categories, ' . $wrap_sel . ' .wcb-products__product-category';
-$category_a_sel    = $wrap_sel . ' .wcb-products__product-categories a, ' . $wrap_sel . ' .wcb-products__product-category a';
+$category_sel      = $wrap_sel . ' :is(.wcb-products__product-categories, .wcb-products__product-category)';
+$category_a_sel    = $category_sel . ' a';
 $price_sel         = $product_sel . ' .wcb-products__product-price';
 $price_text_sel    = $price_sel . ', ' . $price_sel . ' .woocommerce-Price-amount, ' . $price_sel . ' del, ' . $price_sel . ' ins';
 $rating_sel        = $wrap_sel . ' .wcb-products__product-rating';
@@ -212,6 +212,9 @@ if ( ! empty( $st['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $title_sel, 'color', $st['textColor'] );
 	WCB_Block_Helper::add_responsive_css( $css, $title_a_sel, 'color', $st['textColor'] );
 }
+if ( ! empty( $st['hoverColor'] ) ) {
+	WCB_Block_Helper::add_responsive_css( $css, $title_a_sel . ':is(:hover, :focus-visible)', 'color', $st['hoverColor'] );
+}
 if ( ! empty( $st['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $title_sel, 'margin-bottom', $st['marginBottom'] );
 }
@@ -223,6 +226,9 @@ if ( ! empty( $sc['typography'] ) ) {
 if ( ! empty( $sc['textColor'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $category_sel, 'color', $sc['textColor'] );
 	WCB_Block_Helper::add_responsive_css( $css, $category_a_sel, 'color', $sc['textColor'] );
+}
+if ( ! empty( $sc['hoverColor'] ) ) {
+	WCB_Block_Helper::add_responsive_css( $css, $category_a_sel . ':is(:hover, :focus-visible)', 'color', $sc['hoverColor'] );
 }
 if ( ! empty( $sc['marginBottom'] ) ) {
 	WCB_Block_Helper::add_responsive_css( $css, $category_sel, 'margin-bottom', $sc['marginBottom'] );
@@ -512,8 +518,8 @@ if ( ( $is_carousel || 'None' !== $switch_snap ) && ! empty( $attr['style_arrowA
 		$css['desktop'][ $arrow_svg_sel ]['height'] = $sad['arrowSize'];
 	}
 	if ( ! empty( $sad['arrowDistance'] ) ) {
-		WCB_Block_Helper::add_responsive_css( $css, $prev_sel, 'left', $sad['arrowDistance'] );
-		WCB_Block_Helper::add_responsive_css( $css, $next_sel, 'right', $sad['arrowDistance'] );
+		WCB_Block_Helper::add_responsive_css( $css, $prev_sel, $is_carousel ? 'inset-inline-start' : 'left', $sad['arrowDistance'] );
+		WCB_Block_Helper::add_responsive_css( $css, $next_sel, $is_carousel ? 'inset-inline-end' : 'right', $sad['arrowDistance'] );
 	}
 	if ( $is_carousel && ! empty( $sad['dotsMarginTop'] ) ) {
 		$dots_sel = $carousel_sel . ' .swiper-pagination';

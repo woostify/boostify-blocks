@@ -8,6 +8,7 @@
  */
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
+import { pauseCarouselOnHover, resolveCarouselGap } from './options.js';
 
 const NAMESPACE = 'boostify-blocks/products-carousel';
 
@@ -16,28 +17,9 @@ const BREAKPOINT_DESKTOP = 1024;
 const WAIT_INTERVAL = 50;
 const MAX_WAIT_ATTEMPTS = 40;
 
-function parseSpaceBetweenPx( value, fallback = 24 ) {
-	if ( value === undefined || value === null || value === '' ) {
-		return fallback;
-	}
-	if ( typeof value === 'number' ) {
-		return Number.isFinite( value ) ? value : fallback;
-	}
-	const trimmed = String( value ).trim();
-	const parsed = parseFloat( trimmed );
-	if ( ! Number.isFinite( parsed ) ) {
-		return fallback;
-	}
-	if ( trimmed.endsWith( 'rem' ) || trimmed.endsWith( 'em' ) ) {
-		const rootFontSize =
-			parseFloat( window.getComputedStyle( document.documentElement ).fontSize ) || 16;
-		return parsed * rootFontSize;
-	}
-	return parsed;
-}
-
 function mountSwiper( ref, context ) {
-	if ( ! ref || ref.swiper ) {
+	const viewport = ref?.querySelector( ':scope > .wcb-products__carousel-viewport' );
+	if ( ! viewport || viewport.swiper ) {
 		return;
 	}
 
@@ -57,12 +39,12 @@ function mountSwiper( ref, context ) {
 	const colT = Math.max( 1, Number( columns.Tablet ) || colD );
 	const colM = Math.max( 1, Number( columns.Mobile ) || colT );
 
-	const gapD = parseSpaceBetweenPx( spaceBetween.Desktop, 24 );
-	const gapT = parseSpaceBetweenPx( spaceBetween.Tablet, gapD );
-	const gapM = parseSpaceBetweenPx( spaceBetween.Mobile, gapT );
+	const gapD = resolveCarouselGap( spaceBetween.Desktop, viewport );
+	const gapT = resolveCarouselGap( spaceBetween.Tablet, viewport, gapD );
+	const gapM = resolveCarouselGap( spaceBetween.Mobile, viewport, gapT );
 
 	try {
-		new window.Swiper( ref, {
+		const swiper = new window.Swiper( viewport, {
 			observer: true,
 			observeParents: true,
 			loop: !! loop,
@@ -70,7 +52,6 @@ function mountSwiper( ref, context ) {
 			autoplay: isAutoPlay
 				? {
 						delay: Number( autoplaySpeed ) || 3000,
-						pauseOnMouseEnter: !! hoverpause,
 						stopOnLastSlide: ! loop,
 				  }
 				: false,
@@ -79,13 +60,13 @@ function mountSwiper( ref, context ) {
 			spaceBetween: gapM,
 			navigation: isShowArrow
 				? {
-						prevEl: ref.querySelector( '.swiper-button-prev' ),
-						nextEl: ref.querySelector( '.swiper-button-next' ),
+						prevEl: ref.querySelector( ':scope > .swiper-button-prev' ),
+						nextEl: ref.querySelector( ':scope > .swiper-button-next' ),
 				  }
 				: false,
 			pagination: isShowDots
 				? {
-						el: ref.querySelector( '.swiper-pagination' ),
+						el: viewport.querySelector( ':scope > .swiper-pagination' ),
 						clickable: true,
 				  }
 				: false,
@@ -100,6 +81,9 @@ function mountSwiper( ref, context ) {
 				},
 			},
 		} );
+		if ( isAutoPlay && hoverpause ) {
+			pauseCarouselOnHover( ref, swiper );
+		}
 	} catch ( error ) {
 		console.error( 'Products Carousel (Swiper) initialization failed:', error );
 	}
@@ -111,7 +95,7 @@ store( NAMESPACE, {
 			const { ref } = getElement();
 			const context = getContext();
 
-			if ( ! ref || ref.swiper ) {
+			if ( ! ref ) {
 				return;
 			}
 

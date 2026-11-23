@@ -1,6 +1,6 @@
 import { __ } from "@wordpress/i18n";
 import { BlockControls, useBlockProps } from "@wordpress/block-editor";
-import React, { useEffect, useRef, FC, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, FC, useMemo } from "react";
 // @ts-ignore
 import ServerSideRender from "@wordpress/server-side-render";
 import { WcbAttrs } from "./attributes";
@@ -98,7 +98,6 @@ import {
 	buildStyleWishlistButtonDefault,
 	buildStyleQuickViewButtonDefault,
 	buildStyleCountdownUrgencyDefault,
-	normalizeAddToCartPosition,
 } from "./WcbThemeDefaults";
 import useGetDeviceType from "../hooks/useGetDeviceType";
 
@@ -195,28 +194,12 @@ const Edit: FC<Props> = (props) => {
 		const curr = general_layout?.isCustomizerGeneralLayout;
 		prevIsCustomizerGeneralLayout.current = curr;
 
+		if (!general_layout || general_layout.hasCustomized) return;
+
 		if (prev === true && curr === false) {
-			const theme = getThemeDefaults();
-			const curPos = theme.shop_archive_add_to_cart_btn?.position || 'bottom';
-			const normalizedPos = normalizeAddToCartPosition(curPos);
-			setAttributes({
-				general_content: buildGeneralContractDefault(undefined),
-				general_featuredImage: buildGeneralFeaturedImageDefault(undefined),
-				general_addToCartBtn: buildGeneralAddToCartBtnDefault(undefined) as any,
-				general_sortingAndFiltering: buildSortingAndFilteringDefault(undefined),
-				style_layout: buildStyleLayoutDefault(undefined),
-				style_border: buildStyleBorderDefault(undefined),
-				style_featuredImage: buildStyleFeaturedImageDefault(undefined),
-				style_saleBadge: buildStyleSaleBadgeDefault(undefined),
-				style_outOfStock: buildStyleOutOfStockDefault(undefined),
-				style_title: buildStyleTitleDefault(undefined),
-				style_price: buildStylePriceDefault(undefined),
-				style_addToCardBtn: buildStyleAddToCartBtnDefault(undefined, normalizedPos),
-				style_wishlistBtn: buildStyleWishlistButtonDefault(undefined),
-				style_quickViewBtn: buildStyleQuickViewButtonDefault(undefined),
-				style_countdownUrgency: buildStyleCountdownUrgencyDefault(undefined),
-			});
-		} else if (prev === false && curr === true) {
+			// Preserve styles from blocks saved before this flag was introduced.
+			setAttributes({ general_layout: { ...general_layout, hasCustomized: true } });
+		} else if (prev !== true && curr === true) {
 			// When switching to block custom style, snapshot all current Customizer defaults into block attributes.
 			const synced = applyThemeDefaultsToBlockAttributes({
 				...attributes,
@@ -226,15 +209,10 @@ const Edit: FC<Props> = (props) => {
 				},
 			});
 			setAttributes({
+				general_layout: { ...general_layout, hasCustomized: true },
 				general_content: synced.general_content,
 				general_featuredImage: synced.general_featuredImage,
 				general_addToCartBtn: synced.general_addToCartBtn,
-				general_sortingAndFiltering: synced.general_sortingAndFiltering
-					? {
-							...synced.general_sortingAndFiltering,
-							isNumberOfItemsEdited: general_sortingAndFiltering?.isNumberOfItemsEdited,
-					  }
-					: general_sortingAndFiltering,
 				style_layout: synced.style_layout
 					? {
 							...synced.style_layout,
@@ -245,7 +223,10 @@ const Edit: FC<Props> = (props) => {
 				style_featuredImage: synced.style_featuredImage,
 				style_saleBadge: synced.style_saleBadge,
 				style_outOfStock: synced.style_outOfStock,
-				style_title: synced.style_title,
+				style_title: {
+					...(synced.style_title || buildStyleTitleDefault()),
+					hoverColor: style_title?.hoverColor,
+				},
 				style_price: synced.style_price,
 				style_addToCardBtn: synced.style_addToCardBtn,
 				style_wishlistBtn: synced.style_wishlistBtn,
@@ -489,6 +470,8 @@ const Edit: FC<Props> = (props) => {
 												}
 											}}
 											panelData={general_addToCartBtn}
+											catalogMode={getThemeDefaults().catalog_mode}
+											imageHidden={general_featuredImage?.isShowFeaturedImage === false}
 										/>
 									)}
 								</>
@@ -598,6 +581,8 @@ const Edit: FC<Props> = (props) => {
 												setAttributes({ style_category: data });
 											}}
 											panelData={style_category}
+											textColor={effectiveAttrs.style_category?.textColor ?? style_category.textColor}
+											hoverColor={effectiveAttrs.style_category?.hoverColor}
 										/>
 									)}
 
@@ -610,7 +595,8 @@ const Edit: FC<Props> = (props) => {
 											setAttr__={(data) => {
 												setAttributes({ style_title: data });
 											}}
-											panelData={effectiveAttrs.style_title || style_title}
+											panelData={style_title}
+											hoverColor={effectiveAttrs.style_title?.hoverColor}
 										/>
 									)}
 
@@ -895,65 +881,6 @@ const Edit: FC<Props> = (props) => {
 		);
 	};
 
-	const WcbAttrsForSave = useCallback((): WcbAttrsForSave => {
-		const cs: WcbAttrsForSave = {
-			uniqueId,
-			advance_responsiveCondition,
-			advance_zIndex,
-			general_sortingAndFiltering,
-			general_content,
-			general_layout,
-			general_featuredImage,
-			general_addToCartBtn,
-			general_pagination,
-			style_title,
-			style_featuredImage,
-			style_layout,
-			style_addToCardBtn,
-			style_pagination,
-			style_saleBadge,
-			style_outOfStock,
-			style_border,
-			style_price,
-			style_rating,
-			style_wishlistBtn,
-			style_quickViewBtn,
-			style_countdownUrgency,
-			advance_motionEffect,
-			style_category,
-			style_dimension,
-			style_arrowAndDots,
-		};
-		return cs;
-	}, [
-		uniqueId,
-		advance_responsiveCondition,
-		advance_zIndex,
-		general_sortingAndFiltering,
-		general_content,
-		general_layout,
-		general_featuredImage,
-		general_addToCartBtn,
-		general_pagination,
-		style_title,
-		style_featuredImage,
-		style_layout,
-		style_addToCardBtn,
-		style_pagination,
-		style_saleBadge,
-		style_outOfStock,
-		style_border,
-		style_price,
-		style_rating,
-		style_wishlistBtn,
-		style_quickViewBtn,
-		style_countdownUrgency,
-		advance_motionEffect,
-		style_category,
-		style_dimension,
-		style_arrowAndDots,
-	]);
-
 	const effectiveAttrs = useMemo(() => {
 		return applyThemeDefaultsToBlockAttributes(attributes);
 	}, [attributes]);
@@ -989,10 +916,6 @@ const Edit: FC<Props> = (props) => {
 			advance_motionEffect: effectiveAttrs.advance_motionEffect,
 		};
 	}, [effectiveAttrs, className, uniqueId]);
-
-	const WcbAttrsForSaveValue = useMemo(() => {
-		return effectiveAttrs as WcbAttrsForSave;
-	}, [effectiveAttrs]);
 
 	const numCol = effectiveAttrs.style_layout?.numberOfColumn;
 	const colDesk = typeof numCol === "object" && numCol !== null ? (numCol.Desktop ?? 2) : (numCol ?? 2);
@@ -1079,7 +1002,7 @@ const Edit: FC<Props> = (props) => {
 					!!advance_responsiveCondition &&
 					!!advance_motionEffect && (
 						<GlobalCss
-							{...(WcbAttrsForSaveValue as Required<WcbAttrsForSave>)}
+							{...(effectiveAttrs as Required<WcbAttrsForSave>)}
 							previewDeviceType={deviceType}
 						/>
 					)}

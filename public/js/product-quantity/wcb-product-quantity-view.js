@@ -41,35 +41,33 @@ const quantityStore = {
 		},
 	},
 	callbacks: {
-		// Step 4: Keep WooCommerce's legacy jQuery quantity cache in sync.
-		// WooCommerce's ajax add-to-cart handler reads the quantity from
-		// jQuery's cached .data(), which doesn't pick up the plain attribute
-		// changes made via data-wp-bind, so keep that cache in sync too.
-		syncQuantityJqueryData: () => {
-			// Step 4a: Get the current reactive quantity and the root element
-			// this callback (data-wp-watch) is attached to.
-			const context = getContext();
-			const { ref } = getElement();
-
-			if ( ! context ) {
-				return;
-			}
-
-			// Step 4b: Bail out if jQuery isn't loaded (nothing to sync).
-			if ( typeof window.jQuery === 'undefined' ) {
-				return;
-			}
-
-			// Step 4c: Push the latest quantity into jQuery's .data() cache
-			// for every "Add to cart" button inside this element.
-			if ( ref ) {
-				ref.querySelectorAll( '.add_to_cart_button' ).forEach( ( btn ) => {
-					window.jQuery( btn ).data( 'quantity', context.quantity );
-				} );
-			}
-		},
+		syncQuantityJqueryData: syncAddToCartQuantity,
 	},
 };
+
+function syncAddToCartQuantity() {
+	const { quantity } = getContext();
+	const { ref } = getElement();
+
+	ref?.querySelectorAll( '.add_to_cart_button' ).forEach( ( button ) => {
+		// WooCommerce can read the quantity from jQuery's cached data.
+		window.jQuery?.( button ).data( 'quantity', quantity );
+
+		const originalUrl = button.dataset.wcbAddToCartUrl;
+		if ( ! originalUrl ) {
+			return;
+		}
+		if ( quantity === 1 ) {
+			button.setAttribute( 'href', originalUrl );
+			return;
+		}
+
+		// Carry the same quantity when WooCommerce follows the link directly.
+		const url = new URL( originalUrl, button.baseURI );
+		url.searchParams.set( 'quantity', quantity );
+		button.href = url.href;
+	} );
+}
 
 store( 'boostify-blocks/product-quantity', quantityStore );
 store( 'boostify-blocks/quantity', quantityStore );

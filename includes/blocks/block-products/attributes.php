@@ -131,7 +131,6 @@ $attributes = array(
 		'default' => array(
 			'isShowButton'   => true,
 			'position'       => 'bottom',
-			'isShowQuantity' => true,
 			'isShowIcon'     => true,
 		),
 	),
@@ -169,8 +168,8 @@ $attributes = array(
 		'type'    => 'object',
 		'default' => array(
 			'typography'   => $typographyDefault,
-			'textColor'    => '#171717',
-			'marginBottom' => array( 'Desktop' => '0.75rem' ),
+			'textColor'    => '',
+			'marginBottom' => array( 'Desktop' => '0px' ),
 		),
 	),
 
@@ -180,7 +179,7 @@ $attributes = array(
 	'style_featuredImage' => array(
 		'type'    => 'object',
 		'default' => array(
-			'marginBottom'      => array( 'Desktop' => '0.75rem' ),
+			'marginBottom'      => array( 'Desktop' => '0px' ),
 			'backgroundOverlay' => '#FFFFFFE6',
 			'border'            => $borderDefault,
 		),

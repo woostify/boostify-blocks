@@ -2,6 +2,10 @@
 	display: block !important;
 }
 
+.woocommerce-product-categories .woocommerce-search-list__item-input + .woocommerce-search-list__item-label {
+	margin-inline-start: 6px;
+}
+
 /* FOR PREVIEW */
 .wcb-block-products-editor-swithToScrollSnapX__None .wcb-products__list {
 	row-gap: var(--wcb-editor-row-gap, var(--wcb-editor-row-gap-desktop, 1rem));
