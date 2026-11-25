@@ -18,31 +18,37 @@ import getValueFromAttrsResponsives from "../utils/getValueFromAttrsResponsives"
 export interface WCB_PRODUCTS_PANEL_STYLE_CATEGORY {
 	typography: MyTypographyControlData;
 	textColor: string;
+	isTextColorEdited?: boolean;
+	hoverColor?: string;
 	marginBottom: HasResponsive<string>;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO: WCB_PRODUCTS_PANEL_STYLE_CATEGORY =
 	{
 		typography: TYPOGRAPHY_CONTROL_DEMO,
-		textColor: "#171717",
-		marginBottom: { Desktop: "0.75rem" },
+		textColor: "",
+		marginBottom: { Desktop: "0px" },
 	};
 
 interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_PRODUCTS_PANEL_STYLE_CATEGORY;
+	textColor: string;
+	hoverColor?: string;
 	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_CATEGORY) => void;
 }
 
 const WcbProductsPanel_StyleCategory: FC<Props> = ({
 	panelData = WCB_PRODUCTS_PANEL_STYLE_CATEGORY_DEMO,
+	textColor,
+	hoverColor,
 	setAttr__,
 	initialOpen,
 	onToggle,
 	opened,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-	const { typography, textColor, marginBottom } = panelData;
+	const { typography, marginBottom } = panelData;
 
 	const { currentDeviceValue: MARGIN_BOTTOM } = getValueFromAttrsResponsives(
 		marginBottom,
@@ -73,9 +79,16 @@ const WcbProductsPanel_StyleCategory: FC<Props> = ({
 							setAttr__({
 								...panelData,
 								textColor: color,
+								isTextColorEdited: Boolean(color),
 							});
 						}}
 						color={textColor}
+					/>
+
+					<MyColorPicker
+						label={__("Hover Color", "boostify-blocks")}
+						color={hoverColor || ""}
+						onChange={(color) => setAttr__({ ...panelData, hoverColor: color })}
 					/>
 
 					<MyUnitControl

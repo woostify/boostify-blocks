@@ -4,12 +4,37 @@ import { DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES } from "../________";
 import { loadGoogleFont } from "./font";
 import checkResponsiveValueForOptimizeCSS from "./checkResponsiveValueForOptimizeCSS";
 
+export type TypographyDeviceType = "Desktop" | "Tablet" | "Mobile";
+
 interface Params {
 	typography: MyTypographyControlData;
 	className: string;
+	deviceType?: TypographyDeviceType | null;
 }
 
-const getTypographyStyles = ({ typography, className }: Params): CSSObject => {
+const pickDefined = <T,>(...values: (T | undefined | null)[]): T | undefined =>
+	values.find((v): v is T => v !== undefined && v !== null && v !== "");
+
+const pickDeviceTypographyValue = <T,>(
+	deviceType: TypographyDeviceType,
+	mobile: T | undefined,
+	tablet: T | undefined,
+	desktop: T | undefined
+): T | undefined => {
+	if (deviceType === "Mobile") {
+		return pickDefined(mobile, tablet, desktop);
+	}
+	if (deviceType === "Tablet") {
+		return pickDefined(tablet, desktop, mobile);
+	}
+	return pickDefined(desktop, tablet, mobile);
+};
+
+const getTypographyStyles = ({
+	typography,
+	className,
+	deviceType,
+}: Params): CSSObject => {
 	if (!typography || !className) {
 		return {};
 	}
@@ -23,8 +48,11 @@ const getTypographyStyles = ({ typography, className }: Params): CSSObject => {
 		textTransform,
 	} = typography;
 
-	if (!!fontFamily) {
-		loadGoogleFont(fontFamily);
+	const effectiveFontFamily =
+		fontFamily && fontFamily !== "Default" ? fontFamily : undefined;
+
+	if (effectiveFontFamily) {
+		loadGoogleFont(effectiveFontFamily);
 	}
 
 	const { media_desktop, media_tablet } = DEMO_BOOSTIFYBLOCKS_GLOBAL_VARIABLES;
@@ -83,23 +111,53 @@ const getTypographyStyles = ({ typography, className }: Params): CSSObject => {
 		? undefined
 		: appearance?.style?.fontStyle;
 
+	const baseStyles = {
+		fontFamily: effectiveFontFamily,
+		fontWeight: fontWeight,
+		fontStyle: fontStyle,
+		textDecoration,
+		textTransform,
+	};
+
+	if (deviceType) {
+		return {
+			[`${className}`]: {
+				...baseStyles,
+				fontSize: pickDeviceTypographyValue(
+					deviceType,
+					fontSize_Mobile,
+					fontSize_Tablet,
+					fontSize_Desktop
+				),
+				lineHeight: pickDeviceTypographyValue(
+					deviceType,
+					lineHeight_Mobile,
+					lineHeight_Tablet,
+					lineHeight_Desktop
+				),
+				letterSpacing: pickDeviceTypographyValue(
+					deviceType,
+					letterSpacing_Mobile,
+					letterSpacing_Tablet,
+					letterSpacing_Desktop
+				),
+			},
+		};
+	}
+
 	return {
 		[`${className}`]: {
-			fontFamily: fontFamily,
-			fontWeight: fontWeight,
-			fontStyle: fontStyle,
-			textDecoration,
-			textTransform,
+			...baseStyles,
 			//
-			fontSize: fontSize_Mobile_new,
-			lineHeight: lineHeight_Mobile_new,
-			letterSpacing: letterSpacing_Mobile_new,
+			fontSize: fontSize_Mobile_new ?? undefined,
+			lineHeight: lineHeight_Mobile_new ?? undefined,
+			letterSpacing: letterSpacing_Mobile_new ?? undefined,
 			[`@media (min-width: ${media_tablet})`]:
 				fontSize_Tablet_new || lineHeight_Tablet_new || letterSpacing_Tablet_new
 					? {
-							fontSize: fontSize_Tablet_new,
-							lineHeight: lineHeight_Tablet_new,
-							letterSpacing: letterSpacing_Tablet_new,
+							fontSize: fontSize_Tablet_new ?? undefined,
+							lineHeight: lineHeight_Tablet_new ?? undefined,
+							letterSpacing: letterSpacing_Tablet_new ?? undefined,
 					  }
 					: undefined,
 			[`@media (min-width: ${media_desktop})`]:
@@ -107,9 +165,9 @@ const getTypographyStyles = ({ typography, className }: Params): CSSObject => {
 				lineHeight_Desktop_new ||
 				letterSpacing_Desktop_new
 					? {
-							fontSize: fontSize_Desktop_new,
-							lineHeight: lineHeight_Desktop_new,
-							letterSpacing: letterSpacing_Desktop_new,
+							fontSize: fontSize_Desktop_new ?? undefined,
+							lineHeight: lineHeight_Desktop_new ?? undefined,
+							letterSpacing: letterSpacing_Desktop_new ?? undefined,
 					  }
 					: undefined,
 		},

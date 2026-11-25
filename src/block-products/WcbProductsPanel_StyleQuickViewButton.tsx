@@ -10,7 +10,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON {
 	text_color: string;
 	hover_bg_color: string;
 	hover_text_color: string;
-	border_radius: number;
+	border_radius: number | string;
 	woostify_pro_active?: boolean;
 }
 
@@ -19,10 +19,10 @@ export const WCB_PRODUCTS_PANEL_STYLE_QUICKVIEW_BUTTON_DEMO: WCB_PRODUCTS_PANEL_
 		enabled: false,
 		position: "bottom-image",
 		show_icon: true,
-		bg_color: "#ffffff",
-		text_color: "#000000",
-		hover_bg_color: "#f5f5f5",
-		hover_text_color: "#333333",
-		border_radius: 0,
+		bg_color: "",
+		text_color: "",
+		hover_bg_color: "",
+		hover_text_color: "",
+		border_radius: "",
 		woostify_pro_active: false,
 	};
