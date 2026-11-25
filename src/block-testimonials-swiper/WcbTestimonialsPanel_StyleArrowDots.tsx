@@ -65,13 +65,19 @@ const WcbTestimonialsPanel_StyleArrowDots: FC<Props> = ({
 		getValueFromAttrsResponsives(arrowDistance, deviceType);
 	const showArrows = showArrowsDots !== "Dot";
 	const showDots = showArrowsDots !== "Arrow";
+	const panelTitle =
+		showArrows && showDots
+			? __("Arrow & Dots", "boostify-blocks")
+			: showArrows
+			? __("Arrows", "boostify-blocks")
+			: __("Dots", "boostify-blocks");
 	//
 	return (
 		<PanelBody
 			initialOpen={initialOpen}
 			onToggle={onToggle}
 			opened={opened}
-			title={__("Arrow & Dots", "boostify-blocks")}
+			title={panelTitle}
 		>
 			<div className="space-y-5">
 				{showArrows && (

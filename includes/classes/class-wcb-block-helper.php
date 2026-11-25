@@ -559,7 +559,7 @@ class WCB_Block_Helper extends WCB_CSS_Utility {
 		}
 
 		if ( ! empty( $border['hoverColor'] ) ) {
-			self::add_responsive_css( $css, $selector . ':hover', 'border-color', $border['hoverColor'] );
+			self::add_responsive_css( $css, self::append_selector_suffix( $selector, ':hover' ), 'border-color', $border['hoverColor'] );
 		}
 
 		// Border Radius (responsive individual corners).

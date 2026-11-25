@@ -118,7 +118,7 @@ $attributes = array(
 			'isShowFeaturedImage'   => true,
 			'featuredImageSize'     => 'large',
 			'featuredImagePosition' => 'top',
-			'linkCompleteBox'       => false,
+			'linkCompleteBox'       => true,
 			'hoverType'             => 'none',
 		),
 	),
@@ -131,7 +131,6 @@ $attributes = array(
 		'default' => array(
 			'isShowButton'   => true,
 			'position'       => 'bottom',
-			'isShowQuantity' => true,
 			'isShowIcon'     => true,
 		),
 	),
@@ -169,8 +168,8 @@ $attributes = array(
 		'type'    => 'object',
 		'default' => array(
 			'typography'   => $typographyDefault,
-			'textColor'    => '#171717',
-			'marginBottom' => array( 'Desktop' => '0.75rem' ),
+			'textColor'    => '',
+			'marginBottom' => array( 'Desktop' => '0px' ),
 		),
 	),
 
@@ -180,7 +179,7 @@ $attributes = array(
 	'style_featuredImage' => array(
 		'type'    => 'object',
 		'default' => array(
-			'marginBottom'      => array( 'Desktop' => '0.75rem' ),
+			'marginBottom'      => array( 'Desktop' => '0px' ),
 			'backgroundOverlay' => '#FFFFFFE6',
 			'border'            => $borderDefault,
 		),
@@ -215,6 +214,14 @@ $attributes = array(
 				'Mobile'  => '2rem',
 			),
 			'swithToScrollSnapX' => 'None',
+			'layoutType'         => 'grid',
+			'isShowArrow'        => true,
+			'isShowDots'         => true,
+			'isAutoPlay'         => false,
+			'autoplaySpeed'      => 3000,
+			'hoverpause'         => true,
+			'loop'               => false,
+			'animationDuration'  => 500,
 			'isEqualHeight'      => true,
 		),
 	),
@@ -455,6 +462,29 @@ $attributes = array(
 					'bottom' => '',
 				),
 			),
+		),
+	),
+
+	// =========================================================================
+	// style_arrowAndDots — Carousel Arrow & Dots
+	// =========================================================================
+	'style_arrowAndDots' => array(
+		'type'    => 'object',
+		'default' => array(
+			'arrowSize'       => '1.25rem',
+			'border'          => array(
+				'mainSettings' => array(
+					'style' => 'solid',
+					'width' => '1px',
+					'color' => '#d1d5db',
+				),
+				'hoverColor' => '#6b7280',
+				'radius'     => array( 'Desktop' => '99px' ),
+			),
+			'arrowDistance'   => array( 'Desktop' => '0px' ),
+			'dotsMarginTop'   => array( 'Desktop' => '8px' ),
+			'color'           => '#374151',
+			'backgroundColor' => '#fff',
 		),
 	),
 );

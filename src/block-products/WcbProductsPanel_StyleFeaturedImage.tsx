@@ -24,7 +24,7 @@ export interface WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE {
 
 export const WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE_DEMO: WCB_PRODUCTS_PANEL_STYLE_FEATURED_IMAGE =
 	{
-		marginBottom: { Desktop: "0.75rem" },
+		marginBottom: { Desktop: "0px" },
 		backgroundOverlay: "#FFFFFFE6",
 		border: MY_BORDER_CONTROL_DEMO,
 	};

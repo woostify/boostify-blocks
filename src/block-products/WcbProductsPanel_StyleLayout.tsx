@@ -5,6 +5,7 @@ import {
 	// @ts-ignore
 	__experimentalBoxControl as BoxControl,
 	RangeControl,
+	SelectControl,
 	ToggleControl,
 } from "@wordpress/components";
 import MyColorPicker from "../components/controls/MyColorPicker/MyColorPicker";
@@ -36,7 +37,17 @@ export interface WCB_PRODUCTS_PANEL_STYLE_LAYOUT
 	// peekAfter - The value of the future viewports which have to be visible in the current view
 	peekAfter: HasResponsive<string>;
 	isEqualHeight: boolean;
+	contentEqualHeight?: boolean;
+	contentMinHeight?: number;
 	swithToScrollSnapX: ResponsiveDevices | "None";
+	layoutType?: "grid" | "carousel";
+	isShowArrow?: boolean;
+	isShowDots?: boolean;
+	isAutoPlay?: boolean;
+	autoplaySpeed?: number;
+	hoverpause?: boolean;
+	loop?: boolean;
+	animationDuration?: number;
 }
 
 export const WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: WCB_PRODUCTS_PANEL_STYLE_LAYOUT =
@@ -55,6 +66,14 @@ export const WCB_PRODUCTS_PANEL_STYLE_LAYOUT_DEMO: WCB_PRODUCTS_PANEL_STYLE_LAYO
 		numberOfColumn: { Desktop: 3, Mobile: 2, Tablet: 2 },
 		peekAfter: { Desktop: "2rem", Tablet: "2rem", Mobile: "2rem" },
 		swithToScrollSnapX: "None",
+		layoutType: "grid",
+		isShowArrow: true,
+		isShowDots: true,
+		isAutoPlay: false,
+		autoplaySpeed: 3000,
+		hoverpause: true,
+		loop: false,
+		animationDuration: 500,
 		isEqualHeight: true,
 	};
 
@@ -81,6 +100,16 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 
 	const { textAlignment, backgroundColor, colunmGap, padding, rowGap } =
 		panelData;
+	const layoutType = panelData.layoutType || "grid";
+	const isShowArrow = panelData.isShowArrow ?? true;
+	const isShowDots = panelData.isShowDots ?? true;
+	const isAutoPlay = panelData.isAutoPlay ?? false;
+	const autoplaySpeed = panelData.autoplaySpeed ?? 3000;
+	const hoverpause = panelData.hoverpause ?? true;
+	const loop = panelData.loop ?? false;
+	const animationDuration = panelData.animationDuration ?? 500;
+	const isScrollSnapEnabled =
+		layoutType === "grid" && panelData.swithToScrollSnapX !== "None";
 
 	const SNAPX_POSTION_PLANS: MyRadioItem<
 		WCB_PRODUCTS_PANEL_STYLE_LAYOUT["swithToScrollSnapX"]
@@ -114,6 +143,20 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 			title={__("Layout", "boostify-blocks")}
 		>
 			<div className={"space-y-5"}>
+				<SelectControl
+					value={layoutType}
+					options={[
+						{ label: __("Grid", "boostify-blocks"), value: "grid" },
+						{ label: __("Carousel", "boostify-blocks"), value: "carousel" },
+					]}
+					onChange={(value) => {
+						setAttr__({
+							...panelData,
+							layoutType: value as "grid" | "carousel",
+						});
+					}}
+				/>
+
 				<MyTextAlignControl
 					textAlignment={textAlignment}
 					onChange={handleChangeTextAlignment}
@@ -149,55 +192,133 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 					required
 				/>
 
-				<MyDisclosure label="Swith to scroll-snap-x" defaultOpen>
-					<div>
-						<MyRadioGroup
-							label="Swith to scroll-snap-x"
-							onChange={(selected) =>
-								setAttr__({
-									...panelData,
-									swithToScrollSnapX: selected as any,
-								})
-							}
-							value={panelData.swithToScrollSnapX}
-							plans={SNAPX_POSTION_PLANS}
-							hasResponsive={false}
-							isWrap={false}
-						/>
-						<HelpText>
-							{__(
-								"Device selection to start switching from layout GRID to layout is a scroll able row.",
-								"boostify-blocks"
-							)}
-						</HelpText>
-					</div>
-					{/*  */}
-
-					{panelData.swithToScrollSnapX !== "None" && (
+				{layoutType === "grid" ? (
+					<MyDisclosure label={__("Switch to scroll-snap-x", "boostify-blocks")} defaultOpen>
 						<div>
-							<MySpacingSizesControl
-								hasResponsive
-								onChange={(value) => {
+							<MyRadioGroup
+								label={__("Switch to scroll-snap-x", "boostify-blocks")}
+								onChange={(selected) =>
 									setAttr__({
 										...panelData,
-										peekAfter: {
-											...panelData.peekAfter,
-											[deviceType]: value,
-										},
-									});
-								}}
-								value={currentPeekAfter || "0"}
-								label={__("Peek After", "boostify-blocks")}
+										swithToScrollSnapX: selected as any,
+									})
+								}
+								value={panelData.swithToScrollSnapX}
+								plans={SNAPX_POSTION_PLANS}
+								hasResponsive={false}
+								isWrap={false}
 							/>
 							<HelpText>
 								{__(
-									"The value of the future viewports which have to be visible in the current view.",
+									"Device selection to start switching from layout GRID to layout is a scroll able row.",
 									"boostify-blocks"
 								)}
 							</HelpText>
 						</div>
-					)}
-				</MyDisclosure>
+
+						{isScrollSnapEnabled && (
+							<>
+								<div>
+									<MySpacingSizesControl
+										hasResponsive
+										onChange={(value) => {
+											setAttr__({
+												...panelData,
+												peekAfter: {
+													...panelData.peekAfter,
+													[deviceType]: value,
+												},
+											});
+										}}
+										value={currentPeekAfter || "0"}
+										label={__("Peek After", "boostify-blocks")}
+									/>
+									<HelpText>
+										{__(
+											"The value of the future viewports which have to be visible in the current view.",
+											"boostify-blocks"
+										)}
+									</HelpText>
+								</div>
+								<ToggleControl
+									label={__("Show arrows", "boostify-blocks")}
+									checked={isShowArrow}
+									onChange={(checked) => {
+										setAttr__({ ...panelData, isShowArrow: checked });
+									}}
+								/>
+							</>
+						)}
+					</MyDisclosure>
+				) : (
+					<MyDisclosure label={__("Carousel", "boostify-blocks")} defaultOpen>
+						<ToggleControl
+							label={__("Show arrows", "boostify-blocks")}
+							checked={isShowArrow}
+							onChange={(checked) => {
+								setAttr__({ ...panelData, isShowArrow: checked });
+							}}
+						/>
+						<ToggleControl
+							label={__("Show dots", "boostify-blocks")}
+							checked={isShowDots}
+							onChange={(checked) => {
+								setAttr__({ ...panelData, isShowDots: checked });
+							}}
+						/>
+						<ToggleControl
+							label={__("Infinite loop", "boostify-blocks")}
+							checked={loop}
+							onChange={(checked) => {
+								setAttr__({ ...panelData, loop: checked });
+							}}
+						/>
+						<ToggleControl
+							label={__("Autoplay", "boostify-blocks")}
+							checked={isAutoPlay}
+							onChange={(checked) => {
+								setAttr__({ ...panelData, isAutoPlay: checked });
+							}}
+						/>
+						{isAutoPlay && (
+							<>
+								<RangeControl
+									label={__("Autoplay speed (ms)", "boostify-blocks")}
+									value={autoplaySpeed}
+									onChange={(value) => {
+										setAttr__({
+											...panelData,
+											autoplaySpeed: value || 3000,
+										});
+									}}
+									min={500}
+									max={15000}
+									step={100}
+								/>
+								<ToggleControl
+									label={__("Pause on hover", "boostify-blocks")}
+									checked={hoverpause}
+									onChange={(checked) => {
+										setAttr__({ ...panelData, hoverpause: checked });
+									}}
+								/>
+							</>
+						)}
+						<RangeControl
+							label={__("Transition speed (ms)", "boostify-blocks")}
+							value={animationDuration}
+							onChange={(value) => {
+								setAttr__({
+									...panelData,
+									animationDuration: value || 500,
+								});
+							}}
+							min={100}
+							max={5000}
+							step={50}
+						/>
+					</MyDisclosure>
+				)}
 
 				<MyDimensionsNoMarginControl
 					dimensionControl={{ colunmGap, padding, rowGap }}
@@ -208,6 +329,7 @@ const WcbProductsPanel_StyleLayout: FC<Props> = ({
 						});
 					}}
 					paddingLabel={__("Padding content", "boostify-blocks")}
+					showRowGap={layoutType !== "carousel"}
 				/>
 
 				<ToggleControl
