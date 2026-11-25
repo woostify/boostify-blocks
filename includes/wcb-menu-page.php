@@ -35,6 +35,18 @@ function boostify_blocks_hide_admin_notices() {
 add_action( 'admin_head', 'boostify_blocks_hide_admin_notices' );
 
 /**
+ * Add custom body class on the Boostify Blocks settings page.
+ */
+function boostify_blocks_admin_body_class( $classes ) {
+	$screen = get_current_screen();
+	if ( $screen && 'toplevel_page_boostify-blocks-settings' === $screen->id ) {
+		$classes .= ' boostify-blocks-dashboard-page boostify-blocks-includes-settings-page-php';
+	}
+	return $classes;
+}
+add_filter( 'admin_body_class', 'boostify_blocks_admin_body_class' );
+
+/**
  * Render the Boostify Blocks settings page.
  */
 function boostify_blocks_render_settings_page() {
