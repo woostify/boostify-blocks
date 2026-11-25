@@ -59,6 +59,7 @@ interface Props
 	extends Pick<PanelBody.Props, "onToggle" | "opened" | "initialOpen"> {
 	panelData: WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN;
 	setAttr__: (data: WCB_PRODUCTS_PANEL_STYLE_ADD_TO_CART_BTN) => void;
+	isIconPosition?: boolean;
 }
 
 const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
@@ -67,6 +68,7 @@ const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
 	initialOpen,
 	onToggle,
 	opened,
+	isIconPosition = false,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 
@@ -96,12 +98,14 @@ const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
 			title={__("Add to cart button", "boostify-blocks")}
 		>
 			<div className="space-y-2.5">
-				<MyTypographyControl
-					typographyControl={typography}
-					setAttrs__typography={(typography) =>
-						setAttr__({ ...panelData, typography })
-					}
-				/>
+				{!isIconPosition && (
+					<MyTypographyControl
+						typographyControl={typography}
+						setAttrs__typography={(typography) =>
+							setAttr__({ ...panelData, typography })
+						}
+					/>
+				)}
 
 				<MyDisclosure defaultOpen label="Color & Background">
 					<MyColorBackgroundColorControl
@@ -112,7 +116,7 @@ const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
 					/>
 				</MyDisclosure>
 
-				<MyDisclosure label="Border & Dimensions">
+				<MyDisclosure label={isIconPosition ? "Border" : "Border & Dimensions"}>
 					<MyBorderControl
 						borderControl={border}
 						setAttrs__border={(border: MyBorderControlData) => {
@@ -122,39 +126,43 @@ const WcbProductsPanel_StyleAddToCartBtn: FC<Props> = ({
 							});
 						}}
 					/>
-					<BoxControl
-						label={
-							<MyLabelControl className="" hasResponsive>
-								{__("Padding", "boostify-blocks")}
-							</MyLabelControl>
-						}
-						values={padding}
-						onChange={(value: DimensionSettings) => {
-							setAttr__({
-								...panelData,
-								padding: {
-									...paddingProps,
-									[deviceType]: value,
-								},
-							});
-						}}
-					/>
+					{!isIconPosition && (
+						<>
+							<BoxControl
+								label={
+									<MyLabelControl className="" hasResponsive>
+										{__("Padding", "boostify-blocks")}
+									</MyLabelControl>
+								}
+								values={padding}
+								onChange={(value: DimensionSettings) => {
+									setAttr__({
+										...panelData,
+										padding: {
+											...paddingProps,
+											[deviceType]: value,
+										},
+									});
+								}}
+							/>
 
-					<MyUnitControl
-						onChange={(value) => {
-							setAttr__({
-								...panelData,
-								marginBottom: {
-									...marginBottom,
-									[deviceType]: value,
-								},
-							});
-						}}
-						value={MARGIN_BOTTOM || ""}
-						units={MY_GAP_UNITS}
-						label={__("Margin bottom", "boostify-blocks")}
-						hasResponsive
-					/>
+							<MyUnitControl
+								onChange={(value) => {
+									setAttr__({
+										...panelData,
+										marginBottom: {
+											...marginBottom,
+											[deviceType]: value,
+										},
+									});
+								}}
+								value={MARGIN_BOTTOM || ""}
+								units={MY_GAP_UNITS}
+								label={__("Margin bottom", "boostify-blocks")}
+								hasResponsive
+							/>
+						</>
+					)}
 				</MyDisclosure>
 			</div>
 		</PanelBody>

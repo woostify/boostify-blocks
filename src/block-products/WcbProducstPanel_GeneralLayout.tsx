@@ -8,6 +8,7 @@ import { ToggleControl } from "@wordpress/components";
 
 export interface WCB_PRODUCTS_PANEL_GENERAL_LAYOUT {
 	isCustomizerGeneralLayout: boolean;
+	hasCustomized?: boolean;
 }
 
 export const WCB_PRODUCTS_PANEL_GENERAL_LAYOUT_DEMO: WCB_PRODUCTS_PANEL_GENERAL_LAYOUT =

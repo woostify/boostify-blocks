@@ -10,13 +10,12 @@ import React, { FC } from "react";
 
 // @ts-ignore
 import { __experimentalInputControl as InputControl } from "@wordpress/components";
-import MyLabelControl from "../components/controls/MyLabelControl/MyLabelControl";
-import { ResponsiveDevices } from "../components/controls/MyResponsiveToggle/MyResponsiveToggle";
-import useGetDeviceType from "../hooks/useGetDeviceType";
 import { get_STOCK_STATUS_OPTIONS } from "./constants";
 import ProductCategoryControl from "./product-category-control";
 import ProductTagControl, { ProductTaxOperator } from "./product-tag-control";
 import MyDisclosure from "../components/controls/MyDisclosure";
+import HelpText from "../components/controls/HelpText";
+import { getThemeDefaults } from "../utils/themeDefaults";
 import ProductAttributeTermControl from "./product-attribute-term-control";
 
 export type ProductOrderBy =
@@ -33,6 +32,8 @@ export type ProductOrderBy =
 export interface WCB_PRODUCTS_PANEL_SORTINGANDFILTERING {
 	emptyMessage: string;
 	numberOfItems: number;
+	isNumberOfItemsEdited?: boolean;
+	numberOfItemsFromCustomizer?: number;
 	isOnSale: boolean;
 	stockStatus: string[];
 	categories: string[];
@@ -84,8 +85,6 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 	onToggle,
 	opened,
 }) => {
-	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
-
 	const STOCK_STATUS_OPTIONS = get_STOCK_STATUS_OPTIONS() as Record<string, string>;
 
 	const renderSelectOrderBy = () => {
@@ -269,23 +268,27 @@ const WcbProducstPanelSortingAndFiltering: FC<Props> = ({
 					Object.values(STOCK_STATUS_OPTIONS).includes(value)
 				}
 				value={
-					panelData.stockStatus.map((key) => STOCK_STATUS_OPTIONS[key]) || []
+					(panelData.stockStatus || [])
+						.map((key) => STOCK_STATUS_OPTIONS[key])
+						.filter(Boolean)
 				}
 				__experimentalExpandOnFocus={true}
 			/>
+			{getThemeDefaults().hide_out_of_stock_items && panelData.stockStatus?.includes("outofstock") && (
+				<HelpText>
+					{__("WooCommerce is configured to hide out-of-stock products. They will be excluded from this block.", "boostify-blocks")}
+				</HelpText>
+			)}
 
 			{/*  */}
 			<RangeControl
-				label={
-					<MyLabelControl hasResponsive>
-						{__("Number of items", "boostify-blocks")}
-					</MyLabelControl>
-				}
+				label={__("Number of items", "boostify-blocks")}
 				value={panelData.numberOfItems}
 				onChange={(numberOfItems = 10) => {
 					setAttr__({
 						...panelData,
 						numberOfItems,
+						isNumberOfItemsEdited: true,
 					});
 				}}
 				min={1}

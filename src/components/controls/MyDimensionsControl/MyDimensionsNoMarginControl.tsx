@@ -17,6 +17,7 @@ interface Props {
 	dimensionControl: MyDimensionsNoMarginControlData;
 	setAttrs__dimensions: (data: MyDimensionsNoMarginControlData) => void;
 	paddingLabel?: string;
+	showRowGap?: boolean;
 }
 
 const MyDimensionsNoMarginControl: FC<Props> = ({
@@ -24,6 +25,7 @@ const MyDimensionsNoMarginControl: FC<Props> = ({
 	dimensionControl = MY_DIMENSIONS_NO_MARGIN_CONTROL_DEMO,
 	setAttrs__dimensions,
 	paddingLabel = __("Padding", "boostify-blocks"),
+	showRowGap = true,
 }) => {
 	const deviceType: ResponsiveDevices = useGetDeviceType() || "Desktop";
 	//
@@ -85,11 +87,13 @@ const MyDimensionsNoMarginControl: FC<Props> = ({
 
 	return (
 		<div className={className}>
-			<MySpacingSizesControl
-				onChange={setRowGrap}
-				value={rowGap || "0"}
-				label={__("Row Gap", "boostify-blocks")}
-			/>
+			{showRowGap && (
+				<MySpacingSizesControl
+					onChange={setRowGrap}
+					value={rowGap || "0"}
+					label={__("Row Gap", "boostify-blocks")}
+				/>
+			)}
 			<MySpacingSizesControl
 				onChange={setColumnGap}
 				value={colunmGap || "0"}
@@ -104,6 +108,7 @@ const MyDimensionsNoMarginControl: FC<Props> = ({
 				}
 				values={padding || {}}
 				onChange={handleChangePadding}
+				min={0}
 			/>
 		</div>
 	);
